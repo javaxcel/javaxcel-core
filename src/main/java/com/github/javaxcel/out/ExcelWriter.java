@@ -2,6 +2,8 @@ package com.github.javaxcel.out;
 
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelIgnore;
+import com.github.javaxcel.annotation.ExcelModel;
+import com.github.javaxcel.constant.TargetedFieldPolicy;
 import com.github.javaxcel.util.StringUtils;
 import com.github.javaxcel.util.TypeClassifier;
 import org.apache.poi.ss.usermodel.*;
@@ -13,9 +15,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * ExcelWriter
@@ -55,12 +64,27 @@ public final class ExcelWriter<T> {
      */
     private String sheetName;
 
+    private static List<Field> getInheritedFields(Class<?> type) {
+        List<Field> fields = new ArrayList<>();
+        for (Class<?> clazz = type; clazz != null; clazz = clazz.getSuperclass()) {
+            fields.addAll(0, Arrays.asList(clazz.getDeclaredFields()));
+        }
+
+        return fields;
+    }
+
     private ExcelWriter(Class<T> type, List<T> list) {
         this.type = type;
         this.list = list;
-        this.fields = Arrays.stream(this.type.getDeclaredFields())
-                .filter(field -> field.getAnnotation(ExcelIgnore.class) == null && // Excludes the fields annotated @ExcelIgnore.
-                        TypeClassifier.isWritableClass(field.getType())) // Excludes the fields that are un-writable of excel.
+
+        // @ExcelModel의 타깃 필드 정책에 따라 가져오는 필드가 다르다
+        ExcelModel annotation = this.type.getAnnotation(ExcelModel.class);
+        Stream<Field> stream = annotation == null || annotation.policy() == TargetedFieldPolicy.OWN_FIELDS
+                ? Arrays.stream(this.type.getDeclaredFields())
+                : getInheritedFields(this.type).stream();
+
+        // Excludes the fields annotated @ExcelIgnore.
+        this.fields = stream.filter(field -> field.getAnnotation(ExcelIgnore.class) == null)
                 .collect(Collectors.toList());
     }
 
@@ -116,8 +140,8 @@ public final class ExcelWriter<T> {
             if (this.headerNames == null) {
                 this.headerNames = this.fields.stream()
                         .map(field -> {
-                            ExcelColumn meta = field.getAnnotation(ExcelColumn.class);
-                            return meta == null ? field.getName() : meta.value();
+                            ExcelColumn annotation = field.getAnnotation(ExcelColumn.class);
+                            return annotation == null || StringUtils.isNullOrEmpty(annotation.value()) ? field.getName() : annotation.value();
                         }).toArray(String[]::new);
             }
 
@@ -161,9 +185,8 @@ public final class ExcelWriter<T> {
                 cell.setCellValue(StringUtils.ifNullOrEmpty(value, () -> {
                     // 기본값 우선순위: ExcelWriter.write에 넘겨준 기본값 > @ExcelColumn에 지정한 기본값
                     if (this.defaultValue != null) return this.defaultValue;
-
-                    ExcelColumn meta = field.getAnnotation(ExcelColumn.class);
-                    return meta != null ? meta.defaultValue() : null;
+                    ExcelColumn annotation = field.getAnnotation(ExcelColumn.class);
+                    return annotation != null ? annotation.defaultValue() : null;
                 }));
             }
         }
@@ -183,8 +206,25 @@ public final class ExcelWriter<T> {
         // Gets value of the field.
         Object value = field.get(vo);
 
+        if (value == null) return null;
+
+        // Formats datetime when the value of type is datetime.
+        ExcelColumn annotation = field.getAnnotation(ExcelColumn.class);
+        if (annotation != null && !StringUtils.isNullOrEmpty(annotation.pattern())) {
+            Class<?> type = field.getType();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(annotation.pattern());
+
+            if (LocalTime.class.equals(type)) {
+                value = ((LocalTime) value).format(formatter);
+            } else if (LocalDate.class.equals(type)) {
+                value = ((LocalDate) value).format(formatter);
+            } else if (LocalDateTime.class.equals(type)) {
+                value = ((LocalDateTime) value).format(formatter);
+            }
+        }
+
         // Converts value to string.
-        return value == null ? null : String.valueOf(value);
+        return String.valueOf(value);
     }
 
 }

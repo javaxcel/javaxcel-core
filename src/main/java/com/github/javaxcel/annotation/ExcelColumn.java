@@ -12,7 +12,7 @@ public @interface ExcelColumn {
      *
      * @return column name
      */
-    String value();
+    String value() default "";
 
     /**
      * Replacement of the value when the value is null or empty string.
@@ -20,5 +20,12 @@ public @interface ExcelColumn {
      * @return replacement of the value when the value is null or empty string
      */
     String defaultValue() default "";
+
+    /**
+     * Pattern for formatting datetime.
+     *
+     * @return pattern for formatting datetime
+     */
+    String pattern() default "";
 
 }
