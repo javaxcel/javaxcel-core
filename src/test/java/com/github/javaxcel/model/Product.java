@@ -7,11 +7,13 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(exclude = "apiId")
 public class Product {
 
     @ExcelColumn("상품번호")
-    private final long serialNumber;
+    private long serialNumber;
 
     private String name;
 
@@ -26,7 +28,7 @@ public class Product {
 
     private double height;
 
-    @ExcelColumn(value = "WEIGHT", defaultValue = "(empty)")
+    @ExcelColumn(value = "WEIGHT", defaultValue = "0")
     private Double weight;
 
 }

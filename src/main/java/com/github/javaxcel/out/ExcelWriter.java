@@ -4,8 +4,8 @@ import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelIgnore;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.constant.TargetedFieldPolicy;
+import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.StringUtils;
-import com.github.javaxcel.util.TypeClassifier;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jetbrains.annotations.NotNull;
@@ -15,14 +15,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -64,13 +58,16 @@ public final class ExcelWriter<T> {
      */
     private String sheetName;
 
-    private static List<Field> getInheritedFields(Class<?> type) {
-        List<Field> fields = new ArrayList<>();
-        for (Class<?> clazz = type; clazz != null; clazz = clazz.getSuperclass()) {
-            fields.addAll(0, Arrays.asList(clazz.getDeclaredFields()));
-        }
-
-        return fields;
+    /**
+     * Initializes excel writer.
+     *
+     * @param type class type
+     * @param list data list
+     * @param <E> type of the element
+     * @return excel writer
+     */
+    public static <E> ExcelWriter<E> init(@NotNull Class<E> type, @NotNull List<E> list) {
+        return new ExcelWriter<>(type, list);
     }
 
     private ExcelWriter(Class<T> type, List<T> list) {
@@ -81,27 +78,17 @@ public final class ExcelWriter<T> {
         ExcelModel annotation = this.type.getAnnotation(ExcelModel.class);
         Stream<Field> stream = annotation == null || annotation.policy() == TargetedFieldPolicy.OWN_FIELDS
                 ? Arrays.stream(this.type.getDeclaredFields())
-                : getInheritedFields(this.type).stream();
+                : ExcelUtils.getInheritedFields(this.type).stream();
 
         // Excludes the fields annotated @ExcelIgnore.
         this.fields = stream.filter(field -> field.getAnnotation(ExcelIgnore.class) == null)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Initializes excel writer.
-     * @param type class type
-     * @param list data list
-     * @param <E> type of the element
-     * @return excel writer
-     */
-    public static <E> ExcelWriter<E> init(@NotNull Class<E> type, @NotNull List<E> list) {
-        return new ExcelWriter<>(type, list);
-    }
-
     public ExcelWriter<T> headerNames(@NotNull String... headerNames) {
-        if (headerNames.length != this.fields.size())
+        if (headerNames.length != this.fields.size()) {
             throw new IllegalArgumentException("The number of header names is not equal to the number of targeted fields in the class " + this.type.getName());
+        }
 
         this.headerNames = headerNames;
         return this;
@@ -119,6 +106,7 @@ public final class ExcelWriter<T> {
 
     /**
      * 엑셀 파일을 생성한다, 값이 null이거나 empty string인 경우 지정된 문자열로 치환한다.
+     *
      * @param file excel file
      * @throws IOException
      * @throws IllegalAccessException
@@ -181,7 +169,7 @@ public final class ExcelWriter<T> {
 
                 // Creates the cell and sets up data to it.
                 Cell cell = row.createCell(j);
-                String value = stringifyValue(vo, field);
+                String value = ExcelUtils.stringifyValue(vo, field);
                 cell.setCellValue(StringUtils.ifNullOrEmpty(value, () -> {
                     // 기본값 우선순위: ExcelWriter.write에 넘겨준 기본값 > @ExcelColumn에 지정한 기본값
                     if (this.defaultValue != null) return this.defaultValue;
@@ -190,41 +178,6 @@ public final class ExcelWriter<T> {
                 }));
             }
         }
-    }
-
-    /**
-     * Stringify value of the field.
-     * @param field field in object
-     * @param vo object in list
-     * @param <T> type of the object
-     * @return value of the field in value object
-     */
-    private static <T> String stringifyValue(T vo, Field field) throws IllegalAccessException {
-        // private 접근자라도 접근하게 한다
-        field.setAccessible(true);
-
-        // Gets value of the field.
-        Object value = field.get(vo);
-
-        if (value == null) return null;
-
-        // Formats datetime when the value of type is datetime.
-        ExcelColumn annotation = field.getAnnotation(ExcelColumn.class);
-        if (annotation != null && !StringUtils.isNullOrEmpty(annotation.pattern())) {
-            Class<?> type = field.getType();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(annotation.pattern());
-
-            if (LocalTime.class.equals(type)) {
-                value = ((LocalTime) value).format(formatter);
-            } else if (LocalDate.class.equals(type)) {
-                value = ((LocalDate) value).format(formatter);
-            } else if (LocalDateTime.class.equals(type)) {
-                value = ((LocalDateTime) value).format(formatter);
-            }
-        }
-
-        // Converts value to string.
-        return String.valueOf(value);
     }
 
 }
