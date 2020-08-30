@@ -21,11 +21,4 @@ public @interface ExcelColumn {
      */
     String defaultValue() default "";
 
-    /**
-     * Pattern for formatting datetime.
-     *
-     * @return pattern for formatting datetime
-     */
-    String pattern() default "";
-
 }
