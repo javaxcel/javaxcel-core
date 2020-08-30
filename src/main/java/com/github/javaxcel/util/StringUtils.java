@@ -18,4 +18,14 @@ public final class StringUtils {
         return isNullOrEmpty(str) ? defaultValueSupplier.get() : str;
     }
 
+    public static boolean anyMatches(String criterion, CharSequence... strs) {
+        if (criterion == null) return false;
+
+        for (CharSequence str : strs) {
+            if (criterion.contentEquals(str)) return true;
+        }
+
+        return false;
+    }
+
 }
