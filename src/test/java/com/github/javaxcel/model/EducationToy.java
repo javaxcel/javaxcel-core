@@ -37,4 +37,5 @@ public class EducationToy extends Toy {
         this.targetAges = targetAges;
         this.goals = goals;
     }
+
 }

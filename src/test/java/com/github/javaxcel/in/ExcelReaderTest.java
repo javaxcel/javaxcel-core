@@ -16,6 +16,7 @@ import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -56,7 +57,7 @@ public class ExcelReaderTest {
         }
         Constructor<?> constructor = Arrays.stream(declaredConstructors)
                 .min((a, b) -> Math.min(a.getParameterCount(), b.getParameterCount()))
-                .orElse(null);
+                .orElseThrow(NoSuchElementException::new);
         System.out.println("constructor with minimum parameters: " + constructor);
         constructor.setAccessible(true);
         Arrays.stream(constructor.getParameterTypes()).forEach(System.out::println);

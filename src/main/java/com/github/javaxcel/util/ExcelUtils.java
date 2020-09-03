@@ -2,6 +2,7 @@ package com.github.javaxcel.util;
 
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
+import org.apache.poi.ss.usermodel.Workbook;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -13,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public final class ExcelUtils {
 
@@ -31,6 +33,10 @@ public final class ExcelUtils {
         }
 
         return fields;
+    }
+
+    public static int[] getSheetRange(Workbook workbook) {
+        return IntStream.range(0, workbook.getNumberOfSheets()).toArray();
     }
 
     /**

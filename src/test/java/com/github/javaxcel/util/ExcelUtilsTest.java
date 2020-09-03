@@ -3,10 +3,15 @@ package com.github.javaxcel.util;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.constant.ToyType;
 import com.github.javaxcel.model.*;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -16,6 +21,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -40,6 +46,24 @@ public class ExcelUtilsTest {
 
         // then
         inheritedFields.forEach(System.out::println);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "E:\\works\\대한상공회의소 - 유통상품지식뱅크 서비스포털\\2020\\06\\20200618_미기재 설명 등록\\상품분류별 부가속성\\200519_분류별_부가속성예시.xlsx",
+            "E:\\works\\대한상공회의소 - 유통상품지식뱅크 서비스포털\\2020\\06\\20200618_미기재 설명 등록\\상품분류별 부가속성\\[가공] 상품분류별_부가속성_설명.xlsx",
+    })
+    public void getSheetRange(String pathname) throws IOException, InvalidFormatException {
+        // given
+        File file = new File(pathname);
+        Workbook workbook = new XSSFWorkbook(file);
+
+        // when
+        int[] range = IntStream.range(0, workbook.getNumberOfSheets()).toArray();
+        workbook.close();
+
+        // then
+        IntStream.of(range).forEach(i -> System.out.println("[" + i + "] " + workbook.getSheetAt(i).getSheetName()));
     }
 
     @ParameterizedTest
