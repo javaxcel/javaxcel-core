@@ -5,6 +5,7 @@ import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.constant.TargetedFieldPolicy;
 import com.github.javaxcel.util.ExcelUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -31,7 +32,9 @@ import java.util.stream.Stream;
  * 2. 상속받은 필드는 제외된다, 즉 해당 VO에서 정의된 필드만 계산한다.
  * </pre>
  */
-public final class ExcelReader<T> {
+public final class ExcelReader<W extends Workbook, T> {
+
+    private final W workbook;
 
     private final Class<T> type;
 
@@ -59,11 +62,12 @@ public final class ExcelReader<T> {
      */
     private int endIndex = -1;
 
-    public static <E> ExcelReader<E> init(@NotNull Class<E> type) {
-        return new ExcelReader<E>(type);
+    public static <W extends Workbook, E> ExcelReader<W, E> init(@NotNull W workbook, @NotNull Class<E> type) {
+        return new ExcelReader<>(workbook, type);
     }
 
-    private ExcelReader(Class<T> type) {
+    private ExcelReader(W workbook, Class<T> type) {
+        this.workbook = workbook;
         this.type = type;
 
         // @ExcelModel의 타깃 필드 정책에 따라 가져오는 필드가 다르다
@@ -77,7 +81,7 @@ public final class ExcelReader<T> {
                 .collect(Collectors.toList());
     }
 
-    public ExcelReader<T> sheetIndexes(@NotNull int... sheetIndexes) {
+    public ExcelReader<W, T> sheetIndexes(@NotNull int... sheetIndexes) {
         if (sheetIndexes == null || sheetIndexes.length == 0 || IntStream.of(sheetIndexes).anyMatch(i -> i < 0)) {
             throw new IllegalArgumentException("Sheet indexes cannot be null, empty or less than 0.");
         }
@@ -86,14 +90,14 @@ public final class ExcelReader<T> {
         return this;
     }
 
-    public ExcelReader<T> startIndex(int startIndex) {
+    public ExcelReader<W, T> startIndex(int startIndex) {
         if (startIndex < 0) throw new IllegalArgumentException("Start index cannot be less than 0.");
 
         this.startIndex = startIndex;
         return this;
     }
 
-    public ExcelReader<T> endIndex(int endIndex) {
+    public ExcelReader<W, T> endIndex(int endIndex) {
         if (endIndex < 0) throw new IllegalArgumentException("End index cannot be less than 0.");
 
         this.endIndex = endIndex;
@@ -103,42 +107,34 @@ public final class ExcelReader<T> {
     /**
      * 헤더는 제외되며, 지정된 로우부터 또 달리 지정된 로우까지 읽어 VO를 반환한다.
      */
-    public List<T> read(File file) throws InvalidFormatException, ReflectiveOperationException, IOException {
+    public List<T> read() throws ReflectiveOperationException {
         if (this.sheetIndexes.length > 1) throw new IllegalArgumentException("Must input only one sheet index.");
 
         List<T> list = new ArrayList<>();
-        try (Workbook workbook = new XSSFWorkbook(file)) {
-            Sheet sheet = workbook.getSheetAt(this.sheetIndexes[0]);
-            setSheetDataIntoList(sheet, list);
-        }
+        Sheet sheet = this.workbook.getSheetAt(this.sheetIndexes[0]);
+        setSheetDataIntoList(sheet, list);
 
         return list;
     }
 
-    public Map<String, List<T>> readAllSheets(File file) throws InvalidFormatException, ReflectiveOperationException, IOException {
+    public Map<String, List<T>> readAllSheets() throws ReflectiveOperationException {
         Map<String, List<T>> lists = new HashMap<>();
-
-        try (Workbook workbook = new XSSFWorkbook(file)) {
-            setSheetList(workbook, ExcelUtils.getSheetRange(workbook), lists);
-        }
+        setSheetList(ExcelUtils.getSheetRange(this.workbook), lists);
 
         return lists;
     }
 
-    public Map<String, List<T>> readSelectedSheets(File file) throws InvalidFormatException, ReflectiveOperationException, IOException {
+    public Map<String, List<T>> readSelectedSheets() throws ReflectiveOperationException {
         Map<String, List<T>> lists = new HashMap<>();
-
-        try (Workbook workbook = new XSSFWorkbook(file)) {
-            setSheetList(workbook, this.sheetIndexes, lists);
-        }
+        setSheetList(this.sheetIndexes, lists);
 
         return lists;
     }
 
-    private void setSheetList(Workbook workbook, int[] sheetIndexes, Map<String, List<T>> lists) throws ReflectiveOperationException {
+    private void setSheetList(int[] sheetIndexes, Map<String, List<T>> lists) throws ReflectiveOperationException {
         for (int sheetIndex : sheetIndexes) {
             List<T> list = new ArrayList<>();
-            Sheet sheet = workbook.getSheetAt(sheetIndex);
+            Sheet sheet = this.workbook.getSheetAt(sheetIndex);
 
             setSheetDataIntoList(sheet, list);
 

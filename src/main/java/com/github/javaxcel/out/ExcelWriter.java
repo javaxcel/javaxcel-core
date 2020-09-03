@@ -7,13 +7,11 @@ import com.github.javaxcel.constant.TargetedFieldPolicy;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.StringUtils;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
@@ -32,11 +30,11 @@ import java.util.stream.Stream;
  * 3. `headerNames`와 VO의 필드 순서가 일치해야 한다.
  * </pre>
  */
-public final class ExcelWriter<T> {
+public final class ExcelWriter<W extends Workbook, T> {
+
+    private final W workbook;
 
     private final Class<T> type;
-
-    private final List<T> list;
 
     /**
      * The type's fields that will be actually written in excel.
@@ -61,18 +59,19 @@ public final class ExcelWriter<T> {
     /**
      * Initializes excel writer.
      *
+     * @param workbook excel workbook
      * @param type class type
-     * @param list data list
+     * @param <W> instance that extends {@code Workbook}
      * @param <E> type of the element
      * @return excel writer
      */
-    public static <E> ExcelWriter<E> init(@NotNull Class<E> type, @NotNull List<E> list) {
-        return new ExcelWriter<>(type, list);
+    public static <W extends Workbook, E> ExcelWriter<W, E> init(@NotNull W workbook, @NotNull Class<E> type) {
+        return new ExcelWriter<>(workbook, type);
     }
 
-    private ExcelWriter(Class<T> type, List<T> list) {
+    private ExcelWriter(W workbook, Class<T> type) {
+        this.workbook = workbook;
         this.type = type;
-        this.list = list;
 
         // @ExcelModel의 타깃 필드 정책에 따라 가져오는 필드가 다르다
         ExcelModel annotation = this.type.getAnnotation(ExcelModel.class);
@@ -85,7 +84,7 @@ public final class ExcelWriter<T> {
                 .collect(Collectors.toList());
     }
 
-    public ExcelWriter<T> headerNames(@NotNull String... headerNames) {
+    public ExcelWriter<W, T> headerNames(@NotNull String... headerNames) {
         if (headerNames.length != this.fields.size()) {
             throw new IllegalArgumentException("The number of header names is not equal to the number of targeted fields in the class " + this.type.getName());
         }
@@ -94,12 +93,12 @@ public final class ExcelWriter<T> {
         return this;
     }
 
-    public ExcelWriter<T> defaultValue(@Nullable String defaultValue) {
+    public ExcelWriter<W, T> defaultValue(@Nullable String defaultValue) {
         this.defaultValue = defaultValue;
         return this;
     }
 
-    public ExcelWriter<T> sheetName(@Nullable String sheetName) {
+    public ExcelWriter<W, T> sheetName(@Nullable String sheetName) {
         this.sheetName = sheetName;
         return this;
     }
@@ -107,59 +106,60 @@ public final class ExcelWriter<T> {
     /**
      * 엑셀 파일을 생성한다, 값이 null이거나 empty string인 경우 지정된 문자열로 치환한다.
      *
-     * @param file excel file
+     * @param out output stream for writing excel workbook
+     * @param list data list
      * @throws IOException
      * @throws IllegalAccessException
      */
-    public void write(@NotNull File file) throws IOException, IllegalAccessException {
-        try (FileOutputStream fos = new FileOutputStream(file); Workbook workbook = new XSSFWorkbook()) {
-            Sheet sheet = workbook.createSheet(StringUtils.ifNullOrEmpty(this.sheetName, "Sheet"));
-            Row row = sheet.createRow(0);
+    public void write(@NotNull OutputStream out, @NotNull List<T> list) throws IOException, IllegalAccessException {
+        this.sheetName = StringUtils.ifNullOrEmpty(sheetName, "Sheet");
+        Sheet sheet = this.workbook.createSheet(this.sheetName);
 
-            // Sets up style of the header.
-            CellStyle style = workbook.createCellStyle();
-            style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-            Font font = workbook.createFont();
-            font.setBold(true);
-            style.setFont(font);
+        Row row = sheet.createRow(0);
 
-            // 헤더명을 설정하지 않은 경우, 우선순위: @ExcelColumn에 지정한 헤더명 > 필드명
-            if (this.headerNames == null) {
-                this.headerNames = this.fields.stream()
-                        .map(field -> {
-                            ExcelColumn annotation = field.getAnnotation(ExcelColumn.class);
-                            return annotation == null || StringUtils.isNullOrEmpty(annotation.value()) ? field.getName() : annotation.value();
-                        }).toArray(String[]::new);
-            }
+        // Sets up style of the header.
+        CellStyle style = this.workbook.createCellStyle();
+        style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        Font font = this.workbook.createFont();
+        font.setBold(true);
+        style.setFont(font);
 
-            // 빈 헤더명을 설정한 경우, 종료한다
-            if (this.headerNames.length == 0) return;
-
-            // Creates the header.
-            for (int i = 0; i < this.headerNames.length; i++) {
-                String name = this.headerNames[i];
-
-                Cell cell = row.createCell(i);
-                cell.setCellStyle(style);
-                cell.setCellValue(name);
-            }
-
-            // Writes the data.
-            if (this.list != null && !this.list.isEmpty()) setValueToCellFromFields(sheet);
-            workbook.write(fos);
+        // 헤더명을 설정하지 않은 경우, 우선순위: @ExcelColumn에 지정한 헤더명 > 필드명
+        if (this.headerNames == null) {
+            this.headerNames = this.fields.stream()
+                    .map(field -> {
+                        ExcelColumn annotation = field.getAnnotation(ExcelColumn.class);
+                        return annotation == null || StringUtils.isNullOrEmpty(annotation.value()) ? field.getName() : annotation.value();
+                    }).toArray(String[]::new);
         }
+
+        // 빈 헤더명을 설정한 경우, 종료한다
+        if (this.headerNames.length == 0) return;
+
+        // Creates the header.
+        for (int i = 0; i < this.headerNames.length; i++) {
+            String name = this.headerNames[i];
+
+            Cell cell = row.createCell(i);
+            cell.setCellStyle(style);
+            cell.setCellValue(name);
+        }
+
+        // Writes the data.
+        if (list != null && !list.isEmpty()) setValueToCellFromFields(sheet, list);
+        this.workbook.write(out);
     }
 
     /**
      * 상속받은 필드는 포함하지 않으나, 필드의 순서가 일정하다.
      */
-    private void setValueToCellFromFields(Sheet sheet) throws IllegalAccessException {
-        final int listSize = this.list.size();
+    private void setValueToCellFromFields(Sheet sheet, List<T> list) throws IllegalAccessException {
+        final int listSize = list.size();
         final int fieldsSize = this.fields.size();
 
         for (int i = 0; i < listSize; i++) {
-            T vo = this.list.get(i);
+            T element = list.get(i);
 
             // Skips the first row that is header.
             Row row = sheet.createRow(i + 1);
@@ -169,7 +169,7 @@ public final class ExcelWriter<T> {
 
                 // Creates the cell and sets up data to it.
                 Cell cell = row.createCell(j);
-                String value = ExcelUtils.stringifyValue(vo, field);
+                String value = ExcelUtils.stringifyValue(element, field);
                 cell.setCellValue(StringUtils.ifNullOrEmpty(value, () -> {
                     // 기본값 우선순위: ExcelWriter.write에 넘겨준 기본값 > @ExcelColumn에 지정한 기본값
                     if (this.defaultValue != null) return this.defaultValue;

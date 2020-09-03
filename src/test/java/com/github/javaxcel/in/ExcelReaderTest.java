@@ -2,16 +2,20 @@ package com.github.javaxcel.in;
 
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.annotation.ExcelModel;
-import com.github.javaxcel.constant.ToyType;
-import com.github.javaxcel.model.Box;
 import com.github.javaxcel.model.EducationToy;
 import com.github.javaxcel.model.Product;
-import com.github.javaxcel.model.ToyBox;
+import com.github.javaxcel.model.factory.MockFactory;
+import com.github.javaxcel.out.ExcelWriter;
+import lombok.Cleanup;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.*;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,27 +25,6 @@ import java.util.NoSuchElementException;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ExcelReaderTest {
-
-    /**
-     * Products for test.
-     */
-    private final List<Product> products = Arrays.asList(
-            new Product(100000, "알티지 클린 Omega 3", "9b9e7d29-2a60-4973-aec0-685e672eb07a", 3.0, 3.765, 20.5, 580.5),
-            new Product(100001, "레이델 면역쾌청", "a7f3be7b-b235-45b8-9fc5-28f2578ee8e0", 14.0, 140, 15, 570.50),
-            new Product(100002, "그린스토어 우먼케어 건강한 질엔", "d3a6b7c4-c328-470b-b2c9-5e1b937acd0a", 10.75, 14.1, 15, 170.55),
-            new Product(100003, "Bubbleless Vitamin-C", "8a2d7b5d-1a57-4055-a75b-98e495e58a4e", 18.0, 6, 20, 340.07)
-    );
-
-    /**
-     * Box for test.
-     */
-    private final Box<EducationToy> box = new ToyBox<>(Arrays.asList(
-            new EducationToy("", ToyType.CHILD, 1800.0, null, "goals"),
-            new EducationToy("레이델 면역쾌청", ToyType.ADULT, 585.54, new int[]{4, 5, 6, 7, 8, 9}, "Goals"),
-            new EducationToy("Braun Series 7", ToyType.ADULT, 270.00, null, null),
-            new EducationToy("베이비버스 가방퍼즐 키키·묘묘와 친구들", ToyType.CHILD, 2450.50, new int[]{9, 10, 11, 12, 13}, "education for children"),
-            new EducationToy("마누스 기획 성인장갑 남", ToyType.ADULT, 126.6, null, "education for adult")
-    ));
 
     @Test
     public void getDeclaredConstructorWithMinimumParameters() throws ReflectiveOperationException {
@@ -64,16 +47,29 @@ public class ExcelReaderTest {
         Object o = constructor.newInstance();
     }
 
+    /**
+     * 1. {@link ExcelModel#policy()}, {@link com.github.javaxcel.constant.TargetedFieldPolicy#OWN_FIELDS}
+     * <br>
+     * 2. {@link com.github.javaxcel.annotation.ExcelIgnore}
+     */
     @Test
-    public void read() throws InvalidFormatException, ReflectiveOperationException, IOException {
-        // when
+    public void readWithNotInheritedTypeAndExcelIgnore() throws ReflectiveOperationException, IOException {
+        // given
+        List<Product> mocks = MockFactory.generateStaticProducts();
         File file = new File("/data", "products.xlsx");
-        List<Product> products = ExcelReader.init(Product.class)
-                .read(file);
+        @Cleanup
+        Workbook workbook = new XSSFWorkbook();
+        @Cleanup
+        OutputStream out = new FileOutputStream(file);
+
+        // when
+        ExcelWriter.init(workbook, Product.class).write(out, mocks);
+        List<Product> products = ExcelReader.init(workbook, Product.class).read();
 
         // then
-        products.forEach(System.out::println);
-        assertTrue(this.products.stream().allMatch(product -> Collections.frequency(products, product) > 0));
+        assertTrue(mocks.stream()
+                .peek(System.out::println)
+                .allMatch(product -> Collections.frequency(products, product) > 0));
     }
 
     /**
@@ -82,17 +78,32 @@ public class ExcelReaderTest {
      * 2. {@link ExcelDateTimeFormat#pattern()}
      */
     @Test
-    public void readWithTargetedFieldPolicyAndDateTimePattern() throws InvalidFormatException, ReflectiveOperationException, IOException {
-        // when
+    public void readWithTargetedFieldPolicyAndDateTimePattern() throws ReflectiveOperationException, IOException {
+        // given
+        List<EducationToy> mocks = MockFactory.generateStaticBox().getAll();
         File file = new File("/data", "toys.xlsx");
-        List<EducationToy> educationToys = ExcelReader.init(EducationToy.class)
-                .startIndex(1)
-                .endIndex(10)
-                .read(file);
+        @Cleanup
+        Workbook workbook = new XSSFWorkbook();
+        @Cleanup
+        OutputStream out = new FileOutputStream(file);
+
+        // when
+        ExcelWriter.init(workbook, EducationToy.class).write(out, mocks);
+        List<EducationToy> toys = ExcelReader.init(workbook, EducationToy.class).startIndex(1).read();
 
         // then
-        educationToys.forEach(System.out::println);
-        assertTrue(this.box.getAll().stream().allMatch(product -> Collections.frequency(this.box.getAll(), product) > 0));
+        assertTrue(toys.stream()
+                .peek(System.out::println)
+                .allMatch(toy -> Collections.frequency(mocks, toy) > 0));
+    }
+
+    @Test
+    public void readMultipleSheets() throws ReflectiveOperationException, IOException {
+        // given
+        File file = new File("/data", "merged.xlsx");
+
+        // when
+//        ExcelReaderWrapper.init(EducationToy.class, Product.class).sheetIndexes(0, 1).exec(file);
     }
 
 }
