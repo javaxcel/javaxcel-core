@@ -35,6 +35,12 @@ public final class ExcelUtils {
         return fields;
     }
 
+    /**
+     * Gets range of the sheets.
+     *
+     * @param workbook excel workbook
+     * @return range that from 0 to (the number of sheets - 1)
+     */
     public static int[] getSheetRange(Workbook workbook) {
         return IntStream.range(0, workbook.getNumberOfSheets()).toArray();
     }
@@ -136,8 +142,8 @@ public final class ExcelUtils {
         else if (double.class.equals(type) || Double.class.equals(type)) return Double.parseDouble(value);
         else if (char.class.equals(type) || Character.class.equals(type)) return value.charAt(0);
         else if (boolean.class.equals(type) || Boolean.class.equals(type)) return Boolean.parseBoolean(value);
-        else if (BigInteger.class.equals(type)) return new BigInteger(value);
-        else if (BigDecimal.class.equals(type)) return new BigDecimal(value);
+        else if (BigInteger.class.equals(type)) return BigInteger.valueOf(Long.parseLong(value));
+        else if (BigDecimal.class.equals(type)) return BigDecimal.valueOf(Long.parseLong(value));
         else if (TypeClassifier.isTemporal(type)) {
             ExcelDateTimeFormat excelDateTimeFormat = field.getAnnotation(ExcelDateTimeFormat.class);
             String pattern = excelDateTimeFormat == null ? null : excelDateTimeFormat.pattern();
