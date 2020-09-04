@@ -7,10 +7,10 @@ import com.github.javaxcel.model.Product;
 import com.github.javaxcel.model.factory.MockFactory;
 import com.github.javaxcel.out.ExcelWriter;
 import lombok.Cleanup;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ExcelReaderTest {
 
@@ -58,7 +58,7 @@ public class ExcelReaderTest {
         List<Product> mocks = MockFactory.generateStaticProducts();
         File file = new File("/data", "products.xlsx");
         @Cleanup
-        Workbook workbook = new XSSFWorkbook();
+        HSSFWorkbook workbook = new HSSFWorkbook();
         @Cleanup
         OutputStream out = new FileOutputStream(file);
 
@@ -83,27 +83,40 @@ public class ExcelReaderTest {
         List<EducationToy> mocks = MockFactory.generateStaticBox().getAll();
         File file = new File("/data", "toys.xlsx");
         @Cleanup
-        Workbook workbook = new XSSFWorkbook();
+        XSSFWorkbook workbook = new XSSFWorkbook();
         @Cleanup
         OutputStream out = new FileOutputStream(file);
 
         // when
         ExcelWriter.init(workbook, EducationToy.class).write(out, mocks);
-        List<EducationToy> toys = ExcelReader.init(workbook, EducationToy.class).startIndex(1).read();
+        List<EducationToy> educationToys = ExcelReader.init(workbook, EducationToy.class).startIndex(1).read();
 
         // then
-        assertTrue(toys.stream()
+        assertTrue(educationToys.stream()
                 .peek(System.out::println)
-                .allMatch(toy -> Collections.frequency(mocks, toy) > 0));
+                .allMatch(educationToy -> Collections.frequency(mocks, educationToy) > 0));
     }
 
     @Test
-    public void readMultipleSheets() throws ReflectiveOperationException, IOException {
+    public void readMultipleSheets() throws ReflectiveOperationException, IOException, InvalidFormatException {
         // given
+        List<Product> products = MockFactory.generateStaticProducts();
+        List<EducationToy> educationToys = MockFactory.generateStaticBox().getAll();
         File file = new File("/data", "merged.xlsx");
+        @Cleanup
+        XSSFWorkbook workbook = new XSSFWorkbook(file);
 
         // when
-//        ExcelReaderWrapper.init(EducationToy.class, Product.class).sheetIndexes(0, 1).exec(file);
+        List<Product> sheet1 = ExcelReader.init(workbook, Product.class).sheetIndexes(0).read();
+        List<EducationToy> sheet2 = ExcelReader.init(workbook, EducationToy.class).sheetIndexes(1).read();
+
+        // then
+        assertTrue(products.stream()
+                .peek(System.out::println)
+                .allMatch(product -> Collections.frequency(sheet1, product) > 0));
+        assertTrue(educationToys.stream()
+                .peek(System.out::println)
+                .allMatch(educationToy -> Collections.frequency(sheet2, educationToy) > 0));
     }
 
 }

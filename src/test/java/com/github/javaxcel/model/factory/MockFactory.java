@@ -1,9 +1,10 @@
 package com.github.javaxcel.model.factory;
 
 import com.github.javaxcel.constant.ToyType;
-import com.github.javaxcel.model.*;
-import lombok.Getter;
-import lombok.Setter;
+import com.github.javaxcel.model.Box;
+import com.github.javaxcel.model.EducationToy;
+import com.github.javaxcel.model.Product;
+import com.github.javaxcel.model.ToyBox;
 
 import java.util.*;
 
