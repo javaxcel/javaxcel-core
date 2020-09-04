@@ -72,14 +72,6 @@
             <version>1.18.12</version>
             <scope>test</scope>
         </dependency>
-
-        <!-- IntelliJ static analysis -->
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>20.0.0</version>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
 
     <build>

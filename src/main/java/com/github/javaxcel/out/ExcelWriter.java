@@ -7,8 +7,6 @@ import com.github.javaxcel.constant.TargetedFieldPolicy;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.StringUtils;
 import org.apache.poi.ss.usermodel.*;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -65,7 +63,7 @@ public final class ExcelWriter<W extends Workbook, T> {
      * @param <E> type of the element
      * @return excel writer
      */
-    public static <W extends Workbook, E> ExcelWriter<W, E> init(@NotNull W workbook, @NotNull Class<E> type) {
+    public static <W extends Workbook, E> ExcelWriter<W, E> init(W workbook, Class<E> type) {
         return new ExcelWriter<>(workbook, type);
     }
 
@@ -84,7 +82,7 @@ public final class ExcelWriter<W extends Workbook, T> {
                 .collect(Collectors.toList());
     }
 
-    public ExcelWriter<W, T> headerNames(@NotNull String... headerNames) {
+    public ExcelWriter<W, T> headerNames(String... headerNames) {
         if (headerNames.length != this.fields.size()) {
             throw new IllegalArgumentException("The number of header names is not equal to the number of targeted fields in the class " + this.type.getName());
         }
@@ -93,12 +91,12 @@ public final class ExcelWriter<W extends Workbook, T> {
         return this;
     }
 
-    public ExcelWriter<W, T> defaultValue(@Nullable String defaultValue) {
+    public ExcelWriter<W, T> defaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
         return this;
     }
 
-    public ExcelWriter<W, T> sheetName(@Nullable String sheetName) {
+    public ExcelWriter<W, T> sheetName(String sheetName) {
         this.sheetName = sheetName;
         return this;
     }
@@ -111,7 +109,7 @@ public final class ExcelWriter<W extends Workbook, T> {
      * @throws IOException
      * @throws IllegalAccessException
      */
-    public void write(@NotNull OutputStream out, @NotNull List<T> list) throws IOException, IllegalAccessException {
+    public void write(OutputStream out, List<T> list) throws IOException, IllegalAccessException {
         this.sheetName = StringUtils.ifNullOrEmpty(sheetName, "Sheet");
         Sheet sheet = this.workbook.createSheet(this.sheetName);
 

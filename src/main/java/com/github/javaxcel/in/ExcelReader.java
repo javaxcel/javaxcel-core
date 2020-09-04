@@ -11,7 +11,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,7 +61,7 @@ public final class ExcelReader<W extends Workbook, T> {
      */
     private int endIndex = -1;
 
-    public static <W extends Workbook, E> ExcelReader<W, E> init(@NotNull W workbook, @NotNull Class<E> type) {
+    public static <W extends Workbook, E> ExcelReader<W, E> init(W workbook, Class<E> type) {
         return new ExcelReader<>(workbook, type);
     }
 
@@ -81,7 +80,7 @@ public final class ExcelReader<W extends Workbook, T> {
                 .collect(Collectors.toList());
     }
 
-    public ExcelReader<W, T> sheetIndexes(@NotNull int... sheetIndexes) {
+    public ExcelReader<W, T> sheetIndexes(int... sheetIndexes) {
         if (sheetIndexes == null || sheetIndexes.length == 0 || IntStream.of(sheetIndexes).anyMatch(i -> i < 0)) {
             throw new IllegalArgumentException("Sheet indexes cannot be null, empty or less than 0.");
         }
