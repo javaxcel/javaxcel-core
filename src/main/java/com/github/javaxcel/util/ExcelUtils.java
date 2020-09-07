@@ -2,6 +2,10 @@ package com.github.javaxcel.util;
 
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
+import com.github.javaxcel.annotation.ExcelIgnore;
+import com.github.javaxcel.annotation.ExcelModel;
+import com.github.javaxcel.constant.TargetedFieldPolicy;
+import org.apache.poi.ss.usermodel.Workbook;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -13,10 +17,25 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public final class ExcelUtils {
 
     private ExcelUtils() {}
+
+    public static List<Field> getTargetedFields(Class<?> type) {
+        // @ExcelModel의 타깃 필드 정책에 따라 가져오는 필드가 다르다
+        ExcelModel annotation = type.getAnnotation(ExcelModel.class);
+        Stream<Field> stream = annotation == null || annotation.policy() == TargetedFieldPolicy.OWN_FIELDS
+                ? Arrays.stream(type.getDeclaredFields())
+                : getInheritedFields(type).stream();
+
+        // Excludes the fields annotated @ExcelIgnore.
+        return stream.filter(field -> field.getAnnotation(ExcelIgnore.class) == null)
+                .collect(Collectors.toList());
+    }
 
     /**
      * Gets fields of the type including its inherited fields.
@@ -31,6 +50,23 @@ public final class ExcelUtils {
         }
 
         return fields;
+    }
+
+    public static String[] toHeaderNames(List<Field> fields) {
+        return fields.stream().map(field -> {
+            ExcelColumn annotation = field.getAnnotation(ExcelColumn.class);
+            return annotation == null || StringUtils.isNullOrEmpty(annotation.value()) ? field.getName() : annotation.value();
+        }).toArray(String[]::new);
+    }
+
+    /**
+     * Gets range of the sheets.
+     *
+     * @param workbook excel workbook
+     * @return range that from 0 to (the number of sheets - 1)
+     */
+    public static int[] getSheetRange(Workbook workbook) {
+        return IntStream.range(0, workbook.getNumberOfSheets()).toArray();
     }
 
     /**
@@ -130,8 +166,8 @@ public final class ExcelUtils {
         else if (double.class.equals(type) || Double.class.equals(type)) return Double.parseDouble(value);
         else if (char.class.equals(type) || Character.class.equals(type)) return value.charAt(0);
         else if (boolean.class.equals(type) || Boolean.class.equals(type)) return Boolean.parseBoolean(value);
-        else if (BigInteger.class.equals(type)) return new BigInteger(value);
-        else if (BigDecimal.class.equals(type)) return new BigDecimal(value);
+        else if (BigInteger.class.equals(type)) return BigInteger.valueOf(Long.parseLong(value));
+        else if (BigDecimal.class.equals(type)) return BigDecimal.valueOf(Double.parseDouble(value));
         else if (TypeClassifier.isTemporal(type)) {
             ExcelDateTimeFormat excelDateTimeFormat = field.getAnnotation(ExcelDateTimeFormat.class);
             String pattern = excelDateTimeFormat == null ? null : excelDateTimeFormat.pattern();

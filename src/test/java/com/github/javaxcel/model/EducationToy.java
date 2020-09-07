@@ -14,6 +14,7 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = {"targetAges", "date", "time", "dateTime"})
 @NoArgsConstructor
 @ExcelModel(policy = TargetedFieldPolicy.INCLUDES_INHERITED)
 public class EducationToy extends Toy {
@@ -37,4 +38,5 @@ public class EducationToy extends Toy {
         this.targetAges = targetAges;
         this.goals = goals;
     }
+
 }
