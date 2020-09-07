@@ -1,12 +1,15 @@
 package com.github.javaxcel.util;
 
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
-import com.github.javaxcel.constant.ToyType;
-import com.github.javaxcel.model.*;
+import com.github.javaxcel.model.EducationToy;
+import com.github.javaxcel.model.Product;
+import com.github.javaxcel.model.Toy;
+import com.github.javaxcel.model.factory.MockFactory;
+import lombok.Cleanup;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -23,20 +26,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ExcelUtilsTest {
 
-    /**
-     * Box for test.
-     */
-    private final Box<EducationToy> box = new ToyBox<>(Arrays.asList(
-            new EducationToy("", ToyType.CHILD, 1800.0, null, "goals"),
-            new EducationToy("레이델 면역쾌청", ToyType.ADULT, 585.54, new int[]{4, 5, 6, 7, 8, 9}, "Goals"),
-            new EducationToy("Braun Series 7", ToyType.ADULT, 270.00, null, null),
-            new EducationToy("베이비버스 가방퍼즐 키키·묘묘와 친구들", ToyType.CHILD, 2450.50, new int[]{9, 10, 11, 12, 13}, "education for children"),
-            new EducationToy("마누스 기획 성인장갑 남", ToyType.ADULT, 126.6, null, "education for adult")
-    ));
+    @ParameterizedTest
+    @ValueSource(classes = {Product.class, Toy.class, EducationToy.class})
+    public void getTargetedFields(Class<?> type) {
+        // when
+        List<Field> targetedFields = ExcelUtils.getTargetedFields(type);
+
+        // then
+        targetedFields.forEach(System.out::println);
+    }
 
     @ParameterizedTest
     @ValueSource(classes = {Product.class, Toy.class, EducationToy.class})
@@ -49,6 +51,19 @@ public class ExcelUtilsTest {
     }
 
     @ParameterizedTest
+    @ValueSource(classes = {Product.class, Toy.class, EducationToy.class})
+    public void toHeaderNames(Class<?> type) {
+        // given
+        List<Field> targetedFields = ExcelUtils.getTargetedFields(type);
+
+        // when
+        String[] headerNames = ExcelUtils.toHeaderNames(targetedFields);
+
+        // then
+        Arrays.asList(headerNames).forEach(System.out::println);
+    }
+
+    @ParameterizedTest
     @ValueSource(strings = {
             "E:\\works\\대한상공회의소 - 유통상품지식뱅크 서비스포털\\2020\\06\\20200618_미기재 설명 등록\\상품분류별 부가속성\\200519_분류별_부가속성예시.xlsx",
             "E:\\works\\대한상공회의소 - 유통상품지식뱅크 서비스포털\\2020\\06\\20200618_미기재 설명 등록\\상품분류별 부가속성\\[가공] 상품분류별_부가속성_설명.xlsx",
@@ -56,11 +71,11 @@ public class ExcelUtilsTest {
     public void getSheetRange(String pathname) throws IOException, InvalidFormatException {
         // given
         File file = new File(pathname);
+        @Cleanup
         Workbook workbook = new XSSFWorkbook(file);
 
         // when
-        int[] range = IntStream.range(0, workbook.getNumberOfSheets()).toArray();
-        workbook.close();
+        int[] range = ExcelUtils.getSheetRange(workbook);
 
         // then
         IntStream.of(range).forEach(i -> System.out.println("[" + i + "] " + workbook.getSheetAt(i).getSheetName()));
@@ -69,7 +84,7 @@ public class ExcelUtilsTest {
     @ParameterizedTest
     @ValueSource(strings = {"targetAges", "goals", "date", "time", "dateTime"})
     public void stringifyValue(String fieldName) throws IllegalAccessException, NoSuchFieldException {
-        for (EducationToy toy : this.box.getAll()) {
+        for (EducationToy toy : MockFactory.generateStaticBox().getAll()) {
             // when
             String stringifyValue = ExcelUtils.stringifyValue(toy, toy.getClass().getDeclaredField(fieldName));
 
@@ -82,12 +97,13 @@ public class ExcelUtilsTest {
     public void convert() {
         // given
         List<String> values = Arrays.asList("Toy.name", "ADULT", "645.70", "[1,2,3,4]", "educationToys.goals", "2020-08-31", "01/23/45/678", "2020-08-31T01:23:45");
-        List<Field> inheritedFields = ExcelUtils.getInheritedFields(EducationToy.class);
+        List<Field> targetedFields = ExcelUtils.getTargetedFields(EducationToy.class);
 
-        assertEquals(values.size(), inheritedFields.size());
+        assertEquals(values.size(), targetedFields.size());
+
         for (int i = 0; i < values.size(); i++) {
             String value = values.get(i);
-            Field field = inheritedFields.get(i);
+            Field field = targetedFields.get(i);
 
             // when
             Object converted = convert(value, field);
@@ -133,4 +149,36 @@ public class ExcelUtilsTest {
         return null;
     }
 
+    @Test
+    public void formatDateTime() {
+        // given
+        LocalDate date = LocalDate.now();
+        LocalTime time = LocalTime.now();
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        // when
+        String formattedDate = date.format(DateTimeFormatter.ofPattern("yy/M/dd"));
+        String formattedTime = time.format(DateTimeFormatter.ofPattern("HH:mm:ss.SSS"));
+        String formattedDateTime = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+        // then
+        System.out.println(formattedDate);
+        System.out.println(formattedTime);
+        System.out.println(formattedDateTime);
+    }
+
+    @Test
+    public void stringifyBigNumbers() {
+        // given
+        String strBigInt = Long.valueOf(Long.MAX_VALUE).toString();
+        String strBigDec = "123456789123456789123456789123456789123456.07890";
+
+        // when
+        String bigInteger = String.valueOf(BigInteger.valueOf(Long.parseLong(strBigInt)));
+        String bigDecimal = String.valueOf(new BigDecimal(strBigDec));
+
+        // then
+        assertEquals(bigInteger, strBigInt);
+        assertEquals(bigDecimal, strBigDec);
+    }
 }
