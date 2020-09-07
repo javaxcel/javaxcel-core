@@ -5,62 +5,31 @@ import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.annotation.ExcelIgnore;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.constant.TargetedFieldPolicy;
-import com.github.javaxcel.constant.ToyType;
-import com.github.javaxcel.model.*;
+import com.github.javaxcel.model.EducationToy;
+import com.github.javaxcel.model.NoFieldModel;
+import com.github.javaxcel.model.Product;
 import com.github.javaxcel.model.factory.MockFactory;
-import com.github.javaxcel.util.ExcelUtils;
+import lombok.Cleanup;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.function.BiFunction;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ExcelWriterTest {
-
-    @ParameterizedTest
-    @ValueSource(classes = {Product.class, ToyBox.class, Toy.class, EducationToy.class})
-    public void getFields(Class<?> type) throws IllegalAccessException {
-        // given
-        ExcelModel annotation = type.getAnnotation(ExcelModel.class);
-        Stream<Field> stream = annotation == null || annotation.policy() == TargetedFieldPolicy.OWN_FIELDS
-                ? Arrays.stream(type.getDeclaredFields())
-                : ExcelUtils.getInheritedFields(type).stream();
-
-        // when
-        List<Field> fields = stream
-                .filter(field -> field.getAnnotation(ExcelIgnore.class) == null) // Excludes the fields annotated @ExcelIgnore.
-//                .filter(field -> TypeClassifier.isWritableClass(field.getType())) // Excludes the fields that are un-writable of excel.
-                .collect(Collectors.toList());
-
-        // then
-        for (Field field : fields) {
-            field.setAccessible(true);
-
-            if (Toy.class.equals(type) || EducationToy.class.equals(type)) {
-                System.out.println(field.getName() + ":\t" + field.get(MockFactory.generateRandomBox(1).getAll().get(0)));
-            } else if (Product.class.equals(type)) {
-                System.out.println(field.getName() + ":\t" + field.get(MockFactory.generateRandomProducts(1).get(0)));
-            } else {
-                System.out.println(field.getName() + ":\t" + field);
-            }
-        }
-    }
 
     /**
      * 1. {@link ExcelIgnore}
@@ -72,13 +41,17 @@ public class ExcelWriterTest {
     @Test
     public void writeWithIgnoreAndDefaultValue() throws IOException, IllegalAccessException, NoSuchFieldException {
         // given
-        File file = new File("/data", "products.xlsx");
+        File file = new File("/data", "products.xls");
+        @Cleanup
         FileOutputStream out = new FileOutputStream(file);
-        XSSFWorkbook workbook = new XSSFWorkbook();
+        @Cleanup
+        HSSFWorkbook workbook = new HSSFWorkbook();
 
         // when
         List<Product> products = MockFactory.generateRandomProducts(1000);
-        ExcelWriter.init(workbook, Product.class).sheetName("").write(out, products);
+        ExcelWriter.init(workbook, Product.class)
+                .sheetName("Products")
+                .write(out, products);
 
         // then
         assertTrue(file.exists());
@@ -93,7 +66,9 @@ public class ExcelWriterTest {
     public void writeWithTargetedFieldPolicyAndDateTimePattern() throws IOException, IllegalAccessException, NoSuchFieldException {
         // given
         File file = new File("/data", "toys.xlsx");
+        @Cleanup
         FileOutputStream out = new FileOutputStream(file);
+        @Cleanup
         XSSFWorkbook workbook = new XSSFWorkbook();
 
         // when
@@ -120,6 +95,71 @@ public class ExcelWriterTest {
         // then
         assertThrows(NoSuchFieldException.class,
                 () -> ExcelWriter.init(workbook, NoFieldModel.class).write(out, people));
+    }
+
+    @Test
+    public void writeAndDecorate() throws IOException, IllegalAccessException, NoSuchFieldException {
+        // given
+        File file = new File("/data", "products-styled.xlsx");
+        @Cleanup
+        FileOutputStream out = new FileOutputStream(file);
+        @Cleanup
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        BiFunction<XSSFWorkbook, CellStyle, CellStyle> blueColumn = (wb, style) -> {
+            XSSFFont font = wb.createFont();
+            font.setColor(IndexedColors.WHITE.getIndex());
+            style.setFont(font);
+            style.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            return style;
+        };
+        BiFunction<XSSFWorkbook, CellStyle, CellStyle> greenColumn = (wb, style) -> {
+            style.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            return style;
+        };
+
+        // when
+        List<Product> products = MockFactory.generateRandomProducts(1000);
+        ExcelWriter.init(workbook, Product.class)
+                .sheetName("PROD")
+                .adjustSheet((sheet, numOfRows, numOfColumns) -> {
+                    // Makes the columns fit content.
+                    for (int i = 0; i < numOfColumns; i++) {
+                        sheet.autoSizeColumn(i);
+                    }
+
+                    // Hides extra rows.
+                    int maxRows = sheet instanceof HSSFSheet ? 65_536 : 1_048_576;
+                    for (int i = numOfRows - 1; i < maxRows; i++) {
+                        Row row = sheet.getRow(i);
+                        if (row == null) row = sheet.createRow(i);
+                        row.setZeroHeight(true);
+                    }
+
+                    // Hides extra columns.
+                    int maxColumns = sheet instanceof HSSFSheet ? 256 : 16_384;
+                    for (int i = numOfColumns; i < maxColumns; i++) {
+                        sheet.setColumnHidden(i, true);
+                    }
+                })
+                .headerStyle((wb, style) -> {
+                    XSSFFont font = wb.createFont();
+                    font.setItalic(true);
+                    font.setFontHeightInPoints((short) 14);
+                    font.setColor((short) 8);
+                    font.setBold(true);
+                    style.setFont(font);
+
+                    style.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+                    style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                    return style;
+                })
+                .columnStyles(blueColumn, greenColumn, blueColumn, greenColumn, blueColumn, greenColumn)
+                .write(out, products);
+
+        // then
+        assertTrue(file.exists());
     }
 
 }

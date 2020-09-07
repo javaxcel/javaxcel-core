@@ -3,6 +3,7 @@ package com.github.javaxcel.out;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.StringUtils;
+import com.github.javaxcel.util.TriConsumer;
 import org.apache.poi.ss.usermodel.*;
 
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiFunction;
 
 /**
  * ExcelWriter
@@ -48,6 +50,16 @@ public final class ExcelWriter<W extends Workbook, T> {
      * Name of excel sheet.
      */
     private String sheetName;
+
+    //////////////////////////////////////// Style ////////////////////////////////////////
+
+    private TriConsumer<Sheet, Integer, Integer> adjustSheet;
+
+    private CellStyle headerStyle;
+
+    private CellStyle[] columnStyles;
+
+    ///////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Initializes excel writer.
@@ -95,6 +107,45 @@ public final class ExcelWriter<W extends Workbook, T> {
     }
 
     /**
+     *
+     * @param triConsumer sheet, numOfRows, numOfColumns
+     * @return {@code ExcelWriter}
+     */
+    public ExcelWriter<W, T> adjustSheet(TriConsumer<Sheet, Integer, Integer> triConsumer) {
+        if (triConsumer == null) throw new IllegalArgumentException("Tri-consumer cannot be null");
+
+        this.adjustSheet = triConsumer;
+        return this;
+    }
+
+    public ExcelWriter<W, T> headerStyle(BiFunction<W, CellStyle, CellStyle> biFunction) {
+        if (biFunction == null) throw new IllegalArgumentException("Bi-function for header style cannot be null");
+
+        CellStyle headerStyle = biFunction.apply(this.workbook, this.workbook.createCellStyle());
+        if (headerStyle == null) throw new IllegalArgumentException("Header style cannot be null");
+
+        this.headerStyle = headerStyle;
+        return this;
+    }
+
+    @SafeVarargs
+    public final ExcelWriter<W, T> columnStyles(BiFunction<W, CellStyle, CellStyle>... biFunctions) {
+        if (biFunctions == null) throw new IllegalArgumentException("Bi-functions for column styles cannot be null");
+
+        CellStyle[] columnStyles = Arrays.stream(biFunctions)
+                .map(func -> func.apply(this.workbook, this.workbook.createCellStyle()))
+                .toArray(CellStyle[]::new);
+        if (columnStyles.length != 1 && columnStyles.length != this.fields.size()) {
+            throw new IllegalArgumentException("The number of column styles is not equal to the number of targeted fields in the class "
+                    + this.type.getName()
+                    + " (the number of column styles can be 1 for common style)");
+        }
+
+        this.columnStyles = columnStyles;
+        return this;
+    }
+
+    /**
      * 엑셀 파일을 생성한다, 값이 null이거나 empty string인 경우 지정된 문자열로 치환한다.
      *
      * @param out output stream for writing excel workbook
@@ -103,42 +154,38 @@ public final class ExcelWriter<W extends Workbook, T> {
      * @throws IllegalAccessException
      */
     public void write(OutputStream out, List<T> list) throws IOException, IllegalAccessException {
+        if (list == null) throw new IllegalArgumentException("Data list cannot be null");
+
+        // Creates a sheet.
         this.sheetName = StringUtils.ifNullOrEmpty(sheetName, "Sheet");
         Sheet sheet = this.workbook.createSheet(this.sheetName);
 
+        // Creates the first row that is header.
         Row row = sheet.createRow(0);
 
-        // Sets up style of the header.
-        CellStyle style = this.workbook.createCellStyle();
-        style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        Font font = this.workbook.createFont();
-        font.setBold(true);
-        style.setFont(font);
-
         // 헤더명을 설정하지 않은 경우, 우선순위: @ExcelColumn에 지정한 헤더명 > 필드명
-        if (this.headerNames == null) {
-            this.headerNames = this.fields.stream()
-                    .map(field -> {
-                        ExcelColumn annotation = field.getAnnotation(ExcelColumn.class);
-                        return annotation == null || StringUtils.isNullOrEmpty(annotation.value()) ? field.getName() : annotation.value();
-                    }).toArray(String[]::new);
-        }
+        if (this.headerNames == null) this.headerNames = ExcelUtils.toHeaderNames(this.fields);
 
         // 빈 헤더명을 설정한 경우, 종료한다
         if (this.headerNames.length == 0) return;
 
-        // Creates the header.
+        // Names the header given values.
         for (int i = 0; i < this.headerNames.length; i++) {
             String name = this.headerNames[i];
 
             Cell cell = row.createCell(i);
-            cell.setCellStyle(style);
             cell.setCellValue(name);
+
+            // Sets up style of the header.
+            if (this.headerStyle != null) cell.setCellStyle(this.headerStyle);
         }
 
         // Writes the data.
-        if (list != null && !list.isEmpty()) setValueToCellFromFields(sheet, list);
+        if (!list.isEmpty()) setValueToCellFromFields(sheet, list);
+
+        // Adjusts a sheet, rows and columns.
+        if (this.adjustSheet != null) this.adjustSheet.accept(sheet, list.size() + 1, this.fields.size());
+
         this.workbook.write(out);
     }
 
@@ -160,13 +207,21 @@ public final class ExcelWriter<W extends Workbook, T> {
 
                 // Creates the cell and sets up data to it.
                 Cell cell = row.createCell(j);
-                String value = ExcelUtils.stringifyValue(element, field);
-                cell.setCellValue(StringUtils.ifNullOrEmpty(value, () -> {
+                String value = StringUtils.ifNullOrEmpty(ExcelUtils.stringifyValue(element, field), () -> {
                     // 기본값 우선순위: ExcelWriter.write에 넘겨준 기본값 > @ExcelColumn에 지정한 기본값
                     if (this.defaultValue != null) return this.defaultValue;
                     ExcelColumn annotation = field.getAnnotation(ExcelColumn.class);
                     return annotation != null ? annotation.defaultValue() : null;
-                }));
+                });
+                cell.setCellValue(value);
+
+                // Sets up style to the column.
+                if (this.columnStyles != null) {
+                    CellStyle columnStyle = this.columnStyles.length == 1
+                            ? this.columnStyles[0] // common style
+                            : this.columnStyles[j]; // each columns's style
+                    cell.setCellStyle(columnStyle);
+                }
             }
         }
     }
