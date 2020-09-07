@@ -70,7 +70,7 @@ public class ExcelWriterTest {
      * 3. {@link ExcelColumn#defaultValue()}
      */
     @Test
-    public void writeWithIgnoreAndDefaultValue() throws IOException, IllegalAccessException {
+    public void writeWithIgnoreAndDefaultValue() throws IOException, IllegalAccessException, NoSuchFieldException {
         // given
         File file = new File("/data", "products.xlsx");
         FileOutputStream out = new FileOutputStream(file);
@@ -90,7 +90,7 @@ public class ExcelWriterTest {
      * 2. {@link ExcelDateTimeFormat#pattern()}
      */
     @Test
-    public void writeWithTargetedFieldPolicyAndDateTimePattern() throws IOException, IllegalAccessException {
+    public void writeWithTargetedFieldPolicyAndDateTimePattern() throws IOException, IllegalAccessException, NoSuchFieldException {
         // given
         File file = new File("/data", "toys.xlsx");
         FileOutputStream out = new FileOutputStream(file);

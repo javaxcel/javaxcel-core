@@ -1,9 +1,6 @@
 package com.github.javaxcel.out;
 
 import com.github.javaxcel.annotation.ExcelColumn;
-import com.github.javaxcel.annotation.ExcelIgnore;
-import com.github.javaxcel.annotation.ExcelModel;
-import com.github.javaxcel.constant.TargetedFieldPolicy;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.StringUtils;
 import org.apache.poi.ss.usermodel.*;
@@ -13,8 +10,6 @@ import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * ExcelWriter
@@ -63,26 +58,20 @@ public final class ExcelWriter<W extends Workbook, T> {
      * @param <E> type of the element
      * @return excel writer
      */
-    public static <W extends Workbook, E> ExcelWriter<W, E> init(W workbook, Class<E> type) {
+    public static <W extends Workbook, E> ExcelWriter<W, E> init(W workbook, Class<E> type) throws NoSuchFieldException {
         return new ExcelWriter<>(workbook, type);
     }
 
-    private ExcelWriter(W workbook, Class<T> type) {
+    private ExcelWriter(W workbook, Class<T> type) throws NoSuchFieldException {
         this.workbook = workbook;
         this.type = type;
+        this.fields = ExcelUtils.getTargetedFields(type);
 
-        // @ExcelModel의 타깃 필드 정책에 따라 가져오는 필드가 다르다
-        ExcelModel annotation = this.type.getAnnotation(ExcelModel.class);
-        Stream<Field> stream = annotation == null || annotation.policy() == TargetedFieldPolicy.OWN_FIELDS
-                ? Arrays.stream(this.type.getDeclaredFields())
-                : ExcelUtils.getInheritedFields(this.type).stream();
-
-        // Excludes the fields annotated @ExcelIgnore.
-        this.fields = stream.filter(field -> field.getAnnotation(ExcelIgnore.class) == null)
-                .collect(Collectors.toList());
+        if (this.fields.isEmpty()) throw new NoSuchFieldException("Cannot find the targeted fields in the class " + this.type.getName());
     }
 
     public ExcelWriter<W, T> headerNames(String... headerNames) {
+        if (headerNames == null) throw new IllegalArgumentException("Header names cannot be null");
         if (headerNames.length != this.fields.size()) {
             throw new IllegalArgumentException("The number of header names is not equal to the number of targeted fields in the class " + this.type.getName());
         }
@@ -92,11 +81,15 @@ public final class ExcelWriter<W extends Workbook, T> {
     }
 
     public ExcelWriter<W, T> defaultValue(String defaultValue) {
+        if (defaultValue == null) throw new IllegalArgumentException("Default value cannot be null");
+
         this.defaultValue = defaultValue;
         return this;
     }
 
     public ExcelWriter<W, T> sheetName(String sheetName) {
+        if (sheetName == null) throw new IllegalArgumentException("Sheet name cannot be null");
+
         this.sheetName = sheetName;
         return this;
     }

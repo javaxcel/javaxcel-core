@@ -1,25 +1,18 @@
 package com.github.javaxcel.in;
 
-import com.github.javaxcel.annotation.ExcelIgnore;
-import com.github.javaxcel.annotation.ExcelModel;
-import com.github.javaxcel.constant.TargetedFieldPolicy;
 import com.github.javaxcel.util.ExcelUtils;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
  * ExcelReader
@@ -68,16 +61,7 @@ public final class ExcelReader<W extends Workbook, T> {
     private ExcelReader(W workbook, Class<T> type) {
         this.workbook = workbook;
         this.type = type;
-
-        // @ExcelModel의 타깃 필드 정책에 따라 가져오는 필드가 다르다
-        ExcelModel annotation = this.type.getAnnotation(ExcelModel.class);
-        Stream<Field> stream = annotation == null || annotation.policy() == TargetedFieldPolicy.OWN_FIELDS
-                ? Arrays.stream(this.type.getDeclaredFields())
-                : ExcelUtils.getInheritedFields(this.type).stream();
-
-        // Excludes the fields annotated @ExcelIgnore.
-        this.fields = stream.filter(field -> field.getAnnotation(ExcelIgnore.class) == null)
-                .collect(Collectors.toList());
+        this.fields = ExcelUtils.getTargetedFields(type);
     }
 
     public ExcelReader<W, T> sheetIndexes(int... sheetIndexes) {

@@ -9,6 +9,8 @@ import com.github.javaxcel.out.ExcelWriter;
 import lombok.Cleanup;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.Test;
 
@@ -104,7 +106,7 @@ public class ExcelReaderTest {
         List<EducationToy> educationToys = MockFactory.generateStaticBox().getAll();
         File file = new File("/data", "merged.xlsx");
         @Cleanup
-        XSSFWorkbook workbook = new XSSFWorkbook(file);
+        Workbook workbook = WorkbookFactory.create(file);
 
         // when
         List<Product> sheet1 = ExcelReader.init(workbook, Product.class).sheetIndexes(0).read();
