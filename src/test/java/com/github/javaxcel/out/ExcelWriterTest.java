@@ -104,37 +104,22 @@ public class ExcelWriterTest {
         assertTrue(file.exists());
     }
 
+    @DisplayName("ExcelWriter writes with the model that has no field. ==> occurs NoSuchFieldException")
     @Test
-    public void formatDateTime() {
+    public void writeWithNoFieldModel() throws IOException {
         // given
-        LocalDate date = LocalDate.now();
-        LocalTime time = LocalTime.now();
-        LocalDateTime dateTime = LocalDateTime.now();
+        File file = new File("/data", "no-field-model.xls");
+        @Cleanup
+        FileOutputStream out = new FileOutputStream(file);
+        @Cleanup
+        HSSFWorkbook workbook = new HSSFWorkbook();
 
         // when
-        String formattedDate = date.format(DateTimeFormatter.ofPattern("yy/M/dd"));
-        String formattedTime = time.format(DateTimeFormatter.ofPattern("HH:mm:ss.SSS"));
-        String formattedDateTime = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        List<NoFieldModel> people = new ArrayList<>();
 
         // then
-        System.out.println(formattedDate);
-        System.out.println(formattedTime);
-        System.out.println(formattedDateTime);
-    }
-
-    @Test
-    public void stringifyBigNumbers() {
-        // given
-        String strBigInt = Long.valueOf(Long.MAX_VALUE).toString();
-        String strBigDec = "123456789123456789123456789123456789123456.07890";
-
-        // when
-        String bigInteger = String.valueOf(BigInteger.valueOf(Long.parseLong(strBigInt)));
-        String bigDecimal = String.valueOf(new BigDecimal(strBigDec));
-
-        // then
-        assertEquals(bigInteger, strBigInt);
-        assertEquals(bigDecimal, strBigDec);
+        assertThrows(NoSuchFieldException.class,
+                () -> ExcelWriter.init(workbook, NoFieldModel.class).write(out, people));
     }
 
 }
