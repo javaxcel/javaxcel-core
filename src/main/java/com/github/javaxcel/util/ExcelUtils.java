@@ -167,7 +167,7 @@ public final class ExcelUtils {
         else if (char.class.equals(type) || Character.class.equals(type)) return value.charAt(0);
         else if (boolean.class.equals(type) || Boolean.class.equals(type)) return Boolean.parseBoolean(value);
         else if (BigInteger.class.equals(type)) return BigInteger.valueOf(Long.parseLong(value));
-        else if (BigDecimal.class.equals(type)) return BigDecimal.valueOf(Long.parseLong(value));
+        else if (BigDecimal.class.equals(type)) return BigDecimal.valueOf(Double.parseDouble(value));
         else if (TypeClassifier.isTemporal(type)) {
             ExcelDateTimeFormat excelDateTimeFormat = field.getAnnotation(ExcelDateTimeFormat.class);
             String pattern = excelDateTimeFormat == null ? null : excelDateTimeFormat.pattern();
