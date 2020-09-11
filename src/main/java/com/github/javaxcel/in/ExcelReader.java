@@ -1,5 +1,7 @@
 package com.github.javaxcel.in;
 
+import com.github.javaxcel.exception.NoTargetedConstructorException;
+import com.github.javaxcel.exception.SettingFieldValueException;
 import com.github.javaxcel.util.ExcelUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -8,6 +10,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -90,7 +93,7 @@ public final class ExcelReader<W extends Workbook, T> {
     /**
      * 헤더는 제외되며, 지정된 로우부터 또 달리 지정된 로우까지 읽어 VO를 반환한다.
      */
-    public List<T> read() throws ReflectiveOperationException {
+    public List<T> read() {
         if (this.sheetIndexes.length > 1) throw new IllegalArgumentException("Must input only one sheet index.");
 
         List<T> list = new ArrayList<>();
@@ -100,21 +103,21 @@ public final class ExcelReader<W extends Workbook, T> {
         return list;
     }
 
-    public Map<String, List<T>> readAllSheets() throws ReflectiveOperationException {
+    public Map<String, List<T>> readAllSheets() {
         Map<String, List<T>> lists = new HashMap<>();
         setSheetList(ExcelUtils.getSheetRange(this.workbook), lists);
 
         return lists;
     }
 
-    public Map<String, List<T>> readSelectedSheets() throws ReflectiveOperationException {
+    public Map<String, List<T>> readSelectedSheets() {
         Map<String, List<T>> lists = new HashMap<>();
         setSheetList(this.sheetIndexes, lists);
 
         return lists;
     }
 
-    private void setSheetList(int[] sheetIndexes, Map<String, List<T>> lists) throws ReflectiveOperationException {
+    private void setSheetList(int[] sheetIndexes, Map<String, List<T>> lists) {
         for (int sheetIndex : sheetIndexes) {
             List<T> list = new ArrayList<>();
             Sheet sheet = this.workbook.getSheetAt(sheetIndex);
@@ -131,9 +134,8 @@ public final class ExcelReader<W extends Workbook, T> {
      *
      * @param sheet sheet to read
      * @param list list to be added
-     * @throws ReflectiveOperationException
      */
-    private void setSheetDataIntoList(Sheet sheet, List<T> list) throws ReflectiveOperationException {
+    private void setSheetDataIntoList(Sheet sheet, List<T> list) {
         // 헤더를 제외한 전체 로우 개수
         final int numOfRows = sheet.getPhysicalNumberOfRows() - 1;
 
@@ -145,10 +147,21 @@ public final class ExcelReader<W extends Workbook, T> {
             // Skips the first row that is header.
             Row row = sheet.getRow(i + 1);
 
-            Constructor<T> constructor = this.type.getDeclaredConstructor();
+            // Allows only constructor without parameter. ==> into javadoc
+            Constructor<T> constructor;
+            try {
+                constructor = this.type.getDeclaredConstructor();
+            } catch (NoSuchMethodException e) {
+                throw new NoTargetedConstructorException(e, this.type);
+            }
             constructor.setAccessible(true);
 
-            T element = constructor.newInstance();
+            T element;
+            try {
+                element = constructor.newInstance();
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException("Failed to instantiate of the class(" + this.type.getName() + ")");
+            }
             setValueIntoField(element, row);
 
             // Adds a row data of the sheet.
@@ -156,7 +169,7 @@ public final class ExcelReader<W extends Workbook, T> {
         }
     }
 
-    private void setValueIntoField(T element, Row row) throws ReflectiveOperationException {
+    private void setValueIntoField(T element, Row row) {
         int fieldsSize = this.fields.size();
         for (int i = 0; i < fieldsSize; i++) {
             Field field = this.fields.get(i);
@@ -166,11 +179,15 @@ public final class ExcelReader<W extends Workbook, T> {
 //            cell.setCellType(CellType.STRING); // Deprecated for removal since v5.0
             String cellValue = cell.getStringCellValue();
 
-            // private 접근자라도 접근하게 한다
+            // Enables to have access to the field even private field.
             field.setAccessible(true);
 
             // Sets value into the field.
-            field.set(element, ExcelUtils.convertValue(cellValue, field));
+            try {
+                field.set(element, ExcelUtils.convertValue(cellValue, field));
+            } catch (IllegalAccessException e) {
+                throw new SettingFieldValueException(e, element.getClass(), field);
+            }
         }
     }
 

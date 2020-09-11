@@ -83,7 +83,7 @@ public class ExcelUtilsTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"targetAges", "goals", "date", "time", "dateTime"})
-    public void stringifyValue(String fieldName) throws IllegalAccessException, NoSuchFieldException {
+    public void stringifyValue(String fieldName) throws NoSuchFieldException {
         for (EducationToy toy : MockFactory.generateStaticBox().getAll()) {
             // when
             String stringifyValue = ExcelUtils.stringifyValue(toy, toy.getClass().getDeclaredField(fieldName));

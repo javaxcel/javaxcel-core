@@ -6,7 +6,7 @@
 
     <groupId>com.github.javaxcel</groupId>
     <artifactId>javaxcel-core</artifactId>
-    <version>0.2.1</version>
+    <version>0.3.0</version>
     <packaging>jar</packaging>
 
     <name>Javaxcel Core</name>
@@ -25,11 +25,15 @@
         <developer>
             <name>imsejin</name>
             <email>hackeres123@gmail.com</email>
+            <timezone>GMT+0900</timezone>
         </developer>
     </developers>
 
     <scm>
-        <url>${url}</url>
+        <connection>scm:git:${scm.url}</connection>
+        <developerConnection>${scm.connection}</developerConnection>
+        <url>${url}.git</url>
+        <tag>${version}</tag>
     </scm>
 
     <distributionManagement>
@@ -107,19 +111,14 @@
     </dependencies>
 
     <build>
-        <finalName>${project.artifactId}-${project.version}</finalName>
+        <finalName>${artifactId}-${version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
                 <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>io.github.imsejin.WebtoonListExtractorApplication</mainClass>
-                        </manifest>
-                    </archive>
+                    <skip>true</skip>
                 </configuration>
             </plugin>
 
@@ -157,12 +156,14 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
 
+            <!-- Attaches java source files for view -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -178,6 +179,7 @@
                 </executions>
             </plugin>
 
+            <!-- Generates javadoc -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -193,14 +195,11 @@
                 </executions>
             </plugin>
 
-            <!-- GPG Sign -->
+            <!-- Signs with GPG key -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
                 <version>1.6</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
