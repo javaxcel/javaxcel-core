@@ -1,6 +1,8 @@
 package com.github.javaxcel.out;
 
 import com.github.javaxcel.annotation.ExcelColumn;
+import com.github.javaxcel.exception.NoTargetedFieldException;
+import com.github.javaxcel.exception.WritingExcelException;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.StringUtils;
 import com.github.javaxcel.util.TriConsumer;
@@ -66,20 +68,20 @@ public final class ExcelWriter<W extends Workbook, T> {
      *
      * @param workbook excel workbook
      * @param type class type
-     * @param <W> instance that extends {@code Workbook}
+     * @param <W> instance that implements {@link Workbook}
      * @param <E> type of the element
      * @return excel writer
      */
-    public static <W extends Workbook, E> ExcelWriter<W, E> init(W workbook, Class<E> type) throws NoSuchFieldException {
+    public static <W extends Workbook, E> ExcelWriter<W, E> init(W workbook, Class<E> type) {
         return new ExcelWriter<>(workbook, type);
     }
 
-    private ExcelWriter(W workbook, Class<T> type) throws NoSuchFieldException {
+    private ExcelWriter(W workbook, Class<T> type) {
         this.workbook = workbook;
         this.type = type;
         this.fields = ExcelUtils.getTargetedFields(type);
 
-        if (this.fields.isEmpty()) throw new NoSuchFieldException("Cannot find the targeted fields in the class " + this.type.getName());
+        if (this.fields.isEmpty()) throw new NoTargetedFieldException(this.type);
     }
 
     public ExcelWriter<W, T> headerNames(String... headerNames) {
@@ -150,10 +152,8 @@ public final class ExcelWriter<W extends Workbook, T> {
      *
      * @param out output stream for writing excel workbook
      * @param list data list
-     * @throws IOException
-     * @throws IllegalAccessException
      */
-    public void write(OutputStream out, List<T> list) throws IOException, IllegalAccessException {
+    public void write(OutputStream out, List<T> list) {
         if (list == null) throw new IllegalArgumentException("Data list cannot be null");
 
         // Creates a sheet.
@@ -180,19 +180,24 @@ public final class ExcelWriter<W extends Workbook, T> {
             if (this.headerStyle != null) cell.setCellStyle(this.headerStyle);
         }
 
-        // Writes the data.
+        // Sets data into the cell.
         if (!list.isEmpty()) setValueToCellFromFields(sheet, list);
 
         // Adjusts a sheet, rows and columns.
         if (this.adjustSheet != null) this.adjustSheet.accept(sheet, list.size() + 1, this.fields.size());
 
-        this.workbook.write(out);
+        // Writes data to the excel sheet.
+        try {
+            this.workbook.write(out);
+        } catch (IOException e) {
+            throw new WritingExcelException(e);
+        }
     }
 
     /**
      * 상속받은 필드는 포함하지 않으나, 필드의 순서가 일정하다.
      */
-    private void setValueToCellFromFields(Sheet sheet, List<T> list) throws IllegalAccessException {
+    private void setValueToCellFromFields(Sheet sheet, List<T> list) {
         final int listSize = list.size();
         final int fieldsSize = this.fields.size();
 

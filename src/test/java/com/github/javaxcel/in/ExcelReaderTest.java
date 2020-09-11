@@ -55,7 +55,7 @@ public class ExcelReaderTest {
      * 2. {@link com.github.javaxcel.annotation.ExcelIgnore}
      */
     @Test
-    public void readWithNotInheritedTypeAndExcelIgnore() throws ReflectiveOperationException, IOException {
+    public void readWithNotInheritedTypeAndExcelIgnore() throws IOException {
         // given
         List<Product> mocks = MockFactory.generateStaticProducts();
         File file = new File("/data", "products.xlsx");
@@ -80,7 +80,7 @@ public class ExcelReaderTest {
      * 2. {@link ExcelDateTimeFormat#pattern()}
      */
     @Test
-    public void readWithTargetedFieldPolicyAndDateTimePattern() throws ReflectiveOperationException, IOException {
+    public void readWithTargetedFieldPolicyAndDateTimePattern() throws IOException {
         // given
         List<EducationToy> mocks = MockFactory.generateStaticBox().getAll();
         File file = new File("/data", "toys.xlsx");
@@ -100,7 +100,7 @@ public class ExcelReaderTest {
     }
 
     @Test
-    public void readMultipleSheets() throws ReflectiveOperationException, IOException, InvalidFormatException {
+    public void readMultipleSheets() throws IOException {
         // given
         List<Product> products = MockFactory.generateStaticProducts();
         List<EducationToy> educationToys = MockFactory.generateStaticBox().getAll();

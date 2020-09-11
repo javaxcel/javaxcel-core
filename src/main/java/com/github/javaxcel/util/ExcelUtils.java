@@ -5,6 +5,7 @@ import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.annotation.ExcelIgnore;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.constant.TargetedFieldPolicy;
+import com.github.javaxcel.exception.GettingFieldValueException;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import java.lang.reflect.Field;
@@ -77,12 +78,17 @@ public final class ExcelUtils {
      * @param <T> type of the object
      * @return value of the field in value object
      */
-    public static <T> String stringifyValue(T vo, Field field) throws IllegalAccessException {
-        // private 접근자라도 접근하게 한다
+    public static <T> String stringifyValue(T vo, Field field) {
+        // Enables to have access to the field even private field.
         field.setAccessible(true);
 
-        // Gets value of the field.
-        Object value = field.get(vo);
+        // Gets value in the field.
+        Object value;
+        try {
+            value = field.get(vo);
+        } catch (IllegalAccessException e) {
+            throw new GettingFieldValueException(e, vo.getClass(), field);
+        }
 
         if (value == null) return null;
 

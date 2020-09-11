@@ -39,7 +39,7 @@ public class ExcelWriterTest {
      * 3. {@link ExcelColumn#defaultValue()}
      */
     @Test
-    public void writeWithIgnoreAndDefaultValue() throws IOException, IllegalAccessException, NoSuchFieldException {
+    public void writeWithIgnoreAndDefaultValue() throws IOException {
         // given
         File file = new File("/data", "products.xls");
         @Cleanup
@@ -63,7 +63,7 @@ public class ExcelWriterTest {
      * 2. {@link ExcelDateTimeFormat#pattern()}
      */
     @Test
-    public void writeWithTargetedFieldPolicyAndDateTimePattern() throws IOException, IllegalAccessException, NoSuchFieldException {
+    public void writeWithTargetedFieldPolicyAndDateTimePattern() throws IOException {
         // given
         File file = new File("/data", "toys.xlsx");
         @Cleanup
@@ -98,7 +98,7 @@ public class ExcelWriterTest {
     }
 
     @Test
-    public void writeAndDecorate() throws IOException, IllegalAccessException, NoSuchFieldException {
+    public void writeAndDecorate() throws IOException {
         // given
         File file = new File("/data", "products-styled.xlsx");
         @Cleanup
