@@ -14,11 +14,7 @@ import com.github.javaxcel.model.factory.MockFactory;
 import lombok.Cleanup;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -107,15 +103,14 @@ public class ExcelWriterTest {
         FileOutputStream out = new FileOutputStream(file);
         @Cleanup
         XSSFWorkbook workbook = new XSSFWorkbook();
-        BiFunction<XSSFWorkbook, CellStyle, CellStyle> blueColumn = (wb, style) -> {
-            XSSFFont font = wb.createFont();
+        BiFunction<CellStyle, Font, CellStyle> blueColumn = (style, font) -> {
             font.setColor(IndexedColors.WHITE.getIndex());
             style.setFont(font);
             style.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
             style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             return style;
         };
-        BiFunction<XSSFWorkbook, CellStyle, CellStyle> greenColumn = (wb, style) -> {
+        BiFunction<CellStyle, Font, CellStyle> greenColumn = (style, font) -> {
             style.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());
             style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             return style;
@@ -145,8 +140,7 @@ public class ExcelWriterTest {
                         sheet.setColumnHidden(i, true);
                     }
                 })
-                .headerStyle((wb, style) -> {
-                    XSSFFont font = wb.createFont();
+                .headerStyle((style, font) -> {
                     font.setItalic(true);
                     font.setFontHeightInPoints((short) 14);
                     font.setColor((short) 8);
