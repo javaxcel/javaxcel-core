@@ -29,6 +29,11 @@ import java.util.function.BiFunction;
  */
 public final class ExcelWriter<W extends Workbook, T> {
 
+    /**
+     * @see Workbook
+     * @see org.apache.poi.hssf.usermodel.HSSFWorkbook
+     * @see org.apache.poi.xssf.usermodel.XSSFWorkbook
+     */
     private final W workbook;
 
     private final Class<T> type;

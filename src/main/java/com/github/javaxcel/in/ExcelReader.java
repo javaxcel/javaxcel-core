@@ -29,12 +29,19 @@ import java.util.stream.IntStream;
  */
 public final class ExcelReader<W extends Workbook, T> {
 
+    /**
+     * @see Workbook
+     * @see org.apache.poi.hssf.usermodel.HSSFWorkbook
+     * @see org.apache.poi.xssf.usermodel.XSSFWorkbook
+     */
     private final W workbook;
 
     private final Class<T> type;
 
     /**
      * The type's fields that will be actually written in excel.
+     *
+     * @see Class<T>
      */
     private final List<Field> fields;
 
