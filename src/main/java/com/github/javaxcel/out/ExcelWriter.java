@@ -107,7 +107,7 @@ public final class ExcelWriter<W extends Workbook, T> {
     }
 
     public ExcelWriter<W, T> sheetName(String sheetName) {
-        if (sheetName == null) throw new IllegalArgumentException("Sheet name cannot be null");
+        if (StringUtils.isNullOrEmpty(sheetName)) throw new IllegalArgumentException("Sheet name cannot be null or empty");
 
         this.sheetName = sheetName;
         return this;
