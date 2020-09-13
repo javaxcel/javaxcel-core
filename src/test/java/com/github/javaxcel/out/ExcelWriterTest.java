@@ -5,6 +5,8 @@ import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.annotation.ExcelIgnore;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.constant.TargetedFieldPolicy;
+import com.github.javaxcel.exception.NoTargetedFieldException;
+import com.github.javaxcel.model.AllIgnoredModel;
 import com.github.javaxcel.model.EducationToy;
 import com.github.javaxcel.model.NoFieldModel;
 import com.github.javaxcel.model.Product;
@@ -19,6 +21,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -79,9 +83,10 @@ public class ExcelWriterTest {
         assertTrue(file.exists());
     }
 
-    @DisplayName("ExcelWriter writes with the model that has no field. ==> occurs NoSuchFieldException")
-    @Test
-    public void writeWithNoFieldModel() throws IOException {
+    @DisplayName("ExcelWriter writes with the model that has no targeted fields. ==> occurs NoSuchFieldException")
+    @ParameterizedTest
+    @ValueSource(classes = {NoFieldModel.class, AllIgnoredModel.class})
+    public void writeWithClassThatHasNoTargetFields(Class<?> type) throws IOException {
         // given
         File file = new File("/data", "no-field-model.xls");
         @Cleanup
@@ -89,12 +94,9 @@ public class ExcelWriterTest {
         @Cleanup
         HSSFWorkbook workbook = new HSSFWorkbook();
 
-        // when
-        List<NoFieldModel> people = new ArrayList<>();
-
         // then
-        assertThrows(NoSuchFieldException.class,
-                () -> ExcelWriter.init(workbook, NoFieldModel.class).write(out, people));
+        assertThrows(NoTargetedFieldException.class,
+                () -> ExcelWriter.init(workbook, type).write(out, new ArrayList<>()));
     }
 
     @Test
