@@ -5,6 +5,8 @@ import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.annotation.ExcelIgnore;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.constant.TargetedFieldPolicy;
+import com.github.javaxcel.exception.NoTargetedFieldException;
+import com.github.javaxcel.model.AllIgnoredModel;
 import com.github.javaxcel.model.EducationToy;
 import com.github.javaxcel.model.NoFieldModel;
 import com.github.javaxcel.model.Product;
@@ -12,13 +14,11 @@ import com.github.javaxcel.model.factory.MockFactory;
 import lombok.Cleanup;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -79,9 +79,10 @@ public class ExcelWriterTest {
         assertTrue(file.exists());
     }
 
-    @DisplayName("ExcelWriter writes with the model that has no field. ==> occurs NoSuchFieldException")
-    @Test
-    public void writeWithNoFieldModel() throws IOException {
+    @DisplayName("ExcelWriter writes with the model that has no targeted fields. ==> occurs NoSuchFieldException")
+    @ParameterizedTest
+    @ValueSource(classes = {NoFieldModel.class, AllIgnoredModel.class})
+    public void writeWithClassThatHasNoTargetFields(Class<?> type) throws IOException {
         // given
         File file = new File("/data", "no-field-model.xls");
         @Cleanup
@@ -89,12 +90,9 @@ public class ExcelWriterTest {
         @Cleanup
         HSSFWorkbook workbook = new HSSFWorkbook();
 
-        // when
-        List<NoFieldModel> people = new ArrayList<>();
-
         // then
-        assertThrows(NoSuchFieldException.class,
-                () -> ExcelWriter.init(workbook, NoFieldModel.class).write(out, people));
+        assertThrows(NoTargetedFieldException.class,
+                () -> ExcelWriter.init(workbook, type).write(out, new ArrayList<>()));
     }
 
     @Test
@@ -105,15 +103,14 @@ public class ExcelWriterTest {
         FileOutputStream out = new FileOutputStream(file);
         @Cleanup
         XSSFWorkbook workbook = new XSSFWorkbook();
-        BiFunction<XSSFWorkbook, CellStyle, CellStyle> blueColumn = (wb, style) -> {
-            XSSFFont font = wb.createFont();
+        BiFunction<CellStyle, Font, CellStyle> blueColumn = (style, font) -> {
             font.setColor(IndexedColors.WHITE.getIndex());
             style.setFont(font);
             style.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
             style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             return style;
         };
-        BiFunction<XSSFWorkbook, CellStyle, CellStyle> greenColumn = (wb, style) -> {
+        BiFunction<CellStyle, Font, CellStyle> greenColumn = (style, font) -> {
             style.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());
             style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             return style;
@@ -143,8 +140,7 @@ public class ExcelWriterTest {
                         sheet.setColumnHidden(i, true);
                     }
                 })
-                .headerStyle((wb, style) -> {
-                    XSSFFont font = wb.createFont();
+                .headerStyle((style, font) -> {
                     font.setItalic(true);
                     font.setFontHeightInPoints((short) 14);
                     font.setColor((short) 8);

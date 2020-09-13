@@ -29,6 +29,11 @@ import java.util.function.BiFunction;
  */
 public final class ExcelWriter<W extends Workbook, T> {
 
+    /**
+     * @see Workbook
+     * @see org.apache.poi.hssf.usermodel.HSSFWorkbook
+     * @see org.apache.poi.xssf.usermodel.XSSFWorkbook
+     */
     private final W workbook;
 
     private final Class<T> type;
@@ -102,7 +107,7 @@ public final class ExcelWriter<W extends Workbook, T> {
     }
 
     public ExcelWriter<W, T> sheetName(String sheetName) {
-        if (sheetName == null) throw new IllegalArgumentException("Sheet name cannot be null");
+        if (StringUtils.isNullOrEmpty(sheetName)) throw new IllegalArgumentException("Sheet name cannot be null or empty");
 
         this.sheetName = sheetName;
         return this;
@@ -120,10 +125,10 @@ public final class ExcelWriter<W extends Workbook, T> {
         return this;
     }
 
-    public ExcelWriter<W, T> headerStyle(BiFunction<W, CellStyle, CellStyle> biFunction) {
+    public ExcelWriter<W, T> headerStyle(BiFunction<CellStyle, Font, CellStyle> biFunction) {
         if (biFunction == null) throw new IllegalArgumentException("Bi-function for header style cannot be null");
 
-        CellStyle headerStyle = biFunction.apply(this.workbook, this.workbook.createCellStyle());
+        CellStyle headerStyle = biFunction.apply(this.workbook.createCellStyle(), this.workbook.createFont());
         if (headerStyle == null) throw new IllegalArgumentException("Header style cannot be null");
 
         this.headerStyle = headerStyle;
@@ -131,11 +136,11 @@ public final class ExcelWriter<W extends Workbook, T> {
     }
 
     @SafeVarargs
-    public final ExcelWriter<W, T> columnStyles(BiFunction<W, CellStyle, CellStyle>... biFunctions) {
+    public final ExcelWriter<W, T> columnStyles(BiFunction<CellStyle, Font, CellStyle>... biFunctions) {
         if (biFunctions == null) throw new IllegalArgumentException("Bi-functions for column styles cannot be null");
 
         CellStyle[] columnStyles = Arrays.stream(biFunctions)
-                .map(func -> func.apply(this.workbook, this.workbook.createCellStyle()))
+                .map(func -> func.apply(this.workbook.createCellStyle(), this.workbook.createFont()))
                 .toArray(CellStyle[]::new);
         if (columnStyles.length != 1 && columnStyles.length != this.fields.size()) {
             throw new IllegalArgumentException("The number of column styles is not equal to the number of targeted fields in the class "

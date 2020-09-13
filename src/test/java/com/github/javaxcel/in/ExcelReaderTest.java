@@ -2,17 +2,19 @@ package com.github.javaxcel.in;
 
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.annotation.ExcelModel;
+import com.github.javaxcel.exception.NoTargetedConstructorException;
 import com.github.javaxcel.model.EducationToy;
+import com.github.javaxcel.model.FinalFieldModel;
 import com.github.javaxcel.model.Product;
 import com.github.javaxcel.model.factory.MockFactory;
 import com.github.javaxcel.out.ExcelWriter;
 import lombok.Cleanup;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.hssf.usermodel.HSSFWorkbookFactory;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,9 +24,8 @@ import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ExcelReaderTest {
 
@@ -42,7 +43,7 @@ public class ExcelReaderTest {
         }
         Constructor<?> constructor = Arrays.stream(declaredConstructors)
                 .min((a, b) -> Math.min(a.getParameterCount(), b.getParameterCount()))
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new NoTargetedConstructorException(clazz));
         System.out.println("constructor with minimum parameters: " + constructor);
         constructor.setAccessible(true);
         Arrays.stream(constructor.getParameterTypes()).forEach(System.out::println);
@@ -58,7 +59,7 @@ public class ExcelReaderTest {
     public void readWithNotInheritedTypeAndExcelIgnore() throws IOException {
         // given
         List<Product> mocks = MockFactory.generateStaticProducts();
-        File file = new File("/data", "products.xlsx");
+        File file = new File("/data", "products.xls");
         @Cleanup
         HSSFWorkbook workbook = new HSSFWorkbook();
         @Cleanup
@@ -97,6 +98,20 @@ public class ExcelReaderTest {
         assertTrue(educationToys.stream()
                 .peek(System.out::println)
                 .allMatch(educationToy -> Collections.frequency(mocks, educationToy) > 0));
+    }
+
+    @Test
+    public void readWithFinalFields() throws IOException {
+        // given
+        File file = new File("/data", "final-fields.xls");
+        @Cleanup
+        Workbook workbook = HSSFWorkbookFactory.create(file);
+
+        // when
+        List<FinalFieldModel> list = ExcelReader.init(workbook, FinalFieldModel.class).read();
+
+        // then
+        list.forEach(System.out::println);
     }
 
     @Test

@@ -3,10 +3,7 @@ package com.github.javaxcel.in;
 import com.github.javaxcel.exception.NoTargetedConstructorException;
 import com.github.javaxcel.exception.SettingFieldValueException;
 import com.github.javaxcel.util.ExcelUtils;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -29,12 +26,31 @@ import java.util.stream.IntStream;
  */
 public final class ExcelReader<W extends Workbook, T> {
 
+    /**
+     * @see Workbook
+     * @see org.apache.poi.hssf.usermodel.HSSFWorkbook
+     * @see org.apache.poi.xssf.usermodel.XSSFWorkbook
+     */
     private final W workbook;
 
     private final Class<T> type;
 
     /**
+     * Evaluator that evaluates the formula in a cell.
+     *
+     * @see W
+     */
+    private final FormulaEvaluator formulaEvaluator;
+
+    /**
+     * Formatter that stringifies the value in a cell with {@link FormulaEvaluator}.
+     */
+    private static final DataFormatter dataFormatter = new DataFormatter();
+
+    /**
      * The type's fields that will be actually written in excel.
+     *
+     * @see Class<T>
      */
     private final List<Field> fields;
 
@@ -64,6 +80,7 @@ public final class ExcelReader<W extends Workbook, T> {
     private ExcelReader(W workbook, Class<T> type) {
         this.workbook = workbook;
         this.type = type;
+        this.formulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
         this.fields = ExcelUtils.getTargetedFields(type);
     }
 
@@ -174,10 +191,11 @@ public final class ExcelReader<W extends Workbook, T> {
         for (int i = 0; i < fieldsSize; i++) {
             Field field = this.fields.get(i);
 
-            // NPE를 방지하고 모든 데이터를 문자열로 취급한다
+            // If the cell is null, creates an empty cell.
             Cell cell = row.getCell(i, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-//            cell.setCellType(CellType.STRING); // Deprecated for removal since v5.0
-            String cellValue = cell.getStringCellValue();
+
+            // Evaluates the formula and returns a stringifed value.
+            String cellValue = dataFormatter.formatCellValue(cell, this.formulaEvaluator);
 
             // Enables to have access to the field even private field.
             field.setAccessible(true);
