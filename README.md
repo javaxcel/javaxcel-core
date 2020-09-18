@@ -42,8 +42,8 @@ File src = new File("/data", "old-products.xls");
 File dest = new File("/data", "new-products.xlsx");
 
 try (FileOutputStream out = new FileOutputStream(dest);
-		HSSFWorkbook oldWorkbook = new HSSFWorkbook(src);
-    	XSSFWorkbook newWorkbook = new XSSFWorkbook()) {
+        HSSFWorkbook oldWorkbook = new HSSFWorkbook(src);
+        XSSFWorkbook newWorkbook = new XSSFWorkbook()) {
     // Reads the first excel sheet and returns data as a list.
     List<Product> products = ExcelReader.init(oldWorkbook, Product.class).read();
     
@@ -125,7 +125,7 @@ This is `EducationalProduct` class for examples.
 
 ```java
 public void save(List<Product> products, File dest) throw IOException {
-	FileOutputStream out = new FileOutputStream(dest);
+    FileOutputStream out = new FileOutputStream(dest);
     XSSFWorkbook workbook = new XSSFWorkbook();
     
     ExcelWriter.init(workbook, Product.class).write(out, products);
@@ -191,7 +191,7 @@ If you want to use header names only once or override `ExcelColumn#value`, invok
 ExcelWriter.init(workbook, Product.class)
     .headerNames("PRD_NO","NM","ACS_ID","WID","DEP","HEI","WEI") // 7
 //    .headerNames("PRD_NO","NM","ACS_ID","WID","DEP","HEI") // 6 => Occurs exception.
-	.write(out, products);
+    .write(out, products);
 ```
 
 The result is

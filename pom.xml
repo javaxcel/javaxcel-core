@@ -39,7 +39,7 @@
     <distributionManagement>
         <repository>
             <id>${artifactId}</id>
-            <url>https://api.bintray.com/maven/imsejin/Javaxcel/javaxcel-core/;publish=1</url>
+            <url>https://api.bintray.com/maven/${bintray.repo}/${artifactId}/;publish=1</url>
         </repository>
     </distributionManagement>
 
@@ -109,7 +109,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Lombok for test -->
+        <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -143,20 +143,6 @@
                         <configuration>
                             <outputDirectory>${project.build.directory}/lib</outputDirectory>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>pack</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>
