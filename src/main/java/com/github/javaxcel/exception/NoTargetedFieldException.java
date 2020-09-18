@@ -5,7 +5,7 @@ public class NoTargetedFieldException extends RuntimeException {
     private final Class<?> type;
 
     public NoTargetedFieldException(Class<?> type) {
-        super("Cannot find the targeted fields in the class(" + type.getName() + ")");
+        super(String.format("Cannot find the targeted fields in the class(%s)", type.getName()));
         this.type = type;
     }
 
@@ -20,7 +20,7 @@ public class NoTargetedFieldException extends RuntimeException {
     }
 
     public NoTargetedFieldException(Throwable cause, Class<?> type) {
-        super("Cannot find the targeted fields in the class(" + type.getName() + ")", cause);
+        super(String.format("Cannot find the targeted fields in the class(%s)", type.getName()), cause);
         this.type = type;
     }
 

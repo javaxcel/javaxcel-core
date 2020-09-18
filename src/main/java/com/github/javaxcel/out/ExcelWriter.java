@@ -92,7 +92,7 @@ public final class ExcelWriter<W extends Workbook, T> {
     public ExcelWriter<W, T> headerNames(String... headerNames) {
         if (headerNames == null) throw new IllegalArgumentException("Header names cannot be null");
         if (headerNames.length != this.fields.size()) {
-            throw new IllegalArgumentException("The number of header names is not equal to the number of targeted fields in the class " + this.type.getName());
+            throw new IllegalArgumentException(String.format("The number of header names is not equal to the number of targeted fields in the class %s", this.type.getName()));
         }
 
         this.headerNames = headerNames;
@@ -143,9 +143,7 @@ public final class ExcelWriter<W extends Workbook, T> {
                 .map(func -> func.apply(this.workbook.createCellStyle(), this.workbook.createFont()))
                 .toArray(CellStyle[]::new);
         if (columnStyles.length != 1 && columnStyles.length != this.fields.size()) {
-            throw new IllegalArgumentException("The number of column styles is not equal to the number of targeted fields in the class "
-                    + this.type.getName()
-                    + " (the number of column styles can be 1 for common style)");
+            throw new IllegalArgumentException(String.format("The number of column styles is not equal to the number of targeted fields in the class %s (the number of column styles can be 1 for common style)", this.type.getName()));
         }
 
         this.columnStyles = columnStyles;

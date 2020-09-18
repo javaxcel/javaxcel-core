@@ -5,7 +5,7 @@ public class NoTargetedConstructorException extends RuntimeException {
     private final Class<?> type;
 
     public NoTargetedConstructorException(Class<?> type) {
-        super("Cannot find the constructor without parameter in the class(" + type.getName() + ")");
+        super(String.format("Cannot find the constructor without parameter in the class(%s)", type.getName()));
         this.type = type;
     }
 
@@ -20,7 +20,7 @@ public class NoTargetedConstructorException extends RuntimeException {
     }
 
     public NoTargetedConstructorException(Throwable cause, Class<?> type) {
-        super("Cannot find the constructor without parameter in the class(" + type.getName() + ")", cause);
+        super(String.format("Cannot find the constructor without parameter in the class(%s)", type.getName()), cause);
         this.type = type;
     }
 

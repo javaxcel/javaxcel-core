@@ -177,7 +177,7 @@ public final class ExcelReader<W extends Workbook, T> {
             try {
                 element = constructor.newInstance();
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException("Failed to instantiate of the class(" + this.type.getName() + ")");
+                throw new RuntimeException(String.format("Failed to instantiate of the class(%s)", this.type.getName()));
             }
             setValueIntoField(element, row);
 
