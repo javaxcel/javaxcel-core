@@ -72,9 +72,9 @@ public final class ExcelWriter<W extends Workbook, T> {
      * Initializes excel writer.
      *
      * @param workbook excel workbook
-     * @param type class type
-     * @param <W> instance that implements {@link Workbook}
-     * @param <E> type of the element
+     * @param type     class type
+     * @param <W>      instance that implements {@link Workbook}
+     * @param <E>      type of the element
      * @return excel writer
      */
     public static <W extends Workbook, E> ExcelWriter<W, E> init(W workbook, Class<E> type) {
@@ -114,7 +114,6 @@ public final class ExcelWriter<W extends Workbook, T> {
     }
 
     /**
-     *
      * @param triConsumer sheet, numOfRows, numOfColumns
      * @return {@code ExcelWriter}
      */
@@ -153,7 +152,7 @@ public final class ExcelWriter<W extends Workbook, T> {
     /**
      * 엑셀 파일을 생성한다, 값이 null이거나 empty string인 경우 지정된 문자열로 치환한다.
      *
-     * @param out output stream for writing excel workbook
+     * @param out  output stream for writing excel workbook
      * @param list data list
      */
     public void write(OutputStream out, List<T> list) {
