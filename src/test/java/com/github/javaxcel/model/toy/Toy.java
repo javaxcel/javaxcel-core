@@ -1,7 +1,6 @@
-package com.github.javaxcel.model;
+package com.github.javaxcel.model.toy;
 
 import com.github.javaxcel.annotation.ExcelColumn;
-import com.github.javaxcel.constant.ToyType;
 import lombok.*;
 
 @Getter

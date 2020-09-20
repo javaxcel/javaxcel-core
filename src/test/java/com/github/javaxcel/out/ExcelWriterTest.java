@@ -1,17 +1,12 @@
 package com.github.javaxcel.out;
 
-import com.github.javaxcel.annotation.ExcelColumn;
-import com.github.javaxcel.annotation.ExcelDateTimeFormat;
-import com.github.javaxcel.annotation.ExcelIgnore;
-import com.github.javaxcel.annotation.ExcelModel;
-import com.github.javaxcel.constant.TargetedFieldPolicy;
 import com.github.javaxcel.exception.NoTargetedFieldException;
-import com.github.javaxcel.model.AllIgnoredModel;
-import com.github.javaxcel.model.EducationToy;
-import com.github.javaxcel.model.NoFieldModel;
-import com.github.javaxcel.model.Product;
-import com.github.javaxcel.model.factory.MockFactory;
+import com.github.javaxcel.model.etc.AllIgnoredModel;
+import com.github.javaxcel.model.etc.NoFieldModel;
+import com.github.javaxcel.model.product.Product;
+import com.github.javaxcel.model.toy.EducationToy;
 import lombok.Cleanup;
+import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
@@ -31,15 +26,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ExcelWriterTest {
 
-    /**
-     * 1. {@link ExcelIgnore}
-     * <br>
-     * 2. {@link ExcelColumn#value()}
-     * <br>
-     * 3. {@link ExcelColumn#defaultValue()}
-     */
     @Test
-    public void writeWithIgnoreAndDefaultValue() throws IOException {
+    @DisplayName("필드 제외/기본값")
+    @SneakyThrows(IOException.class)
+    public void writeWithIgnoreAndDefaultValue() {
         // given
         File file = new File("/data", "products.xls");
         @Cleanup
@@ -48,7 +38,7 @@ public class ExcelWriterTest {
         HSSFWorkbook workbook = new HSSFWorkbook();
 
         // when
-        List<Product> products = MockFactory.generateRandomProducts(1000);
+        List<Product> products = new Product().createRandoms(1000);
         ExcelWriter.init(workbook, Product.class)
                 .sheetName("Products")
                 .write(out, products);
@@ -57,13 +47,10 @@ public class ExcelWriterTest {
         assertTrue(file.exists());
     }
 
-    /**
-     * 1. {@link ExcelModel#policy()}, {@link TargetedFieldPolicy#INCLUDES_INHERITED}
-     * <br>
-     * 2. {@link ExcelDateTimeFormat#pattern()}
-     */
     @Test
-    public void writeWithTargetedFieldPolicyAndDateTimePattern() throws IOException {
+    @DisplayName("자식 객체/날짜타입")
+    @SneakyThrows(IOException.class)
+    public void writeWithTargetedFieldPolicyAndDateTimePattern() {
         // given
         File file = new File("/data", "toys.xlsx");
         @Cleanup
@@ -72,17 +59,18 @@ public class ExcelWriterTest {
         XSSFWorkbook workbook = new XSSFWorkbook();
 
         // when
-        List<EducationToy> toys = MockFactory.generateRandomBox(1000).getAll();
+        List<EducationToy> toys = new EducationToy().createRandoms(1000);
         ExcelWriter.init(workbook, EducationToy.class).write(out, toys);
 
         // then
         assertTrue(file.exists());
     }
 
-    @DisplayName("ExcelWriter writes with the model that has no targeted fields. ==> occurs NoSuchFieldException")
     @ParameterizedTest
     @ValueSource(classes = {NoFieldModel.class, AllIgnoredModel.class})
-    public void writeWithClassThatHasNoTargetFields(Class<?> type) throws IOException {
+    @DisplayName("Targeted field가 없는 경우")
+    @SneakyThrows(IOException.class)
+    public void writeWithClassThatHasNoTargetFields(Class<?> type) {
         // given
         File file = new File("/data", "no-field-model.xls");
         @Cleanup
@@ -96,7 +84,9 @@ public class ExcelWriterTest {
     }
 
     @Test
-    public void writeAndDecorate() throws IOException {
+    @DisplayName("스타일/데코레이션")
+    @SneakyThrows(IOException.class)
+    public void writeAndDecorate() {
         // given
         File file = new File("/data", "products-styled.xlsx");
         @Cleanup
@@ -105,6 +95,8 @@ public class ExcelWriterTest {
         XSSFWorkbook workbook = new XSSFWorkbook();
         BiFunction<CellStyle, Font, CellStyle> blueColumn = (style, font) -> {
             font.setColor(IndexedColors.WHITE.getIndex());
+            font.setFontName("Malgun Gothic");
+            font.setBold(true);
             style.setFont(font);
             style.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
             style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
@@ -117,7 +109,7 @@ public class ExcelWriterTest {
         };
 
         // when
-        List<Product> products = MockFactory.generateRandomProducts(1000);
+        List<Product> products = new Product().createRandoms(1000);
         ExcelWriter.init(workbook, Product.class)
                 .sheetName("PROD")
                 .adjustSheet((sheet, numOfRows, numOfColumns) -> {
@@ -142,9 +134,10 @@ public class ExcelWriterTest {
                 })
                 .headerStyle((style, font) -> {
                     font.setItalic(true);
-                    font.setFontHeightInPoints((short) 14);
-                    font.setColor((short) 8);
+                    font.setFontHeightInPoints((short) 12);
+                    font.setColor(IndexedColors.BLACK.getIndex());
                     font.setBold(true);
+                    font.setFontName("Malgun Gothic");
                     style.setFont(font);
 
                     style.setFillForegroundColor(IndexedColors.YELLOW.getIndex());

@@ -1,4 +1,4 @@
-package com.github.javaxcel.model;
+package com.github.javaxcel.model.etc;
 
 import com.github.javaxcel.annotation.ExcelIgnore;
 import lombok.Getter;

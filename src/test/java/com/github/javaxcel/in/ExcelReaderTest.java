@@ -3,12 +3,12 @@ package com.github.javaxcel.in;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.exception.NoTargetedConstructorException;
-import com.github.javaxcel.model.EducationToy;
-import com.github.javaxcel.model.FinalFieldModel;
-import com.github.javaxcel.model.Product;
-import com.github.javaxcel.model.factory.MockFactory;
+import com.github.javaxcel.model.etc.FinalFieldModel;
+import com.github.javaxcel.model.product.Product;
+import com.github.javaxcel.model.toy.EducationToy;
 import com.github.javaxcel.out.ExcelWriter;
 import lombok.Cleanup;
+import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.usermodel.HSSFWorkbookFactory;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -30,7 +30,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ExcelReaderTest {
 
     @Test
-    public void getDeclaredConstructorWithMinimumParameters() throws ReflectiveOperationException {
+    @SneakyThrows(ReflectiveOperationException.class)
+    public void getDeclaredConstructorWithMinimumParameters() {
         // given
         Class<Product> clazz = Product.class;
 
@@ -56,9 +57,10 @@ public class ExcelReaderTest {
      * 2. {@link com.github.javaxcel.annotation.ExcelIgnore}
      */
     @Test
-    public void readWithNotInheritedTypeAndExcelIgnore() throws IOException {
+    @SneakyThrows(IOException.class)
+    public void readWithNotInheritedTypeAndExcelIgnore() {
         // given
-        List<Product> mocks = MockFactory.generateStaticProducts();
+        List<Product> mocks = new Product().createDesignees();
         File file = new File("/data", "products.xls");
         @Cleanup
         HSSFWorkbook workbook = new HSSFWorkbook();
@@ -81,9 +83,10 @@ public class ExcelReaderTest {
      * 2. {@link ExcelDateTimeFormat#pattern()}
      */
     @Test
-    public void readWithTargetedFieldPolicyAndDateTimePattern() throws IOException {
+    @SneakyThrows(IOException.class)
+    public void readWithTargetedFieldPolicyAndDateTimePattern() {
         // given
-        List<EducationToy> mocks = MockFactory.generateStaticBox().getAll();
+        List<EducationToy> mocks = new EducationToy().createDesignees();
         File file = new File("/data", "toys.xlsx");
         @Cleanup
         XSSFWorkbook workbook = new XSSFWorkbook();
@@ -101,7 +104,8 @@ public class ExcelReaderTest {
     }
 
     @Test
-    public void readWithFinalFields() throws IOException {
+    @SneakyThrows(IOException.class)
+    public void readWithFinalFields() {
         // given
         File file = new File("/data", "final-fields.xls");
         @Cleanup
@@ -115,10 +119,11 @@ public class ExcelReaderTest {
     }
 
     @Test
-    public void readMultipleSheets() throws IOException {
+    @SneakyThrows(IOException.class)
+    public void readMultipleSheets() {
         // given
-        List<Product> products = MockFactory.generateStaticProducts();
-        List<EducationToy> educationToys = MockFactory.generateStaticBox().getAll();
+        List<Product> products = new Product().createDesignees();
+        List<EducationToy> educationToys = new EducationToy().createDesignees();
         File file = new File("/data", "merged.xlsx");
         @Cleanup
         Workbook workbook = WorkbookFactory.create(file);

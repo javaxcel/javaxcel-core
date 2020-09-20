@@ -1,4 +1,4 @@
-package com.github.javaxcel.model;
+package com.github.javaxcel.model.toy;
 
 import lombok.NoArgsConstructor;
 

@@ -1,12 +1,12 @@
 package com.github.javaxcel.util;
 
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
-import com.github.javaxcel.model.EducationToy;
-import com.github.javaxcel.model.Product;
-import com.github.javaxcel.model.Toy;
-import com.github.javaxcel.model.factory.MockFactory;
+import com.github.javaxcel.model.product.Product;
+import com.github.javaxcel.model.toy.EducationToy;
+import com.github.javaxcel.model.toy.Toy;
 import io.github.imsejin.util.StringUtils;
 import lombok.Cleanup;
+import lombok.SneakyThrows;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -69,7 +69,8 @@ public class ExcelUtilsTest {
             "E:\\works\\대한상공회의소 - 유통상품지식뱅크 서비스포털\\2020\\06\\20200618_미기재 설명 등록\\상품분류별 부가속성\\200519_분류별_부가속성예시.xlsx",
             "E:\\works\\대한상공회의소 - 유통상품지식뱅크 서비스포털\\2020\\06\\20200618_미기재 설명 등록\\상품분류별 부가속성\\[가공] 상품분류별_부가속성_설명.xlsx",
     })
-    public void getSheetRange(String pathname) throws IOException, InvalidFormatException {
+    @SneakyThrows({IOException.class, InvalidFormatException.class})
+    public void getSheetRange(String pathname) {
         // given
         File file = new File(pathname);
         @Cleanup
@@ -84,8 +85,9 @@ public class ExcelUtilsTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"targetAges", "goals", "date", "time", "dateTime"})
-    public void stringifyValue(String fieldName) throws NoSuchFieldException {
-        for (EducationToy toy : MockFactory.generateStaticBox().getAll()) {
+    @SneakyThrows(NoSuchFieldException.class)
+    public void stringifyValue(String fieldName) {
+        for (EducationToy toy : new EducationToy().createRandoms(1000)) {
             // when
             String stringifyValue = ExcelUtils.stringifyValue(toy, toy.getClass().getDeclaredField(fieldName));
 
@@ -182,4 +184,5 @@ public class ExcelUtilsTest {
         assertEquals(bigInteger, strBigInt);
         assertEquals(bigDecimal, strBigDec);
     }
+
 }
