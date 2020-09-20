@@ -83,6 +83,13 @@
             <version>${apache.poi.version}</version>
         </dependency>
 
+        <!-- SpEL(Spring Expression Language) -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-expression</artifactId>
+            <version>5.2.9.RELEASE</version>
+        </dependency>
+
         <!-- Junit 5 -->
         <dependency>
             <groupId>org.junit.platform</groupId>
