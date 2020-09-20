@@ -15,6 +15,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 
 /**
@@ -213,15 +214,25 @@ public final class ExcelWriter<W extends Workbook, T> {
 
             for (int j = 0; j < fieldsSize; j++) {
                 Field field = this.fields.get(j);
-
-                // Creates the cell and sets up data to it.
                 Cell cell = row.createCell(j);
-                String value = StringUtils.ifNullOrEmpty(ExcelUtils.stringifyValue(element, field), () -> {
-                    // 기본값 우선순위: ExcelWriter.write에 넘겨준 기본값 > @ExcelColumn에 지정한 기본값
-                    if (this.defaultValue != null) return this.defaultValue;
-                    ExcelColumn annotation = field.getAnnotation(ExcelColumn.class);
-                    return annotation != null ? annotation.defaultValue() : null;
-                });
+
+                // Computes the data.
+                String value;
+                ExcelWriterConversion conversion = field.getAnnotation(ExcelWriterConversion.class);
+                if (conversion != null && !StringUtils.isNullOrEmpty(conversion.expression())) {
+                    // When the field is annotated with @ExcelWriterConversion.
+                    Map<String, Object> entries = FieldUtils.toEntries(element, this.fields);
+                    value = ExcelUtils.parseExpression(element, field, entries);
+                } else {
+                    // When the field is not annotated with @ExcelWriterConversion.
+                    value = StringUtils.ifNullOrEmpty(ExcelUtils.stringifyValue(element, field), () -> {
+                        // 기본값 우선순위: ExcelWriter.write에 넘겨준 기본값 > @ExcelColumn에 지정한 기본값
+                        if (this.defaultValue != null) return this.defaultValue;
+                        ExcelColumn column = field.getAnnotation(ExcelColumn.class);
+                        return column != null ? column.defaultValue() : null;
+                    });
+                }
+
                 cell.setCellValue(value);
 
                 // Sets up style to the column.

@@ -31,6 +31,42 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ExcelUtilsTest {
 
+    private static Object convert(String value, Field field) {
+        Class<?> type = field.getType();
+
+        if (String.class.equals(type)) return value;
+        else if (byte.class.equals(type) || Byte.class.equals(type)) return Byte.parseByte(value);
+        else if (short.class.equals(type) || Short.class.equals(type)) return Short.parseShort(value);
+        else if (int.class.equals(type) || Integer.class.equals(type)) return Integer.parseInt(value);
+        else if (long.class.equals(type) || Long.class.equals(type)) return Long.parseLong(value);
+        else if (float.class.equals(type) || Float.class.equals(type)) return Float.parseFloat(value);
+        else if (double.class.equals(type) || Double.class.equals(type)) return Double.parseDouble(value);
+        else if (char.class.equals(type) || Character.class.equals(type)) return value.charAt(0);
+        else if (boolean.class.equals(type) || Boolean.class.equals(type)) return Boolean.parseBoolean(value);
+        else if (BigInteger.class.equals(type)) return new BigInteger(value);
+        else if (BigDecimal.class.equals(type)) return new BigDecimal(value);
+        else if (TypeClassifier.isTemporal(type)) {
+            ExcelDateTimeFormat excelDateTimeFormat = field.getAnnotation(ExcelDateTimeFormat.class);
+            String pattern = excelDateTimeFormat == null ? null : excelDateTimeFormat.pattern();
+
+            if (StringUtils.isNullOrEmpty(pattern)) {
+                // When pattern is undefined or implicitly defined.
+                if (LocalTime.class.equals(type)) return LocalTime.parse(value);
+                else if (LocalDate.class.equals(type)) return LocalDate.parse(value);
+                else if (LocalDateTime.class.equals(type)) return LocalDateTime.parse(value);
+
+            } else {
+                // When pattern is explicitly defined.
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+                if (LocalTime.class.equals(type)) return LocalTime.parse(value, formatter);
+                else if (LocalDate.class.equals(type)) return LocalDate.parse(value, formatter);
+                else if (LocalDateTime.class.equals(type)) return LocalDateTime.parse(value, formatter);
+            }
+        }
+
+        return null;
+    }
+
     @ParameterizedTest
     @ValueSource(classes = {Product.class, Toy.class, EducationToy.class})
     public void getTargetedFields(Class<?> type) {
@@ -114,42 +150,6 @@ public class ExcelUtilsTest {
             // then
             System.out.println(converted);
         }
-    }
-
-    private static Object convert(String value, Field field) {
-        Class<?> type = field.getType();
-
-        if (String.class.equals(type)) return value;
-        else if (byte.class.equals(type) || Byte.class.equals(type)) return Byte.parseByte(value);
-        else if (short.class.equals(type) || Short.class.equals(type)) return Short.parseShort(value);
-        else if (int.class.equals(type) || Integer.class.equals(type)) return Integer.parseInt(value);
-        else if (long.class.equals(type) || Long.class.equals(type)) return Long.parseLong(value);
-        else if (float.class.equals(type) || Float.class.equals(type)) return Float.parseFloat(value);
-        else if (double.class.equals(type) || Double.class.equals(type)) return Double.parseDouble(value);
-        else if (char.class.equals(type) || Character.class.equals(type)) return value.charAt(0);
-        else if (boolean.class.equals(type) || Boolean.class.equals(type)) return Boolean.parseBoolean(value);
-        else if (BigInteger.class.equals(type)) return new BigInteger(value);
-        else if (BigDecimal.class.equals(type)) return new BigDecimal(value);
-        else if (TypeClassifier.isTemporal(type)) {
-            ExcelDateTimeFormat excelDateTimeFormat = field.getAnnotation(ExcelDateTimeFormat.class);
-            String pattern = excelDateTimeFormat == null ? null : excelDateTimeFormat.pattern();
-
-            if (StringUtils.isNullOrEmpty(pattern)) {
-                // When pattern is undefined or implicitly defined.
-                if (LocalTime.class.equals(type)) return LocalTime.parse(value);
-                else if (LocalDate.class.equals(type)) return LocalDate.parse(value);
-                else if (LocalDateTime.class.equals(type)) return LocalDateTime.parse(value);
-
-            } else {
-                // When pattern is explicitly defined.
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-                if (LocalTime.class.equals(type)) return LocalTime.parse(value, formatter);
-                else if (LocalDate.class.equals(type)) return LocalDate.parse(value, formatter);
-                else if (LocalDateTime.class.equals(type)) return LocalDateTime.parse(value, formatter);
-            }
-        }
-
-        return null;
     }
 
     @Test

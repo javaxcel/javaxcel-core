@@ -1,6 +1,7 @@
 package com.github.javaxcel.out;
 
 import com.github.javaxcel.exception.NoTargetedFieldException;
+import com.github.javaxcel.model.creature.Human;
 import com.github.javaxcel.model.etc.AllIgnoredModel;
 import com.github.javaxcel.model.etc.NoFieldModel;
 import com.github.javaxcel.model.product.Product;
@@ -146,6 +147,49 @@ public class ExcelWriterTest {
                 })
                 .columnStyles(blueColumn, greenColumn, blueColumn, greenColumn, blueColumn, greenColumn)
                 .write(out, products);
+
+        // then
+        assertTrue(file.exists());
+    }
+
+    @Test
+    @SneakyThrows
+    public void writePeople() {
+        // given
+        File file = new File("/data", "people.xlsx");
+        @Cleanup
+        FileOutputStream out = new FileOutputStream(file);
+        @Cleanup
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        List<Human> people = new Human().createRandoms(1000);
+
+        // when
+        ExcelWriter.init(workbook, Human.class)
+                .adjustSheet((sheet, numOfRows, numOfColumns) -> {
+                    // Makes the columns fit content.
+                    for (int i = 0; i < numOfColumns; i++) {
+                        sheet.autoSizeColumn(i);
+                    }
+                })
+                .headerStyle((style, font) -> {
+                    font.setFontHeightInPoints((short) 10);
+                    font.setColor(IndexedColors.BLACK.getIndex());
+                    font.setBold(true);
+                    font.setFontName("Malgun Gothic");
+                    style.setFont(font);
+
+                    style.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+                    style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                    return style;
+                })
+                .columnStyles((style, font) -> {
+                    font.setFontHeightInPoints((short) 10);
+                    font.setColor(IndexedColors.BLACK.getIndex());
+                    font.setFontName("Malgun Gothic");
+                    style.setFont(font);
+                    return style;
+                })
+                .write(out, people);
 
         // then
         assertTrue(file.exists());
