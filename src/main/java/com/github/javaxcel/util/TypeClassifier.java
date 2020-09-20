@@ -42,7 +42,7 @@ public final class TypeClassifier {
      * 자료형이 문자열(java.lang.String)인지 확인한다.
      */
     public static boolean isString(Class<?> type) {
-        return String.class.equals(type);
+        return type == String.class;
     }
 
     /**
