@@ -35,7 +35,7 @@ public class ExcelUtilsTest {
     @ValueSource(classes = {Product.class, Toy.class, EducationToy.class})
     public void getTargetedFields(Class<?> type) {
         // when
-        List<Field> targetedFields = ExcelUtils.getTargetedFields(type);
+        List<Field> targetedFields = FieldUtils.getTargetedFields(type);
 
         // then
         targetedFields.forEach(System.out::println);
@@ -45,7 +45,7 @@ public class ExcelUtilsTest {
     @ValueSource(classes = {Product.class, Toy.class, EducationToy.class})
     public void getInheritedFields(Class<?> type) {
         // when
-        List<Field> inheritedFields = ExcelUtils.getInheritedFields(type);
+        List<Field> inheritedFields = FieldUtils.getInheritedFields(type);
 
         // then
         inheritedFields.forEach(System.out::println);
@@ -55,10 +55,10 @@ public class ExcelUtilsTest {
     @ValueSource(classes = {Product.class, Toy.class, EducationToy.class})
     public void toHeaderNames(Class<?> type) {
         // given
-        List<Field> targetedFields = ExcelUtils.getTargetedFields(type);
+        List<Field> targetedFields = FieldUtils.getTargetedFields(type);
 
         // when
-        String[] headerNames = ExcelUtils.toHeaderNames(targetedFields);
+        String[] headerNames = FieldUtils.toHeaderNames(targetedFields);
 
         // then
         Arrays.asList(headerNames).forEach(System.out::println);
@@ -100,7 +100,7 @@ public class ExcelUtilsTest {
     public void convert() {
         // given
         List<String> values = Arrays.asList("Toy.name", "ADULT", "645.70", "[1,2,3,4]", "educationToys.goals", "2020-08-31", "01/23/45/678", "2020-08-31T01:23:45");
-        List<Field> targetedFields = ExcelUtils.getTargetedFields(EducationToy.class);
+        List<Field> targetedFields = FieldUtils.getTargetedFields(EducationToy.class);
 
         assertEquals(values.size(), targetedFields.size());
 

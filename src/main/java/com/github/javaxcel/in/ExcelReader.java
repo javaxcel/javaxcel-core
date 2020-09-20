@@ -3,6 +3,7 @@ package com.github.javaxcel.in;
 import com.github.javaxcel.exception.NoTargetedConstructorException;
 import com.github.javaxcel.exception.SettingFieldValueException;
 import com.github.javaxcel.util.ExcelUtils;
+import com.github.javaxcel.util.FieldUtils;
 import org.apache.poi.ss.usermodel.*;
 
 import java.lang.reflect.Constructor;
@@ -81,7 +82,7 @@ public final class ExcelReader<W extends Workbook, T> {
         this.workbook = workbook;
         this.type = type;
         this.formulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
-        this.fields = ExcelUtils.getTargetedFields(type);
+        this.fields = FieldUtils.getTargetedFields(type);
     }
 
     public ExcelReader<W, T> sheetIndexes(int... sheetIndexes) {

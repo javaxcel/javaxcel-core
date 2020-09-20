@@ -2,12 +2,13 @@ package com.github.javaxcel.util;
 
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
-import com.github.javaxcel.annotation.ExcelIgnore;
-import com.github.javaxcel.annotation.ExcelModel;
-import com.github.javaxcel.constant.TargetedFieldPolicy;
-import com.github.javaxcel.exception.GettingFieldValueException;
+import com.github.javaxcel.annotation.ExcelWriterConversion;
+import com.github.javaxcel.exception.NotExistConverterException;
 import io.github.imsejin.util.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -16,49 +17,17 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public final class ExcelUtils {
 
-    private ExcelUtils() {}
+    private static final ExpressionParser parser = new SpelExpressionParser();
 
-    public static List<Field> getTargetedFields(Class<?> type) {
-        // @ExcelModel의 타깃 필드 정책에 따라 가져오는 필드가 다르다
-        ExcelModel annotation = type.getAnnotation(ExcelModel.class);
-        Stream<Field> stream = annotation == null || annotation.policy() == TargetedFieldPolicy.OWN_FIELDS
-                ? Arrays.stream(type.getDeclaredFields())
-                : getInheritedFields(type).stream();
+    private static final StandardEvaluationContext context = new StandardEvaluationContext();
 
-        // Excludes the fields annotated @ExcelIgnore.
-        return stream.filter(field -> field.getAnnotation(ExcelIgnore.class) == null)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Gets fields of the type including its inherited fields.
-     *
-     * @param type type of the object
-     * @return fields of the type including its inherited fields
-     */
-    public static List<Field> getInheritedFields(Class<?> type) {
-        List<Field> fields = new ArrayList<>();
-        for (Class<?> clazz = type; clazz != null; clazz = clazz.getSuperclass()) {
-            fields.addAll(0, Arrays.asList(clazz.getDeclaredFields()));
-        }
-
-        return fields;
-    }
-
-    public static String[] toHeaderNames(List<Field> fields) {
-        return fields.stream().map(field -> {
-            ExcelColumn annotation = field.getAnnotation(ExcelColumn.class);
-            return annotation == null || StringUtils.isNullOrEmpty(annotation.value()) ? field.getName() : annotation.value();
-        }).toArray(String[]::new);
+    private ExcelUtils() {
     }
 
     /**
@@ -66,21 +35,58 @@ public final class ExcelUtils {
      *
      * @param workbook excel workbook
      * @return range that from 0 to (the number of sheets - 1)
+     * @see Workbook#getNumberOfSheets()
      */
     public static int[] getSheetRange(Workbook workbook) {
         return IntStream.range(0, workbook.getNumberOfSheets()).toArray();
     }
 
     /**
+     * Parses a expression.
+     *
+     * @param vo      object in list
+     * @param field   field of object
+     * @param entries entries in which key is VO's field name and value is value of the field
+     * @param <T>     type of the object
+     * @return computed string
+     * @see FieldUtils#toEntries(Object, List)
+     * @see ExcelWriterConversion#expression()
+     * @see ExcelWriterConversion#methodName()
+     * @see ExcelWriterConversion#clazz()
+     */
+    public static <T> String parseExpression(T vo, Field field, Map<String, Object> entries) {
+        // Sets up the converter.
+        ExcelWriterConversion annotation = field.getAnnotation(ExcelWriterConversion.class);
+        String methodName = annotation.methodName();
+        Class<?> converterClass = annotation.clazz();
+        if (!StringUtils.isNullOrEmpty(methodName) && converterClass != Object.class) {
+            try {
+                context.registerFunction(methodName, converterClass.getDeclaredMethod(methodName, annotation.paramTypes()));
+            } catch (NoSuchMethodException e) {
+                throw new NotExistConverterException(e, converterClass);
+            }
+        }
+
+        // Parses a expression.
+        context.setRootObject(vo);
+        context.setVariables(entries);
+        String result = parser.parseExpression(annotation.expression())
+                .getValue(context, String.class);
+
+        return StringUtils.ifNullOrEmpty(result, (String) null);
+    }
+
+    /**
      * Stringify value of the field.
      *
-     * @param field field in object
+     * @param field field of object
      * @param vo    object in list
      * @param <T>   type of the object
      * @return value of the field in value object
+     * @see ExcelDateTimeFormat#pattern()
      */
     public static <T> String stringifyValue(T vo, Field field) {
-        Object value = getFieldValue(vo, field);
+        Object value = FieldUtils.getFieldValue(vo, field);
 
         if (value == null) return null;
 
@@ -99,23 +105,11 @@ public final class ExcelUtils {
         return String.valueOf(value);
     }
 
-    private static <T> Object getFieldValue(T vo, Field field) {
-        // Enables to have access to the field even private field.
-        field.setAccessible(true);
-
-        try {
-            // Returns value in the field.
-            return field.get(vo);
-        } catch (IllegalAccessException e) {
-            throw new GettingFieldValueException(e, vo.getClass(), field);
-        }
-    }
-
     /**
      * Converts a string in cell to the type of field.
      *
      * @param cellValue string in cell of excel sheet
-     * @param field     field in object
+     * @param field     field of object
      * @return value converted to the type of field
      */
     public static Object convertValue(String cellValue, Field field) {
@@ -153,6 +147,7 @@ public final class ExcelUtils {
      *
      * @param type type of the object
      * @return initial value of the type
+     * @see TypeClassifier#isPrimitiveAndNumeric(Class)
      */
     private static Object initialValueOf(Class<?> type) {
         // Value of primitive type cannot be null.

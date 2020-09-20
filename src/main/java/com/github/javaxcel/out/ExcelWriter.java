@@ -1,9 +1,11 @@
 package com.github.javaxcel.out;
 
 import com.github.javaxcel.annotation.ExcelColumn;
+import com.github.javaxcel.annotation.ExcelWriterConversion;
 import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.exception.WritingExcelException;
 import com.github.javaxcel.util.ExcelUtils;
+import com.github.javaxcel.util.FieldUtils;
 import com.github.javaxcel.util.TriConsumer;
 import io.github.imsejin.util.StringUtils;
 import org.apache.poi.ss.usermodel.*;
@@ -84,7 +86,7 @@ public final class ExcelWriter<W extends Workbook, T> {
     private ExcelWriter(W workbook, Class<T> type) {
         this.workbook = workbook;
         this.type = type;
-        this.fields = ExcelUtils.getTargetedFields(type);
+        this.fields = FieldUtils.getTargetedFields(type);
 
         if (this.fields.isEmpty()) throw new NoTargetedFieldException(this.type);
     }
@@ -166,7 +168,7 @@ public final class ExcelWriter<W extends Workbook, T> {
         Row row = sheet.createRow(0);
 
         // 헤더명을 설정하지 않은 경우, 우선순위: @ExcelColumn에 지정한 헤더명 > 필드명
-        if (this.headerNames == null) this.headerNames = ExcelUtils.toHeaderNames(this.fields);
+        if (this.headerNames == null) this.headerNames = FieldUtils.toHeaderNames(this.fields);
 
         // 빈 헤더명을 설정한 경우, 종료한다
         if (this.headerNames.length == 0) return;
