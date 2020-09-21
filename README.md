@@ -1,7 +1,7 @@
 
 
 <p align="center">
-	<img width="35%" src="./src/main/resources/main-image.png" alt="Javaxcel Core">
+	<img width="45%" src="./src/main/resources/main-image.png" alt="Javaxcel Core">
 </p>
 
 
