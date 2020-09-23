@@ -6,6 +6,7 @@ import com.github.javaxcel.model.etc.AllIgnoredModel;
 import com.github.javaxcel.model.etc.NoFieldModel;
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
+import com.github.javaxcel.styler.ExcelStyler;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -114,37 +115,11 @@ public class ExcelWriterTest {
         ExcelWriter.init(workbook, Product.class)
                 .sheetName("PROD")
                 .adjustSheet((sheet, numOfRows, numOfColumns) -> {
-                    // Makes the columns fit content.
-                    for (int i = 0; i < numOfColumns; i++) {
-                        sheet.autoSizeColumn(i);
-                    }
-
-                    // Hides extra rows.
-                    int maxRows = sheet instanceof HSSFSheet ? 65_536 : 1_048_576;
-                    for (int i = numOfRows - 1; i < maxRows; i++) {
-                        Row row = sheet.getRow(i);
-                        if (row == null) row = sheet.createRow(i);
-                        row.setZeroHeight(true);
-                    }
-
-                    // Hides extra columns.
-                    int maxColumns = sheet instanceof HSSFSheet ? 256 : 16_384;
-                    for (int i = numOfColumns; i < maxColumns; i++) {
-                        sheet.setColumnHidden(i, true);
-                    }
+                    ExcelStyler.autoResizeColumns(sheet, numOfColumns);
+                    ExcelStyler.hideExtraRows(sheet, numOfRows);
+                    ExcelStyler.hideExtraColumns(sheet, numOfColumns);
                 })
-                .headerStyle((style, font) -> {
-                    font.setItalic(true);
-                    font.setFontHeightInPoints((short) 12);
-                    font.setColor(IndexedColors.BLACK.getIndex());
-                    font.setBold(true);
-                    font.setFontName("Malgun Gothic");
-                    style.setFont(font);
-
-                    style.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
-                    style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-                    return style;
-                })
+                .headerStyle(ExcelStyler::applyBasicHeaderStyle)
                 .columnStyles(blueColumn, greenColumn, blueColumn, greenColumn, blueColumn, greenColumn)
                 .write(out, products);
 
@@ -165,12 +140,7 @@ public class ExcelWriterTest {
 
         // when
         ExcelWriter.init(workbook, Human.class)
-                .adjustSheet((sheet, numOfRows, numOfColumns) -> {
-                    // Makes the columns fit content.
-                    for (int i = 0; i < numOfColumns; i++) {
-                        sheet.autoSizeColumn(i);
-                    }
-                })
+                .adjustSheet((sheet, numOfRows, numOfColumns) -> ExcelStyler.autoResizeColumns(sheet, numOfColumns))
                 .headerStyle((style, font) -> {
                     font.setFontHeightInPoints((short) 10);
                     font.setColor(IndexedColors.BLACK.getIndex());

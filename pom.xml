@@ -123,6 +123,14 @@
             <version>1.18.12</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- Javaxcel Styler -->
+        <dependency>
+            <groupId>com.github.javaxcel</groupId>
+            <artifactId>javaxcel-styler</artifactId>
+            <version>0.1.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
