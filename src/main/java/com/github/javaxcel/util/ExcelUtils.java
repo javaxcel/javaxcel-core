@@ -2,21 +2,26 @@ package com.github.javaxcel.util;
 
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
+import com.github.javaxcel.annotation.ExcelReaderConversion;
 import com.github.javaxcel.annotation.ExcelWriterConversion;
-import com.github.javaxcel.exception.NotExistConverterException;
+import com.github.javaxcel.exception.NoTargetedConstructorException;
+import com.github.javaxcel.exception.SettingFieldValueException;
 import io.github.imsejin.util.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -60,6 +65,59 @@ public final class ExcelUtils {
                 .getValue(context, String.class);
 
         return StringUtils.ifNullOrEmpty(result, (String) null);
+    }
+
+    /**
+     * Parses a expression to be assigned as field value.
+     *
+     * @param type   type
+     * @param fields targeted fields
+     * @param map    pseudo model
+     * @param <T>    type of the object
+     * @return converted model
+     */
+    public static <T> T parseExpression(Class<T> type, List<Field> fields, Map<String, String> map) {
+        // Allows only constructor without parameter. TODO: write it in javadoc.
+        Constructor<T> constructor;
+        try {
+            constructor = type.getDeclaredConstructor();
+        } catch (NoSuchMethodException e) {
+            throw new NoTargetedConstructorException(e, type);
+        }
+        constructor.setAccessible(true);
+
+        // Instantiates new model and sets up data into the model's fields.
+        T element;
+        try {
+            element = constructor.newInstance();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(String.format("Failed to instantiate of the class(%s)", type.getName()));
+        }
+
+        Map<String, Object> variables = new HashMap<>(map);
+        for (Field field : fields) {
+            ExcelReaderConversion annotation = field.getAnnotation(ExcelReaderConversion.class);
+
+            Object value;
+            if (annotation == null) {
+                value = convert(map.get(field.getName()), field);
+            } else {
+                context.setVariables(variables);
+                value = parser.parseExpression(annotation.value()).getValue(context, field.getType());
+            }
+
+            // Enables to have access to the field even private field.
+            field.setAccessible(true);
+
+            // Sets value into the field.
+            try {
+                field.set(element, value);
+            } catch (IllegalAccessException e) {
+                throw new SettingFieldValueException(e, element.getClass(), field);
+            }
+        }
+
+        return element;
     }
 
     /**

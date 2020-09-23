@@ -114,7 +114,8 @@ public final class ExcelReader<W extends Workbook, T> {
 
         List<T> list = new ArrayList<>();
         Sheet sheet = this.workbook.getSheetAt(this.sheetIndexes[0]);
-        sheetToList(sheet, list);
+//        sheetToList(sheet, list);
+        sheetToListWithExpressions(sheet, list);
 
         return list;
     }
@@ -207,6 +208,48 @@ public final class ExcelReader<W extends Workbook, T> {
                 throw new SettingFieldValueException(e, element.getClass(), field);
             }
         }
+    }
+
+    private void sheetToListWithExpressions(Sheet sheet, List<T> list) {
+        // The number of rows except the first row.
+        final int numOfRows = Math.max(0, sheet.getPhysicalNumberOfRows() - 1);
+
+        // 인덱스 유효성을 체크한다
+        if (this.endIndex == -1 || this.endIndex > numOfRows) this.endIndex = numOfRows;
+
+        // Reads rows.
+        List<Map<String, String>> pseudoModels = new ArrayList<>();
+        for (int i = this.startIndex; i < this.endIndex; i++) {
+            // Skips the first row that is header.
+            Row row = sheet.getRow(i + 1);
+
+            // Adds a row data of the sheet.
+            pseudoModels.add(rowToPseudoModel(row));
+        }
+
+        // Converts pseudo models to real models.
+        pseudoModels.stream()
+                .map(model -> ExcelUtils.parseExpression(this.type, this.fields, model))
+                .forEach(list::add);
+    }
+
+    private Map<String, String> rowToPseudoModel(Row row) {
+        Map<String, String> map = new HashMap<>();
+
+        int fieldsSize = this.fields.size();
+        for (int i = 0; i < fieldsSize; i++) {
+            Field field = this.fields.get(i);
+
+            // If the cell is null, creates an empty cell.
+            Cell cell = row.getCell(i, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+
+            // Evaluates the formula and returns a stringifed value.
+            String cellValue = dataFormatter.formatCellValue(cell, this.formulaEvaluator);
+
+            map.put(field.getName(), cellValue);
+        }
+
+        return map;
     }
 
 }
