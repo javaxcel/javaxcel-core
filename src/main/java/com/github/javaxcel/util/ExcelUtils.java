@@ -42,35 +42,21 @@ public final class ExcelUtils {
     }
 
     /**
-     * Parses a expression.
+     * Parses a expression to be written as cell value.
      *
-     * @param vo      object in list
-     * @param field   field of object
-     * @param entries entries in which key is VO's field name and value is value of the field
-     * @param <T>     type of the object
+     * @param vo    object in list
+     * @param field field of object
+     * @param map   {@link Map} in which key is the model's field name and value is the model's field value
+     * @param <T>   type of the object
      * @return computed string
-     * @see FieldUtils#toEntries(Object, List)
-     * @see ExcelWriterConversion#expression()
-     * @see ExcelWriterConversion#methodName()
-     * @see ExcelWriterConversion#clazz()
+     * @see ExcelWriterConversion#value()
      */
-    public static <T> String parseExpression(T vo, Field field, Map<String, Object> entries) {
-        // Sets up the converter.
+    public static <T> String parseExpression(T vo, Field field, Map<String, Object> map) {
         ExcelWriterConversion annotation = field.getAnnotation(ExcelWriterConversion.class);
-        String methodName = annotation.methodName();
-        Class<?> converterClass = annotation.clazz();
-        if (!StringUtils.isNullOrEmpty(methodName) && converterClass != Object.class) {
-            try {
-                context.registerFunction(methodName, converterClass.getDeclaredMethod(methodName, annotation.paramTypes()));
-            } catch (NoSuchMethodException e) {
-                throw new NotExistConverterException(e, converterClass);
-            }
-        }
-
-        // Parses a expression.
         context.setRootObject(vo);
-        context.setVariables(entries);
-        String result = parser.parseExpression(annotation.expression())
+        context.setVariables(map);
+
+        String result = parser.parseExpression(annotation.value())
                 .getValue(context, String.class);
 
         return StringUtils.ifNullOrEmpty(result, (String) null);

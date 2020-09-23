@@ -18,23 +18,29 @@ public final class FieldUtils {
     }
 
     /**
-     * Gets the targeted fields.
+     * Gets the targeted fields depending on the policy.
+     *
+     * <p> If the targeting policy is {@link TargetedFieldPolicy#OWN_FIELDS},
+     * this returns its own declared fields.
+     * Otherwise({@link TargetedFieldPolicy#INCLUDES_INHERITED}) this returns
+     * its own declared fields including super classes's fields.
+     *
+     * <p> This doesn't return the fields annotated with {@link ExcelIgnore}.
      *
      * @param type type of the object
      * @return targeted fields
      * @see ExcelModel#policy()
      * @see TargetedFieldPolicy
-     * @see Class#getDeclaredFields()
-     * @see FieldUtils#getInheritedFields(Class)
+     * @see ExcelIgnore
      */
     public static List<Field> getTargetedFields(Class<?> type) {
-        // @ExcelModel의 타깃 필드 정책에 따라 가져오는 필드가 다르다
+        // Gets fields depending on the policy.
         ExcelModel annotation = type.getAnnotation(ExcelModel.class);
         Stream<Field> stream = annotation == null || annotation.policy() == TargetedFieldPolicy.OWN_FIELDS
                 ? Arrays.stream(type.getDeclaredFields())
                 : getInheritedFields(type).stream();
 
-        // Excludes the fields annotated @ExcelIgnore.
+        // Excludes the fields to be ignored.
         return stream.filter(field -> field.getAnnotation(ExcelIgnore.class) == null)
                 .collect(Collectors.toList());
     }
@@ -75,22 +81,22 @@ public final class FieldUtils {
     }
 
     /**
-     * Converts fields to entries.
+     * Converts fields to a map.
      *
      * @param vo     object in list
      * @param fields targeted fields
      * @param <T>    type of the object
-     * @return entries in which key is VO's field name and value is value of the field
+     * @return {@link Map} in which key is the model's field name and value is the model's field value
      * @see Field#getName()
      * @see FieldUtils#getFieldValue(Object, Field)
      */
-    public static <T> Map<String, Object> toEntries(T vo, List<Field> fields) {
-        Map<String, Object> entries = new HashMap<>();
+    public static <T> Map<String, Object> toMap(T vo, List<Field> fields) {
+        Map<String, Object> map = new HashMap<>();
         for (Field field : fields) {
-            entries.put(field.getName(), getFieldValue(vo, field));
+            map.put(field.getName(), getFieldValue(vo, field));
         }
 
-        return entries;
+        return map;
     }
 
     static <T> Object getFieldValue(T vo, Field field) {

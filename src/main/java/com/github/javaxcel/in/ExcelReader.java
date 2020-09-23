@@ -28,26 +28,22 @@ import java.util.stream.IntStream;
 public final class ExcelReader<W extends Workbook, T> {
 
     /**
+     * Formatter that stringifies the value in a cell with {@link FormulaEvaluator}.
+     */
+    private static final DataFormatter dataFormatter = new DataFormatter();
+    /**
      * @see Workbook
      * @see org.apache.poi.hssf.usermodel.HSSFWorkbook
      * @see org.apache.poi.xssf.usermodel.XSSFWorkbook
      */
     private final W workbook;
-
     private final Class<T> type;
-
     /**
      * Evaluator that evaluates the formula in a cell.
      *
      * @see W
      */
     private final FormulaEvaluator formulaEvaluator;
-
-    /**
-     * Formatter that stringifies the value in a cell with {@link FormulaEvaluator}.
-     */
-    private static final DataFormatter dataFormatter = new DataFormatter();
-
     /**
      * The type's fields that will be actually written in excel.
      *
@@ -56,33 +52,33 @@ public final class ExcelReader<W extends Workbook, T> {
     private final List<Field> fields;
 
     /**
-     * Sheet's indexes that {@code ExcelReader} will read.
+     * Sheet's indexes that {@link ExcelReader} will read.
      * <br>
      * Default value is {@code {0}} (it mean index of the first sheet).
      */
     private int[] sheetIndexes = {0};
 
     /**
-     * Row's index that {@code ExcelReader} will start to read.
+     * Row's index that {@link ExcelReader} will start to read.
      */
     private int startIndex;
 
     /**
-     * Row's index that {@code ExcelReader} will end to read.
+     * Row's index that {@link ExcelReader} will end to read.
      * <br>
      * Default value is {@code -1} (it mean index of the last row).
      */
     private int endIndex = -1;
-
-    public static <W extends Workbook, E> ExcelReader<W, E> init(W workbook, Class<E> type) {
-        return new ExcelReader<>(workbook, type);
-    }
 
     private ExcelReader(W workbook, Class<T> type) {
         this.workbook = workbook;
         this.type = type;
         this.formulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
         this.fields = FieldUtils.getTargetedFields(type);
+    }
+
+    public static <W extends Workbook, E> ExcelReader<W, E> init(W workbook, Class<E> type) {
+        return new ExcelReader<>(workbook, type);
     }
 
     public ExcelReader<W, T> sheetIndexes(int... sheetIndexes) {
@@ -109,38 +105,40 @@ public final class ExcelReader<W extends Workbook, T> {
     }
 
     /**
-     * 헤더는 제외되며, 지정된 로우부터 또 달리 지정된 로우까지 읽어 VO를 반환한다.
+     * Gets a list after this reads the excel file.
+     *
+     * @return list
      */
     public List<T> read() {
         if (this.sheetIndexes.length > 1) throw new IllegalArgumentException("Must input only one sheet index.");
 
         List<T> list = new ArrayList<>();
         Sheet sheet = this.workbook.getSheetAt(this.sheetIndexes[0]);
-        setSheetDataIntoList(sheet, list);
+        sheetToList(sheet, list);
 
         return list;
     }
 
     public Map<String, List<T>> readAllSheets() {
         Map<String, List<T>> lists = new HashMap<>();
-        setSheetList(ExcelUtils.getSheetRange(this.workbook), lists);
+        sheetsToLists(ExcelUtils.getSheetRange(this.workbook), lists);
 
         return lists;
     }
 
     public Map<String, List<T>> readSelectedSheets() {
         Map<String, List<T>> lists = new HashMap<>();
-        setSheetList(this.sheetIndexes, lists);
+        sheetsToLists(this.sheetIndexes, lists);
 
         return lists;
     }
 
-    private void setSheetList(int[] sheetIndexes, Map<String, List<T>> lists) {
+    private void sheetsToLists(int[] sheetIndexes, Map<String, List<T>> lists) {
         for (int sheetIndex : sheetIndexes) {
             List<T> list = new ArrayList<>();
             Sheet sheet = this.workbook.getSheetAt(sheetIndex);
 
-            setSheetDataIntoList(sheet, list);
+            sheetToList(sheet, list);
 
             // Add a sheet data of the workbook.
             lists.put(sheet.getSheetName(), list);
@@ -151,21 +149,21 @@ public final class ExcelReader<W extends Workbook, T> {
      * Reads a sheet and Adds rows of the data into list.
      *
      * @param sheet sheet to read
-     * @param list list to be added
+     * @param list  list to be added
      */
-    private void setSheetDataIntoList(Sheet sheet, List<T> list) {
-        // 헤더를 제외한 전체 로우 개수
-        final int numOfRows = sheet.getPhysicalNumberOfRows() - 1;
+    private void sheetToList(Sheet sheet, List<T> list) {
+        // The number of rows except the first row.
+        final int numOfRows = Math.max(0, sheet.getPhysicalNumberOfRows() - 1);
 
         // 인덱스 유효성을 체크한다
         if (this.endIndex == -1 || this.endIndex > numOfRows) this.endIndex = numOfRows;
 
-        // 엑셀 파일을 읽는다
+        // Reads rows.
         for (int i = this.startIndex; i < this.endIndex; i++) {
             // Skips the first row that is header.
             Row row = sheet.getRow(i + 1);
 
-            // Allows only constructor without parameter. ==> into javadoc
+            // Allows only constructor without parameter. TODO: write it in javadoc.
             Constructor<T> constructor;
             try {
                 constructor = this.type.getDeclaredConstructor();
@@ -174,20 +172,21 @@ public final class ExcelReader<W extends Workbook, T> {
             }
             constructor.setAccessible(true);
 
+            // Instantiates new model and sets up data into the model's fields.
             T element;
             try {
                 element = constructor.newInstance();
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException(String.format("Failed to instantiate of the class(%s)", this.type.getName()));
             }
-            setValueIntoField(element, row);
+            rowToModel(element, row);
 
             // Adds a row data of the sheet.
             list.add(element);
         }
     }
 
-    private void setValueIntoField(T element, Row row) {
+    private void rowToModel(T element, Row row) {
         int fieldsSize = this.fields.size();
         for (int i = 0; i < fieldsSize; i++) {
             Field field = this.fields.get(i);
