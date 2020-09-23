@@ -7,34 +7,14 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ExcelReaderConversion {
 
-    String expression();
-
     /**
-     * Class that has a converter method.
+     * Expression to be assigned as field value.
      *
-     * @return class
-     * @see #methodName()
-     * @see #paramTypes()
+     * @return expression parser will parse
+     * @see org.springframework.expression.spel.standard.SpelExpressionParser
+     * @see org.springframework.expression.spel.support.StandardEvaluationContext
+     * @see org.springframework.expression.Expression
      */
-    Class<?> clazz() default Object.class;
-
-    /**
-     * Name of the method that converts a value
-     * after {@link com.github.javaxcel.in.ExcelReader} reads data.
-     *
-     * @return name of a converter method
-     * @see #clazz()
-     * @see #paramTypes()
-     */
-    String methodName() default "";
-
-    /**
-     * Parameter types of the converter method.
-     *
-     * @return parameter types
-     * @see #clazz()
-     * @see #methodName()
-     */
-    Class<?>[] paramTypes() default {};
+    String value();
 
 }
