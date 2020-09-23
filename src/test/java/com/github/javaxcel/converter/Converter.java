@@ -1,5 +1,6 @@
 package com.github.javaxcel.converter;
 
+import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public final class Converter {
@@ -19,6 +20,10 @@ public final class Converter {
         }
 
         return sb.substring(0, sb.length() - 1);
+    }
+
+    public static int[] toIntArray(String[] strs) {
+        return Arrays.stream(strs).mapToInt(Integer::parseInt).toArray();
     }
 
 }

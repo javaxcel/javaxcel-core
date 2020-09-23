@@ -9,22 +9,28 @@ import com.github.javaxcel.model.toy.EducationToy;
 import com.github.javaxcel.styler.ExcelStyler;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.util.StopWatch;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ExcelWriterTest {
 
@@ -33,17 +39,27 @@ public class ExcelWriterTest {
     @SneakyThrows(IOException.class)
     public void writeWithIgnoreAndDefaultValue() {
         // given
-        File file = new File("/data", "products.xls");
+        File file = new File("/data", "products.xlsx");
         @Cleanup
         FileOutputStream out = new FileOutputStream(file);
         @Cleanup
-        HSSFWorkbook workbook = new HSSFWorkbook();
+        XSSFWorkbook workbook = new XSSFWorkbook();
 
         // when
-        List<Product> products = new Product().createRandoms(1000);
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start("Product#createRandoms");
+
+        List<Product> products = new Product().createRandoms(ExcelStyler.HSSF_MAX_ROWS / 3);
+
+        stopWatch.stop();
+        stopWatch.start("ExcelWriter#write");
+
         ExcelWriter.init(workbook, Product.class)
                 .sheetName("Products")
                 .write(out, products);
+
+        stopWatch.stop();
+        System.out.println(stopWatch.prettyPrint());
 
         // then
         assertTrue(file.exists());
@@ -61,7 +77,7 @@ public class ExcelWriterTest {
         XSSFWorkbook workbook = new XSSFWorkbook();
 
         // when
-        List<EducationToy> toys = new EducationToy().createRandoms(1000);
+        List<EducationToy> toys = new EducationToy().createRandoms(ExcelStyler.HSSF_MAX_ROWS - 1);
         ExcelWriter.init(workbook, EducationToy.class).write(out, toys);
 
         // then
@@ -128,6 +144,7 @@ public class ExcelWriterTest {
     }
 
     @Test
+    @DisplayName("표현식 사용")
     @SneakyThrows
     public void writePeople() {
         // given
@@ -136,7 +153,14 @@ public class ExcelWriterTest {
         FileOutputStream out = new FileOutputStream(file);
         @Cleanup
         XSSFWorkbook workbook = new XSSFWorkbook();
-        List<Human> people = new Human().createRandoms(1000);
+
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start("Human#createRandoms");
+
+        List<Human> people = new Human().createRandoms(10_000);
+
+        stopWatch.stop();
+        stopWatch.start("ExcelReader#read");
 
         // when
         ExcelWriter.init(workbook, Human.class)
@@ -160,6 +184,9 @@ public class ExcelWriterTest {
                     return style;
                 })
                 .write(out, people);
+
+        stopWatch.stop();
+        System.out.println(stopWatch.prettyPrint());
 
         // then
         assertTrue(file.exists());

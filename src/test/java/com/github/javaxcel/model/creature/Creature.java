@@ -1,6 +1,7 @@
 package com.github.javaxcel.model.creature;
 
 import com.github.javaxcel.annotation.ExcelColumn;
+import com.github.javaxcel.annotation.ExcelReaderConversion;
 import com.github.javaxcel.annotation.ExcelWriterConversion;
 import lombok.*;
 
@@ -13,15 +14,18 @@ import lombok.*;
 public abstract class Creature {
 
     @ExcelColumn("Kingdom")
-    @ExcelWriterConversion(expression = "#kingdom.toString().toLowerCase()")
+    @ExcelWriterConversion("#kingdom.toString().toLowerCase()")
+    @ExcelReaderConversion("T(com.github.javaxcel.model.creature.Kingdom).valueOf(#kingdom.toUpperCase())")
     private Kingdom kingdom;
 
     @ExcelColumn("Sex")
-    @ExcelWriterConversion(expression = "#kingdom.toString() + #sex.toString().replaceAll('(.+)', '/$1/')")
+    @ExcelWriterConversion("#kingdom.toString() + sex.toString().replaceAll('(.+)', '/$1/')")
+    @ExcelReaderConversion("T(com.github.javaxcel.model.creature.Sex).valueOf(#sex.replaceAll('ANIMALIA|/', ''))")
     private Sex sex;
 
     @ExcelColumn("Lifespan")
-    @ExcelWriterConversion(expression = "#lifespan + (#lifespan > 1 ? ' years' : ' year')")
+    @ExcelWriterConversion("#lifespan + (#lifespan > 1 ? ' years' : ' year')")
+    @ExcelReaderConversion("#lifespan.replaceAll('(\\d+).+', '$1')")
     private int lifespan;
 
 }

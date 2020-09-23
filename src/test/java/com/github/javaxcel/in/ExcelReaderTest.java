@@ -3,6 +3,7 @@ package com.github.javaxcel.in;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.exception.NoTargetedConstructorException;
+import com.github.javaxcel.model.creature.Human;
 import com.github.javaxcel.model.etc.FinalFieldModel;
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
@@ -139,6 +140,21 @@ public class ExcelReaderTest {
         assertTrue(educationToys.stream()
                 .peek(System.out::println)
                 .allMatch(educationToy -> Collections.frequency(sheet2, educationToy) > 0));
+    }
+
+    @Test
+    @SneakyThrows
+    public void readPeople() {
+        // given
+        File file = new File("/data", "people.xlsx");
+        @Cleanup
+        Workbook workbook = WorkbookFactory.create(file);
+
+        // when
+        List<Human> people = ExcelReader.init(workbook, Human.class).read();
+
+        // then
+        people.forEach(System.out::println);
     }
 
 }

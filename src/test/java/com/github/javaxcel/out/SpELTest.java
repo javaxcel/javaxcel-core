@@ -9,6 +9,7 @@ import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
+import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -166,6 +167,42 @@ public class SpELTest {
 
         // then
         assertEquals(value, "2,3,4,5,6");
+    }
+
+    @Test
+    public void parseToRealModel() {
+        // given
+        Map<String, Object> map = new HashMap<>();
+        String key = "agesFromBirthToPuberty";
+        map.put(key, "2, 3, 4, 5, 6");
+
+        String exp = "T(com.github.javaxcel.converter.Converter).toIntArray(#" + key + ".split(', '))";
+
+        // when
+        SpelExpressionParser parser = new SpelExpressionParser();
+        StandardEvaluationContext context = new StandardEvaluationContext();
+        context.setVariables(map);
+
+        int[] ints = parser.parseExpression(exp).getValue(context, int[].class);
+
+        // then
+        assertArrayEquals(ints, new int[]{2, 3, 4, 5, 6});
+    }
+
+    @Test
+    public void parseConstructor() {
+        // given
+        BigInteger bigInt = new BigInteger("123456789");
+
+//        String exp = "T(java.math.BigInteger).valueOf('123456789')";
+        String exp = "new java.math.BigInteger('123456789')";
+
+        // when
+        SpelExpressionParser parser = new SpelExpressionParser();
+        BigInteger bigInteger = parser.parseExpression(exp).getValue(BigInteger.class);
+
+        // then
+        assertEquals(bigInt, bigInteger);
     }
 
 }

@@ -1,11 +1,7 @@
 package com.github.javaxcel.model.creature;
 
-import com.github.javaxcel.annotation.ExcelColumn;
-import com.github.javaxcel.annotation.ExcelDateTimeFormat;
-import com.github.javaxcel.annotation.ExcelModel;
-import com.github.javaxcel.annotation.ExcelWriterConversion;
+import com.github.javaxcel.annotation.*;
 import com.github.javaxcel.constant.TargetedFieldPolicy;
-import com.github.javaxcel.converter.Converter;
 import com.github.javaxcel.model.Mockables;
 import lombok.*;
 
@@ -31,42 +27,52 @@ public class Human extends Creature implements Mockables<Human> {
 
     @ExcelColumn("Birthday")
     @ExcelDateTimeFormat(pattern = "yyyy/MM/dd")
+    @ExcelReaderConversion("T(java.time.LocalDate).parse(#birthday, T(java.time.format.DateTimeFormatter).ofPattern('yyyy/MM/dd'))")
     private LocalDate birthday;
 
     @ExcelColumn("Birth Time")
     @ExcelDateTimeFormat(pattern = "HH/mm/ss.SSS")
+    @ExcelReaderConversion("T(java.time.LocalTime).parse(#birthTime, T(java.time.format.DateTimeFormatter).ofPattern('HH/mm/ss.SSS'))")
     private LocalTime birthTime;
 
     @ExcelColumn("Place of Birth")
-    @ExcelWriterConversion(expression = "#capitalize(#placeOfBirth)", clazz = Converter.class, methodName = "capitalize", paramTypes = String.class)
+    @ExcelWriterConversion("T(com.github.javaxcel.converter.Converter).capitalize(#placeOfBirth)")
+    @ExcelReaderConversion("#placeOfBirth?.toLowerCase()") // null-safe operator '?.'
     private String placeOfBirth;
 
     @ExcelColumn("Rest Seconds of Life")
-    @ExcelWriterConversion(expression = "#restSecondsOfLife + ' sec'")
+    @ExcelWriterConversion("#restSecondsOfLife + ' sec'")
+    @ExcelReaderConversion("new java.math.BigDecimal(#restSecondsOfLife.replace(' sec', ''))") // constructor
     private BigDecimal restSecondsOfLife;
 
     @ExcelColumn("Number of Cells")
-    @ExcelWriterConversion(expression = "#numOfCells + ' cells/kg'")
+    @ExcelWriterConversion("#numOfCells + ' cells/kg'")
+    @ExcelReaderConversion("new java.math.BigInteger(#numOfCells.replace(' cells/kg', ''))") // constructor
     private BigInteger numOfCells;
 
     @ExcelColumn("Height")
-    @ExcelWriterConversion(expression = "#height + ' cm'")
+    @ExcelWriterConversion("#height + ' cm'")
+    @ExcelReaderConversion("T(Float).parseFloat(#height.replace(' cm', ''))")
     private float height;
 
     @ExcelColumn("Weight")
-    @ExcelWriterConversion(expression = "#weight + ' kg'")
+    @ExcelWriterConversion("#weight + ' kg'")
+    @ExcelReaderConversion("T(Float).parseFloat(#weight.replace(' kg', ''))")
     private float weight;
 
     @ExcelColumn("Ages from Birth to Puberty")
-    @ExcelWriterConversion(expression = "T(java.util.Arrays).stream(#agesFromBirthToPuberty).boxed()" +
+    @ExcelWriterConversion("T(java.util.Arrays).stream(#agesFromBirthToPuberty).boxed()" +
             ".collect(T(java.util.stream.Collectors).toList()).toString().replaceAll('[\\[\\]]', '')")
+    @ExcelReaderConversion("T(com.github.javaxcel.converter.Converter).toIntArray(#agesFromBirthToPuberty?.split(', '))")
     private int[] agesFromBirthToPuberty;
 
     @ExcelColumn("Ages from Twilight to Death")
+    @ExcelReaderConversion("new int[] {}")
     private int[] agesFromTwilightToDeath;
 
     @ExcelColumn("Whether Disabled or Not")
-    @ExcelWriterConversion(expression = "#disabled ? 'yes' : 'no'")
+    @ExcelWriterConversion("#disabled ? 'yes' : 'no'")
+    @ExcelReaderConversion("#disabled eq 'yes' ? true : false")
     private boolean disabled;
 
     public Human(Kingdom kingdom, Sex sex, int lifespan, String name, LocalDate birthday, LocalTime birthTime,
