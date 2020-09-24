@@ -23,10 +23,8 @@ import org.springframework.util.StopWatch;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -36,7 +34,7 @@ public class ExcelWriterTest {
 
     @Test
     @DisplayName("필드 제외/기본값")
-    @SneakyThrows(IOException.class)
+    @SneakyThrows
     public void writeWithIgnoreAndDefaultValue() {
         // given
         File file = new File("/data", "products.xlsx");
@@ -67,7 +65,7 @@ public class ExcelWriterTest {
 
     @Test
     @DisplayName("자식 객체/날짜타입")
-    @SneakyThrows(IOException.class)
+    @SneakyThrows
     public void writeWithTargetedFieldPolicyAndDateTimePattern() {
         // given
         File file = new File("/data", "toys.xlsx");
@@ -87,7 +85,7 @@ public class ExcelWriterTest {
     @ParameterizedTest
     @ValueSource(classes = {NoFieldModel.class, AllIgnoredModel.class})
     @DisplayName("Targeted field가 없는 경우")
-    @SneakyThrows(IOException.class)
+    @SneakyThrows
     public void writeWithClassThatHasNoTargetFields(Class<?> type) {
         // given
         File file = new File("/data", "no-field-model.xls");
@@ -103,7 +101,7 @@ public class ExcelWriterTest {
 
     @Test
     @DisplayName("스타일/데코레이션")
-    @SneakyThrows(IOException.class)
+    @SneakyThrows
     public void writeAndDecorate() {
         // given
         File file = new File("/data", "products-styled.xlsx");

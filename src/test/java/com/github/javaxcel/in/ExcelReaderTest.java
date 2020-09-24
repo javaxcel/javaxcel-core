@@ -15,23 +15,22 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbookFactory;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ExcelReaderTest {
 
     @Test
-    @SneakyThrows(ReflectiveOperationException.class)
+    @SneakyThrows
     public void getDeclaredConstructorWithMinimumParameters() {
         // given
         Class<Product> clazz = Product.class;
@@ -58,7 +57,7 @@ public class ExcelReaderTest {
      * 2. {@link com.github.javaxcel.annotation.ExcelIgnore}
      */
     @Test
-    @SneakyThrows(IOException.class)
+    @SneakyThrows
     public void readWithNotInheritedTypeAndExcelIgnore() {
         // given
         List<Product> mocks = new Product().createDesignees();
@@ -84,7 +83,7 @@ public class ExcelReaderTest {
      * 2. {@link ExcelDateTimeFormat#pattern()}
      */
     @Test
-    @SneakyThrows(IOException.class)
+    @SneakyThrows
     public void readWithTargetedFieldPolicyAndDateTimePattern() {
         // given
         List<EducationToy> mocks = new EducationToy().createDesignees();
@@ -105,7 +104,7 @@ public class ExcelReaderTest {
     }
 
     @Test
-    @SneakyThrows(IOException.class)
+    @SneakyThrows
     public void readWithFinalFields() {
         // given
         File file = new File("/data", "final-fields.xls");
@@ -120,7 +119,7 @@ public class ExcelReaderTest {
     }
 
     @Test
-    @SneakyThrows(IOException.class)
+    @SneakyThrows
     public void readMultipleSheets() {
         // given
         List<Product> products = new Product().createDesignees();

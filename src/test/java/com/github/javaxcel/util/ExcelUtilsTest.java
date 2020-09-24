@@ -7,15 +7,13 @@ import com.github.javaxcel.model.toy.Toy;
 import io.github.imsejin.util.StringUtils;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -27,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ExcelUtilsTest {
 
@@ -105,7 +103,7 @@ public class ExcelUtilsTest {
             "E:\\works\\대한상공회의소 - 유통상품지식뱅크 서비스포털\\2020\\06\\20200618_미기재 설명 등록\\상품분류별 부가속성\\200519_분류별_부가속성예시.xlsx",
             "E:\\works\\대한상공회의소 - 유통상품지식뱅크 서비스포털\\2020\\06\\20200618_미기재 설명 등록\\상품분류별 부가속성\\[가공] 상품분류별_부가속성_설명.xlsx",
     })
-    @SneakyThrows({IOException.class, InvalidFormatException.class})
+    @SneakyThrows
     public void getSheetRange(String pathname) {
         // given
         File file = new File(pathname);
@@ -121,7 +119,7 @@ public class ExcelUtilsTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"targetAges", "goals", "date", "time", "dateTime"})
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows
     public void stringifyValue(String fieldName) {
         for (EducationToy toy : new EducationToy().createRandoms(1000)) {
             // when

@@ -88,7 +88,7 @@ public final class FieldUtils {
      * @param <T>    type of the object
      * @return {@link Map} in which key is the model's field name and value is the model's field value
      * @see Field#getName()
-     * @see FieldUtils#getFieldValue(Object, Field)
+     * @see #getFieldValue(Object, Field)
      */
     public static <T> Map<String, Object> toMap(T vo, List<Field> fields) {
         Map<String, Object> map = new HashMap<>();

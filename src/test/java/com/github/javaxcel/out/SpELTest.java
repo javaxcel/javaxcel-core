@@ -3,7 +3,9 @@ package com.github.javaxcel.out;
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
 import io.github.imsejin.util.StringUtils;
-import org.junit.jupiter.api.*;
+import lombok.SneakyThrows;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -15,7 +17,8 @@ import java.util.stream.IntStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SpELTest {
 
@@ -149,7 +152,8 @@ public class SpELTest {
     }
 
     @Test
-    public void parseVaribleWithMethod() throws NoSuchMethodException {
+    @SneakyThrows
+    public void parseVaribleWithMethod() {
         // given
         EducationToy toy = new EducationToy();
         toy.setTargetAges(new int[]{2, 3, 4, 5, 6});
