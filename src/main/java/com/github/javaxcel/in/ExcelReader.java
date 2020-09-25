@@ -233,15 +233,15 @@ public final class ExcelReader<W extends Workbook, T> {
      * to the model. The result is the same as the following code.
      *
      * <pre>{@code
-     *     +------+--------+--------+
-     *     | name | height | weight |
-     *     +------+--------+--------+
-     *     | John | 180.5  | 79.2   |
-     *     +------+--------+--------+
+     *     +------+--------+--------+----------+
+     *     | name | height | weight | eyesight |
+     *     +------+--------+--------+----------+
+     *     | John | 180.5  | 79.2   |          |
+     *     +------+--------+--------+----------+
      *
      *     This row will be converted to
      *
-     *     { "name": "John", "height": "180.5", "weight": "79.2" }
+     *     { "name": "John", "height": "180.5", "weight": "79.2", "eyesight": null }
      * }</pre>
      *
      * @param row row in sheet
@@ -260,7 +260,8 @@ public final class ExcelReader<W extends Workbook, T> {
             // Evaluates the formula and returns a stringifed value.
             String cellValue = dataFormatter.formatCellValue(cell, this.formulaEvaluator);
 
-            simulatedModel.put(field.getName(), cellValue);
+            // Converts empty string to null because when CellType is BLANK, DataFormatter returns empty string.
+            simulatedModel.put(field.getName(), cellValue.equals("") ? null : cellValue);
         }
 
         return simulatedModel;
