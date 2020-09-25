@@ -160,26 +160,9 @@ public final class ExcelUtils {
         ExcelColumn excelColumn = field.getAnnotation(ExcelColumn.class);
         Class<?> type = field.getType();
 
-        if (excelColumn == null) {
-            /*
-            Field without @ExcelColumn.
-             */
-
-            // Sets up default value to the field.
-            if (StringUtils.isNullOrEmpty(cellValue)) return initialValueOf(type);
-
-        } else {
-            /*
-            Field with @ExcelColumn.
-             */
-
-            // Sets up default value to the field.
-            if (StringUtils.isNullOrEmpty(cellValue)) {
-                String defaultValue = excelColumn.defaultValue();
-
-                // When not explicitly define default value.
-                if (defaultValue.equals("")) return initialValueOf(type);
-            }
+        // When you don't explicitly define default value and the cell value is null or empty.
+        if ((excelColumn == null || excelColumn.defaultValue().equals("")) && StringUtils.isNullOrEmpty(cellValue)) {
+            return initialValueOf(type);
         }
 
         // Converts string to the type of field.

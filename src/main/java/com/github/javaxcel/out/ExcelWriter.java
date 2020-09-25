@@ -231,7 +231,7 @@ public final class ExcelWriter<W extends Workbook, T> {
                         // 기본값 우선순위: ExcelWriter.write에 넘겨준 기본값 > @ExcelColumn에 지정한 기본값
                         if (this.defaultValue != null) return this.defaultValue;
                         ExcelColumn column = field.getAnnotation(ExcelColumn.class);
-                        return column != null ? column.defaultValue() : null;
+                        return column == null || column.defaultValue().equals("") ? null : column.defaultValue();
                     });
                 } else {
                     // When the field is annotated with @ExcelWriterConversion.
