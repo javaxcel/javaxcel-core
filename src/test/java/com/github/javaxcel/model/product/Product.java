@@ -3,6 +3,7 @@ package com.github.javaxcel.model.product;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelIgnore;
 import com.github.javaxcel.model.Mockables;
+import io.github.imsejin.util.StringUtils;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import java.util.UUID;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = "apiId")
+@EqualsAndHashCode(exclude = {"apiId", "depth", "weight"})
 public class Product implements Mockables<Product> {
 
     @ExcelColumn("상품번호")
@@ -30,12 +31,12 @@ public class Product implements Mockables<Product> {
     @ExcelColumn(value = "가로")
     private Double width;
 
-    @ExcelColumn(defaultValue = "(empty)") // Default value is ineffective to primitive type.
+//    @ExcelColumn(defaultValue = "(empty)") // Default value is ineffective to primitive type.
     private double depth;
 
     private double height;
 
-    @ExcelColumn(value = "WEIGHT", defaultValue = "0") // Default value is effective except primitive type.
+//    @ExcelColumn(value = "WEIGHT", defaultValue = "0") // Default value is effective except primitive type.
     private Double weight;
 
     @Override
@@ -54,7 +55,7 @@ public class Product implements Mockables<Product> {
 
         for (int i = 0; i < size; i++) {
             long serialNumber = RANDOM.nextInt(1000000) + 1000000;
-            String name = RANDOM.nextDouble() <= 0.75 ? Mockables.generateRandomText(RANDOM.nextInt(16)) : null;
+            String name = RANDOM.nextDouble() <= 0.75 ? Mockables.generateRandomText(RANDOM.nextInt(16) + 1) : null;
             String apiId = UUID.randomUUID().toString();
             Double width = RANDOM.nextDouble() >= 0.5 ? RANDOM.nextDouble() * 100 : null;
             double depth = RANDOM.nextDouble() * 100;

@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,12 +50,12 @@ public class ExcelReaderTest {
             System.out.println(constructor);
         }
         Constructor<?> constructor = Arrays.stream(declaredConstructors)
-                .min((a, b) -> Math.min(a.getParameterCount(), b.getParameterCount()))
+                .min(Comparator.comparingInt(Constructor::getParameterCount))
                 .orElseThrow(() -> new NoTargetedConstructorException(clazz));
         System.out.println("constructor with minimum parameters: " + constructor);
         constructor.setAccessible(true);
         Arrays.stream(constructor.getParameterTypes()).forEach(System.out::println);
-        Object o = constructor.newInstance();
+        constructor.newInstance();
     }
 
     /**
@@ -77,7 +78,7 @@ public class ExcelReaderTest {
 
         stopWatch.stop();
 
-        List<Product> mocks = new Product().createDesignees();
+        List<Product> mocks = new Product().createRandoms(1000);
 
         stopWatch.start("read products");
 
@@ -88,9 +89,7 @@ public class ExcelReaderTest {
         stopWatch.stop();
 
         // then
-        assertTrue(mocks.stream()
-                .peek(System.out::println)
-                .allMatch(product -> Collections.frequency(products, product) > 0));
+        assertTrue(mocks.containsAll(products));
         System.out.println(stopWatch.prettyPrint());
     }
 
@@ -114,20 +113,18 @@ public class ExcelReaderTest {
 
         stopWatch.stop();
 
-        List<EducationToy> mocks = new EducationToy().createDesignees();
+        List<EducationToy> mocks = new EducationToy().createRandoms(1000);
 
         stopWatch.start("read toys");
 
         // when
         ExcelWriter.init(workbook, EducationToy.class).write(out, mocks);
-        List<EducationToy> educationToys = ExcelReader.init(workbook, EducationToy.class).startIndex(1).read();
+        List<EducationToy> educationToys = ExcelReader.init(workbook, EducationToy.class).read();
 
         stopWatch.stop();
 
         // then
-        assertTrue(educationToys.stream()
-                .peek(System.out::println)
-                .allMatch(educationToy -> Collections.frequency(mocks, educationToy) > 0));
+        assertTrue(mocks.containsAll(educationToys));
         System.out.println(stopWatch.prettyPrint());
     }
 
@@ -143,7 +140,7 @@ public class ExcelReaderTest {
         List<FinalFieldModel> list = ExcelReader.init(workbook, FinalFieldModel.class).read();
 
         // then
-        list.forEach(System.out::println);
+        list.forEach(System.out::println); // FinalFieldModel(number=100, text=TEXT)
     }
 
     @Test
@@ -194,16 +191,12 @@ public class ExcelReaderTest {
         List<Human> people = ExcelReader.init(workbook, Human.class).read();
 
         stopWatch.stop();
-        System.out.println(stopWatch.prettyPrint());
 
         // then
-        List<String> strings = people.stream().map(Human::toString).collect(Collectors.toList());
-        strings.forEach(System.out::println);
         assertTrue(mocks.stream()
-                // .map(Human::toString)
                 .peek(System.out::println)
-                .allMatch(human -> Collections.frequency(people, human) > 0));
-                // .allMatch(people::contains));
+                .allMatch(people::contains));
+        System.out.println(stopWatch.prettyPrint());
     }
 
 }

@@ -8,11 +8,11 @@ public final class Converter {
     private Converter() {
     }
 
-    public static String capitalize(String str) {
+    public static String capitalize(String str, String delim) {
         if (str == null) return null;
 
         StringBuilder sb = new StringBuilder();
-        for (StringTokenizer tokenizer = new StringTokenizer(str, "-"); tokenizer.hasMoreTokens(); ) {
+        for (StringTokenizer tokenizer = new StringTokenizer(str, delim); tokenizer.hasMoreTokens(); ) {
             String token = tokenizer.nextToken();
             sb.append(String.valueOf(token.charAt(0)).toUpperCase())
                     .append(token.substring(1))

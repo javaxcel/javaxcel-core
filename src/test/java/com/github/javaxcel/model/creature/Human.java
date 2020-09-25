@@ -36,7 +36,7 @@ public class Human extends Creature implements Mockables<Human> {
     private LocalTime birthTime;
 
     @ExcelColumn("Place of Birth")
-    @ExcelWriterConversion("T(com.github.javaxcel.converter.Converter).capitalize(#placeOfBirth)")
+    @ExcelWriterConversion("T(com.github.javaxcel.converter.Converter).capitalize(#placeOfBirth, '-')")
     @ExcelReaderConversion("#placeOfBirth?.toLowerCase()") // null-safe operator '?.'
     private String placeOfBirth;
 
@@ -97,19 +97,19 @@ public class Human extends Creature implements Mockables<Human> {
     public List<Human> createDesignees() {
         return Arrays.asList(
                 new Human(Kingdom.ANIMALIA, Sex.MALE, 30, "Jeremy", LocalDate.now(), LocalTime.now(),
-                        "Seoul, Republic of Korea", new BigDecimal("34857058102347105675.583417804735034534756348701"),
+                        "seoul,-republic-of-korea", new BigDecimal("34857058102347105675.583417804735034534756348701"),
                         new BigInteger("3024563964348504345428940615799280516897078902523043244"), 180, 70,
                         new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, new int[]{30}, true),
                 new Human(Kingdom.ARCHAEA, Sex.INTERSEX, 100, "germ", LocalDate.now(), LocalTime.now(),
-                        "The earth", new BigDecimal("95230947174310317483424235.32758234"),
+                        "the-earth", new BigDecimal("95230947174310317483424235.32758234"),
                         new BigInteger("232549312541241462344"), 1, 1,
                         new int[]{0, 1}, new int[]{99, 100}, false),
                 new Human(Kingdom.BACTERIA, Sex.INTERSEX, 47_000, "virus", LocalDate.now(), LocalTime.now(),
-                        "The earth", new BigDecimal("1679811295023592390682741892423423905802.69345023"),
+                        "the-earth", new BigDecimal("1679811295023592390682741892423423905802.69345023"),
                         new BigInteger("672586170780398545235540893463155661323"), 1, 1,
                         new int[]{0}, new int[]{}, false),
                 new Human(Kingdom.PLANTAE, Sex.FEMALE, 2000, "tree of life", LocalDate.now(), LocalTime.now(),
-                        "United State of America", new BigDecimal("728349210342742.2346791209564390683103567314567813420124892047128537183"),
+                        "united-state-of-america", new BigDecimal("728349210342742.2346791209564390683103567314567813420124892047128537183"),
                         new BigInteger("13489570439503567143859483067247856304724853452034"), 1000, 10_000,
                         new int[]{0, 1, 2, 3, 4, 5, 6}, new int[]{1996, 1997, 1998,1999,2000}, false)
         );

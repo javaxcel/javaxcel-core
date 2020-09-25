@@ -11,7 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 public class Toy {
 
-    @ExcelColumn(defaultValue = "(empty)")
+//    @ExcelColumn(defaultValue = "(empty)")
     private String name;
 
     private ToyType toyType;
