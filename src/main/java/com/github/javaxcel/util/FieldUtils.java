@@ -5,6 +5,7 @@ import com.github.javaxcel.annotation.ExcelIgnore;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.constant.TargetedFieldPolicy;
 import com.github.javaxcel.exception.GettingFieldValueException;
+import com.github.javaxcel.exception.SettingFieldValueException;
 import io.github.imsejin.util.StringUtils;
 
 import java.lang.reflect.Field;
@@ -83,31 +84,43 @@ public final class FieldUtils {
     /**
      * Converts fields to a map.
      *
-     * @param vo     object in list
+     * @param model  model in list
      * @param fields targeted fields
      * @param <T>    type of the object
      * @return {@link Map} in which key is the model's field name and value is the model's field value
      * @see Field#getName()
      * @see #getFieldValue(Object, Field)
      */
-    public static <T> Map<String, Object> toMap(T vo, List<Field> fields) {
+    public static <T> Map<String, Object> toMap(T model, List<Field> fields) {
         Map<String, Object> map = new HashMap<>();
         for (Field field : fields) {
-            map.put(field.getName(), getFieldValue(vo, field));
+            map.put(field.getName(), getFieldValue(model, field));
         }
 
         return map;
     }
 
-    static <T> Object getFieldValue(T vo, Field field) {
+    public static <T> Object getFieldValue(T model, Field field) {
         // Enables to have access to the field even private field.
         field.setAccessible(true);
 
         try {
             // Returns value in the field.
-            return field.get(vo);
+            return field.get(model);
         } catch (IllegalAccessException e) {
-            throw new GettingFieldValueException(e, vo.getClass(), field);
+            throw new GettingFieldValueException(e, model.getClass(), field);
+        }
+    }
+
+    public static <T> void setFieldValue(T model, Field field, Object value) {
+        // Enables to have access to the field even private field.
+        field.setAccessible(true);
+
+        // Sets value into the field.
+        try {
+            field.set(model, value);
+        } catch (IllegalAccessException e) {
+            throw new SettingFieldValueException(e, model.getClass(), field);
         }
     }
 
