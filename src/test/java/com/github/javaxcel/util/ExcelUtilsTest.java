@@ -1,6 +1,7 @@
 package com.github.javaxcel.util;
 
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
+import com.github.javaxcel.converter.impl.BasicWritingConverter;
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
 import com.github.javaxcel.model.toy.Toy;
@@ -121,9 +122,12 @@ public class ExcelUtilsTest {
     @ValueSource(strings = {"targetAges", "goals", "date", "time", "dateTime"})
     @SneakyThrows
     public void stringifyValue(String fieldName) {
+        // given
+        BasicWritingConverter<EducationToy> converter = new BasicWritingConverter<>();
+
         for (EducationToy toy : new EducationToy().createRandoms(1000)) {
             // when
-            String stringifyValue = ExcelUtils.stringifyValue(toy, toy.getClass().getDeclaredField(fieldName));
+            String stringifyValue = converter.convert(toy, toy.getClass().getDeclaredField(fieldName));
 
             // then
             System.out.println(stringifyValue);

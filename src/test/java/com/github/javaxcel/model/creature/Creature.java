@@ -20,7 +20,8 @@ public abstract class Creature {
 
     @ExcelColumn("Sex")
     @ExcelWriterConversion("#kingdom.toString() + sex.toString().replaceAll('(.+)', '/$1/')")
-    @ExcelReaderConversion("T(com.github.javaxcel.model.creature.Sex).valueOf(#sex.replaceAll('ANIMALIA|/', ''))")
+    @ExcelReaderConversion("T(com.github.javaxcel.model.creature.Sex).valueOf(#sex.replaceAll(#kingdom.toUpperCase() + '|/', ''))")
+//    @ExcelReaderConversion("T(com.github.javaxcel.model.creature.Sex).valueOf(#sex.replaceAll('^.+/(.+)/', '$1'))")
     private Sex sex;
 
     @ExcelColumn("Lifespan")

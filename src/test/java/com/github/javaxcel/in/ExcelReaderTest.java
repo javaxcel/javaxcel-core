@@ -8,24 +8,30 @@ import com.github.javaxcel.model.etc.FinalFieldModel;
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
 import com.github.javaxcel.out.ExcelWriter;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.usermodel.HSSFWorkbookFactory;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.jupiter.api.Test;
+import org.apache.poi.xssf.usermodel.XSSFWorkbookFactory;
+import org.junit.jupiter.api.*;
+import org.springframework.util.StopWatch;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ExcelReaderTest {
 
@@ -59,22 +65,33 @@ public class ExcelReaderTest {
     @Test
     @SneakyThrows
     public void readWithNotInheritedTypeAndExcelIgnore() {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start("load 'products.xls' file");
+
         // given
-        List<Product> mocks = new Product().createDesignees();
         File file = new File("/data", "products.xls");
         @Cleanup
         HSSFWorkbook workbook = new HSSFWorkbook();
         @Cleanup
         OutputStream out = new FileOutputStream(file);
 
+        stopWatch.stop();
+
+        List<Product> mocks = new Product().createDesignees();
+
+        stopWatch.start("read products");
+
         // when
         ExcelWriter.init(workbook, Product.class).write(out, mocks);
         List<Product> products = ExcelReader.init(workbook, Product.class).read();
+
+        stopWatch.stop();
 
         // then
         assertTrue(mocks.stream()
                 .peek(System.out::println)
                 .allMatch(product -> Collections.frequency(products, product) > 0));
+        System.out.println(stopWatch.prettyPrint());
     }
 
     /**
@@ -85,22 +102,33 @@ public class ExcelReaderTest {
     @Test
     @SneakyThrows
     public void readWithTargetedFieldPolicyAndDateTimePattern() {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start("load 'toys.xlsx' file");
+
         // given
-        List<EducationToy> mocks = new EducationToy().createDesignees();
         File file = new File("/data", "toys.xlsx");
         @Cleanup
         XSSFWorkbook workbook = new XSSFWorkbook();
         @Cleanup
         OutputStream out = new FileOutputStream(file);
 
+        stopWatch.stop();
+
+        List<EducationToy> mocks = new EducationToy().createDesignees();
+
+        stopWatch.start("read toys");
+
         // when
         ExcelWriter.init(workbook, EducationToy.class).write(out, mocks);
         List<EducationToy> educationToys = ExcelReader.init(workbook, EducationToy.class).startIndex(1).read();
+
+        stopWatch.stop();
 
         // then
         assertTrue(educationToys.stream()
                 .peek(System.out::println)
                 .allMatch(educationToy -> Collections.frequency(mocks, educationToy) > 0));
+        System.out.println(stopWatch.prettyPrint());
     }
 
     @Test
@@ -144,16 +172,38 @@ public class ExcelReaderTest {
     @Test
     @SneakyThrows
     public void readPeople() {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start("load 'people.xlsx' file");
+
         // given
         File file = new File("/data", "people.xlsx");
         @Cleanup
-        Workbook workbook = WorkbookFactory.create(file);
+//        Workbook workbook = WorkbookFactory.create(true);
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        @Cleanup
+        OutputStream out = new FileOutputStream(file);
+
+        stopWatch.stop();
+
+        List<Human> mocks = new Human().createDesignees();
+
+        stopWatch.start("read people");
 
         // when
+        ExcelWriter.init(workbook, Human.class).write(out, mocks);
         List<Human> people = ExcelReader.init(workbook, Human.class).read();
 
+        stopWatch.stop();
+        System.out.println(stopWatch.prettyPrint());
+
         // then
-        people.forEach(System.out::println);
+        List<String> strings = people.stream().map(Human::toString).collect(Collectors.toList());
+        strings.forEach(System.out::println);
+        assertTrue(mocks.stream()
+                // .map(Human::toString)
+                .peek(System.out::println)
+                .allMatch(human -> Collections.frequency(people, human) > 0));
+                // .allMatch(people::contains));
     }
 
 }

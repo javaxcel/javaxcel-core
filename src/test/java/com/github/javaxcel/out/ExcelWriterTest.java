@@ -37,20 +37,20 @@ public class ExcelWriterTest {
     @SneakyThrows
     public void writeWithIgnoreAndDefaultValue() {
         // given
-        File file = new File("/data", "products.xlsx");
+        File file = new File("/data", "products.xls");
         @Cleanup
         FileOutputStream out = new FileOutputStream(file);
         @Cleanup
-        XSSFWorkbook workbook = new XSSFWorkbook();
+        HSSFWorkbook workbook = new HSSFWorkbook();
 
         // when
         StopWatch stopWatch = new StopWatch();
-        stopWatch.start("Product#createRandoms");
+        stopWatch.start("create product mocks");
 
-        List<Product> products = new Product().createRandoms(ExcelStyler.HSSF_MAX_ROWS / 3);
+        List<Product> products = new Product().createRandoms(ExcelStyler.HSSF_MAX_ROWS - 1);
 
         stopWatch.stop();
-        stopWatch.start("ExcelWriter#write");
+        stopWatch.start("write products");
 
         ExcelWriter.init(workbook, Product.class)
                 .sheetName("Products")
@@ -75,8 +75,18 @@ public class ExcelWriterTest {
         XSSFWorkbook workbook = new XSSFWorkbook();
 
         // when
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start("create toy mocks");
+
         List<EducationToy> toys = new EducationToy().createRandoms(ExcelStyler.HSSF_MAX_ROWS - 1);
+
+        stopWatch.stop();
+        stopWatch.start("write with toys");
+
         ExcelWriter.init(workbook, EducationToy.class).write(out, toys);
+
+        stopWatch.stop();
+        System.out.println(stopWatch.prettyPrint());
 
         // then
         assertTrue(file.exists());
@@ -94,9 +104,15 @@ public class ExcelWriterTest {
         @Cleanup
         HSSFWorkbook workbook = new HSSFWorkbook();
 
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start("initialize");
+
         // then
         assertThrows(NoTargetedFieldException.class,
                 () -> ExcelWriter.init(workbook, type).write(out, new ArrayList<>()));
+
+        stopWatch.stop();
+        System.out.println(stopWatch.prettyPrint());
     }
 
     @Test
@@ -146,23 +162,22 @@ public class ExcelWriterTest {
     @SneakyThrows
     public void writePeople() {
         // given
-        File file = new File("/data", "people.xlsx");
+        File file = new File("/data", "people.xls");
         @Cleanup
         FileOutputStream out = new FileOutputStream(file);
         @Cleanup
-        XSSFWorkbook workbook = new XSSFWorkbook();
+        HSSFWorkbook workbook = new HSSFWorkbook();
 
         StopWatch stopWatch = new StopWatch();
-        stopWatch.start("Human#createRandoms");
+        stopWatch.start("create human mocks");
 
-        List<Human> people = new Human().createRandoms(10_000);
+        List<Human> people = new Human().createRandoms(ExcelStyler.HSSF_MAX_ROWS - 1);
 
         stopWatch.stop();
-        stopWatch.start("ExcelReader#read");
+        stopWatch.start("write people");
 
         // when
         ExcelWriter.init(workbook, Human.class)
-                .adjustSheet((sheet, numOfRows, numOfColumns) -> ExcelStyler.autoResizeColumns(sheet, numOfColumns))
                 .headerStyle((style, font) -> {
                     font.setFontHeightInPoints((short) 10);
                     font.setColor(IndexedColors.BLACK.getIndex());
