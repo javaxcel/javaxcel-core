@@ -8,21 +8,17 @@ import com.github.javaxcel.model.etc.FinalFieldModel;
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
 import com.github.javaxcel.out.ExcelWriter;
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.usermodel.HSSFWorkbookFactory;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbookFactory;
 import org.junit.jupiter.api.*;
 import org.springframework.util.StopWatch;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
@@ -30,7 +26,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -175,7 +170,6 @@ public class ExcelReaderTest {
         // given
         File file = new File("/data", "people.xlsx");
         @Cleanup
-//        Workbook workbook = WorkbookFactory.create(true);
         XSSFWorkbook workbook = new XSSFWorkbook();
         @Cleanup
         OutputStream out = new FileOutputStream(file);
