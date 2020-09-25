@@ -1,18 +1,18 @@
 package com.github.javaxcel.in;
 
-import com.github.javaxcel.exception.NoTargetedConstructorException;
-import com.github.javaxcel.exception.SettingFieldValueException;
+import com.github.javaxcel.annotation.ExcelReaderConversion;
+import com.github.javaxcel.converter.impl.BasicReadingConverter;
+import com.github.javaxcel.converter.impl.ExpressiveReadingConverter;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
 import org.apache.poi.ss.usermodel.*;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -31,6 +31,11 @@ public final class ExcelReader<W extends Workbook, T> {
      * Formatter that stringifies the value in a cell with {@link FormulaEvaluator}.
      */
     private static final DataFormatter dataFormatter = new DataFormatter();
+
+    private final BasicReadingConverter<T> basicConverter = new BasicReadingConverter<>();
+
+    private final ExpressiveReadingConverter<T> expConverter;
+
     /**
      * @see Workbook
      * @see org.apache.poi.hssf.usermodel.HSSFWorkbook
@@ -75,6 +80,7 @@ public final class ExcelReader<W extends Workbook, T> {
         this.type = type;
         this.formulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
         this.fields = FieldUtils.getTargetedFields(type);
+        this.expConverter = new ExpressiveReadingConverter<>(type);
     }
 
     public static <W extends Workbook, E> ExcelReader<W, E> init(W workbook, Class<E> type) {
@@ -114,8 +120,7 @@ public final class ExcelReader<W extends Workbook, T> {
 
         List<T> list = new ArrayList<>();
         Sheet sheet = this.workbook.getSheetAt(this.sheetIndexes[0]);
-//        sheetToList(sheet, list);
-        sheetToListWithExpressions(sheet, list);
+        sheetToList(sheet, list);
 
         return list;
     }
@@ -153,6 +158,53 @@ public final class ExcelReader<W extends Workbook, T> {
      * @param list  list to be added
      */
     private void sheetToList(Sheet sheet, List<T> list) {
+        List<Map<String, Object>> sModels = getSimulatedModels(sheet);
+
+        List<T> realModels = sModels.stream()//.parallel()
+                .map(this::toRealModel)
+                .collect(Collectors.toList());
+
+        list.addAll(realModels);
+    }
+
+    /**
+     * Converts a simulated model to the real model.
+     *
+     * @param sModel simulated model
+     * @return real model
+     */
+    private T toRealModel(Map<String, Object> sModel) {
+        expConverter.setVariables(sModel);
+        T model = ExcelUtils.instantiate(this.type);
+
+        for (Field field : this.fields) {
+            String cellValue = (String) sModel.get(field.getName());
+
+            ExcelReaderConversion annotation = field.getAnnotation(ExcelReaderConversion.class);
+            Object fieldValue;
+            if (annotation == null) {
+                // When the field is not annotated with @ExcelReaderConversion.
+                fieldValue = basicConverter.convert(cellValue, field);
+            } else {
+                // When the field is annotated with @ExcelReaderConversion.
+                fieldValue = expConverter.convert(cellValue, field);
+            }
+
+            FieldUtils.setFieldValue(model, field, fieldValue);
+        }
+
+        return model;
+    }
+
+    /**
+     * Gets simulated models from a sheet.
+     *
+     * <p>
+     *
+     * @param sheet excel sheet
+     * @return simulated models
+     */
+    private List<Map<String, Object>> getSimulatedModels(Sheet sheet) {
         // The number of rows except the first row.
         final int numOfRows = Math.max(0, sheet.getPhysicalNumberOfRows() - 1);
 
@@ -160,34 +212,44 @@ public final class ExcelReader<W extends Workbook, T> {
         if (this.endIndex == -1 || this.endIndex > numOfRows) this.endIndex = numOfRows;
 
         // Reads rows.
+        List<Map<String, Object>> simulatedModels = new ArrayList<>();
         for (int i = this.startIndex; i < this.endIndex; i++) {
             // Skips the first row that is header.
             Row row = sheet.getRow(i + 1);
 
-            // Allows only constructor without parameter. TODO: write it in javadoc.
-            Constructor<T> constructor;
-            try {
-                constructor = this.type.getDeclaredConstructor();
-            } catch (NoSuchMethodException e) {
-                throw new NoTargetedConstructorException(e, this.type);
-            }
-            constructor.setAccessible(true);
-
-            // Instantiates new model and sets up data into the model's fields.
-            T element;
-            try {
-                element = constructor.newInstance();
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException(String.format("Failed to instantiate of the class(%s)", this.type.getName()));
-            }
-            rowToModel(element, row);
-
             // Adds a row data of the sheet.
-            list.add(element);
+            simulatedModels.add(rowToSimulatedModel(row));
         }
+
+        return simulatedModels;
     }
 
-    private void rowToModel(T element, Row row) {
+    /**
+     * Converts a row to a simulated model.
+     *
+     * <p> Reads rows to get data. this creates {@link Map} as a simulated model
+     * and puts the key({@link Field#getName()}) and the value
+     * ({@link DataFormatter#formatCellValue(Cell, FormulaEvaluator)})
+     * to the model. The result is the same as the following code.
+     *
+     * <pre>{@code
+     *     +------+--------+--------+
+     *     | name | height | weight |
+     *     +------+--------+--------+
+     *     | John | 180.5  | 79.2   |
+     *     +------+--------+--------+
+     *
+     *     This row will be converted to
+     *
+     *     { "name": "John", "height": "180.5", "weight": "79.2" }
+     * }</pre>
+     *
+     * @param row row in sheet
+     * @return simulated model
+     */
+    private Map<String, Object> rowToSimulatedModel(Row row) {
+        Map<String, Object> simulatedModel = new HashMap<>();
+
         int fieldsSize = this.fields.size();
         for (int i = 0; i < fieldsSize; i++) {
             Field field = this.fields.get(i);
@@ -198,58 +260,10 @@ public final class ExcelReader<W extends Workbook, T> {
             // Evaluates the formula and returns a stringifed value.
             String cellValue = dataFormatter.formatCellValue(cell, this.formulaEvaluator);
 
-            // Enables to have access to the field even private field.
-            field.setAccessible(true);
-
-            // Sets value into the field.
-            try {
-                field.set(element, ExcelUtils.convertValue(cellValue, field));
-            } catch (IllegalAccessException e) {
-                throw new SettingFieldValueException(e, element.getClass(), field);
-            }
-        }
-    }
-
-    private void sheetToListWithExpressions(Sheet sheet, List<T> list) {
-        // The number of rows except the first row.
-        final int numOfRows = Math.max(0, sheet.getPhysicalNumberOfRows() - 1);
-
-        // 인덱스 유효성을 체크한다
-        if (this.endIndex == -1 || this.endIndex > numOfRows) this.endIndex = numOfRows;
-
-        // Reads rows.
-        List<Map<String, String>> pseudoModels = new ArrayList<>();
-        for (int i = this.startIndex; i < this.endIndex; i++) {
-            // Skips the first row that is header.
-            Row row = sheet.getRow(i + 1);
-
-            // Adds a row data of the sheet.
-            pseudoModels.add(rowToPseudoModel(row));
+            simulatedModel.put(field.getName(), cellValue);
         }
 
-        // Converts pseudo models to real models.
-        pseudoModels.stream()
-                .map(model -> ExcelUtils.parseExpression(this.type, this.fields, model))
-                .forEach(list::add);
-    }
-
-    private Map<String, String> rowToPseudoModel(Row row) {
-        Map<String, String> map = new HashMap<>();
-
-        int fieldsSize = this.fields.size();
-        for (int i = 0; i < fieldsSize; i++) {
-            Field field = this.fields.get(i);
-
-            // If the cell is null, creates an empty cell.
-            Cell cell = row.getCell(i, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-
-            // Evaluates the formula and returns a stringifed value.
-            String cellValue = dataFormatter.formatCellValue(cell, this.formulaEvaluator);
-
-            map.put(field.getName(), cellValue);
-        }
-
-        return map;
+        return simulatedModel;
     }
 
 }

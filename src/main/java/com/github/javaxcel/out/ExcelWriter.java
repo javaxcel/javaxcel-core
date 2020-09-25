@@ -1,10 +1,10 @@
 package com.github.javaxcel.out;
 
-import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelWriterConversion;
+import com.github.javaxcel.converter.impl.BasicWritingConverter;
+import com.github.javaxcel.converter.impl.ExpressiveWritingConverter;
 import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.exception.WritingExcelException;
-import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
 import com.github.javaxcel.util.TriConsumer;
 import io.github.imsejin.util.StringUtils;
@@ -31,6 +31,10 @@ import java.util.function.BiFunction;
  * </pre>
  */
 public final class ExcelWriter<W extends Workbook, T> {
+
+    private final BasicWritingConverter<T> basicConverter = new BasicWritingConverter<>();
+
+    private final ExpressiveWritingConverter<T> expConverter = new ExpressiveWritingConverter<>();
 
     /**
      * @see Workbook
@@ -107,6 +111,8 @@ public final class ExcelWriter<W extends Workbook, T> {
         if (defaultValue == null) throw new IllegalArgumentException("Default value cannot be null");
 
         this.defaultValue = defaultValue;
+        this.basicConverter.setDefaultValue(defaultValue);
+        this.expConverter.setDefaultValue(defaultValue);
         return this;
     }
 
@@ -148,7 +154,9 @@ public final class ExcelWriter<W extends Workbook, T> {
                 .map(func -> func.apply(this.workbook.createCellStyle(), this.workbook.createFont()))
                 .toArray(CellStyle[]::new);
         if (columnStyles.length != 1 && columnStyles.length != this.fields.size()) {
-            throw new IllegalArgumentException(String.format("The number of column styles is not equal to the number of targeted fields in the class %s (the number of column styles can be 1 for common style)", this.type.getName()));
+            throw new IllegalArgumentException(String.format(
+                    "The number of column styles is not equal to the number of targeted fields in the class %s (the number of column styles can be 1 for common style)",
+                    this.type.getName()));
         }
 
         this.columnStyles = columnStyles;
@@ -156,7 +164,7 @@ public final class ExcelWriter<W extends Workbook, T> {
     }
 
     /**
-     * 엑셀 파일을 생성한다, 값이 null이거나 empty string인 경우 지정된 문자열로 치환한다.
+     * Writes the data in a sheet.
      *
      * @param out  output stream for writing excel workbook
      * @param list data list
@@ -171,10 +179,10 @@ public final class ExcelWriter<W extends Workbook, T> {
         // Creates the first row that is header.
         Row row = sheet.createRow(0);
 
-        // 헤더명을 설정하지 않은 경우, 우선순위: @ExcelColumn에 지정한 헤더명 > 필드명
+        // If the header name is not set through ExcelWriter, brings values from @ExcelColumn.
         if (this.headerNames == null) this.headerNames = FieldUtils.toHeaderNames(this.fields);
 
-        // 빈 헤더명을 설정한 경우, 종료한다
+        // If the header name doesn't exist, ExcelWriter doesn't write.
         if (this.headerNames.length == 0) return;
 
         // Names the header given values.
@@ -213,7 +221,7 @@ public final class ExcelWriter<W extends Workbook, T> {
         final int fieldsSize = this.fields.size();
 
         for (int i = 0; i < listSize; i++) {
-            T element = list.get(i);
+            T model = list.get(i);
 
             // Skips the first row that is header.
             Row row = sheet.createRow(i + 1);
@@ -222,24 +230,20 @@ public final class ExcelWriter<W extends Workbook, T> {
                 Field field = this.fields.get(j);
                 Cell cell = row.createCell(j);
 
-                // Computes the data.
+                // Converts field value to the string.
                 String value;
                 ExcelWriterConversion conversion = field.getAnnotation(ExcelWriterConversion.class);
                 if (conversion == null) {
                     // When the field is not annotated with @ExcelWriterConversion.
-                    value = StringUtils.ifNullOrEmpty(ExcelUtils.stringifyValue(element, field), () -> {
-                        // 기본값 우선순위: ExcelWriter.write에 넘겨준 기본값 > @ExcelColumn에 지정한 기본값
-                        if (this.defaultValue != null) return this.defaultValue;
-                        ExcelColumn column = field.getAnnotation(ExcelColumn.class);
-                        return column == null || column.defaultValue().equals("") ? null : column.defaultValue();
-                    });
+                    value = basicConverter.convert(model, field);
                 } else {
                     // When the field is annotated with @ExcelWriterConversion.
-                    Map<String, Object> map = FieldUtils.toMap(element, this.fields);
-                    value = ExcelUtils.parseExpression(element, field, map);
+                    Map<String, Object> simulatedModel = FieldUtils.toMap(model, this.fields);
+                    expConverter.setVariables(simulatedModel);
+                    value = expConverter.convert(model, field);
                 }
 
-                cell.setCellValue(value);
+                if (value != null) cell.setCellValue(value);
 
                 // Sets up style to the column.
                 if (this.columnStyles != null) {
