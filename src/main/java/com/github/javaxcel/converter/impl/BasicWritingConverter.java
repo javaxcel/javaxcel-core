@@ -17,10 +17,9 @@ public class BasicWritingConverter<T> implements WritingConverter<T> {
     private String defaultValue;
 
     /**
-     * Sets up the default value.
-     *
-     * @param defaultValue default value
+     * {@inheritDoc}
      */
+    @Override
     public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
     }
@@ -34,13 +33,7 @@ public class BasicWritingConverter<T> implements WritingConverter<T> {
     @Override
     public String convert(T model, Field field) {
         String value = stringify(model, field);
-
-        return StringUtils.ifNullOrEmpty(value, () -> {
-            // ExcelWriter's default value takes precedence over ExcelColumn's default value.
-            if (this.defaultValue != null) return this.defaultValue;
-            ExcelColumn column = field.getAnnotation(ExcelColumn.class);
-            return column == null || column.defaultValue().equals("") ? null : column.defaultValue();
-        });
+        return WritingConverter.convertIfDefault(value, this.defaultValue, field);
     }
 
     /**

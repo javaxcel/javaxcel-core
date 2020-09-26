@@ -13,7 +13,7 @@ public class ExpressiveReadingConverter<T> implements ReadingConverter<T> {
 
     private static final ExpressionParser parser = new SpelExpressionParser();
 
-    private static final StandardEvaluationContext context = new StandardEvaluationContext();
+    private final StandardEvaluationContext context = new StandardEvaluationContext();
 
     private final Class<T> type;
 

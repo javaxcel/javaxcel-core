@@ -2,7 +2,6 @@ package com.github.javaxcel.converter.impl;
 
 import com.github.javaxcel.annotation.ExcelWriterConversion;
 import com.github.javaxcel.converter.WritingConverter;
-import io.github.imsejin.util.StringUtils;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -14,17 +13,16 @@ public class ExpressiveWritingConverter<T> implements WritingConverter<T> {
 
     private static final ExpressionParser parser = new SpelExpressionParser();
 
-    private static final StandardEvaluationContext context = new StandardEvaluationContext();
+    private final StandardEvaluationContext context = new StandardEvaluationContext();
 
     private String defaultValue;
 
     private Map<String, Object> variables;
 
     /**
-     * Sets up the default value.
-     *
-     * @param defaultValue default value
+     * {@inheritDoc}
      */
+    @Override
     public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
     }
@@ -43,8 +41,8 @@ public class ExpressiveWritingConverter<T> implements WritingConverter<T> {
      *
      * <p> Parses a expression to be written as cell value.
      *
-     * @param model        object in list
-     * @param field        field of object
+     * @param model object in list
+     * @param field field of object
      * @return computed string
      * @see ExcelWriterConversion#value()
      */
@@ -57,7 +55,7 @@ public class ExpressiveWritingConverter<T> implements WritingConverter<T> {
         String result = parser.parseExpression(annotation.value())
                 .getValue(context, String.class);
 
-        return StringUtils.ifNullOrEmpty(result, (String) null);
+        return WritingConverter.convertIfDefault(result, this.defaultValue, field);
     }
 
 }

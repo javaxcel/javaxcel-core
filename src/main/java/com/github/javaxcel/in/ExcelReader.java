@@ -57,7 +57,7 @@ public final class ExcelReader<W extends Workbook, T> {
     /**
      * Sheet's indexes that {@link ExcelReader} will read.
      * <br>
-     * Default value is {@code {0}} (it mean index of the first sheet).
+     * Default value is {@code {0}} (it means index of the first sheet).
      */
     private int[] sheetIndexes = {0};
 
@@ -69,7 +69,7 @@ public final class ExcelReader<W extends Workbook, T> {
     /**
      * Row's index that {@link ExcelReader} will end to read.
      * <br>
-     * Default value is {@code -1} (it mean index of the last row).
+     * Default value is {@code -1} (it means index of the last row).
      */
     private int endIndex = -1;
 
