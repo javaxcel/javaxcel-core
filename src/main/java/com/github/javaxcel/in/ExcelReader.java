@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * ExcelReader
@@ -73,6 +74,8 @@ public final class ExcelReader<W extends Workbook, T> {
      */
     private int endIndex = -1;
 
+    private boolean parallel;
+
     private ExcelReader(W workbook, Class<T> type) {
         this.workbook = workbook;
         this.type = type;
@@ -104,6 +107,11 @@ public final class ExcelReader<W extends Workbook, T> {
         if (endIndex < 0) throw new IllegalArgumentException("End index cannot be less than 0.");
 
         this.endIndex = endIndex;
+        return this;
+    }
+
+    public ExcelReader<W, T> parallel() {
+        this.parallel = true;
         return this;
     }
 
@@ -157,9 +165,8 @@ public final class ExcelReader<W extends Workbook, T> {
     private void sheetToList(Sheet sheet, List<T> list) {
         List<Map<String, Object>> sModels = getSimulatedModels(sheet);
 
-        List<T> realModels = sModels.stream()//.parallel()
-                .map(this::toRealModel)
-                .collect(Collectors.toList());
+        Stream<Map<String, Object>> stream = this.parallel ? sModels.stream() : sModels.parallelStream();
+        List<T> realModels = stream.map(this::toRealModel).collect(Collectors.toList());
 
         list.addAll(realModels);
     }
