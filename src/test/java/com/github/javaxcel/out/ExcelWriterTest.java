@@ -78,7 +78,7 @@ public class ExcelWriterTest {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start("create toy mocks");
 
-        List<EducationToy> toys = new EducationToy().createRandoms(ExcelStyler.HSSF_MAX_ROWS - 1);
+        List<EducationToy> toys = new EducationToy().createRandoms(10_000);
 
         stopWatch.stop();
         stopWatch.start("write with toys");
@@ -141,7 +141,7 @@ public class ExcelWriterTest {
         };
 
         // when
-        List<Product> products = new Product().createRandoms(1000);
+        List<Product> products = new Product().createRandoms(100);
         ExcelWriter.init(workbook, Product.class)
                 .sheetName("PROD")
                 .adjustSheet((sheet, numOfRows, numOfColumns) -> {
@@ -171,7 +171,7 @@ public class ExcelWriterTest {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start("create human mocks");
 
-        List<Human> people = new Human().createRandoms(ExcelStyler.HSSF_MAX_ROWS - 1);
+        List<Human> people = new Human().createRandoms(10_000);
 
         stopWatch.stop();
         stopWatch.start("write people");

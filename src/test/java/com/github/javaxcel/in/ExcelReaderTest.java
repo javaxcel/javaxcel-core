@@ -32,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ExcelReaderTest {
 
     @Test
+    @DisplayName("매개변수가 가정 적은 생성자 찾기")
     @SneakyThrows
     public void getDeclaredConstructorWithMinimumParameters() {
         // given
@@ -59,6 +60,7 @@ public class ExcelReaderTest {
      * 2. {@link com.github.javaxcel.annotation.ExcelIgnore}
      */
     @Test
+    @DisplayName("상속 X / @ExcelIgnore")
     @SneakyThrows
     public void readWithNotInheritedTypeAndExcelIgnore() {
         StopWatch stopWatch = new StopWatch();
@@ -73,7 +75,7 @@ public class ExcelReaderTest {
 
         stopWatch.stop();
 
-        List<Product> mocks = new Product().createRandoms(1000);
+        List<Product> mocks = new Product().createRandoms(10_000);
 
         stopWatch.start("read products");
 
@@ -94,6 +96,7 @@ public class ExcelReaderTest {
      * 2. {@link ExcelDateTimeFormat#pattern()}
      */
     @Test
+    @DisplayName("상속 O / @ExcelDateTimeFormat")
     @SneakyThrows
     public void readWithTargetedFieldPolicyAndDateTimePattern() {
         StopWatch stopWatch = new StopWatch();
@@ -108,7 +111,7 @@ public class ExcelReaderTest {
 
         stopWatch.stop();
 
-        List<EducationToy> mocks = new EducationToy().createRandoms(1000);
+        List<EducationToy> mocks = new EducationToy().createRandoms(10_000);
 
         stopWatch.start("read toys");
 
@@ -124,6 +127,7 @@ public class ExcelReaderTest {
     }
 
     @Test
+    @DisplayName("Model with final fields")
     @SneakyThrows
     public void readWithFinalFields() {
         // given
@@ -162,6 +166,7 @@ public class ExcelReaderTest {
     }
 
     @Test
+    @DisplayName("상속 O / 표현식")
     @SneakyThrows
     public void readPeople() {
         StopWatch stopWatch = new StopWatch();
@@ -176,7 +181,7 @@ public class ExcelReaderTest {
 
         stopWatch.stop();
 
-        List<Human> mocks = new Human().createDesignees();
+        List<Human> mocks = new Human().createRandoms(1000);
 
         stopWatch.start("read people");
 
@@ -187,10 +192,8 @@ public class ExcelReaderTest {
         stopWatch.stop();
 
         // then
-        assertTrue(mocks.stream()
-                .peek(System.out::println)
-                .allMatch(people::contains));
         System.out.println(stopWatch.prettyPrint());
+        assertTrue(mocks.containsAll(people));
     }
 
 }

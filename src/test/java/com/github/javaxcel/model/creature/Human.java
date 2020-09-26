@@ -124,7 +124,7 @@ public class Human extends Creature implements Mockables<Human> {
             Kingdom kingdom = Kingdom.ANIMALIA;
             Sex sex = Sex.MALE.createRandom();
             int lifespan = RANDOM.nextInt(140) + 1;
-            String name = RANDOM.nextDouble() <= 0.85 ? Mockables.generateRandomText(RANDOM.nextInt(24)) : null;
+            String name = RANDOM.nextDouble() <= 0.85 ? Mockables.generateRandomText(RANDOM.nextInt(24) + 1) : null;
             LocalDate birthday = LocalDate.now();
             LocalTime birthTime = LocalTime.now();
             String placeOfBirth = name == null ? null : UUID.randomUUID().toString();
