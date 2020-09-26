@@ -34,8 +34,6 @@ public final class ExcelReader<W extends Workbook, T> {
 
     private final BasicReadingConverter<T> basicConverter = new BasicReadingConverter<>();
 
-    private final ExpressiveReadingConverter<T> expConverter;
-
     /**
      * @see Workbook
      * @see org.apache.poi.hssf.usermodel.HSSFWorkbook
@@ -80,7 +78,6 @@ public final class ExcelReader<W extends Workbook, T> {
         this.type = type;
         this.formulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
         this.fields = FieldUtils.getTargetedFields(type);
-        this.expConverter = new ExpressiveReadingConverter<>(type);
     }
 
     public static <W extends Workbook, E> ExcelReader<W, E> init(W workbook, Class<E> type) {
@@ -174,7 +171,6 @@ public final class ExcelReader<W extends Workbook, T> {
      * @return real model
      */
     private T toRealModel(Map<String, Object> sModel) {
-        expConverter.setVariables(sModel);
         T model = ExcelUtils.instantiate(this.type);
 
         for (Field field : this.fields) {
@@ -187,6 +183,8 @@ public final class ExcelReader<W extends Workbook, T> {
                 fieldValue = basicConverter.convert(cellValue, field);
             } else {
                 // When the field is annotated with @ExcelReaderConversion.
+                ExpressiveReadingConverter<T> expConverter = new ExpressiveReadingConverter<>(this.type);
+                expConverter.setVariables(sModel);
                 fieldValue = expConverter.convert(cellValue, field);
             }
 
