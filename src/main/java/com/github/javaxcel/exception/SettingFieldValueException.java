@@ -9,7 +9,7 @@ public class SettingFieldValueException extends RuntimeException {
     private final Field field;
 
     public SettingFieldValueException(Class<?> type, Field field) {
-        super("Failed to set value into the field(" + field.getName() + ") of the class(" + type.getName() + ")");
+        super(String.format("Failed to set value into the field(%s) of the class(%s)", field.getName(), type.getName()));
         this.type = type;
         this.field = field;
     }
@@ -27,7 +27,7 @@ public class SettingFieldValueException extends RuntimeException {
     }
 
     public SettingFieldValueException(Throwable cause, Class<?> type, Field field) {
-        super("Failed to set value into the field(" + field.getName() + ") of the class(" + type.getName() + ")", cause);
+        super(String.format("Failed to set value into the field(%s) of the class(%s)", field.getName(), type.getName()), cause);
         this.type = type;
         this.field = field;
     }

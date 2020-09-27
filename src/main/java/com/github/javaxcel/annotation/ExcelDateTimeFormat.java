@@ -11,6 +11,10 @@ public @interface ExcelDateTimeFormat {
      * Pattern for formatting datetime.
      *
      * @return pattern for formatting datetime
+     * @see java.time.LocalDate
+     * @see java.time.LocalTime
+     * @see java.time.LocalDateTime
+     * @see java.time.format.DateTimeFormatter
      */
     String pattern();
 

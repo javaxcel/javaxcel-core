@@ -1,4 +1,4 @@
-package com.github.javaxcel.model;
+package com.github.javaxcel.model.etc;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

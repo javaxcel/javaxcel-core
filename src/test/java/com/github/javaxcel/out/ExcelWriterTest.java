@@ -1,28 +1,27 @@
 package com.github.javaxcel.out;
 
-import com.github.javaxcel.annotation.ExcelColumn;
-import com.github.javaxcel.annotation.ExcelDateTimeFormat;
-import com.github.javaxcel.annotation.ExcelIgnore;
-import com.github.javaxcel.annotation.ExcelModel;
-import com.github.javaxcel.constant.TargetedFieldPolicy;
 import com.github.javaxcel.exception.NoTargetedFieldException;
-import com.github.javaxcel.model.AllIgnoredModel;
-import com.github.javaxcel.model.EducationToy;
-import com.github.javaxcel.model.NoFieldModel;
-import com.github.javaxcel.model.Product;
-import com.github.javaxcel.model.factory.MockFactory;
+import com.github.javaxcel.model.creature.Human;
+import com.github.javaxcel.model.etc.AllIgnoredModel;
+import com.github.javaxcel.model.etc.NoFieldModel;
+import com.github.javaxcel.model.product.Product;
+import com.github.javaxcel.model.toy.EducationToy;
+import com.github.javaxcel.styler.ExcelStyler;
 import lombok.Cleanup;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
+import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.util.StopWatch;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -31,15 +30,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ExcelWriterTest {
 
-    /**
-     * 1. {@link ExcelIgnore}
-     * <br>
-     * 2. {@link ExcelColumn#value()}
-     * <br>
-     * 3. {@link ExcelColumn#defaultValue()}
-     */
     @Test
-    public void writeWithIgnoreAndDefaultValue() throws IOException {
+    @DisplayName("Default value + @ExcelIgnore")
+    @SneakyThrows
+    public void writeWithIgnoreAndDefaultValue() {
         // given
         File file = new File("/data", "products.xls");
         @Cleanup
@@ -48,22 +42,29 @@ public class ExcelWriterTest {
         HSSFWorkbook workbook = new HSSFWorkbook();
 
         // when
-        List<Product> products = MockFactory.generateRandomProducts(1000);
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start("create product mocks");
+
+        List<Product> products = new Product().createRandoms(ExcelStyler.HSSF_MAX_ROWS - 1);
+
+        stopWatch.stop();
+        stopWatch.start("write products");
+
         ExcelWriter.init(workbook, Product.class)
                 .sheetName("Products")
                 .write(out, products);
+
+        stopWatch.stop();
+        System.out.println(stopWatch.prettyPrint());
 
         // then
         assertTrue(file.exists());
     }
 
-    /**
-     * 1. {@link ExcelModel#policy()}, {@link TargetedFieldPolicy#INCLUDES_INHERITED}
-     * <br>
-     * 2. {@link ExcelDateTimeFormat#pattern()}
-     */
     @Test
-    public void writeWithTargetedFieldPolicyAndDateTimePattern() throws IOException {
+    @DisplayName("Including inherited fields + @ExcelDateTimeFormat")
+    @SneakyThrows
+    public void writeWithTargetedFieldPolicyAndDateTimePattern() {
         // given
         File file = new File("/data", "toys.xlsx");
         @Cleanup
@@ -72,17 +73,28 @@ public class ExcelWriterTest {
         XSSFWorkbook workbook = new XSSFWorkbook();
 
         // when
-        List<EducationToy> toys = MockFactory.generateRandomBox(1000).getAll();
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start("create toy mocks");
+
+        List<EducationToy> toys = new EducationToy().createRandoms(10_000);
+
+        stopWatch.stop();
+        stopWatch.start("write with toys");
+
         ExcelWriter.init(workbook, EducationToy.class).write(out, toys);
+
+        stopWatch.stop();
+        System.out.println(stopWatch.prettyPrint());
 
         // then
         assertTrue(file.exists());
     }
 
-    @DisplayName("ExcelWriter writes with the model that has no targeted fields. ==> occurs NoSuchFieldException")
     @ParameterizedTest
     @ValueSource(classes = {NoFieldModel.class, AllIgnoredModel.class})
-    public void writeWithClassThatHasNoTargetFields(Class<?> type) throws IOException {
+    @DisplayName("Model without targeted fields")
+    @SneakyThrows
+    public void writeWithClassThatHasNoTargetFields(Class<?> type) {
         // given
         File file = new File("/data", "no-field-model.xls");
         @Cleanup
@@ -90,21 +102,31 @@ public class ExcelWriterTest {
         @Cleanup
         HSSFWorkbook workbook = new HSSFWorkbook();
 
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start("initialize");
+
         // then
         assertThrows(NoTargetedFieldException.class,
                 () -> ExcelWriter.init(workbook, type).write(out, new ArrayList<>()));
+
+        stopWatch.stop();
+        System.out.println(stopWatch.prettyPrint());
     }
 
     @Test
-    public void writeAndDecorate() throws IOException {
+    @DisplayName("Adjust sheet + styling")
+    @SneakyThrows
+    public void writeAndDecorate() {
         // given
-        File file = new File("/data", "products-styled.xlsx");
+        File file = new File("/data", "people-styled.xlsx");
         @Cleanup
         FileOutputStream out = new FileOutputStream(file);
         @Cleanup
         XSSFWorkbook workbook = new XSSFWorkbook();
         BiFunction<CellStyle, Font, CellStyle> blueColumn = (style, font) -> {
             font.setColor(IndexedColors.WHITE.getIndex());
+            font.setFontName("Malgun Gothic");
+            font.setBold(true);
             style.setFont(font);
             style.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
             style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
@@ -117,42 +139,57 @@ public class ExcelWriterTest {
         };
 
         // when
-        List<Product> products = MockFactory.generateRandomProducts(1000);
-        ExcelWriter.init(workbook, Product.class)
-                .sheetName("PROD")
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start("create product mocks");
+
+        List<Human> people = new Human().createRandoms(1000);
+
+        stopWatch.stop();
+        stopWatch.start("write people and decorate");
+
+        ExcelWriter.init(workbook, Human.class)
+                .sheetName("People")
                 .adjustSheet((sheet, numOfRows, numOfColumns) -> {
-                    // Makes the columns fit content.
-                    for (int i = 0; i < numOfColumns; i++) {
-                        sheet.autoSizeColumn(i);
-                    }
-
-                    // Hides extra rows.
-                    int maxRows = sheet instanceof HSSFSheet ? 65_536 : 1_048_576;
-                    for (int i = numOfRows - 1; i < maxRows; i++) {
-                        Row row = sheet.getRow(i);
-                        if (row == null) row = sheet.createRow(i);
-                        row.setZeroHeight(true);
-                    }
-
-                    // Hides extra columns.
-                    int maxColumns = sheet instanceof HSSFSheet ? 256 : 16_384;
-                    for (int i = numOfColumns; i < maxColumns; i++) {
-                        sheet.setColumnHidden(i, true);
-                    }
+                    ExcelStyler.autoResizeColumns(sheet, numOfColumns);
+                    ExcelStyler.hideExtraRows(sheet, numOfRows);
+                    ExcelStyler.hideExtraColumns(sheet, numOfColumns);
                 })
-                .headerStyle((style, font) -> {
-                    font.setItalic(true);
-                    font.setFontHeightInPoints((short) 14);
-                    font.setColor((short) 8);
-                    font.setBold(true);
-                    style.setFont(font);
+                .headerStyle(ExcelStyler::applyBasicHeaderStyle)
+                .columnStyles(blueColumn, greenColumn, blueColumn, greenColumn, blueColumn, greenColumn, blueColumn,
+                        greenColumn, blueColumn, greenColumn, blueColumn, greenColumn, blueColumn, greenColumn)
+                .write(out, people);
 
-                    style.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
-                    style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-                    return style;
-                })
-                .columnStyles(blueColumn, greenColumn, blueColumn, greenColumn, blueColumn, greenColumn)
-                .write(out, products);
+        stopWatch.stop();
+        System.out.println(stopWatch.prettyPrint());
+
+        // then
+        assertTrue(file.exists());
+    }
+
+    @Test
+    @DisplayName("Including inherited fields + @ExcelWriterConversion")
+    @SneakyThrows
+    public void writePeople() {
+        // given
+        File file = new File("/data", "people.xls");
+        @Cleanup
+        FileOutputStream out = new FileOutputStream(file);
+        @Cleanup
+        HSSFWorkbook workbook = new HSSFWorkbook();
+
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start("create human mocks");
+
+        List<Human> people = new Human().createRandoms(10_000);
+
+        stopWatch.stop();
+        stopWatch.start("write people");
+
+        // when
+        ExcelWriter.init(workbook, Human.class).write(out, people);
+
+        stopWatch.stop();
+        System.out.println(stopWatch.prettyPrint());
 
         // then
         assertTrue(file.exists());

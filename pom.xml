@@ -39,20 +39,28 @@
     <distributionManagement>
         <repository>
             <id>${artifactId}</id>
-            <url>https://api.bintray.com/maven/imsejin/Javaxcel/javaxcel-core/;publish=1</url>
+            <url>https://api.bintray.com/maven/${bintray.repo}/${artifactId}/;publish=1</url>
         </repository>
     </distributionManagement>
 
     <properties>
+        <bintray.repo>imsejin/Javaxcel</bintray.repo>
+        <bintray.package>${artifactId}</bintray.package>
         <java.version>1.8</java.version>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.source>${java.version}</maven.compiler.source>
+        <common.utils.version>0.1.2</common.utils.version>
         <apache.poi.version>4.1.2</apache.poi.version>
-        <bintray.repo>imsejin/Javaxcel</bintray.repo>
-        <bintray.package>${artifactId}</bintray.package>
     </properties>
 
     <dependencies>
+        <!-- Common Utils -->
+        <dependency>
+            <groupId>io.github.imsejin</groupId>
+            <artifactId>common-utils</artifactId>
+            <version>${common.utils.version}</version>
+        </dependency>
+
         <!-- Apache POI -->
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -73,6 +81,13 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-scratchpad</artifactId>
             <version>${apache.poi.version}</version>
+        </dependency>
+
+        <!-- SpEL(Spring Expression Language) -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-expression</artifactId>
+            <version>5.2.9.RELEASE</version>
         </dependency>
 
         <!-- Junit 5 -->
@@ -101,11 +116,19 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Lombok for test -->
+        <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.12</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Javaxcel Styler -->
+        <dependency>
+            <groupId>com.github.javaxcel</groupId>
+            <artifactId>javaxcel-styler</artifactId>
+            <version>0.1.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -135,20 +158,6 @@
                         <configuration>
                             <outputDirectory>${project.build.directory}/lib</outputDirectory>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>pack</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>

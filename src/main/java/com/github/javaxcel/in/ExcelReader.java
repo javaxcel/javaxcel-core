@@ -1,18 +1,20 @@
 package com.github.javaxcel.in;
 
-import com.github.javaxcel.exception.NoTargetedConstructorException;
-import com.github.javaxcel.exception.SettingFieldValueException;
+import com.github.javaxcel.annotation.ExcelReaderConversion;
+import com.github.javaxcel.converter.impl.BasicReadingConverter;
+import com.github.javaxcel.converter.impl.ExpressiveReadingConverter;
 import com.github.javaxcel.util.ExcelUtils;
+import com.github.javaxcel.util.FieldUtils;
 import org.apache.poi.ss.usermodel.*;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * ExcelReader
@@ -27,26 +29,25 @@ import java.util.stream.IntStream;
 public final class ExcelReader<W extends Workbook, T> {
 
     /**
+     * Formatter that stringifies the value in a cell with {@link FormulaEvaluator}.
+     */
+    private static final DataFormatter dataFormatter = new DataFormatter();
+
+    private final BasicReadingConverter<T> basicConverter = new BasicReadingConverter<>();
+
+    /**
      * @see Workbook
      * @see org.apache.poi.hssf.usermodel.HSSFWorkbook
      * @see org.apache.poi.xssf.usermodel.XSSFWorkbook
      */
     private final W workbook;
-
     private final Class<T> type;
-
     /**
      * Evaluator that evaluates the formula in a cell.
      *
      * @see W
      */
     private final FormulaEvaluator formulaEvaluator;
-
-    /**
-     * Formatter that stringifies the value in a cell with {@link FormulaEvaluator}.
-     */
-    private static final DataFormatter dataFormatter = new DataFormatter();
-
     /**
      * The type's fields that will be actually written in excel.
      *
@@ -55,33 +56,35 @@ public final class ExcelReader<W extends Workbook, T> {
     private final List<Field> fields;
 
     /**
-     * Sheet's indexes that {@code ExcelReader} will read.
+     * Sheet's indexes that {@link ExcelReader} will read.
      * <br>
-     * Default value is {@code {0}} (it mean index of the first sheet).
+     * Default value is {@code {0}} (it means index of the first sheet).
      */
     private int[] sheetIndexes = {0};
 
     /**
-     * Row's index that {@code ExcelReader} will start to read.
+     * Row's index that {@link ExcelReader} will start to read.
      */
     private int startIndex;
 
     /**
-     * Row's index that {@code ExcelReader} will end to read.
+     * Row's index that {@link ExcelReader} will end to read.
      * <br>
-     * Default value is {@code -1} (it mean index of the last row).
+     * Default value is {@code -1} (it means index of the last row).
      */
     private int endIndex = -1;
 
-    public static <W extends Workbook, E> ExcelReader<W, E> init(W workbook, Class<E> type) {
-        return new ExcelReader<>(workbook, type);
-    }
+    private boolean parallel;
 
     private ExcelReader(W workbook, Class<T> type) {
         this.workbook = workbook;
         this.type = type;
         this.formulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
-        this.fields = ExcelUtils.getTargetedFields(type);
+        this.fields = FieldUtils.getTargetedFields(type);
+    }
+
+    public static <W extends Workbook, E> ExcelReader<W, E> init(W workbook, Class<E> type) {
+        return new ExcelReader<>(workbook, type);
     }
 
     public ExcelReader<W, T> sheetIndexes(int... sheetIndexes) {
@@ -108,38 +111,67 @@ public final class ExcelReader<W extends Workbook, T> {
     }
 
     /**
-     * 헤더는 제외되며, 지정된 로우부터 또 달리 지정된 로우까지 읽어 VO를 반환한다.
+     * Makes the conversion from simulated model into real model parallel.
+     *
+     * <p> We recommend processing in parallel only when
+     * dealing with large data. The following table is a benchmark.
+     *
+     * <pre>{@code
+     *     +---------+------------+----------+
+     *     |         | sequential | parallel |
+     *     +---------+------------+----------+
+     *     | 10,000  | 18s        | 18s      |
+     *     +---------+------------+----------+
+     *     | 25,000  | 32s        | 41s      |
+     *     +---------+------------+----------+
+     *     | 100,000 | 1m 49s     | 2m 7s    |
+     *     +---------+------------+----------+
+     *     | 200,000 | 33m 2s     | 29m 45s  |
+     *     +---------+------------+----------+
+     * }</pre>
+     *
+     * @return {@link ExcelReader}
+     */
+    public ExcelReader<W, T> parallel() {
+        this.parallel = true;
+        return this;
+    }
+
+    /**
+     * Gets a list after this reads the excel file.
+     *
+     * @return list
      */
     public List<T> read() {
         if (this.sheetIndexes.length > 1) throw new IllegalArgumentException("Must input only one sheet index.");
 
         List<T> list = new ArrayList<>();
         Sheet sheet = this.workbook.getSheetAt(this.sheetIndexes[0]);
-        setSheetDataIntoList(sheet, list);
+        sheetToList(sheet, list);
 
         return list;
     }
 
     public Map<String, List<T>> readAllSheets() {
         Map<String, List<T>> lists = new HashMap<>();
-        setSheetList(ExcelUtils.getSheetRange(this.workbook), lists);
+        sheetsToLists(ExcelUtils.getSheetRange(this.workbook), lists);
 
         return lists;
     }
 
     public Map<String, List<T>> readSelectedSheets() {
         Map<String, List<T>> lists = new HashMap<>();
-        setSheetList(this.sheetIndexes, lists);
+        sheetsToLists(this.sheetIndexes, lists);
 
         return lists;
     }
 
-    private void setSheetList(int[] sheetIndexes, Map<String, List<T>> lists) {
+    private void sheetsToLists(int[] sheetIndexes, Map<String, List<T>> lists) {
         for (int sheetIndex : sheetIndexes) {
             List<T> list = new ArrayList<>();
             Sheet sheet = this.workbook.getSheetAt(sheetIndex);
 
-            setSheetDataIntoList(sheet, list);
+            sheetToList(sheet, list);
 
             // Add a sheet data of the workbook.
             lists.put(sheet.getSheetName(), list);
@@ -150,43 +182,101 @@ public final class ExcelReader<W extends Workbook, T> {
      * Reads a sheet and Adds rows of the data into list.
      *
      * @param sheet sheet to read
-     * @param list list to be added
+     * @param list  list to be added
      */
-    private void setSheetDataIntoList(Sheet sheet, List<T> list) {
-        // 헤더를 제외한 전체 로우 개수
-        final int numOfRows = sheet.getPhysicalNumberOfRows() - 1;
+    private void sheetToList(Sheet sheet, List<T> list) {
+        List<Map<String, Object>> sModels = getSimulatedModels(sheet);
+
+        Stream<Map<String, Object>> stream = this.parallel ? sModels.stream() : sModels.parallelStream();
+        List<T> realModels = stream.map(this::toRealModel).collect(Collectors.toList());
+
+        list.addAll(realModels);
+    }
+
+    /**
+     * Converts a simulated model to the real model.
+     *
+     * @param sModel simulated model
+     * @return real model
+     */
+    private T toRealModel(Map<String, Object> sModel) {
+        T model = ExcelUtils.instantiate(this.type);
+
+        for (Field field : this.fields) {
+            String cellValue = (String) sModel.get(field.getName());
+
+            ExcelReaderConversion annotation = field.getAnnotation(ExcelReaderConversion.class);
+            Object fieldValue;
+            if (annotation == null) {
+                // When the field is not annotated with @ExcelReaderConversion.
+                fieldValue = basicConverter.convert(cellValue, field);
+            } else {
+                // When the field is annotated with @ExcelReaderConversion.
+                ExpressiveReadingConverter<T> expConverter = new ExpressiveReadingConverter<>(this.type);
+                expConverter.setVariables(sModel);
+                fieldValue = expConverter.convert(cellValue, field);
+            }
+
+            FieldUtils.setFieldValue(model, field, fieldValue);
+        }
+
+        return model;
+    }
+
+    /**
+     * Gets simulated models from a sheet.
+     *
+     * <p>
+     *
+     * @param sheet excel sheet
+     * @return simulated models
+     */
+    private List<Map<String, Object>> getSimulatedModels(Sheet sheet) {
+        // The number of rows except the first row.
+        final int numOfRows = Math.max(0, sheet.getPhysicalNumberOfRows() - 1);
 
         // 인덱스 유효성을 체크한다
         if (this.endIndex == -1 || this.endIndex > numOfRows) this.endIndex = numOfRows;
 
-        // 엑셀 파일을 읽는다
+        // Reads rows.
+        List<Map<String, Object>> simulatedModels = new ArrayList<>();
         for (int i = this.startIndex; i < this.endIndex; i++) {
             // Skips the first row that is header.
             Row row = sheet.getRow(i + 1);
 
-            // Allows only constructor without parameter. ==> into javadoc
-            Constructor<T> constructor;
-            try {
-                constructor = this.type.getDeclaredConstructor();
-            } catch (NoSuchMethodException e) {
-                throw new NoTargetedConstructorException(e, this.type);
-            }
-            constructor.setAccessible(true);
-
-            T element;
-            try {
-                element = constructor.newInstance();
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException("Failed to instantiate of the class(" + this.type.getName() + ")");
-            }
-            setValueIntoField(element, row);
-
             // Adds a row data of the sheet.
-            list.add(element);
+            simulatedModels.add(rowToSimulatedModel(row));
         }
+
+        return simulatedModels;
     }
 
-    private void setValueIntoField(T element, Row row) {
+    /**
+     * Converts a row to a simulated model.
+     *
+     * <p> Reads rows to get data. this creates {@link Map} as a simulated model
+     * and puts the key({@link Field#getName()}) and the value
+     * ({@link DataFormatter#formatCellValue(Cell, FormulaEvaluator)})
+     * to the model. The result is the same as the following code.
+     *
+     * <pre>{@code
+     *     +------+--------+--------+----------+
+     *     | name | height | weight | eyesight |
+     *     +------+--------+--------+----------+
+     *     | John | 180.5  | 79.2   |          |
+     *     +------+--------+--------+----------+
+     *
+     *     This row will be converted to
+     *
+     *     { "name": "John", "height": "180.5", "weight": "79.2", "eyesight": null }
+     * }</pre>
+     *
+     * @param row row in sheet
+     * @return simulated model
+     */
+    private Map<String, Object> rowToSimulatedModel(Row row) {
+        Map<String, Object> simulatedModel = new HashMap<>();
+
         int fieldsSize = this.fields.size();
         for (int i = 0; i < fieldsSize; i++) {
             Field field = this.fields.get(i);
@@ -197,16 +287,11 @@ public final class ExcelReader<W extends Workbook, T> {
             // Evaluates the formula and returns a stringifed value.
             String cellValue = dataFormatter.formatCellValue(cell, this.formulaEvaluator);
 
-            // Enables to have access to the field even private field.
-            field.setAccessible(true);
-
-            // Sets value into the field.
-            try {
-                field.set(element, ExcelUtils.convertValue(cellValue, field));
-            } catch (IllegalAccessException e) {
-                throw new SettingFieldValueException(e, element.getClass(), field);
-            }
+            // Converts empty string to null because when CellType is BLANK, DataFormatter returns empty string.
+            simulatedModel.put(field.getName(), cellValue.equals("") ? null : cellValue);
         }
+
+        return simulatedModel;
     }
 
 }

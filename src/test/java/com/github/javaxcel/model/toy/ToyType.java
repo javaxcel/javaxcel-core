@@ -1,4 +1,4 @@
-package com.github.javaxcel.constant;
+package com.github.javaxcel.model.toy;
 
 public enum ToyType {
 

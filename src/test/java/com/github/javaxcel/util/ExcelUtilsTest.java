@@ -1,20 +1,20 @@
 package com.github.javaxcel.util;
 
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
-import com.github.javaxcel.model.EducationToy;
-import com.github.javaxcel.model.Product;
-import com.github.javaxcel.model.Toy;
-import com.github.javaxcel.model.factory.MockFactory;
+import com.github.javaxcel.converter.impl.BasicWritingConverter;
+import com.github.javaxcel.model.product.Product;
+import com.github.javaxcel.model.toy.EducationToy;
+import com.github.javaxcel.model.toy.Toy;
+import io.github.imsejin.util.StringUtils;
 import lombok.Cleanup;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import lombok.SneakyThrows;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -26,92 +26,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ExcelUtilsTest {
-
-    @ParameterizedTest
-    @ValueSource(classes = {Product.class, Toy.class, EducationToy.class})
-    public void getTargetedFields(Class<?> type) {
-        // when
-        List<Field> targetedFields = ExcelUtils.getTargetedFields(type);
-
-        // then
-        targetedFields.forEach(System.out::println);
-    }
-
-    @ParameterizedTest
-    @ValueSource(classes = {Product.class, Toy.class, EducationToy.class})
-    public void getInheritedFields(Class<?> type) {
-        // when
-        List<Field> inheritedFields = ExcelUtils.getInheritedFields(type);
-
-        // then
-        inheritedFields.forEach(System.out::println);
-    }
-
-    @ParameterizedTest
-    @ValueSource(classes = {Product.class, Toy.class, EducationToy.class})
-    public void toHeaderNames(Class<?> type) {
-        // given
-        List<Field> targetedFields = ExcelUtils.getTargetedFields(type);
-
-        // when
-        String[] headerNames = ExcelUtils.toHeaderNames(targetedFields);
-
-        // then
-        Arrays.asList(headerNames).forEach(System.out::println);
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {
-            "E:\\works\\대한상공회의소 - 유통상품지식뱅크 서비스포털\\2020\\06\\20200618_미기재 설명 등록\\상품분류별 부가속성\\200519_분류별_부가속성예시.xlsx",
-            "E:\\works\\대한상공회의소 - 유통상품지식뱅크 서비스포털\\2020\\06\\20200618_미기재 설명 등록\\상품분류별 부가속성\\[가공] 상품분류별_부가속성_설명.xlsx",
-    })
-    public void getSheetRange(String pathname) throws IOException, InvalidFormatException {
-        // given
-        File file = new File(pathname);
-        @Cleanup
-        Workbook workbook = new XSSFWorkbook(file);
-
-        // when
-        int[] range = ExcelUtils.getSheetRange(workbook);
-
-        // then
-        IntStream.of(range).forEach(i -> System.out.println("[" + i + "] " + workbook.getSheetAt(i).getSheetName()));
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"targetAges", "goals", "date", "time", "dateTime"})
-    public void stringifyValue(String fieldName) throws NoSuchFieldException {
-        for (EducationToy toy : MockFactory.generateStaticBox().getAll()) {
-            // when
-            String stringifyValue = ExcelUtils.stringifyValue(toy, toy.getClass().getDeclaredField(fieldName));
-
-            // then
-            System.out.println(stringifyValue);
-        }
-    }
-
-    @Test
-    public void convert() {
-        // given
-        List<String> values = Arrays.asList("Toy.name", "ADULT", "645.70", "[1,2,3,4]", "educationToys.goals", "2020-08-31", "01/23/45/678", "2020-08-31T01:23:45");
-        List<Field> targetedFields = ExcelUtils.getTargetedFields(EducationToy.class);
-
-        assertEquals(values.size(), targetedFields.size());
-
-        for (int i = 0; i < values.size(); i++) {
-            String value = values.get(i);
-            Field field = targetedFields.get(i);
-
-            // when
-            Object converted = convert(value, field);
-
-            // then
-            System.out.println(converted);
-        }
-    }
 
     private static Object convert(String value, Field field) {
         Class<?> type = field.getType();
@@ -149,6 +66,94 @@ public class ExcelUtilsTest {
         return null;
     }
 
+    @ParameterizedTest
+    @ValueSource(classes = {Product.class, Toy.class, EducationToy.class})
+    public void getTargetedFields(Class<?> type) {
+        // when
+        List<Field> targetedFields = FieldUtils.getTargetedFields(type);
+
+        // then
+        targetedFields.forEach(System.out::println);
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {Product.class, Toy.class, EducationToy.class})
+    public void getInheritedFields(Class<?> type) {
+        // when
+        List<Field> inheritedFields = FieldUtils.getInheritedFields(type);
+
+        // then
+        inheritedFields.forEach(System.out::println);
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {Product.class, Toy.class, EducationToy.class})
+    public void toHeaderNames(Class<?> type) {
+        // given
+        List<Field> targetedFields = FieldUtils.getTargetedFields(type);
+
+        // when
+        String[] headerNames = FieldUtils.toHeaderNames(targetedFields);
+
+        // then
+        Arrays.asList(headerNames).forEach(System.out::println);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "E:\\works\\대한상공회의소 - 유통상품지식뱅크 서비스포털\\2020\\06\\20200618_미기재 설명 등록\\상품분류별 부가속성\\200519_분류별_부가속성예시.xlsx",
+            "E:\\works\\대한상공회의소 - 유통상품지식뱅크 서비스포털\\2020\\06\\20200618_미기재 설명 등록\\상품분류별 부가속성\\[가공] 상품분류별_부가속성_설명.xlsx",
+    })
+    @SneakyThrows
+    public void getSheetRange(String pathname) {
+        // given
+        File file = new File(pathname);
+        @Cleanup
+        Workbook workbook = new XSSFWorkbook(file);
+
+        // when
+        int[] range = ExcelUtils.getSheetRange(workbook);
+
+        // then
+        IntStream.of(range).forEach(i -> System.out.println("[" + i + "] " + workbook.getSheetAt(i).getSheetName()));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"targetAges", "goals", "date", "time", "dateTime"})
+    @SneakyThrows
+    public void stringifyValue(String fieldName) {
+        // given
+        BasicWritingConverter<EducationToy> converter = new BasicWritingConverter<>();
+
+        for (EducationToy toy : new EducationToy().createRandoms(1000)) {
+            // when
+            String stringifyValue = converter.convert(toy, toy.getClass().getDeclaredField(fieldName));
+
+            // then
+            System.out.println(stringifyValue);
+        }
+    }
+
+    @Test
+    public void convert() {
+        // given
+        List<String> values = Arrays.asList("Toy.name", "ADULT", "645.70", "[1,2,3,4]", "educationToys.goals", "2020-08-31", "01/23/45/678", "2020-08-31T01:23:45");
+        List<Field> targetedFields = FieldUtils.getTargetedFields(EducationToy.class);
+
+        assertEquals(values.size(), targetedFields.size());
+
+        for (int i = 0; i < values.size(); i++) {
+            String value = values.get(i);
+            Field field = targetedFields.get(i);
+
+            // when
+            Object converted = convert(value, field);
+
+            // then
+            System.out.println(converted);
+        }
+    }
+
     @Test
     public void formatDateTime() {
         // given
@@ -181,4 +186,5 @@ public class ExcelUtilsTest {
         assertEquals(bigInteger, strBigInt);
         assertEquals(bigDecimal, strBigDec);
     }
+
 }

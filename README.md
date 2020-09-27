@@ -1,15 +1,21 @@
-# Javaxcel Core
 
-![GitHub commit activity](https://img.shields.io/github/commit-activity/m/javaxcel/javaxcel-core)
-![GitHub](https://img.shields.io/github/license/javaxcel/javaxcel-core)
-![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/javaxcel/javaxcel-core?include_prereleases&label=github&sort=semver)
-![Bintray](https://img.shields.io/bintray/v/imsejin/Javaxcel/javaxcel-core)
-[![Maven Central](https://img.shields.io/maven-central/v/com.github.javaxcel/javaxcel-core.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.javaxcel%22%20AND%20a:%22javaxcel-core%22)
-![GitHub All Releases](https://img.shields.io/github/downloads/javaxcel/javaxcel-core/total?label=downloads%20at%20github)
-![Bintray](https://img.shields.io/bintray/dt/imsejin/Javaxcel/javaxcel-core?label=downloads%20at%20bintray)
-![jdk](https://img.shields.io/badge/jdk-8-orange)
 
-This is utility for writing and reading excel file with simple usage based annotations.
+<p align="center">
+	<img width="45%" src="./src/main/resources/main-image.png" alt="Javaxcel Core">
+</p>
+
+
+<p align="center">
+    <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/javaxcel/javaxcel-core">
+    <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/javaxcel/javaxcel-core?label=github">
+    <img alt="Bintray" src="https://img.shields.io/bintray/v/imsejin/Javaxcel/javaxcel-core">
+    <img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.github.javaxcel/javaxcel-core">
+    <img alt="GitHub All Releases" src="https://img.shields.io/github/downloads/javaxcel/javaxcel-core/total?label=downloads%20at%20github">
+    <img alt="Bintray" src="https://img.shields.io/bintray/dt/imsejin/Javaxcel/javaxcel-core?label=downloads%20at%20bintray">
+    <img alt="GitHub" src="https://img.shields.io/github/license/javaxcel/javaxcel-core">
+    <img alt="jdk8" src="https://img.shields.io/badge/jdk-8-orange">
+</p>
+Javaxcel is utilities for writing and reading excel file with simple usage based annotations.
 
 
 
@@ -42,8 +48,8 @@ File src = new File("/data", "old-products.xls");
 File dest = new File("/data", "new-products.xlsx");
 
 try (FileOutputStream out = new FileOutputStream(dest);
-		HSSFWorkbook oldWorkbook = new HSSFWorkbook(src);
-    	XSSFWorkbook newWorkbook = new XSSFWorkbook()) {
+        HSSFWorkbook oldWorkbook = new HSSFWorkbook(src);
+        XSSFWorkbook newWorkbook = new XSSFWorkbook()) {
     // Reads the first excel sheet and returns data as a list.
     List<Product> products = ExcelReader.init(oldWorkbook, Product.class).read();
     
@@ -125,7 +131,7 @@ This is `EducationalProduct` class for examples.
 
 ```java
 public void save(List<Product> products, File dest) throw IOException {
-	FileOutputStream out = new FileOutputStream(dest);
+    FileOutputStream out = new FileOutputStream(dest);
     XSSFWorkbook workbook = new XSSFWorkbook();
     
     ExcelWriter.init(workbook, Product.class).write(out, products);
@@ -191,7 +197,7 @@ If you want to use header names only once or override `ExcelColumn#value`, invok
 ExcelWriter.init(workbook, Product.class)
     .headerNames("PRD_NO","NM","ACS_ID","WID","DEP","HEI","WEI") // 7
 //    .headerNames("PRD_NO","NM","ACS_ID","WID","DEP","HEI") // 6 => Occurs exception.
-	.write(out, products);
+    .write(out, products);
 ```
 
 The result is

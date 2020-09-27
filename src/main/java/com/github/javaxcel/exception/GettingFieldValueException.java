@@ -9,7 +9,7 @@ public class GettingFieldValueException extends RuntimeException {
     private final Field field;
 
     public GettingFieldValueException(Class<?> type, Field field) {
-        super("Failed to get value in the field(" + field.getName() + ") of the class(" + type.getName() + ")");
+        super(String.format("Failed to get value in the field(%s) of the class(%s)", field.getName(), type.getName()));
         this.type = type;
         this.field = field;
     }
@@ -27,7 +27,7 @@ public class GettingFieldValueException extends RuntimeException {
     }
 
     public GettingFieldValueException(Throwable cause, Class<?> type, Field field) {
-        super("Failed to get value in the field(" + field.getName() + ") of the class(" + type.getName() + ")", cause);
+        super(String.format("Failed to get value in the field(%s) of the class(%s)", field.getName(), type.getName()), cause);
         this.type = type;
         this.field = field;
     }

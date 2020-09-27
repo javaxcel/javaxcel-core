@@ -1,7 +1,6 @@
-package com.github.javaxcel.model;
+package com.github.javaxcel.model.toy;
 
 import com.github.javaxcel.annotation.ExcelColumn;
-import com.github.javaxcel.constant.ToyType;
 import lombok.*;
 
 @Getter
@@ -12,7 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 public class Toy {
 
-    @ExcelColumn(defaultValue = "(empty)")
+//    @ExcelColumn(defaultValue = "(empty)")
     private String name;
 
     private ToyType toyType;
