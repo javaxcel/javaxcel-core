@@ -110,6 +110,28 @@ public final class ExcelReader<W extends Workbook, T> {
         return this;
     }
 
+    /**
+     * Makes the conversion from simulated model into real model parallel.
+     *
+     * <p> We recommend processing in parallel only when
+     * dealing with large data. The following table is a benchmark.
+     *
+     * <pre>{@code
+     *     +---------+------------+----------+
+     *     |         | sequential | parallel |
+     *     +---------+------------+----------+
+     *     | 10,000  | 18s        | 18s      |
+     *     +---------+------------+----------+
+     *     | 25,000  | 32s        | 41s      |
+     *     +---------+------------+----------+
+     *     | 100,000 | 1m 49s     | 2m 7s    |
+     *     +---------+------------+----------+
+     *     | 200,000 | 33m 2s     | 29m 45s  |
+     *     +---------+------------+----------+
+     * }</pre>
+     *
+     * @return {@link ExcelReader}
+     */
     public ExcelReader<W, T> parallel() {
         this.parallel = true;
         return this;
