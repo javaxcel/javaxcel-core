@@ -187,7 +187,7 @@ public final class ExcelReader<W extends Workbook, T> {
     private void sheetToList(Sheet sheet, List<T> list) {
         List<Map<String, Object>> sModels = getSimulatedModels(sheet);
 
-        Stream<Map<String, Object>> stream = this.parallel ? sModels.stream() : sModels.parallelStream();
+        Stream<Map<String, Object>> stream = this.parallel ? sModels.parallelStream() : sModels.stream();
         List<T> realModels = stream.map(this::toRealModel).collect(Collectors.toList());
 
         list.addAll(realModels);
