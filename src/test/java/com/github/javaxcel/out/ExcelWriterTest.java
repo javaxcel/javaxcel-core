@@ -15,8 +15,7 @@ import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.util.StopWatch;
@@ -27,13 +26,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ExcelWriterTest {
 
     @Test
-    @DisplayName("필드 제외/기본값")
+    @DisplayName("Default value + @ExcelIgnore")
     @SneakyThrows
     public void writeWithIgnoreAndDefaultValue() {
         // given
@@ -64,7 +62,7 @@ public class ExcelWriterTest {
     }
 
     @Test
-    @DisplayName("자식 객체/날짜타입")
+    @DisplayName("Including inherited fields + @ExcelDateTimeFormat")
     @SneakyThrows
     public void writeWithTargetedFieldPolicyAndDateTimePattern() {
         // given
@@ -94,7 +92,7 @@ public class ExcelWriterTest {
 
     @ParameterizedTest
     @ValueSource(classes = {NoFieldModel.class, AllIgnoredModel.class})
-    @DisplayName("Targeted field가 없는 경우")
+    @DisplayName("Model without targeted fields")
     @SneakyThrows
     public void writeWithClassThatHasNoTargetFields(Class<?> type) {
         // given
@@ -116,11 +114,11 @@ public class ExcelWriterTest {
     }
 
     @Test
-    @DisplayName("스타일/데코레이션")
+    @DisplayName("Adjust sheet + styling")
     @SneakyThrows
     public void writeAndDecorate() {
         // given
-        File file = new File("/data", "products-styled.xlsx");
+        File file = new File("/data", "people-styled.xlsx");
         @Cleanup
         FileOutputStream out = new FileOutputStream(file);
         @Cleanup
@@ -141,24 +139,35 @@ public class ExcelWriterTest {
         };
 
         // when
-        List<Product> products = new Product().createRandoms(100);
-        ExcelWriter.init(workbook, Product.class)
-                .sheetName("PROD")
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start("create product mocks");
+
+        List<Human> people = new Human().createRandoms(1000);
+
+        stopWatch.stop();
+        stopWatch.start("write people and decorate");
+
+        ExcelWriter.init(workbook, Human.class)
+                .sheetName("People")
                 .adjustSheet((sheet, numOfRows, numOfColumns) -> {
                     ExcelStyler.autoResizeColumns(sheet, numOfColumns);
                     ExcelStyler.hideExtraRows(sheet, numOfRows);
                     ExcelStyler.hideExtraColumns(sheet, numOfColumns);
                 })
                 .headerStyle(ExcelStyler::applyBasicHeaderStyle)
-                .columnStyles(blueColumn, greenColumn, blueColumn, greenColumn, blueColumn, greenColumn)
-                .write(out, products);
+                .columnStyles(blueColumn, greenColumn, blueColumn, greenColumn, blueColumn, greenColumn, blueColumn,
+                        greenColumn, blueColumn, greenColumn, blueColumn, greenColumn, blueColumn, greenColumn)
+                .write(out, people);
+
+        stopWatch.stop();
+        System.out.println(stopWatch.prettyPrint());
 
         // then
         assertTrue(file.exists());
     }
 
     @Test
-    @DisplayName("표현식 사용")
+    @DisplayName("Including inherited fields + @ExcelWriterConversion")
     @SneakyThrows
     public void writePeople() {
         // given
@@ -177,26 +186,7 @@ public class ExcelWriterTest {
         stopWatch.start("write people");
 
         // when
-        ExcelWriter.init(workbook, Human.class)
-                .headerStyle((style, font) -> {
-                    font.setFontHeightInPoints((short) 10);
-                    font.setColor(IndexedColors.BLACK.getIndex());
-                    font.setBold(true);
-                    font.setFontName("Malgun Gothic");
-                    style.setFont(font);
-
-                    style.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
-                    style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-                    return style;
-                })
-                .columnStyles((style, font) -> {
-                    font.setFontHeightInPoints((short) 10);
-                    font.setColor(IndexedColors.BLACK.getIndex());
-                    font.setFontName("Malgun Gothic");
-                    style.setFont(font);
-                    return style;
-                })
-                .write(out, people);
+        ExcelWriter.init(workbook, Human.class).write(out, people);
 
         stopWatch.stop();
         System.out.println(stopWatch.prettyPrint());

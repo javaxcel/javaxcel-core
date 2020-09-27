@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ExcelReaderTest {
 
     @Test
-    @DisplayName("매개변수가 가정 적은 생성자 찾기")
+    @DisplayName("Find constructor with min params")
     @SneakyThrows
     public void getDeclaredConstructorWithMinimumParameters() {
         // given
@@ -60,7 +60,7 @@ public class ExcelReaderTest {
      * 2. {@link com.github.javaxcel.annotation.ExcelIgnore}
      */
     @Test
-    @DisplayName("상속 X / @ExcelIgnore")
+    @DisplayName("Own fields + @ExcelIgnore")
     @SneakyThrows
     public void readWithNotInheritedTypeAndExcelIgnore() {
         StopWatch stopWatch = new StopWatch();
@@ -96,7 +96,7 @@ public class ExcelReaderTest {
      * 2. {@link ExcelDateTimeFormat#pattern()}
      */
     @Test
-    @DisplayName("상속 O / @ExcelDateTimeFormat")
+    @DisplayName("Including inherited fields + @ExcelDateTimeFormat")
     @SneakyThrows
     public void readWithTargetedFieldPolicyAndDateTimePattern() {
         StopWatch stopWatch = new StopWatch();
@@ -166,7 +166,7 @@ public class ExcelReaderTest {
     }
 
     @Test
-    @DisplayName("상속 O / 표현식")
+    @DisplayName("Including inherited fields + @ExcelReaderConversion")
     @SneakyThrows
     public void readPeople() {
         StopWatch stopWatch = new StopWatch();
@@ -181,7 +181,7 @@ public class ExcelReaderTest {
 
         stopWatch.stop();
 
-        List<Human> mocks = new Human().createRandoms(1000);
+        List<Human> mocks = new Human().createRandoms(10_000);
 
         stopWatch.start("read people");
 
