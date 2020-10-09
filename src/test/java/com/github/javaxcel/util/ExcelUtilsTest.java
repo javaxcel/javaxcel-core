@@ -10,7 +10,7 @@ import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.*;
 
 public class ExcelUtilsTest {
 
@@ -140,7 +140,7 @@ public class ExcelUtilsTest {
         List<String> values = Arrays.asList("Toy.name", "ADULT", "645.70", "[1,2,3,4]", "educationToys.goals", "2020-08-31", "01/23/45/678", "2020-08-31T01:23:45");
         List<Field> targetedFields = FieldUtils.getTargetedFields(EducationToy.class);
 
-        assertEquals(values.size(), targetedFields.size());
+        assertThat(targetedFields.size()).isEqualTo(values.size());
 
         for (int i = 0; i < values.size(); i++) {
             String value = values.get(i);
@@ -183,8 +183,8 @@ public class ExcelUtilsTest {
         String bigDecimal = String.valueOf(new BigDecimal(strBigDec));
 
         // then
-        assertEquals(bigInteger, strBigInt);
-        assertEquals(bigDecimal, strBigDec);
+        assertThat(strBigInt).isEqualTo(bigInteger);
+        assertThat(strBigDec).isEqualTo(bigDecimal);
     }
 
 }

@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ExcelWriterTest {
@@ -58,7 +59,7 @@ public class ExcelWriterTest {
         System.out.println(stopWatch.prettyPrint());
 
         // then
-        assertTrue(file.exists());
+        assertThat(file.exists()).isTrue();
     }
 
     @Test
@@ -87,7 +88,7 @@ public class ExcelWriterTest {
         System.out.println(stopWatch.prettyPrint());
 
         // then
-        assertTrue(file.exists());
+        assertThat(file.exists()).isTrue();
     }
 
     @ParameterizedTest
@@ -163,7 +164,7 @@ public class ExcelWriterTest {
         System.out.println(stopWatch.prettyPrint());
 
         // then
-        assertTrue(file.exists());
+        assertThat(file.exists()).isTrue();
     }
 
     @Test
@@ -192,7 +193,7 @@ public class ExcelWriterTest {
         System.out.println(stopWatch.prettyPrint());
 
         // then
-        assertTrue(file.exists());
+        assertThat(file.exists()).isTrue();
     }
 
 }

@@ -27,7 +27,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 
 public class ExcelReaderTest {
 
@@ -86,7 +86,7 @@ public class ExcelReaderTest {
         stopWatch.stop();
 
         // then
-        assertTrue(mocks.containsAll(products));
+        assertThat(mocks.containsAll(products)).isTrue();
         System.out.println(stopWatch.prettyPrint());
     }
 
@@ -122,7 +122,7 @@ public class ExcelReaderTest {
         stopWatch.stop();
 
         // then
-        assertTrue(mocks.containsAll(educationToys));
+        assertThat(mocks.containsAll(educationToys)).isTrue();
         System.out.println(stopWatch.prettyPrint());
     }
 
@@ -157,12 +157,14 @@ public class ExcelReaderTest {
         List<EducationToy> sheet2 = ExcelReader.init(workbook, EducationToy.class).sheetIndexes(1).read();
 
         // then
-        assertTrue(products.stream()
+        assertThat(products.stream()
                 .peek(System.out::println)
-                .allMatch(product -> Collections.frequency(sheet1, product) > 0));
-        assertTrue(educationToys.stream()
+                .allMatch(it -> Collections.frequency(sheet1, it) > 0))
+                .isTrue();
+        assertThat(educationToys.stream()
                 .peek(System.out::println)
-                .allMatch(educationToy -> Collections.frequency(sheet2, educationToy) > 0));
+                .allMatch(it -> Collections.frequency(sheet2, it) > 0))
+                .isTrue();
     }
 
     @Test
@@ -193,7 +195,7 @@ public class ExcelReaderTest {
 
         // then
         System.out.println(stopWatch.prettyPrint());
-        assertTrue(mocks.containsAll(people));
+        assertThat(mocks.containsAll(people)).isTrue();
     }
 
 }

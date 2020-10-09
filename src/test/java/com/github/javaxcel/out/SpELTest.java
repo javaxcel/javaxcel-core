@@ -4,8 +4,7 @@ import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
 import io.github.imsejin.util.StringUtils;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -15,16 +14,15 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.IntStream;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SpELTest {
 
     private static String convert(IntStream stream) {
         return stream.mapToObj(String::valueOf)
-                .collect(() -> new StringJoiner(","), StringJoiner::add, (s1, s2) -> { }).toString();
+                .collect(() -> new StringJoiner(","), StringJoiner::add, (s1, s2) -> {
+                }).toString();
     }
 
     @Test
@@ -38,7 +36,7 @@ public class SpELTest {
         Expression expression = parser.parseExpression(exp);
 
         // then
-        assertThat(expression.getValue(String.class), is("[Hello, world!]"));
+        assertThat(expression.getValue(String.class)).isEqualTo("[Hello, world!]");
     }
 
     @Test
@@ -53,8 +51,8 @@ public class SpELTest {
         Expression expression = parser.parseExpression("apiId = name.toUpperCase()");
 
         // then
-        assertThat(expression.getValue(product, String.class), is("MINT CHOCOLATE"));
-        assertThat(product.getApiId(), is("MINT CHOCOLATE"));
+        assertThat(expression.getValue(product, String.class)).isEqualTo("MINT CHOCOLATE");
+        assertThat(product.getApiId()).isEqualTo("MINT CHOCOLATE");
     }
 
     @Test
@@ -70,7 +68,7 @@ public class SpELTest {
         parser.parseExpression("apiId").setValue(product, uuid);
 
         // then
-        assertThat(product.getApiId(), is(uuid));
+        assertThat(product.getApiId()).isEqualTo(uuid);
     }
 
     @Test
@@ -87,8 +85,8 @@ public class SpELTest {
         String value = parser.parseExpression("name = #name").getValue(context, String.class);
 
         // then
-        assertThat(product.getName(), is("Cafe mocha"));
-        assertEquals(product.getName(), value);
+        assertThat(product.getName()).isEqualTo("Cafe mocha");
+        assertThat(value).isEqualTo(product.getName());
     }
 
     @Test
@@ -104,14 +102,14 @@ public class SpELTest {
         String convertedTemplate = expression.getValue(product, String.class);
 
         // then #1
-        assertEquals(convertedTemplate, "'Milk Tea'.replace(' ', '_').toLowerCase()");
+        assertThat("'Milk Tea'.replace(' ', '_').toLowerCase()").isEqualTo(convertedTemplate);
 
         // when #2
         Expression expression1 = parser.parseExpression(convertedTemplate);
         String value = expression1.getValue(product, String.class);
 
         // then #2
-        assertEquals(value, "milk_tea");
+        assertThat("milk_tea").isEqualTo(value);
     }
 
     @Test
@@ -148,7 +146,7 @@ public class SpELTest {
                 (String) parser.parseExpression(exp).getValue(context), "");
 
         // then
-        assertEquals(value, "[2, 3, 4, 5, 6]");
+        assertThat("[2, 3, 4, 5, 6]").isEqualTo(value);
     }
 
     @Test
@@ -170,7 +168,7 @@ public class SpELTest {
                 (String) parser.parseExpression(exp).getValue(context), "");
 
         // then
-        assertEquals(value, "2,3,4,5,6");
+        assertThat("2,3,4,5,6").isEqualTo(value);
     }
 
     @Test
@@ -206,7 +204,7 @@ public class SpELTest {
         BigInteger bigInteger = parser.parseExpression(exp).getValue(BigInteger.class);
 
         // then
-        assertEquals(bigInt, bigInteger);
+        assertThat(bigInteger).isEqualTo(bigInt);
     }
 
 }
