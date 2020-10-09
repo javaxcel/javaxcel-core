@@ -180,7 +180,7 @@ public class SpELTest {
         String key = "agesFromBirthToPuberty";
         map.put(key, "2, 3, 4, 5, 6");
 
-        String exp = "T(com.github.javaxcel.converter.Converter).toIntArray(#" + key + ".split(', '))";
+        String exp = "T(com.github.javaxcel.Converter).toIntArray(#" + key + ".split(', '))";
 
         // when
         SpelExpressionParser parser = new SpelExpressionParser();

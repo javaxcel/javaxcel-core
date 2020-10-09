@@ -1,4 +1,4 @@
-package com.github.javaxcel.converter;
+package com.github.javaxcel;
 
 import java.util.Arrays;
 import java.util.StringTokenizer;

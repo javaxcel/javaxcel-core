@@ -27,53 +27,53 @@ public class Human extends Creature implements Mockables<Human> {
 
     @ExcelColumn("Birthday")
     @ExcelDateTimeFormat(pattern = "yyyy/MM/dd")
-    @ExcelReaderConversion("T(java.time.LocalDate).parse(#birthday, T(java.time.format.DateTimeFormatter).ofPattern('yyyy/MM/dd'))")
+    @ExcelReaderExpression("T(java.time.LocalDate).parse(#birthday, T(java.time.format.DateTimeFormatter).ofPattern('yyyy/MM/dd'))")
     private LocalDate birthday;
 
     @ExcelColumn("Birth Time")
     @ExcelDateTimeFormat(pattern = "HH/mm/ss.SSS")
-    @ExcelReaderConversion("T(java.time.LocalTime).parse(#birthTime, T(java.time.format.DateTimeFormatter).ofPattern('HH/mm/ss.SSS'))")
+    @ExcelReaderExpression("T(java.time.LocalTime).parse(#birthTime, T(java.time.format.DateTimeFormatter).ofPattern('HH/mm/ss.SSS'))")
     private LocalTime birthTime;
 
     @ExcelColumn("Place of Birth")
-    @ExcelWriterConversion("T(com.github.javaxcel.converter.Converter).capitalize(#placeOfBirth, '-')")
-    @ExcelReaderConversion("#placeOfBirth?.toLowerCase()") // null-safe operator '?.'
+    @ExcelWriterExpression("T(com.github.javaxcel.Converter).capitalize(#placeOfBirth, '-')")
+    @ExcelReaderExpression("#placeOfBirth?.toLowerCase()") // null-safe operator '?.'
     private String placeOfBirth;
 
     @ExcelColumn("Rest Seconds of Life")
-    @ExcelWriterConversion("#restSecondsOfLife + ' sec'")
-    @ExcelReaderConversion("new java.math.BigDecimal(#restSecondsOfLife.replace(' sec', ''))") // constructor
+    @ExcelWriterExpression("#restSecondsOfLife + ' sec'")
+    @ExcelReaderExpression("new java.math.BigDecimal(#restSecondsOfLife.replace(' sec', ''))") // constructor
     private BigDecimal restSecondsOfLife;
 
     @ExcelColumn("Number of Cells")
-    @ExcelWriterConversion("#numOfCells + ' cells/kg'")
-    @ExcelReaderConversion("new java.math.BigInteger(#numOfCells.replace(' cells/kg', ''))") // constructor
+    @ExcelWriterExpression("#numOfCells + ' cells/kg'")
+    @ExcelReaderExpression("new java.math.BigInteger(#numOfCells.replace(' cells/kg', ''))") // constructor
     private BigInteger numOfCells;
 
     @ExcelColumn("Height")
-    @ExcelWriterConversion("#height + ' cm'")
-    @ExcelReaderConversion("T(Float).parseFloat(#height.replace(' cm', ''))")
+    @ExcelWriterExpression("#height + ' cm'")
+    @ExcelReaderExpression("T(Float).parseFloat(#height.replace(' cm', ''))")
     private float height;
 
     @ExcelColumn("Weight")
-    @ExcelWriterConversion("#weight + ' kg'")
-    @ExcelReaderConversion("T(Float).parseFloat(#weight.replace(' kg', ''))")
+    @ExcelWriterExpression("#weight + ' kg'")
+    @ExcelReaderExpression("T(Float).parseFloat(#weight.replace(' kg', ''))")
     private float weight;
 
     @ExcelColumn("Ages from Birth to Puberty")
-    @ExcelWriterConversion("T(java.util.Arrays).stream(#agesFromBirthToPuberty).boxed()" +
+    @ExcelWriterExpression("T(java.util.Arrays).stream(#agesFromBirthToPuberty).boxed()" +
             ".collect(T(java.util.stream.Collectors).toList()).toString().replaceAll('[\\[\\]]', '')")
-    @ExcelReaderConversion("#agesFromBirthToPuberty == null || #agesFromBirthToPuberty.equals('') ? null" +
-            ": T(com.github.javaxcel.converter.Converter).toIntArray(#agesFromBirthToPuberty.split(', '))")
+    @ExcelReaderExpression("#agesFromBirthToPuberty == null || #agesFromBirthToPuberty.equals('') ? null" +
+            ": T(com.github.javaxcel.Converter).toIntArray(#agesFromBirthToPuberty.split(', '))")
     private int[] agesFromBirthToPuberty;
 
     @ExcelColumn("Ages from Twilight to Death")
-    @ExcelReaderConversion("new int[] {}")
+    @ExcelReaderExpression("new int[] {}")
     private int[] agesFromTwilightToDeath;
 
     @ExcelColumn("Whether Disabled or Not")
-    @ExcelWriterConversion("#disabled ? 'yes' : 'no'")
-    @ExcelReaderConversion("#disabled eq 'yes' ? true : false")
+    @ExcelWriterExpression("#disabled ? 'yes' : 'no'")
+    @ExcelReaderExpression("#disabled eq 'yes' ? true : false")
     private boolean disabled;
 
     public Human(Kingdom kingdom, Sex sex, int lifespan, String name, LocalDate birthday, LocalTime birthTime,
