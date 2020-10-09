@@ -2,9 +2,9 @@ package com.github.javaxcel.converter.impl;
 
 import com.github.javaxcel.annotation.ExcelReaderExpression;
 import com.github.javaxcel.converter.ReadingConverter;
-import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
+import io.github.imsejin.expression.ExpressionParser;
+import io.github.imsejin.expression.spel.standard.SpelExpressionParser;
+import io.github.imsejin.expression.spel.support.StandardEvaluationContext;
 
 import java.lang.reflect.Field;
 import java.util.Map;

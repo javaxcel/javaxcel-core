@@ -85,9 +85,9 @@
 
         <!-- SpEL(Spring Expression Language) -->
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-expression</artifactId>
-            <version>5.2.9.RELEASE</version>
+            <groupId>io.github.imsejin</groupId>
+            <artifactId>spel</artifactId>
+            <version>5.2.9</version>
         </dependency>
 
         <!-- Junit 5 -->

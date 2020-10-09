@@ -3,12 +3,12 @@ package com.github.javaxcel.out;
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
 import io.github.imsejin.common.util.StringUtils;
+import io.github.imsejin.expression.Expression;
+import io.github.imsejin.expression.ParserContext;
+import io.github.imsejin.expression.spel.standard.SpelExpressionParser;
+import io.github.imsejin.expression.spel.support.StandardEvaluationContext;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.*;
-import org.springframework.expression.Expression;
-import org.springframework.expression.ParserContext;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import java.math.BigInteger;
 import java.util.*;
