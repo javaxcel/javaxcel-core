@@ -1,6 +1,6 @@
 package com.github.javaxcel.out;
 
-import com.github.javaxcel.annotation.ExcelWriterConversion;
+import com.github.javaxcel.annotation.ExcelWriterExpression;
 import com.github.javaxcel.converter.impl.BasicWritingConverter;
 import com.github.javaxcel.converter.impl.ExpressiveWritingConverter;
 import com.github.javaxcel.exception.NoTargetedFieldException;
@@ -232,7 +232,7 @@ public final class ExcelWriter<W extends Workbook, T> {
 
                 // Converts field value to the string.
                 String value;
-                ExcelWriterConversion conversion = field.getAnnotation(ExcelWriterConversion.class);
+                ExcelWriterExpression conversion = field.getAnnotation(ExcelWriterExpression.class);
                 if (conversion == null) {
                     // When the field is not annotated with @ExcelWriterConversion.
                     value = basicConverter.convert(model, field);

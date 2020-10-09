@@ -1,6 +1,6 @@
 package com.github.javaxcel.in;
 
-import com.github.javaxcel.annotation.ExcelReaderConversion;
+import com.github.javaxcel.annotation.ExcelReaderExpression;
 import com.github.javaxcel.converter.impl.BasicReadingConverter;
 import com.github.javaxcel.converter.impl.ExpressiveReadingConverter;
 import com.github.javaxcel.util.ExcelUtils;
@@ -205,7 +205,7 @@ public final class ExcelReader<W extends Workbook, T> {
         for (Field field : this.fields) {
             String cellValue = (String) sModel.get(field.getName());
 
-            ExcelReaderConversion annotation = field.getAnnotation(ExcelReaderConversion.class);
+            ExcelReaderExpression annotation = field.getAnnotation(ExcelReaderExpression.class);
             Object fieldValue;
             if (annotation == null) {
                 // When the field is not annotated with @ExcelReaderConversion.
