@@ -8,6 +8,7 @@ import com.github.javaxcel.model.etc.FinalFieldModel;
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
 import com.github.javaxcel.out.ExcelWriter;
+import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -16,7 +17,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.*;
-import org.springframework.util.StopWatch;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -63,7 +64,7 @@ public class ExcelReaderTest {
     @DisplayName("Own fields + @ExcelIgnore")
     @SneakyThrows
     public void readWithNotInheritedTypeAndExcelIgnore() {
-        StopWatch stopWatch = new StopWatch();
+        Stopwatch stopWatch = new Stopwatch();
         stopWatch.start("load 'products.xls' file");
 
         // given
@@ -87,7 +88,7 @@ public class ExcelReaderTest {
 
         // then
         assertThat(mocks.containsAll(products)).isTrue();
-        System.out.println(stopWatch.prettyPrint());
+        System.out.println(stopWatch.getStatistics());
     }
 
     /**
@@ -99,7 +100,7 @@ public class ExcelReaderTest {
     @DisplayName("Including inherited fields + @ExcelDateTimeFormat")
     @SneakyThrows
     public void readWithTargetedFieldPolicyAndDateTimePattern() {
-        StopWatch stopWatch = new StopWatch();
+        Stopwatch stopWatch = new Stopwatch();
         stopWatch.start("load 'toys.xlsx' file");
 
         // given
@@ -123,7 +124,7 @@ public class ExcelReaderTest {
 
         // then
         assertThat(mocks.containsAll(educationToys)).isTrue();
-        System.out.println(stopWatch.prettyPrint());
+        System.out.println(stopWatch.getStatistics());
     }
 
     @Test
@@ -139,7 +140,16 @@ public class ExcelReaderTest {
         List<FinalFieldModel> list = ExcelReader.init(workbook, FinalFieldModel.class).read();
 
         // then
-        list.forEach(System.out::println); // FinalFieldModel(number=100, text=TEXT)
+        list.forEach(it -> {
+            // FinalFieldModel(number=100, text=TEXT)
+            assertThat(it.getNumber())
+                    .as("Value of final field is never changed")
+                    .isEqualTo(100);
+            assertThat(it.getText())
+                    .as("Value of final field is never changed")
+                    .isEqualTo("TEXT");
+            System.out.println(it);
+        });
     }
 
     @Test
@@ -171,7 +181,7 @@ public class ExcelReaderTest {
     @DisplayName("Including inherited fields + @ExcelReaderConversion")
     @SneakyThrows
     public void readPeople() {
-        StopWatch stopWatch = new StopWatch();
+        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
         stopWatch.start("load 'people.xlsx' file");
 
         // given
@@ -182,9 +192,11 @@ public class ExcelReaderTest {
         OutputStream out = new FileOutputStream(file);
 
         stopWatch.stop();
+        stopWatch.start("create mocks");
 
         List<Human> mocks = new Human().createRandoms(10_000);
 
+        stopWatch.stop();
         stopWatch.start("read people");
 
         // when
@@ -194,8 +206,10 @@ public class ExcelReaderTest {
         stopWatch.stop();
 
         // then
-        System.out.println(stopWatch.prettyPrint());
-        assertThat(mocks.containsAll(people)).isTrue();
+        assertThat(mocks.containsAll(people))
+                .as("Loaded data is equal to mock's data")
+                .isTrue();
+        System.out.println(stopWatch.getStatistics());
     }
 
 }
