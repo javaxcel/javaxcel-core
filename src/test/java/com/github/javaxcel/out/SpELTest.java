@@ -2,7 +2,7 @@ package com.github.javaxcel.out;
 
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
-import io.github.imsejin.util.StringUtils;
+import io.github.imsejin.common.util.StringUtils;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.*;
 import org.springframework.expression.Expression;

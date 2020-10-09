@@ -49,7 +49,7 @@
         <java.version>1.8</java.version>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.source>${java.version}</maven.compiler.source>
-        <common.utils.version>0.1.2</common.utils.version>
+        <common.utils.version>0.3.0</common.utils.version>
         <apache.poi.version>4.1.2</apache.poi.version>
     </properties>
 
