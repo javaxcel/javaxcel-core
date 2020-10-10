@@ -6,7 +6,7 @@ import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.constant.TargetedFieldPolicy;
 import com.github.javaxcel.exception.GettingFieldValueException;
 import com.github.javaxcel.exception.SettingFieldValueException;
-import io.github.imsejin.util.StringUtils;
+import io.github.imsejin.common.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -67,17 +67,17 @@ public final class FieldUtils {
      * Converts fields to header names.
      *
      * <p> This checks whether the field is annotated with {@link ExcelColumn} or not.
-     * If {@link ExcelColumn#value()} is not null and not empty,
+     * If {@link ExcelColumn#name()} is not null and not empty,
      * this returns a header name defined in the field.
      * Otherwise returns name of the field.
      *
      * @param fields targeted fields
-     * @return list of {@link ExcelColumn#value()} or {@link Field#getName()}
+     * @return list of {@link ExcelColumn#name()} or {@link Field#getName()}
      */
     public static String[] toHeaderNames(List<Field> fields) {
         return fields.stream().map(field -> {
             ExcelColumn annotation = field.getAnnotation(ExcelColumn.class);
-            return annotation == null || StringUtils.isNullOrEmpty(annotation.value()) ? field.getName() : annotation.value();
+            return annotation == null || StringUtils.isNullOrEmpty(annotation.name()) ? field.getName() : annotation.name();
         }).toArray(String[]::new);
     }
 
@@ -100,6 +100,14 @@ public final class FieldUtils {
         return map;
     }
 
+    /**
+     * Returns value of the field.
+     *
+     * @param model model in list
+     * @param field targeted field
+     * @param <T>   type of the object
+     * @return field value
+     */
     public static <T> Object getFieldValue(T model, Field field) {
         // Enables to have access to the field even private field.
         field.setAccessible(true);
@@ -112,6 +120,14 @@ public final class FieldUtils {
         }
     }
 
+    /**
+     * Sets up value into the field.
+     *
+     * @param model model in list
+     * @param field targeted field
+     * @param value value to be set into field
+     * @param <T>   type of the object
+     */
     public static <T> void setFieldValue(T model, Field field, Object value) {
         // Enables to have access to the field even private field.
         field.setAccessible(true);

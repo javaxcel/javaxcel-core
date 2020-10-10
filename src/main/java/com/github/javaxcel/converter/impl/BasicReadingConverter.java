@@ -4,7 +4,7 @@ import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.converter.ReadingConverter;
 import com.github.javaxcel.util.TypeClassifier;
-import io.github.imsejin.util.StringUtils;
+import io.github.imsejin.common.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -15,29 +15,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class BasicReadingConverter<T> implements ReadingConverter<T> {
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p> Converts a string in cell to the type of field.
-     *
-     * @param value string that is cell value
-     * @param field field of model
-     * @return value converted to the type of field
-     */
-    @Override
-    public Object convert(String value, Field field) {
-        ExcelColumn excelColumn = field.getAnnotation(ExcelColumn.class);
-        Class<?> type = field.getType();
-
-        // When you don't explicitly define default value and the cell value is null or empty.
-        if ((excelColumn == null || excelColumn.defaultValue().equals("")) && StringUtils.isNullOrEmpty(value)) {
-            return initialValueOf(type);
-        }
-
-        // Converts string to the type of field.
-        return parse(value, field);
-    }
 
     /**
      * Gets initial value of the type.
@@ -90,6 +67,29 @@ public class BasicReadingConverter<T> implements ReadingConverter<T> {
         }
 
         return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p> Converts a string in cell to the type of field.
+     *
+     * @param value string that is cell value
+     * @param field field of model
+     * @return value converted to the type of field
+     */
+    @Override
+    public Object convert(String value, Field field) {
+        ExcelColumn excelColumn = field.getAnnotation(ExcelColumn.class);
+        Class<?> type = field.getType();
+
+        // When you don't explicitly define default value and the cell value is null or empty.
+        if ((excelColumn == null || excelColumn.defaultValue().equals("")) && StringUtils.isNullOrEmpty(value)) {
+            return initialValueOf(type);
+        }
+
+        // Converts string to the type of field.
+        return parse(value, field);
     }
 
 }

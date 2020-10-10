@@ -7,6 +7,7 @@ import com.github.javaxcel.model.etc.NoFieldModel;
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
 import com.github.javaxcel.styler.ExcelStyler;
+import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -18,14 +19,15 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.util.StopWatch;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ExcelWriterTest {
@@ -42,10 +44,11 @@ public class ExcelWriterTest {
         HSSFWorkbook workbook = new HSSFWorkbook();
 
         // when
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start("create product mocks");
+        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
+        int numOfMocks = ExcelStyler.HSSF_MAX_ROWS - 1;
+        stopWatch.start(String.format("create %d mocks", numOfMocks));
 
-        List<Product> products = new Product().createRandoms(ExcelStyler.HSSF_MAX_ROWS - 1);
+        List<Product> products = new Product().createRandoms(numOfMocks);
 
         stopWatch.stop();
         stopWatch.start("write products");
@@ -55,10 +58,10 @@ public class ExcelWriterTest {
                 .write(out, products);
 
         stopWatch.stop();
-        System.out.println(stopWatch.prettyPrint());
+        System.out.println(stopWatch.getStatistics());
 
         // then
-        assertTrue(file.exists());
+        assertThat(file.exists()).isTrue();
     }
 
     @Test
@@ -73,10 +76,11 @@ public class ExcelWriterTest {
         XSSFWorkbook workbook = new XSSFWorkbook();
 
         // when
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start("create toy mocks");
+        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
+        int numOfMocks = 10_000;
+        stopWatch.start(String.format("create %d mocks", numOfMocks));
 
-        List<EducationToy> toys = new EducationToy().createRandoms(10_000);
+        List<EducationToy> toys = new EducationToy().createRandoms(numOfMocks);
 
         stopWatch.stop();
         stopWatch.start("write with toys");
@@ -84,10 +88,10 @@ public class ExcelWriterTest {
         ExcelWriter.init(workbook, EducationToy.class).write(out, toys);
 
         stopWatch.stop();
-        System.out.println(stopWatch.prettyPrint());
+        System.out.println(stopWatch.getStatistics());
 
         // then
-        assertTrue(file.exists());
+        assertThat(file.exists()).isTrue();
     }
 
     @ParameterizedTest
@@ -102,7 +106,7 @@ public class ExcelWriterTest {
         @Cleanup
         HSSFWorkbook workbook = new HSSFWorkbook();
 
-        StopWatch stopWatch = new StopWatch();
+        Stopwatch stopWatch = new Stopwatch(TimeUnit.MILLISECONDS);
         stopWatch.start("initialize");
 
         // then
@@ -110,7 +114,7 @@ public class ExcelWriterTest {
                 () -> ExcelWriter.init(workbook, type).write(out, new ArrayList<>()));
 
         stopWatch.stop();
-        System.out.println(stopWatch.prettyPrint());
+        System.out.println(stopWatch.getStatistics());
     }
 
     @Test
@@ -139,10 +143,11 @@ public class ExcelWriterTest {
         };
 
         // when
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start("create product mocks");
+        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
+        int numOfMocks = 1000;
+        stopWatch.start(String.format("create %d mocks", numOfMocks));
 
-        List<Human> people = new Human().createRandoms(1000);
+        List<Human> people = new Human().createRandoms(numOfMocks);
 
         stopWatch.stop();
         stopWatch.start("write people and decorate");
@@ -160,10 +165,10 @@ public class ExcelWriterTest {
                 .write(out, people);
 
         stopWatch.stop();
-        System.out.println(stopWatch.prettyPrint());
+        System.out.println(stopWatch.getStatistics());
 
         // then
-        assertTrue(file.exists());
+        assertThat(file.exists()).isTrue();
     }
 
     @Test
@@ -177,10 +182,11 @@ public class ExcelWriterTest {
         @Cleanup
         HSSFWorkbook workbook = new HSSFWorkbook();
 
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start("create human mocks");
+        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
+        int numOfMocks = 10_000;
+        stopWatch.start(String.format("create %d mocks", numOfMocks));
 
-        List<Human> people = new Human().createRandoms(10_000);
+        List<Human> people = new Human().createRandoms(numOfMocks);
 
         stopWatch.stop();
         stopWatch.start("write people");
@@ -189,10 +195,10 @@ public class ExcelWriterTest {
         ExcelWriter.init(workbook, Human.class).write(out, people);
 
         stopWatch.stop();
-        System.out.println(stopWatch.prettyPrint());
+        System.out.println(stopWatch.getStatistics());
 
         // then
-        assertTrue(file.exists());
+        assertThat(file.exists()).isTrue();
     }
 
 }

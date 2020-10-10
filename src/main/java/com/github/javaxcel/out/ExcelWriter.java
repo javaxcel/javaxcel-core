@@ -1,13 +1,13 @@
 package com.github.javaxcel.out;
 
-import com.github.javaxcel.annotation.ExcelWriterConversion;
+import com.github.javaxcel.annotation.ExcelWriterExpression;
 import com.github.javaxcel.converter.impl.BasicWritingConverter;
 import com.github.javaxcel.converter.impl.ExpressiveWritingConverter;
 import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.exception.WritingExcelException;
 import com.github.javaxcel.util.FieldUtils;
 import com.github.javaxcel.util.TriConsumer;
-import io.github.imsejin.util.StringUtils;
+import io.github.imsejin.common.util.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 
 import java.io.IOException;
@@ -56,11 +56,6 @@ public final class ExcelWriter<W extends Workbook, T> {
     private String[] headerNames;
 
     /**
-     * Replacement of the value when the value is null or empty string.
-     */
-    private String defaultValue;
-
-    /**
      * Name of excel sheet.
      */
     private String sheetName;
@@ -107,10 +102,15 @@ public final class ExcelWriter<W extends Workbook, T> {
         return this;
     }
 
+    /**
+     * Sets up default value.
+     *
+     * @param defaultValue replacement of the value when it is null or empty string.
+     * @return {@link ExcelWriter}
+     */
     public ExcelWriter<W, T> defaultValue(String defaultValue) {
         if (defaultValue == null) throw new IllegalArgumentException("Default value cannot be null");
 
-        this.defaultValue = defaultValue;
         this.basicConverter.setDefaultValue(defaultValue);
         this.expConverter.setDefaultValue(defaultValue);
         return this;
@@ -232,7 +232,7 @@ public final class ExcelWriter<W extends Workbook, T> {
 
                 // Converts field value to the string.
                 String value;
-                ExcelWriterConversion conversion = field.getAnnotation(ExcelWriterConversion.class);
+                ExcelWriterExpression conversion = field.getAnnotation(ExcelWriterExpression.class);
                 if (conversion == null) {
                     // When the field is not annotated with @ExcelWriterConversion.
                     value = basicConverter.convert(model, field);

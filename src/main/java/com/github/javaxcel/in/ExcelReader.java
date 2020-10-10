@@ -1,8 +1,9 @@
 package com.github.javaxcel.in;
 
-import com.github.javaxcel.annotation.ExcelReaderConversion;
+import com.github.javaxcel.annotation.ExcelReaderExpression;
 import com.github.javaxcel.converter.impl.BasicReadingConverter;
 import com.github.javaxcel.converter.impl.ExpressiveReadingConverter;
+import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
 import org.apache.poi.ss.usermodel.*;
@@ -81,6 +82,8 @@ public final class ExcelReader<W extends Workbook, T> {
         this.type = type;
         this.formulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
         this.fields = FieldUtils.getTargetedFields(type);
+
+        if (this.fields.isEmpty()) throw new NoTargetedFieldException(this.type);
     }
 
     public static <W extends Workbook, E> ExcelReader<W, E> init(W workbook, Class<E> type) {
@@ -117,17 +120,17 @@ public final class ExcelReader<W extends Workbook, T> {
      * dealing with large data. The following table is a benchmark.
      *
      * <pre>{@code
-     *     +---------+------------+----------+
-     *     |         | sequential | parallel |
-     *     +---------+------------+----------+
-     *     | 10,000  | 18s        | 18s      |
-     *     +---------+------------+----------+
-     *     | 25,000  | 32s        | 41s      |
-     *     +---------+------------+----------+
-     *     | 100,000 | 1m 49s     | 2m 7s    |
-     *     +---------+------------+----------+
-     *     | 200,000 | 33m 2s     | 29m 45s  |
-     *     +---------+------------+----------+
+     *     +------------+------------+----------+
+     *     | row \ type | sequential | parallel |
+     *     +------------+------------+----------+
+     *     | 10,000     | 16s        | 13s      |
+     *     +------------+------------+----------+
+     *     | 25,000     | 31s        | 21s      |
+     *     +------------+------------+----------+
+     *     | 100,000    | 2m 7s      | 1m 31s   |
+     *     +------------+------------+----------+
+     *     | 150,000    | 3m 28s     | 2m 1s    |
+     *     +------------+------------+----------+
      * }</pre>
      *
      * @return {@link ExcelReader}
@@ -187,7 +190,7 @@ public final class ExcelReader<W extends Workbook, T> {
     private void sheetToList(Sheet sheet, List<T> list) {
         List<Map<String, Object>> sModels = getSimulatedModels(sheet);
 
-        Stream<Map<String, Object>> stream = this.parallel ? sModels.stream() : sModels.parallelStream();
+        Stream<Map<String, Object>> stream = this.parallel ? sModels.parallelStream() : sModels.stream();
         List<T> realModels = stream.map(this::toRealModel).collect(Collectors.toList());
 
         list.addAll(realModels);
@@ -205,7 +208,7 @@ public final class ExcelReader<W extends Workbook, T> {
         for (Field field : this.fields) {
             String cellValue = (String) sModel.get(field.getName());
 
-            ExcelReaderConversion annotation = field.getAnnotation(ExcelReaderConversion.class);
+            ExcelReaderExpression annotation = field.getAnnotation(ExcelReaderExpression.class);
             Object fieldValue;
             if (annotation == null) {
                 // When the field is not annotated with @ExcelReaderConversion.

@@ -8,6 +8,7 @@ import com.github.javaxcel.model.etc.FinalFieldModel;
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
 import com.github.javaxcel.out.ExcelWriter;
+import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -16,7 +17,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.*;
-import org.springframework.util.StopWatch;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,8 +26,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 
 public class ExcelReaderTest {
 
@@ -48,10 +49,13 @@ public class ExcelReaderTest {
         Constructor<?> constructor = Arrays.stream(declaredConstructors)
                 .min(Comparator.comparingInt(Constructor::getParameterCount))
                 .orElseThrow(() -> new NoTargetedConstructorException(clazz));
-        System.out.println("constructor with minimum parameters: " + constructor);
         constructor.setAccessible(true);
         Arrays.stream(constructor.getParameterTypes()).forEach(System.out::println);
-        constructor.newInstance();
+
+        assertThat(constructor.newInstance())
+                .as("Instantiates class without params")
+                .isInstanceOf(clazz);
+        System.out.println("Constructor with minimum parameters: " + constructor);
     }
 
     /**
@@ -63,7 +67,7 @@ public class ExcelReaderTest {
     @DisplayName("Own fields + @ExcelIgnore")
     @SneakyThrows
     public void readWithNotInheritedTypeAndExcelIgnore() {
-        StopWatch stopWatch = new StopWatch();
+        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
         stopWatch.start("load 'products.xls' file");
 
         // given
@@ -74,9 +78,12 @@ public class ExcelReaderTest {
         OutputStream out = new FileOutputStream(file);
 
         stopWatch.stop();
+        int numOfMocks = 10_000;
+        stopWatch.start(String.format("create %d mocks", numOfMocks));
 
-        List<Product> mocks = new Product().createRandoms(10_000);
+        List<Product> mocks = new Product().createRandoms(numOfMocks);
 
+        stopWatch.stop();
         stopWatch.start("read products");
 
         // when
@@ -86,8 +93,8 @@ public class ExcelReaderTest {
         stopWatch.stop();
 
         // then
-        assertTrue(mocks.containsAll(products));
-        System.out.println(stopWatch.prettyPrint());
+        assertThat(mocks.containsAll(products)).isTrue();
+        System.out.println(stopWatch.getStatistics());
     }
 
     /**
@@ -99,7 +106,7 @@ public class ExcelReaderTest {
     @DisplayName("Including inherited fields + @ExcelDateTimeFormat")
     @SneakyThrows
     public void readWithTargetedFieldPolicyAndDateTimePattern() {
-        StopWatch stopWatch = new StopWatch();
+        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
         stopWatch.start("load 'toys.xlsx' file");
 
         // given
@@ -110,9 +117,12 @@ public class ExcelReaderTest {
         OutputStream out = new FileOutputStream(file);
 
         stopWatch.stop();
+        int numOfMocks = 10_000;
+        stopWatch.start(String.format("create %d mocks", numOfMocks));
 
-        List<EducationToy> mocks = new EducationToy().createRandoms(10_000);
+        List<EducationToy> mocks = new EducationToy().createRandoms(numOfMocks);
 
+        stopWatch.stop();
         stopWatch.start("read toys");
 
         // when
@@ -122,8 +132,8 @@ public class ExcelReaderTest {
         stopWatch.stop();
 
         // then
-        assertTrue(mocks.containsAll(educationToys));
-        System.out.println(stopWatch.prettyPrint());
+        assertThat(mocks.containsAll(educationToys)).isTrue();
+        System.out.println(stopWatch.getStatistics());
     }
 
     @Test
@@ -139,7 +149,16 @@ public class ExcelReaderTest {
         List<FinalFieldModel> list = ExcelReader.init(workbook, FinalFieldModel.class).read();
 
         // then
-        list.forEach(System.out::println); // FinalFieldModel(number=100, text=TEXT)
+        list.forEach(it -> {
+            // FinalFieldModel(number=100, text=TEXT)
+            assertThat(it.getNumber())
+                    .as("Value of final field is never changed")
+                    .isEqualTo(100);
+            assertThat(it.getText())
+                    .as("Value of final field is never changed")
+                    .isEqualTo("TEXT");
+            System.out.println(it);
+        });
     }
 
     @Test
@@ -157,19 +176,21 @@ public class ExcelReaderTest {
         List<EducationToy> sheet2 = ExcelReader.init(workbook, EducationToy.class).sheetIndexes(1).read();
 
         // then
-        assertTrue(products.stream()
+        assertThat(products.stream()
                 .peek(System.out::println)
-                .allMatch(product -> Collections.frequency(sheet1, product) > 0));
-        assertTrue(educationToys.stream()
+                .allMatch(it -> Collections.frequency(sheet1, it) > 0))
+                .isTrue();
+        assertThat(educationToys.stream()
                 .peek(System.out::println)
-                .allMatch(educationToy -> Collections.frequency(sheet2, educationToy) > 0));
+                .allMatch(it -> Collections.frequency(sheet2, it) > 0))
+                .isTrue();
     }
 
     @Test
     @DisplayName("Including inherited fields + @ExcelReaderConversion")
     @SneakyThrows
     public void readPeople() {
-        StopWatch stopWatch = new StopWatch();
+        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
         stopWatch.start("load 'people.xlsx' file");
 
         // given
@@ -180,20 +201,25 @@ public class ExcelReaderTest {
         OutputStream out = new FileOutputStream(file);
 
         stopWatch.stop();
+        int numOfMocks = 10_000;
+        stopWatch.start(String.format("create %d mocks", numOfMocks));
 
-        List<Human> mocks = new Human().createRandoms(10_000);
+        List<Human> mocks = new Human().createRandoms(numOfMocks);
 
+        stopWatch.stop();
         stopWatch.start("read people");
 
         // when
         ExcelWriter.init(workbook, Human.class).write(out, mocks);
-        List<Human> people = ExcelReader.init(workbook, Human.class).read();
+        List<Human> people = ExcelReader.init(workbook, Human.class).parallel().read();
 
         stopWatch.stop();
 
         // then
-        System.out.println(stopWatch.prettyPrint());
-        assertTrue(mocks.containsAll(people));
+        assertThat(mocks.containsAll(people))
+                .as("Loaded data is equal to mock's data")
+                .isTrue();
+        System.out.println(stopWatch.getStatistics());
     }
 
 }

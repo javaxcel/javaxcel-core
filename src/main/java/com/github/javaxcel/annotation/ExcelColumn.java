@@ -8,11 +8,11 @@ import java.lang.annotation.*;
 public @interface ExcelColumn {
 
     /**
-     * Column name.
+     * Header name.
      *
-     * @return column name
+     * @return header name
      */
-    String value() default "";
+    String name() default "";
 
     /**
      * Replacement of the value when the value is null or empty string.

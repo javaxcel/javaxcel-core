@@ -3,7 +3,6 @@ package com.github.javaxcel.model.product;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelIgnore;
 import com.github.javaxcel.model.Mockables;
-import io.github.imsejin.util.StringUtils;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -19,24 +18,24 @@ import java.util.UUID;
 @EqualsAndHashCode(exclude = {"apiId", "depth", "weight"})
 public class Product implements Mockables<Product> {
 
-    @ExcelColumn("상품번호")
+    @ExcelColumn(name = "상품번호")
     private long serialNumber;
 
     private String name;
 
     @ExcelIgnore
-    @ExcelColumn("API_ID")
+    @ExcelColumn(name = "API_ID")
     private String apiId;
 
-    @ExcelColumn(value = "가로")
+    @ExcelColumn(name = "가로")
     private Double width;
 
-//    @ExcelColumn(defaultValue = "(empty)") // Default value is ineffective to primitive type.
+    @ExcelColumn(defaultValue = "(empty)") // Default value is ineffective to primitive type.
     private double depth;
 
     private double height;
 
-//    @ExcelColumn(value = "WEIGHT", defaultValue = "0") // Default value is effective except primitive type.
+    @ExcelColumn(name = "WEIGHT", defaultValue = "-1") // Default value is effective except primitive type.
     private Double weight;
 
     @Override

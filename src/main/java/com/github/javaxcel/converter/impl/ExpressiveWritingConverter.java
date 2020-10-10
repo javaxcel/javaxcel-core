@@ -1,10 +1,10 @@
 package com.github.javaxcel.converter.impl;
 
-import com.github.javaxcel.annotation.ExcelWriterConversion;
+import com.github.javaxcel.annotation.ExcelWriterExpression;
 import com.github.javaxcel.converter.WritingConverter;
-import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
+import io.github.imsejin.expression.ExpressionParser;
+import io.github.imsejin.expression.spel.standard.SpelExpressionParser;
+import io.github.imsejin.expression.spel.support.StandardEvaluationContext;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -44,11 +44,11 @@ public class ExpressiveWritingConverter<T> implements WritingConverter<T> {
      * @param model object in list
      * @param field field of object
      * @return computed string
-     * @see ExcelWriterConversion#value()
+     * @see ExcelWriterExpression#value()
      */
     @Override
     public String convert(T model, Field field) {
-        ExcelWriterConversion annotation = field.getAnnotation(ExcelWriterConversion.class);
+        ExcelWriterExpression annotation = field.getAnnotation(ExcelWriterExpression.class);
         context.setRootObject(model);
         context.setVariables(this.variables);
 

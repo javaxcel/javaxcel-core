@@ -22,58 +22,58 @@ import java.util.UUID;
 @ExcelModel(policy = TargetedFieldPolicy.INCLUDES_INHERITED)
 public class Human extends Creature implements Mockables<Human> {
 
-    @ExcelColumn("Name")
+    @ExcelColumn(name = "Name")
     private String name;
 
-    @ExcelColumn("Birthday")
+    @ExcelColumn(name = "Birthday")
     @ExcelDateTimeFormat(pattern = "yyyy/MM/dd")
-    @ExcelReaderConversion("T(java.time.LocalDate).parse(#birthday, T(java.time.format.DateTimeFormatter).ofPattern('yyyy/MM/dd'))")
+    @ExcelReaderExpression("T(java.time.LocalDate).parse(#birthday, T(java.time.format.DateTimeFormatter).ofPattern('yyyy/MM/dd'))")
     private LocalDate birthday;
 
-    @ExcelColumn("Birth Time")
+    @ExcelColumn(name = "Birth Time")
     @ExcelDateTimeFormat(pattern = "HH/mm/ss.SSS")
-    @ExcelReaderConversion("T(java.time.LocalTime).parse(#birthTime, T(java.time.format.DateTimeFormatter).ofPattern('HH/mm/ss.SSS'))")
+    @ExcelReaderExpression("T(java.time.LocalTime).parse(#birthTime, T(java.time.format.DateTimeFormatter).ofPattern('HH/mm/ss.SSS'))")
     private LocalTime birthTime;
 
-    @ExcelColumn("Place of Birth")
-    @ExcelWriterConversion("T(com.github.javaxcel.converter.Converter).capitalize(#placeOfBirth, '-')")
-    @ExcelReaderConversion("#placeOfBirth?.toLowerCase()") // null-safe operator '?.'
+    @ExcelColumn(name = "Place of Birth")
+    @ExcelWriterExpression("T(com.github.javaxcel.Converter).capitalize(#placeOfBirth, '-')")
+    @ExcelReaderExpression("#placeOfBirth?.toLowerCase()") // null-safe operator '?.'
     private String placeOfBirth;
 
-    @ExcelColumn("Rest Seconds of Life")
-    @ExcelWriterConversion("#restSecondsOfLife + ' sec'")
-    @ExcelReaderConversion("new java.math.BigDecimal(#restSecondsOfLife.replace(' sec', ''))") // constructor
+    @ExcelColumn(name = "Rest Seconds of Life")
+    @ExcelWriterExpression("#restSecondsOfLife + ' sec'")
+    @ExcelReaderExpression("new java.math.BigDecimal(#restSecondsOfLife.replace(' sec', ''))") // constructor
     private BigDecimal restSecondsOfLife;
 
-    @ExcelColumn("Number of Cells")
-    @ExcelWriterConversion("#numOfCells + ' cells/kg'")
-    @ExcelReaderConversion("new java.math.BigInteger(#numOfCells.replace(' cells/kg', ''))") // constructor
+    @ExcelColumn(name = "Number of Cells")
+    @ExcelWriterExpression("#numOfCells + ' cells/kg'")
+    @ExcelReaderExpression("new java.math.BigInteger(#numOfCells.replace(' cells/kg', ''))") // constructor
     private BigInteger numOfCells;
 
-    @ExcelColumn("Height")
-    @ExcelWriterConversion("#height + ' cm'")
-    @ExcelReaderConversion("T(Float).parseFloat(#height.replace(' cm', ''))")
+    @ExcelColumn(name = "Height")
+    @ExcelWriterExpression("#height + ' cm'")
+    @ExcelReaderExpression("T(Float).parseFloat(#height.replace(' cm', ''))")
     private float height;
 
-    @ExcelColumn("Weight")
-    @ExcelWriterConversion("#weight + ' kg'")
-    @ExcelReaderConversion("T(Float).parseFloat(#weight.replace(' kg', ''))")
+    @ExcelColumn(name = "Weight")
+    @ExcelWriterExpression("#weight + ' kg'")
+    @ExcelReaderExpression("#weight.replace(' kg', '')") // This string will be parsed as float.
     private float weight;
 
-    @ExcelColumn("Ages from Birth to Puberty")
-    @ExcelWriterConversion("T(java.util.Arrays).stream(#agesFromBirthToPuberty).boxed()" +
+    @ExcelColumn(name = "Ages from Birth to Puberty")
+    @ExcelWriterExpression("T(java.util.Arrays).stream(#agesFromBirthToPuberty).boxed()" +
             ".collect(T(java.util.stream.Collectors).toList()).toString().replaceAll('[\\[\\]]', '')")
-    @ExcelReaderConversion("#agesFromBirthToPuberty == null || #agesFromBirthToPuberty.equals('') ? null" +
-            ": T(com.github.javaxcel.converter.Converter).toIntArray(#agesFromBirthToPuberty.split(', '))")
+    @ExcelReaderExpression("#agesFromBirthToPuberty == null || #agesFromBirthToPuberty.equals('') ? null" +
+            ": T(com.github.javaxcel.Converter).toIntArray(#agesFromBirthToPuberty.split(', '))")
     private int[] agesFromBirthToPuberty;
 
-    @ExcelColumn("Ages from Twilight to Death")
-    @ExcelReaderConversion("new int[] {}")
+    @ExcelColumn(name = "Ages from Twilight to Death")
+    @ExcelReaderExpression("new int[] {}")
     private int[] agesFromTwilightToDeath;
 
-    @ExcelColumn("Whether Disabled or Not")
-    @ExcelWriterConversion("#disabled ? 'yes' : 'no'")
-    @ExcelReaderConversion("#disabled eq 'yes' ? true : false")
+    @ExcelColumn(name = "Whether Disabled or Not")
+    @ExcelWriterExpression("#disabled ? 'yes' : 'no'")
+    @ExcelReaderExpression("#disabled eq 'yes' ? true : false")
     private boolean disabled;
 
     public Human(Kingdom kingdom, Sex sex, int lifespan, String name, LocalDate birthday, LocalTime birthTime,
@@ -111,7 +111,7 @@ public class Human extends Creature implements Mockables<Human> {
                 new Human(Kingdom.PLANTAE, Sex.FEMALE, 2000, "tree of life", LocalDate.now(), LocalTime.now(),
                         "united-state-of-america", new BigDecimal("728349210342742.2346791209564390683103567314567813420124892047128537183"),
                         new BigInteger("13489570439503567143859483067247856304724853452034"), 1000, 10_000,
-                        new int[]{0, 1, 2, 3, 4, 5, 6}, new int[]{1996, 1997, 1998,1999,2000}, false)
+                        new int[]{0, 1, 2, 3, 4, 5, 6}, new int[]{1996, 1997, 1998, 1999, 2000}, false)
         );
     }
 
