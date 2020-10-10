@@ -100,6 +100,14 @@ public final class FieldUtils {
         return map;
     }
 
+    /**
+     * Returns value of the field.
+     *
+     * @param model model in list
+     * @param field targeted field
+     * @param <T>   type of the object
+     * @return field value
+     */
     public static <T> Object getFieldValue(T model, Field field) {
         // Enables to have access to the field even private field.
         field.setAccessible(true);
@@ -112,6 +120,14 @@ public final class FieldUtils {
         }
     }
 
+    /**
+     * Sets up value into the field.
+     *
+     * @param model model in list
+     * @param field targeted field
+     * @param value value to be set into field
+     * @param <T>   type of the object
+     */
     public static <T> void setFieldValue(T model, Field field, Object value) {
         // Enables to have access to the field even private field.
         field.setAccessible(true);

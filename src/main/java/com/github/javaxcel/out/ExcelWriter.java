@@ -56,11 +56,6 @@ public final class ExcelWriter<W extends Workbook, T> {
     private String[] headerNames;
 
     /**
-     * Replacement of the value when the value is null or empty string.
-     */
-    private String defaultValue;
-
-    /**
      * Name of excel sheet.
      */
     private String sheetName;
@@ -107,10 +102,15 @@ public final class ExcelWriter<W extends Workbook, T> {
         return this;
     }
 
+    /**
+     * Sets up default value.
+     *
+     * @param defaultValue replacement of the value when it is null or empty string.
+     * @return {@link ExcelWriter}
+     */
     public ExcelWriter<W, T> defaultValue(String defaultValue) {
         if (defaultValue == null) throw new IllegalArgumentException("Default value cannot be null");
 
-        this.defaultValue = defaultValue;
         this.basicConverter.setDefaultValue(defaultValue);
         this.expConverter.setDefaultValue(defaultValue);
         return this;
