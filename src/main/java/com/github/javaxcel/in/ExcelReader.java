@@ -3,6 +3,7 @@ package com.github.javaxcel.in;
 import com.github.javaxcel.annotation.ExcelReaderExpression;
 import com.github.javaxcel.converter.impl.BasicReadingConverter;
 import com.github.javaxcel.converter.impl.ExpressiveReadingConverter;
+import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
 import org.apache.poi.ss.usermodel.*;
@@ -81,6 +82,8 @@ public final class ExcelReader<W extends Workbook, T> {
         this.type = type;
         this.formulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
         this.fields = FieldUtils.getTargetedFields(type);
+
+        if (this.fields.isEmpty()) throw new NoTargetedFieldException(this.type);
     }
 
     public static <W extends Workbook, E> ExcelReader<W, E> init(W workbook, Class<E> type) {
