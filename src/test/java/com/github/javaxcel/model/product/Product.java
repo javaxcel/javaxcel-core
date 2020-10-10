@@ -19,16 +19,16 @@ import java.util.UUID;
 @EqualsAndHashCode(exclude = {"apiId", "depth", "weight"})
 public class Product implements Mockables<Product> {
 
-    @ExcelColumn("상품번호")
+    @ExcelColumn(name = "상품번호")
     private long serialNumber;
 
     private String name;
 
     @ExcelIgnore
-    @ExcelColumn("API_ID")
+    @ExcelColumn(name = "API_ID")
     private String apiId;
 
-    @ExcelColumn(value = "가로")
+    @ExcelColumn(name = "가로")
     private Double width;
 
 //    @ExcelColumn(defaultValue = "(empty)") // Default value is ineffective to primitive type.
