@@ -1,20 +1,24 @@
-
-
-<p align="center">
-	<img width="45%" src="./src/main/resources/main-image.png" alt="Javaxcel Core">
+<p align="center" width="40%">
+	<img  src="./src/main/resources/main-image.png" alt="Javaxcel Core">
 </p>
 
 
-<p align="center">
-    <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/javaxcel/javaxcel-core">
-    <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/javaxcel/javaxcel-core?label=github">
-    <img alt="Bintray" src="https://img.shields.io/bintray/v/imsejin/Javaxcel/javaxcel-core">
-    <img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.github.javaxcel/javaxcel-core">
-    <img alt="GitHub All Releases" src="https://img.shields.io/github/downloads/javaxcel/javaxcel-core/total?label=downloads%20at%20github">
-    <img alt="Bintray" src="https://img.shields.io/bintray/dt/imsejin/Javaxcel/javaxcel-core?label=downloads%20at%20bintray">
-    <img alt="GitHub" src="https://img.shields.io/github/license/javaxcel/javaxcel-core">
-    <img alt="jdk8" src="https://img.shields.io/badge/jdk-8-orange">
-</p>
+
+<div style="display: flex; justify-content: center;">
+    <p align="center" style="width: 50%">
+        <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/javaxcel/javaxcel-core">
+        <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/javaxcel/javaxcel-core?label=github">
+        <img alt="Bintray" src="https://img.shields.io/bintray/v/imsejin/Javaxcel/javaxcel-core">
+        <img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.github.javaxcel/javaxcel-core">
+        <img alt="GitHub All Releases" src="https://img.shields.io/github/downloads/javaxcel/javaxcel-core/total?label=downloads%20at%20github">
+        <img alt="Bintray" src="https://img.shields.io/bintray/dt/imsejin/Javaxcel/javaxcel-core?label=downloads%20at%20bintray">
+        <img alt="GitHub" src="https://img.shields.io/github/license/javaxcel/javaxcel-core">
+        <img alt="jdk8" src="https://img.shields.io/badge/jdk-8-orange">
+    </p>
+</div>
+
+
+
 Javaxcel is utilities for writing and reading excel file with simple usage based annotations.
 
 <br><br>
