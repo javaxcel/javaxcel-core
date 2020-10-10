@@ -57,7 +57,7 @@ public class Human extends Creature implements Mockables<Human> {
 
     @ExcelColumn(name = "Weight")
     @ExcelWriterExpression("#weight + ' kg'")
-    @ExcelReaderExpression("T(Float).parseFloat(#weight.replace(' kg', ''))")
+    @ExcelReaderExpression("#weight.replace(' kg', '')") // This string will be parsed as float.
     private float weight;
 
     @ExcelColumn(name = "Ages from Birth to Puberty")
@@ -111,7 +111,7 @@ public class Human extends Creature implements Mockables<Human> {
                 new Human(Kingdom.PLANTAE, Sex.FEMALE, 2000, "tree of life", LocalDate.now(), LocalTime.now(),
                         "united-state-of-america", new BigDecimal("728349210342742.2346791209564390683103567314567813420124892047128537183"),
                         new BigInteger("13489570439503567143859483067247856304724853452034"), 1000, 10_000,
-                        new int[]{0, 1, 2, 3, 4, 5, 6}, new int[]{1996, 1997, 1998,1999,2000}, false)
+                        new int[]{0, 1, 2, 3, 4, 5, 6}, new int[]{1996, 1997, 1998, 1999, 2000}, false)
         );
     }
 

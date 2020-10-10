@@ -30,7 +30,6 @@ public class EducationToy extends Toy implements Mockables<EducationToy> {
     @ExcelColumn
     private LocalDate date = LocalDate.now();
 
-    //    @ExcelColumn
     @ExcelDateTimeFormat(pattern = "HH/mm/ss/SSS")
     private LocalTime time = LocalTime.now();
 

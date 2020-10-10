@@ -30,12 +30,12 @@ public class Product implements Mockables<Product> {
     @ExcelColumn(name = "가로")
     private Double width;
 
-//    @ExcelColumn(defaultValue = "(empty)") // Default value is ineffective to primitive type.
+    @ExcelColumn(defaultValue = "(empty)") // Default value is ineffective to primitive type.
     private double depth;
 
     private double height;
 
-//    @ExcelColumn(value = "WEIGHT", defaultValue = "0") // Default value is effective except primitive type.
+    @ExcelColumn(name = "WEIGHT", defaultValue = "-1") // Default value is effective except primitive type.
     private Double weight;
 
     @Override
