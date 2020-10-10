@@ -4,6 +4,7 @@ import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
 import io.github.imsejin.common.util.StringUtils;
 import io.github.imsejin.expression.Expression;
+import io.github.imsejin.expression.ExpressionParser;
 import io.github.imsejin.expression.ParserContext;
 import io.github.imsejin.expression.spel.standard.SpelExpressionParser;
 import io.github.imsejin.expression.spel.support.StandardEvaluationContext;
@@ -18,6 +19,8 @@ import static org.assertj.core.api.Assertions.*;
 
 public class SpELTest {
 
+    private static final ExpressionParser parser = new SpelExpressionParser();
+
     private static String convert(IntStream stream) {
         return stream.mapToObj(String::valueOf)
                 .collect(() -> new StringJoiner(","), StringJoiner::add, (s1, s2) -> {
@@ -31,7 +34,6 @@ public class SpELTest {
         String exp = "T(java.util.Arrays).asList('Hello', \"world!\").toString()";
 
         // when
-        SpelExpressionParser parser = new SpelExpressionParser();
         Expression expression = parser.parseExpression(exp);
 
         // then
@@ -49,7 +51,6 @@ public class SpELTest {
         product.setName(name);
 
         // when
-        SpelExpressionParser parser = new SpelExpressionParser();
         Expression expression = parser.parseExpression("apiId = name.toUpperCase()");
         String actual = expression.getValue(product, String.class);
 
@@ -71,7 +72,6 @@ public class SpELTest {
         product.setApiId(initialUuid);
 
         // when
-        SpelExpressionParser parser = new SpelExpressionParser();
         String newUuid = UUID.randomUUID().toString();
         parser.parseExpression("apiId").setValue(product, newUuid);
 
@@ -85,6 +85,7 @@ public class SpELTest {
     }
 
     @Test
+    @DisplayName("SpEL: Product#name = #variable")
     public void expressionThatHasVariable() {
         // given
         String initialName = "Caramel macchiato";
@@ -93,7 +94,6 @@ public class SpELTest {
 
         // when
         String newName = "Cafe mocha";
-        SpelExpressionParser parser = new SpelExpressionParser();
         StandardEvaluationContext context = new StandardEvaluationContext();
         context.setRootObject(product);
         context.setVariable("name", newName);
@@ -112,29 +112,54 @@ public class SpELTest {
     }
 
     @Test
+    @DisplayName("SpEL: template expression #{fieldName}")
     public void inputValueToTemplateAndParseExpression() {
         // given
         Product product = new Product();
         product.setName("Milk Tea");
         String exp = "'#{name}'.replace(' ', '_').toLowerCase()";
 
-        // when #1
-        SpelExpressionParser parser = new SpelExpressionParser();
-        Expression expression = parser.parseExpression(exp, ParserContext.TEMPLATE_EXPRESSION);
-        String convertedTemplate = expression.getValue(product, String.class);
+        // when
+        String convertedTemplate = parser.parseExpression(exp, ParserContext.TEMPLATE_EXPRESSION)
+                .getValue(product, String.class);
+        String expressionResult = parser.parseExpression(convertedTemplate)
+                .getValue(product, String.class);
 
-        // then #1
-        assertThat("'Milk Tea'.replace(' ', '_').toLowerCase()").isEqualTo(convertedTemplate);
-
-        // when #2
-        Expression expression1 = parser.parseExpression(convertedTemplate);
-        String value = expression1.getValue(product, String.class);
-
-        // then #2
-        assertThat("milk_tea").isEqualTo(value);
+        // then
+        assertThat(convertedTemplate)
+                .as("#{fieldName} is converted into field value")
+                .isEqualTo(exp.replaceAll("#\\{.+}", product.getName()));
+        assertThat(expressionResult)
+                .as("Executes a expression as converted template")
+                .isEqualTo("milk_tea");
     }
 
     @Test
+    @DisplayName("SpEL: only variable without root object")
+    public void parseVariable() {
+        // given
+        EducationToy toy = new EducationToy();
+        toy.setTargetAges(new int[]{2, 3, 4, 5, 6});
+        String fieldName = "targetAges";
+        String exp = String.format("T(java.util.Arrays).stream(#%s)" +
+                ".boxed()" +
+                ".collect(T(java.util.stream.Collectors).toList())" +
+                ".toString()" +
+                ".replaceAll('[\\[\\]]', '')", fieldName);
+
+        // when
+        StandardEvaluationContext context = new StandardEvaluationContext(toy);
+        context.setVariable(fieldName, toy.getTargetAges());
+        String expResult = parser.parseExpression(exp).getValue(context, String.class);
+
+        // then
+        assertThat(expResult)
+                .as("Stringified int array")
+                .isEqualTo("2, 3, 4, 5, 6");
+    }
+
+    @Test
+    @DisplayName("SpEL: only variables without root object")
     @SuppressWarnings("unchecked")
     public void parseVariables() {
         // given
@@ -144,37 +169,20 @@ public class SpELTest {
         }};
 
         // when
-        SpelExpressionParser parser = new SpelExpressionParser();
         StandardEvaluationContext context = new StandardEvaluationContext();
         context.setVariables(map);
-        List<Integer> list = parser.parseExpression("#primes.?[#this > 7]").getValue(context, List.class);
+        List<Integer> list = parser.parseExpression("#primes.?[#this > 7]")
+                .getValue(context, List.class);
 
         // then
-        list.forEach(System.out::println);
-    }
-
-    @Test
-    public void parseVariable() {
-        // given
-        EducationToy toy = new EducationToy();
-        toy.setTargetAges(new int[]{2, 3, 4, 5, 6});
-        String fieldName = "targetAges";
-        String exp = "T(java.util.Arrays).stream(#" + fieldName + ").boxed().collect(T(java.util.stream.Collectors).toList()).toString()";
-
-        // when
-        SpelExpressionParser parser = new SpelExpressionParser();
-        StandardEvaluationContext context = new StandardEvaluationContext(toy);
-        context.setVariable(fieldName, toy.getTargetAges());
-        String value = StringUtils.ifNullOrEmpty(
-                (String) parser.parseExpression(exp).getValue(context), "");
-
-        // then
-        assertThat("[2, 3, 4, 5, 6]").isEqualTo(value);
+        list.forEach(it -> assertThat(it)
+                .as("Elements in list are greater than 7")
+                .isGreaterThan(7));
     }
 
     @Test
     @SneakyThrows
-    public void parseVaribleWithMethod() {
+    public void parseVariableWithMethod() {
         // given
         EducationToy toy = new EducationToy();
         toy.setTargetAges(new int[]{2, 3, 4, 5, 6});
@@ -183,7 +191,6 @@ public class SpELTest {
         String exp = "#" + converterName + "(T(java.util.Arrays).stream(#" + fieldName + "))";
 
         // when
-        SpelExpressionParser parser = new SpelExpressionParser();
         StandardEvaluationContext context = new StandardEvaluationContext(toy);
         context.registerFunction(converterName, SpELTest.class.getDeclaredMethod(converterName, IntStream.class));
         context.setVariable(fieldName, toy.getTargetAges());
@@ -204,7 +211,6 @@ public class SpELTest {
         String exp = "T(com.github.javaxcel.Converter).toIntArray(#" + key + ".split(', '))";
 
         // when
-        SpelExpressionParser parser = new SpelExpressionParser();
         StandardEvaluationContext context = new StandardEvaluationContext();
         context.setVariables(map);
 
@@ -215,6 +221,7 @@ public class SpELTest {
     }
 
     @Test
+    @DisplayName("SpEL: write a constructor in expression")
     public void parseConstructor() {
         // given
         BigInteger bigInt = new BigInteger("123456789");
@@ -222,11 +229,10 @@ public class SpELTest {
         String exp = "new java.math.BigInteger('123456789')";
 
         // when
-        SpelExpressionParser parser = new SpelExpressionParser();
-        BigInteger bigInteger = parser.parseExpression(exp).getValue(BigInteger.class);
+        BigInteger expResult = parser.parseExpression(exp).getValue(BigInteger.class);
 
         // then
-        assertThat(bigInteger).isEqualTo(bigInt);
+        assertThat(expResult).isEqualTo(bigInt);
     }
 
 }
