@@ -4,18 +4,16 @@
 
 
 
-<div style="display: flex; justify-content: center;">
-    <p align="center" style="width: 50%">
-        <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/javaxcel/javaxcel-core">
-        <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/javaxcel/javaxcel-core?label=github">
-        <img alt="Bintray" src="https://img.shields.io/bintray/v/imsejin/Javaxcel/javaxcel-core">
-        <img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.github.javaxcel/javaxcel-core">
-        <img alt="GitHub All Releases" src="https://img.shields.io/github/downloads/javaxcel/javaxcel-core/total?label=downloads%20at%20github">
-        <img alt="Bintray" src="https://img.shields.io/bintray/dt/imsejin/Javaxcel/javaxcel-core?label=downloads%20at%20bintray">
-        <img alt="GitHub" src="https://img.shields.io/github/license/javaxcel/javaxcel-core">
-        <img alt="jdk8" src="https://img.shields.io/badge/jdk-8-orange">
-    </p>
-</div>
+<p align="center">
+    <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/javaxcel/javaxcel-core">
+    <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/javaxcel/javaxcel-core?label=github">
+    <img alt="Bintray" src="https://img.shields.io/bintray/v/imsejin/Javaxcel/javaxcel-core">
+    <img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.github.javaxcel/javaxcel-core">
+    <img alt="GitHub All Releases" src="https://img.shields.io/github/downloads/javaxcel/javaxcel-core/total?label=downloads%20at%20github">
+    <img alt="Bintray" src="https://img.shields.io/bintray/dt/imsejin/Javaxcel/javaxcel-core?label=downloads%20at%20bintray">
+    <img alt="GitHub" src="https://img.shields.io/github/license/javaxcel/javaxcel-core">
+    <img alt="jdk8" src="https://img.shields.io/badge/jdk-8-orange">
+</p>
 
 
 
@@ -132,7 +130,7 @@ The result is
         "depth": 0.0,
         "height": 20.5,
         "weight": 580.5
-	}
+    }
 ]
 ```
 
@@ -384,7 +382,7 @@ The result is
 List<EducationalProduct> eduProducts = ExcelReader.init(workbook, EducationalProduct.class).read();
 ```
 
-```json
+```js
 [
     {
         "serialNumber": 10001,
