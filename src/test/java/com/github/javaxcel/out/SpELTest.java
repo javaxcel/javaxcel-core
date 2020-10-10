@@ -15,7 +15,6 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class SpELTest {
 
@@ -36,57 +35,80 @@ public class SpELTest {
         Expression expression = parser.parseExpression(exp);
 
         // then
-        assertThat(expression.getValue(String.class)).isEqualTo("[Hello, world!]");
+        assertThat(expression.getValue(String.class))
+                .as("Expression result is equal to stringified array")
+                .isEqualTo(Arrays.asList("Hello", "world!").toString());
     }
 
     @Test
     @DisplayName("SpEL: Product#apiId = Product#name")
     public void setApiIdWithName() {
         // given
+        String name = "Mint Chocolate";
         Product product = new Product();
-        product.setName("Mint Chocolate");
+        product.setName(name);
 
         // when
         SpelExpressionParser parser = new SpelExpressionParser();
         Expression expression = parser.parseExpression("apiId = name.toUpperCase()");
+        String actual = expression.getValue(product, String.class);
 
         // then
-        assertThat(expression.getValue(product, String.class)).isEqualTo("MINT CHOCOLATE");
-        assertThat(product.getApiId()).isEqualTo("MINT CHOCOLATE");
+        assertThat(product.getApiId())
+                .as("Product's name is change into the capitalized")
+                .isEqualTo(name.toUpperCase());
+        assertThat(actual)
+                .as("Expression result is equal to product's api id")
+                .isEqualTo(product.getApiId());
     }
 
     @Test
     @DisplayName("SpEL: Product#apiId = UUID#randomUUID()#toString()")
     public void setValueIntoProperty() {
         // given
+        String initialUuid = UUID.randomUUID().toString();
         Product product = new Product();
-        product.setApiId(UUID.randomUUID().toString());
+        product.setApiId(initialUuid);
 
         // when
         SpelExpressionParser parser = new SpelExpressionParser();
-        String uuid = UUID.randomUUID().toString();
-        parser.parseExpression("apiId").setValue(product, uuid);
+        String newUuid = UUID.randomUUID().toString();
+        parser.parseExpression("apiId").setValue(product, newUuid);
 
         // then
-        assertThat(product.getApiId()).isEqualTo(uuid);
+        assertThat(product.getApiId())
+                .as("Initial api id is replaced")
+                .isNotEqualTo(initialUuid);
+        assertThat(product.getApiId())
+                .as("Product's api id is replaced with new api id")
+                .isEqualTo(newUuid);
     }
 
     @Test
     public void expressionThatHasVariable() {
         // given
+        String initialName = "Caramel macchiato";
         Product product = new Product();
-        product.setName("Caramel macchiato");
+        product.setName(initialName);
 
         // when
+        String newName = "Cafe mocha";
         SpelExpressionParser parser = new SpelExpressionParser();
         StandardEvaluationContext context = new StandardEvaluationContext();
         context.setRootObject(product);
-        context.setVariable("name", "Cafe mocha");
-        String value = parser.parseExpression("name = #name").getValue(context, String.class);
+        context.setVariable("name", newName);
+        String actual = parser.parseExpression("name = #name").getValue(context, String.class);
 
         // then
-        assertThat(product.getName()).isEqualTo("Cafe mocha");
-        assertThat(value).isEqualTo(product.getName());
+        assertThat(product.getName())
+                .as("Initial name is replaced")
+                .isNotEqualTo(initialName);
+        assertThat(product.getName())
+                .as("Product's name is replaced with new name")
+                .isEqualTo(newName);
+        assertThat(actual)
+                .as("Expression result is equal to product's name")
+                .isEqualTo(product.getName());
     }
 
     @Test
@@ -113,6 +135,7 @@ public class SpELTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void parseVariables() {
         // given
         List<Integer> primes = Arrays.asList(2, 3, 5, 7, 11, 13, 17);
@@ -188,7 +211,7 @@ public class SpELTest {
         int[] ints = parser.parseExpression(exp).getValue(context, int[].class);
 
         // then
-        assertArrayEquals(ints, new int[]{2, 3, 4, 5, 6});
+        assertThat(ints).containsExactly(2, 3, 4, 5, 6);
     }
 
     @Test
@@ -196,7 +219,6 @@ public class SpELTest {
         // given
         BigInteger bigInt = new BigInteger("123456789");
 
-//        String exp = "T(java.math.BigInteger).valueOf('123456789')";
         String exp = "new java.math.BigInteger('123456789')";
 
         // when

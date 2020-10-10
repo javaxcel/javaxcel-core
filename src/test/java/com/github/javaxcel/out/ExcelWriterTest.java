@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 
 import static org.assertj.core.api.Assertions.*;
@@ -43,10 +44,11 @@ public class ExcelWriterTest {
         HSSFWorkbook workbook = new HSSFWorkbook();
 
         // when
-        Stopwatch stopWatch = new Stopwatch();
-        stopWatch.start("create product mocks");
+        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
+        int numOfMocks = ExcelStyler.HSSF_MAX_ROWS - 1;
+        stopWatch.start(String.format("create %d mocks", numOfMocks));
 
-        List<Product> products = new Product().createRandoms(ExcelStyler.HSSF_MAX_ROWS - 1);
+        List<Product> products = new Product().createRandoms(numOfMocks);
 
         stopWatch.stop();
         stopWatch.start("write products");
@@ -74,10 +76,11 @@ public class ExcelWriterTest {
         XSSFWorkbook workbook = new XSSFWorkbook();
 
         // when
-        Stopwatch stopWatch = new Stopwatch();
-        stopWatch.start("create toy mocks");
+        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
+        int numOfMocks = 10_000;
+        stopWatch.start(String.format("create %d mocks", numOfMocks));
 
-        List<EducationToy> toys = new EducationToy().createRandoms(10_000);
+        List<EducationToy> toys = new EducationToy().createRandoms(numOfMocks);
 
         stopWatch.stop();
         stopWatch.start("write with toys");
@@ -103,7 +106,7 @@ public class ExcelWriterTest {
         @Cleanup
         HSSFWorkbook workbook = new HSSFWorkbook();
 
-        Stopwatch stopWatch = new Stopwatch();
+        Stopwatch stopWatch = new Stopwatch(TimeUnit.MILLISECONDS);
         stopWatch.start("initialize");
 
         // then
@@ -140,10 +143,11 @@ public class ExcelWriterTest {
         };
 
         // when
-        Stopwatch stopWatch = new Stopwatch();
-        stopWatch.start("create product mocks");
+        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
+        int numOfMocks = 1000;
+        stopWatch.start(String.format("create %d mocks", numOfMocks));
 
-        List<Human> people = new Human().createRandoms(1000);
+        List<Human> people = new Human().createRandoms(numOfMocks);
 
         stopWatch.stop();
         stopWatch.start("write people and decorate");
@@ -178,10 +182,11 @@ public class ExcelWriterTest {
         @Cleanup
         HSSFWorkbook workbook = new HSSFWorkbook();
 
-        Stopwatch stopWatch = new Stopwatch();
-        stopWatch.start("create human mocks");
+        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
+        int numOfMocks = 10_000;
+        stopWatch.start(String.format("create %d mocks", numOfMocks));
 
-        List<Human> people = new Human().createRandoms(10_000);
+        List<Human> people = new Human().createRandoms(numOfMocks);
 
         stopWatch.stop();
         stopWatch.start("write people");

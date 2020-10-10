@@ -49,10 +49,13 @@ public class ExcelReaderTest {
         Constructor<?> constructor = Arrays.stream(declaredConstructors)
                 .min(Comparator.comparingInt(Constructor::getParameterCount))
                 .orElseThrow(() -> new NoTargetedConstructorException(clazz));
-        System.out.println("constructor with minimum parameters: " + constructor);
         constructor.setAccessible(true);
         Arrays.stream(constructor.getParameterTypes()).forEach(System.out::println);
-        constructor.newInstance();
+
+        assertThat(constructor.newInstance())
+                .as("Instantiates class without params")
+                .isInstanceOf(clazz);
+        System.out.println("Constructor with minimum parameters: " + constructor);
     }
 
     /**
@@ -64,7 +67,7 @@ public class ExcelReaderTest {
     @DisplayName("Own fields + @ExcelIgnore")
     @SneakyThrows
     public void readWithNotInheritedTypeAndExcelIgnore() {
-        Stopwatch stopWatch = new Stopwatch();
+        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
         stopWatch.start("load 'products.xls' file");
 
         // given
@@ -75,9 +78,12 @@ public class ExcelReaderTest {
         OutputStream out = new FileOutputStream(file);
 
         stopWatch.stop();
+        int numOfMocks = 10_000;
+        stopWatch.start(String.format("create %d mocks", numOfMocks));
 
-        List<Product> mocks = new Product().createRandoms(10_000);
+        List<Product> mocks = new Product().createRandoms(numOfMocks);
 
+        stopWatch.stop();
         stopWatch.start("read products");
 
         // when
@@ -100,7 +106,7 @@ public class ExcelReaderTest {
     @DisplayName("Including inherited fields + @ExcelDateTimeFormat")
     @SneakyThrows
     public void readWithTargetedFieldPolicyAndDateTimePattern() {
-        Stopwatch stopWatch = new Stopwatch();
+        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
         stopWatch.start("load 'toys.xlsx' file");
 
         // given
@@ -111,9 +117,12 @@ public class ExcelReaderTest {
         OutputStream out = new FileOutputStream(file);
 
         stopWatch.stop();
+        int numOfMocks = 10_000;
+        stopWatch.start(String.format("create %d mocks", numOfMocks));
 
-        List<EducationToy> mocks = new EducationToy().createRandoms(10_000);
+        List<EducationToy> mocks = new EducationToy().createRandoms(numOfMocks);
 
+        stopWatch.stop();
         stopWatch.start("read toys");
 
         // when
@@ -192,16 +201,17 @@ public class ExcelReaderTest {
         OutputStream out = new FileOutputStream(file);
 
         stopWatch.stop();
-        stopWatch.start("create mocks");
+        int numOfMocks = 10_000;
+        stopWatch.start(String.format("create %d mocks", numOfMocks));
 
-        List<Human> mocks = new Human().createRandoms(10_000);
+        List<Human> mocks = new Human().createRandoms(numOfMocks);
 
         stopWatch.stop();
         stopWatch.start("read people");
 
         // when
         ExcelWriter.init(workbook, Human.class).write(out, mocks);
-        List<Human> people = ExcelReader.init(workbook, Human.class).read();
+        List<Human> people = ExcelReader.init(workbook, Human.class).parallel().read();
 
         stopWatch.stop();
 
