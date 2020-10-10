@@ -3,7 +3,6 @@ package com.github.javaxcel.model.product;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelIgnore;
 import com.github.javaxcel.model.Mockables;
-import io.github.imsejin.common.util.StringUtils;
 import lombok.*;
 
 import java.util.ArrayList;
