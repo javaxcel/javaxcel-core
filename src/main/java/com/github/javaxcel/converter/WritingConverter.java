@@ -1,7 +1,7 @@
 package com.github.javaxcel.converter;
 
 import com.github.javaxcel.annotation.ExcelColumn;
-import io.github.imsejin.common.util.StringUtils;
+import com.github.javaxcel.util.StringUtils;
 
 import java.lang.reflect.Field;
 
