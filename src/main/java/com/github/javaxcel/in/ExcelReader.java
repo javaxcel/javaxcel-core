@@ -13,9 +13,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * ExcelReader
@@ -191,7 +192,7 @@ public final class ExcelReader<W extends Workbook, T> {
         List<Map<String, Object>> sModels = getSimulatedModels(sheet);
 
         Stream<Map<String, Object>> stream = this.parallel ? sModels.parallelStream() : sModels.stream();
-        List<T> realModels = stream.map(this::toRealModel).collect(Collectors.toList());
+        List<T> realModels = stream.map(this::toRealModel).collect(toList());
 
         list.addAll(realModels);
     }
@@ -235,11 +236,10 @@ public final class ExcelReader<W extends Workbook, T> {
      * @return simulated models
      */
     private List<Map<String, Object>> getSimulatedModels(Sheet sheet) {
-        // The number of rows except the first row.
-        final int numOfRows = Math.max(0, sheet.getPhysicalNumberOfRows() - 1);
+        final int numOfModels = ExcelUtils.getNumOfModels(sheet);
 
         // 인덱스 유효성을 체크한다
-        if (this.endIndex == -1 || this.endIndex > numOfRows) this.endIndex = numOfRows;
+        if (this.endIndex == -1 || this.endIndex > numOfModels) this.endIndex = numOfModels;
 
         // Reads rows.
         List<Map<String, Object>> simulatedModels = new ArrayList<>();

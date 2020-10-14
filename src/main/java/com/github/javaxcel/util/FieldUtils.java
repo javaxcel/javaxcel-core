@@ -9,8 +9,9 @@ import com.github.javaxcel.exception.SettingFieldValueException;
 
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 public final class FieldUtils {
 
@@ -42,7 +43,7 @@ public final class FieldUtils {
 
         // Excludes the fields to be ignored.
         return stream.filter(field -> field.getAnnotation(ExcelIgnore.class) == null)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     /**
