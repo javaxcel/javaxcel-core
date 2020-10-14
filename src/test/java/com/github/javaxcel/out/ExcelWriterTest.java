@@ -33,6 +33,19 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class ExcelWriterTest {
 
+    @SneakyThrows
+    private static int getNumOfWrittenModels(Class<? extends Workbook> type, File file) {
+        Workbook workbook;
+        if (type == HSSFWorkbook.class) {
+            workbook = new HSSFWorkbook(new FileInputStream(file));
+        } else {
+            workbook = new XSSFWorkbook(file);
+        }
+
+        Sheet sheet = workbook.getSheetAt(0);
+        return ExcelUtils.getNumOfModels(sheet);
+    }
+
     /**
      * When write 100,000 mocks,
      * <p> 1. XSSFWorkbook: 18 sec
@@ -69,9 +82,7 @@ public class ExcelWriterTest {
                 .as("#1 Excel file will be created")
                 .isNotNull()
                 .exists();
-        @Cleanup XSSFWorkbook realWorkbook = new XSSFWorkbook(file);
-        Sheet sheet = realWorkbook.getSheetAt(0);
-        assertThat(ExcelUtils.getNumOfModels(sheet))
+        assertThat(getNumOfWrittenModels(XSSFWorkbook.class, file))
                 .as("#2 The number of actually written model is %,d", products.size())
                 .isEqualTo(products.size());
     }
@@ -105,9 +116,7 @@ public class ExcelWriterTest {
                 .as("#1 Excel file will be created")
                 .isNotNull()
                 .exists();
-        @Cleanup XSSFWorkbook realWorkbook = new XSSFWorkbook(file);
-        Sheet sheet = realWorkbook.getSheetAt(0);
-        assertThat(ExcelUtils.getNumOfModels(sheet))
+        assertThat(getNumOfWrittenModels(XSSFWorkbook.class, file))
                 .as("#2 The number of actually written model is %,d", toys.size())
                 .isEqualTo(toys.size());
     }
@@ -212,9 +221,7 @@ public class ExcelWriterTest {
                 .as("#1 Excel file will be created")
                 .isNotNull()
                 .exists();
-        @Cleanup HSSFWorkbook realWorkbook = new HSSFWorkbook(new FileInputStream(file));
-        Sheet sheet = realWorkbook.getSheetAt(0);
-        assertThat(ExcelUtils.getNumOfModels(sheet))
+        assertThat(getNumOfWrittenModels(HSSFWorkbook.class, file))
                 .as("#2 The number of actually written model is %,d", people.size())
                 .isEqualTo(people.size());
     }
