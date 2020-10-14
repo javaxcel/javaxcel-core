@@ -2,11 +2,14 @@ package com.github.javaxcel.converter.impl;
 
 import com.github.javaxcel.annotation.ExcelWriterExpression;
 import com.github.javaxcel.converter.WritingConverter;
+import io.github.imsejin.expression.Expression;
 import io.github.imsejin.expression.ExpressionParser;
 import io.github.imsejin.expression.spel.standard.SpelExpressionParser;
 import io.github.imsejin.expression.spel.support.StandardEvaluationContext;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ExpressiveWritingConverter<T> implements WritingConverter<T> {
@@ -14,6 +17,8 @@ public class ExpressiveWritingConverter<T> implements WritingConverter<T> {
     private static final ExpressionParser parser = new SpelExpressionParser();
 
     private final StandardEvaluationContext context = new StandardEvaluationContext();
+
+    private final Map<String, Expression> cache = new HashMap<>();
 
     private String defaultValue;
 
@@ -25,6 +30,42 @@ public class ExpressiveWritingConverter<T> implements WritingConverter<T> {
     @Override
     public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
+    }
+
+    /**
+     * Parses expressions for each fields and caches them.
+     *
+     * <p> The following table is a benchmark.
+     *
+     * <pre>{@code
+     *     +--------------+--------+--------+
+     *     | row \ cached | true   | false  |
+     *     +--------------+--------+--------+
+     *     | 10,000       | 2s     | 5s     |
+     *     +--------------+--------+--------+
+     *     | 65,535       | 7s     | 25s    |
+     *     +--------------+--------+--------+
+     *     | 100,000      | 10s    | 40s    |
+     *     +--------------+--------+--------+
+     *     | 300,000      | 27s    | 1m 58s |
+     *     +--------------+--------+--------+
+     *     | 500,000      | 43s    | 3m 18s |
+     *     +--------------+--------+--------+
+     *     | 1,048,574    | 1m 28s | 6m 35s |
+     *     +--------------+--------+--------+
+     * }</pre>
+     *
+     * @param fields fields of model
+     */
+    public void cacheExpressions(List<Field> fields) {
+        for (Field field : fields) {
+            ExcelWriterExpression annotation = field.getAnnotation(ExcelWriterExpression.class);
+            if (annotation == null) continue;
+
+            String fieldName = field.getName();
+            Expression expression = parser.parseExpression(annotation.value());
+            this.cache.put(fieldName, expression);
+        }
     }
 
     /**
@@ -41,19 +82,17 @@ public class ExpressiveWritingConverter<T> implements WritingConverter<T> {
      *
      * <p> Parses a expression to be written as cell value.
      *
-     * @param model object in list
-     * @param field field of object
+     * @param model element in list
+     * @param field field of model
      * @return computed string
      * @see ExcelWriterExpression#value()
      */
     @Override
     public String convert(T model, Field field) {
-        ExcelWriterExpression annotation = field.getAnnotation(ExcelWriterExpression.class);
         context.setRootObject(model);
         context.setVariables(this.variables);
 
-        String result = parser.parseExpression(annotation.value())
-                .getValue(context, String.class);
+        String result = this.cache.get(field.getName()).getValue(context, String.class);
 
         return WritingConverter.convertIfDefault(result, this.defaultValue, field);
     }

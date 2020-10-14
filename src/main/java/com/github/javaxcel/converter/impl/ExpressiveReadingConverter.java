@@ -2,11 +2,14 @@ package com.github.javaxcel.converter.impl;
 
 import com.github.javaxcel.annotation.ExcelReaderExpression;
 import com.github.javaxcel.converter.ReadingConverter;
+import io.github.imsejin.expression.Expression;
 import io.github.imsejin.expression.ExpressionParser;
 import io.github.imsejin.expression.spel.standard.SpelExpressionParser;
 import io.github.imsejin.expression.spel.support.StandardEvaluationContext;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ExpressiveReadingConverter<T> implements ReadingConverter<T> {
@@ -21,6 +24,27 @@ public class ExpressiveReadingConverter<T> implements ReadingConverter<T> {
 
     public ExpressiveReadingConverter(Class<T> type) {
         this.type = type;
+    }
+
+    /**
+     * Creates cache of expression.
+     *
+     * @param fields fields of model
+     * @return cache of expression
+     */
+    public static Map<String, Expression> createCache(List<Field> fields) {
+        Map<String, Expression> cache = new HashMap<>();
+
+        for (Field field : fields) {
+            ExcelReaderExpression annotation = field.getAnnotation(ExcelReaderExpression.class);
+            if (annotation == null) continue;
+
+            String fieldName = field.getName();
+            Expression expression = parser.parseExpression(annotation.value());
+            cache.put(fieldName, expression);
+        }
+
+        return cache;
     }
 
     /**
@@ -45,6 +69,20 @@ public class ExpressiveReadingConverter<T> implements ReadingConverter<T> {
         context.setVariables(this.variables);
 
         return parser.parseExpression(annotation.value()).getValue(context, field.getType());
+    }
+
+    /**
+     * Converts cached expression into field value.
+     *
+     * @param value      value
+     * @param field      targeted field
+     * @param expression expression
+     * @return converted model
+     */
+    public Object convert(String value, Field field, Expression expression) {
+        context.setVariables(this.variables);
+
+        return expression.getValue(context, field.getType());
     }
 
 }

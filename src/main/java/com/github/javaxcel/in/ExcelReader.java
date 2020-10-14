@@ -59,6 +59,8 @@ public final class ExcelReader<W extends Workbook, T> {
      */
     private final List<Field> fields;
 
+    private final Map<String, Expression> cache;
+
     /**
      * Sheet's indexes that {@link ExcelReader} will read.
      * <br>
@@ -87,6 +89,8 @@ public final class ExcelReader<W extends Workbook, T> {
         this.fields = FieldUtils.getTargetedFields(type);
 
         if (this.fields.isEmpty()) throw new NoTargetedFieldException(this.type);
+
+        this.cache = ExpressiveReadingConverter.createCache(this.fields);
     }
 
     public static <W extends Workbook, E> ExcelReader<W, E> init(W workbook, Class<E> type) {
@@ -221,7 +225,8 @@ public final class ExcelReader<W extends Workbook, T> {
                 // When the field is annotated with @ExcelReaderConversion.
                 ExpressiveReadingConverter<T> expConverter = new ExpressiveReadingConverter<>(this.type);
                 expConverter.setVariables(sModel);
-                fieldValue = expConverter.convert(cellValue, field);
+                Expression expression = this.cache.get(field.getName());
+                fieldValue = expConverter.convert(cellValue, field, expression);
             }
 
             FieldUtils.setFieldValue(model, field, fieldValue);

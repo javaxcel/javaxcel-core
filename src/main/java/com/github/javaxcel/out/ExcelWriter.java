@@ -76,6 +76,8 @@ public final class ExcelWriter<W extends Workbook, T> {
         this.fields = FieldUtils.getTargetedFields(type);
 
         if (this.fields.isEmpty()) throw new NoTargetedFieldException(this.type);
+
+        expConverter.cacheExpressions(this.fields);
     }
 
     /**
