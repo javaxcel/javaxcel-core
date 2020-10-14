@@ -7,6 +7,7 @@ import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -88,6 +89,10 @@ public final class ExcelReader<W extends Workbook, T> {
     }
 
     public static <W extends Workbook, E> ExcelReader<W, E> init(W workbook, Class<E> type) {
+        if (workbook instanceof SXSSFWorkbook) {
+            throw new UnsupportedOperationException("SXSSFWorkbook is not supported workbook");
+        }
+
         return new ExcelReader<>(workbook, type);
     }
 
