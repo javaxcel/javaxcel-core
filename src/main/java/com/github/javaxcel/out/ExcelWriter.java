@@ -19,16 +19,10 @@ import java.util.Map;
 import java.util.function.BiFunction;
 
 /**
- * ExcelWriter
+ * Excel writer
  *
- * <pre>
- * 1. VO의 필드가 오직 `기초형`, `Wrapper Class` 또는 `String`이어야 한다.
- *    이외의 타입을 갖는 필드(컬럼)는 계산하지 않는다, 즉 해당 필드는 순서(엑셀 파일)에서 제외된다.
- *
- * 2. 상속받은 필드는 제외된다, 즉 해당 VO에서 정의된 필드만 계산한다.
- *
- * 3. `headerNames`와 VO의 필드 순서가 일치해야 한다.
- * </pre>
+ * @param <W> workbook
+ * @param <T> the type of model
  */
 public final class ExcelWriter<W extends Workbook, T> {
 
@@ -37,9 +31,11 @@ public final class ExcelWriter<W extends Workbook, T> {
     private final ExpressiveWritingConverter<T> expConverter = new ExpressiveWritingConverter<>();
 
     /**
-     * @see Workbook
+     * Apache POI workbook.
+     *
      * @see org.apache.poi.hssf.usermodel.HSSFWorkbook
      * @see org.apache.poi.xssf.usermodel.XSSFWorkbook
+     * @see org.apache.poi.xssf.streaming.SXSSFWorkbook
      */
     private final W workbook;
 
@@ -236,10 +232,10 @@ public final class ExcelWriter<W extends Workbook, T> {
                 String value;
                 ExcelWriterExpression conversion = field.getAnnotation(ExcelWriterExpression.class);
                 if (conversion == null) {
-                    // When the field is not annotated with @ExcelWriterConversion.
+                    // When the field is not annotated with @ExcelWriterExpression.
                     value = basicConverter.convert(model, field);
                 } else {
-                    // When the field is annotated with @ExcelWriterConversion.
+                    // When the field is annotated with @ExcelWriterExpression.
                     Map<String, Object> simulatedModel = FieldUtils.toMap(model, this.fields);
                     expConverter.setVariables(simulatedModel);
                     value = expConverter.convert(model, field);

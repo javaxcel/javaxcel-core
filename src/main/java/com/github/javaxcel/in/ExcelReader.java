@@ -7,6 +7,7 @@ import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.exception.UnsupportedWorkbookException;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
+import io.github.imsejin.expression.Expression;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
@@ -21,14 +22,7 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 
 /**
- * ExcelReader
- *
- * <pre>
- * 1. VO의 필드가 오직 `Wrapper Class` 또는 `String`이어야 하며, 기초형 필드가 있어서는 안된다.
- *    이외의 타입을 갖는 필드는 모두 null이 할당된다.
- *
- * 2. 상속받은 필드는 제외된다, 즉 해당 VO에서 정의된 필드만 계산한다.
- * </pre>
+ * Excel reader
  */
 public final class ExcelReader<W extends Workbook, T> {
 
@@ -45,13 +39,16 @@ public final class ExcelReader<W extends Workbook, T> {
      * @see org.apache.poi.xssf.usermodel.XSSFWorkbook
      */
     private final W workbook;
+
     private final Class<T> type;
+
     /**
      * Evaluator that evaluates the formula in a cell.
      *
      * @see W
      */
     private final FormulaEvaluator formulaEvaluator;
+
     /**
      * The type's fields that will be actually written in excel.
      *
@@ -149,7 +146,7 @@ public final class ExcelReader<W extends Workbook, T> {
     }
 
     /**
-     * Gets a list after this reads the excel file.
+     * Returns a list after this reads the excel file.
      *
      * @return list
      */
@@ -219,10 +216,10 @@ public final class ExcelReader<W extends Workbook, T> {
             ExcelReaderExpression annotation = field.getAnnotation(ExcelReaderExpression.class);
             Object fieldValue;
             if (annotation == null) {
-                // When the field is not annotated with @ExcelReaderConversion.
+                // When the field is not annotated with @ExcelReaderExpression.
                 fieldValue = basicConverter.convert(cellValue, field);
             } else {
-                // When the field is annotated with @ExcelReaderConversion.
+                // When the field is annotated with @ExcelReaderExpression.
                 ExpressiveReadingConverter<T> expConverter = new ExpressiveReadingConverter<>(this.type);
                 expConverter.setVariables(sModel);
                 Expression expression = this.cache.get(field.getName());
