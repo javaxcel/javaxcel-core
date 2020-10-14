@@ -230,8 +230,8 @@ public final class ExcelWriter<W extends Workbook, T> {
 
                 // Converts field value to the string.
                 String value;
-                ExcelWriterExpression conversion = field.getAnnotation(ExcelWriterExpression.class);
-                if (conversion == null) {
+                ExcelWriterExpression annotation = field.getAnnotation(ExcelWriterExpression.class);
+                if (annotation == null) {
                     // When the field is not annotated with @ExcelWriterExpression.
                     value = basicConverter.convert(model, field);
                 } else {
