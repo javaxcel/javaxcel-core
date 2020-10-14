@@ -1,8 +1,11 @@
 package com.github.javaxcel.util;
 
 import com.github.javaxcel.exception.NoTargetedConstructorException;
+import com.github.javaxcel.exception.UnsupportedWorkbookException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -43,10 +46,12 @@ public final class ExcelUtils {
      * @return the number of models
      */
     public static int getNumOfModels(Sheet sheet) {
+        if (sheet instanceof SXSSFSheet) throw new UnsupportedWorkbookException();
         return Math.max(0, sheet.getPhysicalNumberOfRows() - 1);
     }
 
     public static long getNumOfModels(Workbook workbook) {
+        if (workbook instanceof SXSSFWorkbook) throw new UnsupportedWorkbookException();
         return getSheets(workbook).stream().mapToInt(ExcelUtils::getNumOfModels).count();
     }
 
