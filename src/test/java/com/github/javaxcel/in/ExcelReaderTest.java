@@ -15,10 +15,13 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.usermodel.HSSFWorkbookFactory;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
@@ -28,7 +31,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ExcelReaderTest {
 
@@ -68,32 +71,40 @@ public class ExcelReaderTest {
     @SneakyThrows
     public void readWithNotInheritedTypeAndExcelIgnore() {
         Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
-        stopWatch.start("load 'products.xls' file");
+        String filename = "products.xls";
 
         // given
-        File file = new File("/data", "products.xls");
-        @Cleanup
-        HSSFWorkbook workbook = new HSSFWorkbook();
-        @Cleanup
-        OutputStream out = new FileOutputStream(file);
-
+        stopWatch.start(String.format("create '%s' file", filename));
+        File file = new File("/data", filename);
+        @Cleanup HSSFWorkbook workbook = new HSSFWorkbook();
+        @Cleanup OutputStream out = new FileOutputStream(file);
         stopWatch.stop();
+
         int numOfMocks = 10_000;
-        stopWatch.start(String.format("create %d mocks", numOfMocks));
-
+        stopWatch.start(String.format("create %,d mocks", numOfMocks));
         List<Product> mocks = new Product().createRandoms(numOfMocks);
-
         stopWatch.stop();
-        stopWatch.start("read products");
+
+        stopWatch.start(String.format("write %,d models", numOfMocks));
+        ExcelWriter.init(workbook, Product.class).write(out, mocks);
+        stopWatch.stop();
+
+        stopWatch.start(String.format("load '%s' file", filename));
+        @Cleanup HSSFWorkbook wb = new HSSFWorkbook(new FileInputStream(file));
+        stopWatch.stop();
 
         // when
-        ExcelWriter.init(workbook, Product.class).write(out, mocks);
-        List<Product> products = ExcelReader.init(workbook, Product.class).read();
-
+        stopWatch.start(String.format("read %,d models", numOfMocks));
+        List<Product> products = ExcelReader.init(wb, Product.class).read();
         stopWatch.stop();
 
         // then
-        assertThat(mocks.containsAll(products)).isTrue();
+        assertThat(products.size())
+                .as("#1 The number of loaded models is %,s", mocks.size())
+                .isEqualTo(mocks.size());
+        assertThat(products)
+                .as("#2 Each loaded model is equal to each mock")
+                .containsAll(mocks);
         System.out.println(stopWatch.getStatistics());
     }
 
@@ -107,32 +118,40 @@ public class ExcelReaderTest {
     @SneakyThrows
     public void readWithTargetedFieldPolicyAndDateTimePattern() {
         Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
-        stopWatch.start("load 'toys.xlsx' file");
+        String filename = "toys.xlsx";
 
         // given
-        File file = new File("/data", "toys.xlsx");
-        @Cleanup
-        XSSFWorkbook workbook = new XSSFWorkbook();
-        @Cleanup
-        OutputStream out = new FileOutputStream(file);
-
+        stopWatch.start(String.format("create '%s' file", filename));
+        File file = new File("/data", filename);
+        @Cleanup Workbook workbook = new SXSSFWorkbook();
+        @Cleanup OutputStream out = new FileOutputStream(file);
         stopWatch.stop();
-        int numOfMocks = 10_000;
-        stopWatch.start(String.format("create %d mocks", numOfMocks));
 
+        int numOfMocks = 100_000;
+        stopWatch.start(String.format("create %,d mocks", numOfMocks));
         List<EducationToy> mocks = new EducationToy().createRandoms(numOfMocks);
-
         stopWatch.stop();
-        stopWatch.start("read toys");
+
+        stopWatch.start(String.format("write %,d models", numOfMocks));
+        ExcelWriter.init(workbook, EducationToy.class).write(out, mocks);
+        stopWatch.stop();
+
+        stopWatch.start(String.format("load '%s' file", filename));
+        @Cleanup Workbook wb = new XSSFWorkbook(file);
+        stopWatch.stop();
 
         // when
-        ExcelWriter.init(workbook, EducationToy.class).write(out, mocks);
-        List<EducationToy> educationToys = ExcelReader.init(workbook, EducationToy.class).read();
-
+        stopWatch.start(String.format("read %,d models", numOfMocks));
+        List<EducationToy> educationToys = ExcelReader.init(wb, EducationToy.class).read();
         stopWatch.stop();
 
         // then
-        assertThat(mocks.containsAll(educationToys)).isTrue();
+        assertThat(educationToys.size())
+                .as("#1 The number of loaded models is %,s", mocks.size())
+                .isEqualTo(mocks.size());
+        assertThat(educationToys)
+                .as("#2 Each loaded model is equal to each mock")
+                .containsAll(mocks);
         System.out.println(stopWatch.getStatistics());
     }
 
@@ -142,8 +161,7 @@ public class ExcelReaderTest {
     public void readWithFinalFields() {
         // given
         File file = new File("/data", "final-fields.xls");
-        @Cleanup
-        Workbook workbook = HSSFWorkbookFactory.create(file);
+        @Cleanup Workbook workbook = HSSFWorkbookFactory.create(file);
 
         // when
         List<FinalFieldModel> list = ExcelReader.init(workbook, FinalFieldModel.class).read();
@@ -168,8 +186,7 @@ public class ExcelReaderTest {
         List<Product> products = new Product().createDesignees();
         List<EducationToy> educationToys = new EducationToy().createDesignees();
         File file = new File("/data", "merged.xlsx");
-        @Cleanup
-        Workbook workbook = WorkbookFactory.create(file);
+        @Cleanup Workbook workbook = WorkbookFactory.create(file);
 
         // when
         List<Product> sheet1 = ExcelReader.init(workbook, Product.class).sheetIndexes(0).read();
@@ -191,34 +208,40 @@ public class ExcelReaderTest {
     @SneakyThrows
     public void readPeople() {
         Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
-        stopWatch.start("load 'people.xlsx' file");
+        String filename = "people.xlsx";
 
         // given
+        stopWatch.start(String.format("create '%s' file", filename));
         File file = new File("/data", "people.xlsx");
-        @Cleanup
-        XSSFWorkbook workbook = new XSSFWorkbook();
-        @Cleanup
-        OutputStream out = new FileOutputStream(file);
-
+        @Cleanup Workbook workbook = new SXSSFWorkbook();
+        @Cleanup OutputStream out = new FileOutputStream(file);
         stopWatch.stop();
+
         int numOfMocks = 10_000;
-        stopWatch.start(String.format("create %d mocks", numOfMocks));
-
+        stopWatch.start(String.format("create %,d mocks", numOfMocks));
         List<Human> mocks = new Human().createRandoms(numOfMocks);
-
         stopWatch.stop();
-        stopWatch.start("read people");
+
+        stopWatch.start(String.format("write %,d models", numOfMocks));
+        ExcelWriter.init(workbook, Human.class).write(out, mocks);
+        stopWatch.stop();
+
+        stopWatch.start(String.format("load '%s' file", filename));
+        @Cleanup Workbook wb = new XSSFWorkbook(file);
+        stopWatch.stop();
 
         // when
-        ExcelWriter.init(workbook, Human.class).write(out, mocks);
-        List<Human> people = ExcelReader.init(workbook, Human.class).parallel().read();
-
+        stopWatch.start(String.format("read %,d models", numOfMocks));
+        List<Human> people = ExcelReader.init(wb, Human.class).parallel().read();
         stopWatch.stop();
 
         // then
-        assertThat(mocks.containsAll(people))
-                .as("Loaded data is equal to mock's data")
-                .isTrue();
+        assertThat(people.size())
+                .as("#1 The number of loaded models is %,s", mocks.size())
+                .isEqualTo(mocks.size());
+        assertThat(people)
+                .as("#2 Each loaded model is equal to each mock")
+                .containsAll(mocks);
         System.out.println(stopWatch.getStatistics());
     }
 

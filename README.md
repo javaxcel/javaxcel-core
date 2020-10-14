@@ -1,8 +1,7 @@
-
-
-<p align="center">
-	<img width="45%" src="./src/main/resources/main-image.png" alt="Javaxcel Core">
+<p align="center" width="40%">
+	<img  src="./src/main/resources/main-image.png" alt="Javaxcel Core">
 </p>
+
 
 
 <p align="center">
@@ -15,6 +14,9 @@
     <img alt="GitHub" src="https://img.shields.io/github/license/javaxcel/javaxcel-core">
     <img alt="jdk8" src="https://img.shields.io/badge/jdk-8-orange">
 </p>
+
+
+
 Javaxcel is utilities for writing and reading excel file with simple usage based annotations.
 
 <br><br>
@@ -128,7 +130,7 @@ The result is
         "depth": 0.0,
         "height": 20.5,
         "weight": 580.5
-	}
+    }
 ]
 ```
 
@@ -380,7 +382,7 @@ The result is
 List<EducationalProduct> eduProducts = ExcelReader.init(workbook, EducationalProduct.class).read();
 ```
 
-```json
+```js
 [
     {
         "serialNumber": 10001,

@@ -4,7 +4,7 @@ import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.converter.WritingConverter;
 import com.github.javaxcel.util.FieldUtils;
-import io.github.imsejin.common.util.StringUtils;
+import com.github.javaxcel.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
@@ -39,8 +39,8 @@ public class BasicWritingConverter<T> implements WritingConverter<T> {
     /**
      * Stringifies a value of the field.
      *
-     * @param model object in list
-     * @param field field of object
+     * @param model element in list
+     * @param field field of model
      * @return value of the field in value object
      * @see ExcelDateTimeFormat#pattern()
      */

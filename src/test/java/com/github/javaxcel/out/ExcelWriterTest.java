@@ -7,20 +7,20 @@ import com.github.javaxcel.model.etc.NoFieldModel;
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
 import com.github.javaxcel.styler.ExcelStyler;
+import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,25 +28,38 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class ExcelWriterTest {
 
+    @SneakyThrows
+    private static int getNumOfWrittenModels(Class<? extends Workbook> type, File file) {
+        @Cleanup
+        Workbook workbook = type == HSSFWorkbook.class
+                ? new HSSFWorkbook(new FileInputStream(file))
+                : new XSSFWorkbook(file);
+
+        Sheet sheet = workbook.getSheetAt(0);
+        return ExcelUtils.getNumOfModels(sheet);
+    }
+
+    /**
+     * When write 349,525 mocks,
+     * <p> 1. XSSFWorkbook: 45 sec
+     * <p> 2. SXSSFWorkbook: 6 sec
+     */
     @Test
     @DisplayName("Default value + @ExcelIgnore")
     @SneakyThrows
     public void writeWithIgnoreAndDefaultValue() {
         // given
-        File file = new File("/data", "products.xls");
-        @Cleanup
-        FileOutputStream out = new FileOutputStream(file);
-        @Cleanup
-        HSSFWorkbook workbook = new HSSFWorkbook();
+        File file = new File("/data", "products.xlsx");
+        @Cleanup FileOutputStream out = new FileOutputStream(file);
+        @Cleanup Workbook workbook = new SXSSFWorkbook();
 
         // when
         Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
-        int numOfMocks = ExcelStyler.HSSF_MAX_ROWS - 1;
-        stopWatch.start(String.format("create %d mocks", numOfMocks));
+        int numOfMocks = ExcelStyler.XSSF_MAX_ROWS / 10;
+        stopWatch.start(String.format("create %,d mocks", numOfMocks));
 
         List<Product> products = new Product().createRandoms(numOfMocks);
 
@@ -61,7 +74,13 @@ public class ExcelWriterTest {
         System.out.println(stopWatch.getStatistics());
 
         // then
-        assertThat(file.exists()).isTrue();
+        assertThat(file)
+                .as("#1 Excel file will be created")
+                .isNotNull()
+                .exists();
+        assertThat(getNumOfWrittenModels(XSSFWorkbook.class, file))
+                .as("#2 The number of actually written model is %,d", products.size())
+                .isEqualTo(products.size());
     }
 
     @Test
@@ -70,10 +89,8 @@ public class ExcelWriterTest {
     public void writeWithTargetedFieldPolicyAndDateTimePattern() {
         // given
         File file = new File("/data", "toys.xlsx");
-        @Cleanup
-        FileOutputStream out = new FileOutputStream(file);
-        @Cleanup
-        XSSFWorkbook workbook = new XSSFWorkbook();
+        @Cleanup FileOutputStream out = new FileOutputStream(file);
+        @Cleanup XSSFWorkbook workbook = new XSSFWorkbook();
 
         // when
         Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
@@ -91,7 +108,13 @@ public class ExcelWriterTest {
         System.out.println(stopWatch.getStatistics());
 
         // then
-        assertThat(file.exists()).isTrue();
+        assertThat(file)
+                .as("#1 Excel file will be created")
+                .isNotNull()
+                .exists();
+        assertThat(getNumOfWrittenModels(XSSFWorkbook.class, file))
+                .as("#2 The number of actually written model is %,d", toys.size())
+                .isEqualTo(toys.size());
     }
 
     @ParameterizedTest
@@ -101,20 +124,13 @@ public class ExcelWriterTest {
     public void writeWithClassThatHasNoTargetFields(Class<?> type) {
         // given
         File file = new File("/data", "no-field-model.xls");
-        @Cleanup
-        FileOutputStream out = new FileOutputStream(file);
-        @Cleanup
-        HSSFWorkbook workbook = new HSSFWorkbook();
+        @Cleanup FileOutputStream out = new FileOutputStream(file);
+        @Cleanup HSSFWorkbook workbook = new HSSFWorkbook();
 
-        Stopwatch stopWatch = new Stopwatch(TimeUnit.MILLISECONDS);
-        stopWatch.start("initialize");
-
-        // then
-        assertThrows(NoTargetedFieldException.class,
-                () -> ExcelWriter.init(workbook, type).write(out, new ArrayList<>()));
-
-        stopWatch.stop();
-        System.out.println(stopWatch.getStatistics());
+        // when & then
+        assertThatThrownBy(() -> ExcelWriter.init(workbook, type).write(out, new ArrayList<>()))
+                .as("When write with a model that has targeted fields")
+                .isInstanceOf(NoTargetedFieldException.class);
     }
 
     @Test
@@ -123,10 +139,8 @@ public class ExcelWriterTest {
     public void writeAndDecorate() {
         // given
         File file = new File("/data", "people-styled.xlsx");
-        @Cleanup
-        FileOutputStream out = new FileOutputStream(file);
-        @Cleanup
-        XSSFWorkbook workbook = new XSSFWorkbook();
+        @Cleanup FileOutputStream out = new FileOutputStream(file);
+        @Cleanup XSSFWorkbook workbook = new XSSFWorkbook();
         BiFunction<CellStyle, Font, CellStyle> blueColumn = (style, font) -> {
             font.setColor(IndexedColors.WHITE.getIndex());
             font.setFontName("Malgun Gothic");
@@ -168,7 +182,10 @@ public class ExcelWriterTest {
         System.out.println(stopWatch.getStatistics());
 
         // then
-        assertThat(file.exists()).isTrue();
+        assertThat(file)
+                .as("#1 Excel file will be created")
+                .isNotNull()
+                .exists();
     }
 
     @Test
@@ -177,13 +194,11 @@ public class ExcelWriterTest {
     public void writePeople() {
         // given
         File file = new File("/data", "people.xls");
-        @Cleanup
-        FileOutputStream out = new FileOutputStream(file);
-        @Cleanup
-        HSSFWorkbook workbook = new HSSFWorkbook();
+        @Cleanup FileOutputStream out = new FileOutputStream(file);
+        @Cleanup Workbook workbook = new HSSFWorkbook();
 
         Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
-        int numOfMocks = 10_000;
+        int numOfMocks = ExcelStyler.HSSF_MAX_ROWS - 1;
         stopWatch.start(String.format("create %d mocks", numOfMocks));
 
         List<Human> people = new Human().createRandoms(numOfMocks);
@@ -198,7 +213,13 @@ public class ExcelWriterTest {
         System.out.println(stopWatch.getStatistics());
 
         // then
-        assertThat(file.exists()).isTrue();
+        assertThat(file)
+                .as("#1 Excel file will be created")
+                .isNotNull()
+                .exists();
+        assertThat(getNumOfWrittenModels(HSSFWorkbook.class, file))
+                .as("#2 The number of actually written model is %,d", people.size())
+                .isEqualTo(people.size());
     }
 
 }

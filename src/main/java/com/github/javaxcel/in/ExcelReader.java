@@ -4,28 +4,25 @@ import com.github.javaxcel.annotation.ExcelReaderExpression;
 import com.github.javaxcel.converter.impl.BasicReadingConverter;
 import com.github.javaxcel.converter.impl.ExpressiveReadingConverter;
 import com.github.javaxcel.exception.NoTargetedFieldException;
+import com.github.javaxcel.exception.UnsupportedWorkbookException;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
+import io.github.imsejin.expression.Expression;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
+
 /**
- * ExcelReader
- *
- * <pre>
- * 1. VO의 필드가 오직 `Wrapper Class` 또는 `String`이어야 하며, 기초형 필드가 있어서는 안된다.
- *    이외의 타입을 갖는 필드는 모두 null이 할당된다.
- *
- * 2. 상속받은 필드는 제외된다, 즉 해당 VO에서 정의된 필드만 계산한다.
- * </pre>
+ * Excel reader
  */
 public final class ExcelReader<W extends Workbook, T> {
 
@@ -42,19 +39,24 @@ public final class ExcelReader<W extends Workbook, T> {
      * @see org.apache.poi.xssf.usermodel.XSSFWorkbook
      */
     private final W workbook;
+
     private final Class<T> type;
+
     /**
      * Evaluator that evaluates the formula in a cell.
      *
      * @see W
      */
     private final FormulaEvaluator formulaEvaluator;
+
     /**
      * The type's fields that will be actually written in excel.
      *
      * @see Class<T>
      */
     private final List<Field> fields;
+
+    private final Map<String, Expression> cache;
 
     /**
      * Sheet's indexes that {@link ExcelReader} will read.
@@ -84,9 +86,12 @@ public final class ExcelReader<W extends Workbook, T> {
         this.fields = FieldUtils.getTargetedFields(type);
 
         if (this.fields.isEmpty()) throw new NoTargetedFieldException(this.type);
+
+        this.cache = ExpressiveReadingConverter.createCache(this.fields);
     }
 
     public static <W extends Workbook, E> ExcelReader<W, E> init(W workbook, Class<E> type) {
+        if (workbook instanceof SXSSFWorkbook) throw new UnsupportedWorkbookException();
         return new ExcelReader<>(workbook, type);
     }
 
@@ -141,7 +146,7 @@ public final class ExcelReader<W extends Workbook, T> {
     }
 
     /**
-     * Gets a list after this reads the excel file.
+     * Returns a list after this reads the excel file.
      *
      * @return list
      */
@@ -191,7 +196,7 @@ public final class ExcelReader<W extends Workbook, T> {
         List<Map<String, Object>> sModels = getSimulatedModels(sheet);
 
         Stream<Map<String, Object>> stream = this.parallel ? sModels.parallelStream() : sModels.stream();
-        List<T> realModels = stream.map(this::toRealModel).collect(Collectors.toList());
+        List<T> realModels = stream.map(this::toRealModel).collect(toList());
 
         list.addAll(realModels);
     }
@@ -211,13 +216,14 @@ public final class ExcelReader<W extends Workbook, T> {
             ExcelReaderExpression annotation = field.getAnnotation(ExcelReaderExpression.class);
             Object fieldValue;
             if (annotation == null) {
-                // When the field is not annotated with @ExcelReaderConversion.
+                // When the field is not annotated with @ExcelReaderExpression.
                 fieldValue = basicConverter.convert(cellValue, field);
             } else {
-                // When the field is annotated with @ExcelReaderConversion.
+                // When the field is annotated with @ExcelReaderExpression.
                 ExpressiveReadingConverter<T> expConverter = new ExpressiveReadingConverter<>(this.type);
                 expConverter.setVariables(sModel);
-                fieldValue = expConverter.convert(cellValue, field);
+                Expression expression = this.cache.get(field.getName());
+                fieldValue = expConverter.convert(cellValue, field, expression);
             }
 
             FieldUtils.setFieldValue(model, field, fieldValue);
@@ -235,11 +241,10 @@ public final class ExcelReader<W extends Workbook, T> {
      * @return simulated models
      */
     private List<Map<String, Object>> getSimulatedModels(Sheet sheet) {
-        // The number of rows except the first row.
-        final int numOfRows = Math.max(0, sheet.getPhysicalNumberOfRows() - 1);
+        final int numOfModels = ExcelUtils.getNumOfModels(sheet);
 
         // 인덱스 유효성을 체크한다
-        if (this.endIndex == -1 || this.endIndex > numOfRows) this.endIndex = numOfRows;
+        if (this.endIndex == -1 || this.endIndex > numOfModels) this.endIndex = numOfModels;
 
         // Reads rows.
         List<Map<String, Object>> simulatedModels = new ArrayList<>();
