@@ -15,8 +15,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -28,28 +27,25 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 public class ExcelWriterTest {
 
     @SneakyThrows
     private static int getNumOfWrittenModels(Class<? extends Workbook> type, File file) {
-        Workbook workbook;
-        if (type == HSSFWorkbook.class) {
-            workbook = new HSSFWorkbook(new FileInputStream(file));
-        } else {
-            workbook = new XSSFWorkbook(file);
-        }
+        @Cleanup
+        Workbook workbook = type == HSSFWorkbook.class
+                ? new HSSFWorkbook(new FileInputStream(file))
+                : new XSSFWorkbook(file);
 
         Sheet sheet = workbook.getSheetAt(0);
         return ExcelUtils.getNumOfModels(sheet);
     }
 
     /**
-     * When write 100,000 mocks,
-     * <p> 1. XSSFWorkbook: 18 sec
-     * <p> 2. SXSSFWorkbook: 3 sec
+     * When write 349,525 mocks,
+     * <p> 1. XSSFWorkbook: 45 sec
+     * <p> 2. SXSSFWorkbook: 6 sec
      */
     @Test
     @DisplayName("Default value + @ExcelIgnore")
@@ -62,7 +58,7 @@ public class ExcelWriterTest {
 
         // when
         Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
-        int numOfMocks = ExcelStyler.XSSF_MAX_ROWS / 5;
+        int numOfMocks = ExcelStyler.XSSF_MAX_ROWS / 10;
         stopWatch.start(String.format("create %,d mocks", numOfMocks));
 
         List<Product> products = new Product().createRandoms(numOfMocks);
@@ -199,10 +195,10 @@ public class ExcelWriterTest {
         // given
         File file = new File("/data", "people.xls");
         @Cleanup FileOutputStream out = new FileOutputStream(file);
-        @Cleanup HSSFWorkbook workbook = new HSSFWorkbook();
+        @Cleanup Workbook workbook = new HSSFWorkbook();
 
         Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
-        int numOfMocks = 10_000;
+        int numOfMocks = ExcelStyler.HSSF_MAX_ROWS - 1;
         stopWatch.start(String.format("create %d mocks", numOfMocks));
 
         List<Human> people = new Human().createRandoms(numOfMocks);
