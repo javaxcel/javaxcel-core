@@ -2,15 +2,12 @@ package com.github.javaxcel.util;
 
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.converter.impl.BasicWritingConverter;
-import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
-import com.github.javaxcel.model.toy.Toy;
-import com.github.javaxcel.util.StringUtils;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -26,7 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ExcelUtilsTest {
 
@@ -67,39 +64,6 @@ public class ExcelUtilsTest {
     }
 
     @ParameterizedTest
-    @ValueSource(classes = {Product.class, Toy.class, EducationToy.class})
-    public void getTargetedFields(Class<?> type) {
-        // when
-        List<Field> targetedFields = FieldUtils.getTargetedFields(type);
-
-        // then
-        targetedFields.forEach(System.out::println);
-    }
-
-    @ParameterizedTest
-    @ValueSource(classes = {Product.class, Toy.class, EducationToy.class})
-    public void getInheritedFields(Class<?> type) {
-        // when
-        List<Field> inheritedFields = FieldUtils.getInheritedFields(type);
-
-        // then
-        inheritedFields.forEach(System.out::println);
-    }
-
-    @ParameterizedTest
-    @ValueSource(classes = {Product.class, Toy.class, EducationToy.class})
-    public void toHeaderNames(Class<?> type) {
-        // given
-        List<Field> targetedFields = FieldUtils.getTargetedFields(type);
-
-        // when
-        String[] headerNames = FieldUtils.toHeaderNames(targetedFields);
-
-        // then
-        Arrays.asList(headerNames).forEach(System.out::println);
-    }
-
-    @ParameterizedTest
     @ValueSource(strings = {
             "E:\\works\\대한상공회의소 - 유통상품지식뱅크 서비스포털\\2020\\06\\20200618_미기재 설명 등록\\상품분류별 부가속성\\200519_분류별_부가속성예시.xlsx",
             "E:\\works\\대한상공회의소 - 유통상품지식뱅크 서비스포털\\2020\\06\\20200618_미기재 설명 등록\\상품분류별 부가속성\\[가공] 상품분류별_부가속성_설명.xlsx",
@@ -108,8 +72,7 @@ public class ExcelUtilsTest {
     public void getSheetRange(String pathname) {
         // given
         File file = new File(pathname);
-        @Cleanup
-        Workbook workbook = new XSSFWorkbook(file);
+        @Cleanup Workbook workbook = new XSSFWorkbook(file);
 
         // when
         int[] range = ExcelUtils.getSheetRange(workbook);
