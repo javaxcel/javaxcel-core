@@ -51,27 +51,27 @@ public class ExcelWriterTest {
     @DisplayName("Default value + @ExcelIgnore")
     @SneakyThrows
     public void writeWithIgnoreAndDefaultValue() {
-        // given
-        File file = new File("/data", "products.xlsx");
-        @Cleanup FileOutputStream out = new FileOutputStream(file);
-        @Cleanup Workbook workbook = new SXSSFWorkbook();
-
-        // when
         Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
+        String filename = "products.xlsx";
+
+        // given
+        stopWatch.start(String.format("create '%s' file", filename));
+        File file = new File("/data", filename);
+        @Cleanup FileOutputStream out = new FileOutputStream(file);
+        @Cleanup SXSSFWorkbook workbook = new SXSSFWorkbook();
+        stopWatch.stop();
+
         int numOfMocks = ExcelStyler.XSSF_MAX_ROWS / 10;
         stopWatch.start(String.format("create %,d mocks", numOfMocks));
-
         List<Product> products = new Product().createRandoms(numOfMocks);
-
         stopWatch.stop();
-        stopWatch.start("write products");
 
+        // when
+        stopWatch.start(String.format("write %,d models", numOfMocks));
         ExcelWriter.init(workbook, Product.class)
                 .sheetName("Products")
                 .write(out, products);
-
         stopWatch.stop();
-        System.out.println(stopWatch.getStatistics());
 
         // then
         assertThat(file)
@@ -81,31 +81,31 @@ public class ExcelWriterTest {
         assertThat(getNumOfWrittenModels(XSSFWorkbook.class, file))
                 .as("#2 The number of actually written model is %,d", products.size())
                 .isEqualTo(products.size());
+        System.out.println(stopWatch.getStatistics());
     }
 
     @Test
     @DisplayName("Including inherited fields + @ExcelDateTimeFormat")
     @SneakyThrows
     public void writeWithTargetedFieldPolicyAndDateTimePattern() {
+        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
+        String filename = "toys.xlsx";
+
         // given
-        File file = new File("/data", "toys.xlsx");
+        stopWatch.start(String.format("create '%s' file", filename));
+        File file = new File("/data", filename);
         @Cleanup FileOutputStream out = new FileOutputStream(file);
         @Cleanup XSSFWorkbook workbook = new XSSFWorkbook();
 
-        // when
-        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
         int numOfMocks = 10_000;
-        stopWatch.start(String.format("create %d mocks", numOfMocks));
-
+        stopWatch.start(String.format("create %,d mocks", numOfMocks));
         List<EducationToy> toys = new EducationToy().createRandoms(numOfMocks);
-
         stopWatch.stop();
-        stopWatch.start("write with toys");
 
+        // when
+        stopWatch.start(String.format("write %,d models", numOfMocks));
         ExcelWriter.init(workbook, EducationToy.class).write(out, toys);
-
         stopWatch.stop();
-        System.out.println(stopWatch.getStatistics());
 
         // then
         assertThat(file)
@@ -115,6 +115,7 @@ public class ExcelWriterTest {
         assertThat(getNumOfWrittenModels(XSSFWorkbook.class, file))
                 .as("#2 The number of actually written model is %,d", toys.size())
                 .isEqualTo(toys.size());
+        System.out.println(stopWatch.getStatistics());
     }
 
     @ParameterizedTest
@@ -137,8 +138,12 @@ public class ExcelWriterTest {
     @DisplayName("Adjust sheet + styling")
     @SneakyThrows
     public void writeAndDecorate() {
+        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
+        String filename = "people-styled.xlsx";
+
         // given
-        File file = new File("/data", "people-styled.xlsx");
+        stopWatch.start(String.format("create '%s' file", filename));
+        File file = new File("/data", filename);
         @Cleanup FileOutputStream out = new FileOutputStream(file);
         @Cleanup XSSFWorkbook workbook = new XSSFWorkbook();
         BiFunction<CellStyle, Font, CellStyle> blueColumn = (style, font) -> {
@@ -155,17 +160,15 @@ public class ExcelWriterTest {
             style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             return style;
         };
+        stopWatch.stop();
 
         // when
-        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
         int numOfMocks = 1000;
-        stopWatch.start(String.format("create %d mocks", numOfMocks));
-
+        stopWatch.start(String.format("create %,d mocks", numOfMocks));
         List<Human> people = new Human().createRandoms(numOfMocks);
-
         stopWatch.stop();
-        stopWatch.start("write people and decorate");
 
+        stopWatch.start(String.format("write and decorate %,d models", numOfMocks));
         ExcelWriter.init(workbook, Human.class)
                 .sheetName("People")
                 .adjustSheet((sheet, numOfRows, numOfColumns) -> {
@@ -177,40 +180,39 @@ public class ExcelWriterTest {
                 .columnStyles(blueColumn, greenColumn, blueColumn, greenColumn, blueColumn, greenColumn, blueColumn,
                         greenColumn, blueColumn, greenColumn, blueColumn, greenColumn, blueColumn, greenColumn)
                 .write(out, people);
-
         stopWatch.stop();
-        System.out.println(stopWatch.getStatistics());
 
         // then
         assertThat(file)
                 .as("#1 Excel file will be created")
                 .isNotNull()
                 .exists();
+        System.out.println(stopWatch.getStatistics());
     }
 
     @Test
     @DisplayName("Including inherited fields + @ExcelWriterConversion")
     @SneakyThrows
     public void writePeople() {
+        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
+        String filename = "people.xls";
+
         // given
-        File file = new File("/data", "people.xls");
+        stopWatch.start(String.format("create '%s' file", filename));
+        File file = new File("/data", filename);
         @Cleanup FileOutputStream out = new FileOutputStream(file);
         @Cleanup Workbook workbook = new HSSFWorkbook();
-
-        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
-        int numOfMocks = ExcelStyler.HSSF_MAX_ROWS - 1;
-        stopWatch.start(String.format("create %d mocks", numOfMocks));
-
-        List<Human> people = new Human().createRandoms(numOfMocks);
-
         stopWatch.stop();
-        stopWatch.start("write people");
+
+        int numOfMocks = ExcelStyler.HSSF_MAX_ROWS - 1;
+        stopWatch.start(String.format("create %,d mocks", numOfMocks));
+        List<Human> people = new Human().createRandoms(numOfMocks);
+        stopWatch.stop();
 
         // when
+        stopWatch.start(String.format("write %,d models", numOfMocks));
         ExcelWriter.init(workbook, Human.class).write(out, people);
-
         stopWatch.stop();
-        System.out.println(stopWatch.getStatistics());
 
         // then
         assertThat(file)
@@ -220,6 +222,7 @@ public class ExcelWriterTest {
         assertThat(getNumOfWrittenModels(HSSFWorkbook.class, file))
                 .as("#2 The number of actually written model is %,d", people.size())
                 .isEqualTo(people.size());
+        System.out.println(stopWatch.getStatistics());
     }
 
 }
