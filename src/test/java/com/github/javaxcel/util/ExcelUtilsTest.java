@@ -7,7 +7,7 @@ import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -68,6 +68,7 @@ public class ExcelUtilsTest {
             "E:\\works\\대한상공회의소 - 유통상품지식뱅크 서비스포털\\2020\\06\\20200618_미기재 설명 등록\\상품분류별 부가속성\\200519_분류별_부가속성예시.xlsx",
             "E:\\works\\대한상공회의소 - 유통상품지식뱅크 서비스포털\\2020\\06\\20200618_미기재 설명 등록\\상품분류별 부가속성\\[가공] 상품분류별_부가속성_설명.xlsx",
     })
+    @Disabled
     @SneakyThrows
     public void getSheetRange(String pathname) {
         // given
@@ -88,7 +89,7 @@ public class ExcelUtilsTest {
         // given
         BasicWritingConverter<EducationToy> converter = new BasicWritingConverter<>();
 
-        for (EducationToy toy : new EducationToy().createRandoms(1000)) {
+        for (EducationToy toy : new EducationToy().createRandoms(10)) {
             // when
             String stringifyValue = converter.convert(toy, toy.getClass().getDeclaredField(fieldName));
 
@@ -98,6 +99,7 @@ public class ExcelUtilsTest {
     }
 
     @Test
+    @Disabled
     public void convert() {
         // given
         List<String> values = Arrays.asList("Toy.name", "ADULT", "645.70", "[1,2,3,4]", "educationToys.goals", "2020-08-31", "01/23/45/678", "2020-08-31T01:23:45");
@@ -118,6 +120,7 @@ public class ExcelUtilsTest {
     }
 
     @Test
+    @Disabled
     public void formatDateTime() {
         // given
         LocalDate date = LocalDate.now();
@@ -136,6 +139,7 @@ public class ExcelUtilsTest {
     }
 
     @Test
+    @Disabled
     public void stringifyBigNumbers() {
         // given
         String strBigInt = Long.valueOf(Long.MAX_VALUE).toString();

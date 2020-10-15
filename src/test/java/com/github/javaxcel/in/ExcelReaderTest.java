@@ -17,8 +17,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -127,7 +126,7 @@ public class ExcelReaderTest {
         @Cleanup OutputStream out = new FileOutputStream(file);
         stopWatch.stop();
 
-        int numOfMocks = 100_000;
+        int numOfMocks = 10_000;
         stopWatch.start(String.format("create %,d mocks", numOfMocks));
         List<EducationToy> mocks = new EducationToy().createRandoms(numOfMocks);
         stopWatch.stop();
@@ -180,6 +179,7 @@ public class ExcelReaderTest {
     }
 
     @Test
+    @Disabled
     @SneakyThrows
     public void readMultipleSheets() {
         // given
