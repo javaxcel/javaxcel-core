@@ -34,7 +34,8 @@ public final class ExcelReader<W extends Workbook, T> {
     private final BasicReadingConverter<T> basicConverter = new BasicReadingConverter<>();
 
     /**
-     * @see Workbook
+     * Apache POI workbook.
+     *
      * @see org.apache.poi.hssf.usermodel.HSSFWorkbook
      * @see org.apache.poi.xssf.usermodel.XSSFWorkbook
      */
