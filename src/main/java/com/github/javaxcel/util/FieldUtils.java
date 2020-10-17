@@ -75,11 +75,11 @@ public final class FieldUtils {
      * @param fields targeted fields
      * @return list of {@link ExcelColumn#name()} or {@link Field#getName()}
      */
-    public static String[] toHeaderNames(List<Field> fields) {
+    public static List<String> toHeaderNames(List<Field> fields) {
         return fields.stream().map(field -> {
             ExcelColumn annotation = field.getAnnotation(ExcelColumn.class);
             return annotation == null || StringUtils.isNullOrEmpty(annotation.name()) ? field.getName() : annotation.name();
-        }).toArray(String[]::new);
+        }).collect(toList());
     }
 
     /**

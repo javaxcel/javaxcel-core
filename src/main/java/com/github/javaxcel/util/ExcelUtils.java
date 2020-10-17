@@ -2,6 +2,8 @@ package com.github.javaxcel.util;
 
 import com.github.javaxcel.exception.NoTargetedConstructorException;
 import com.github.javaxcel.exception.UnsupportedWorkbookException;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
@@ -52,7 +54,13 @@ public final class ExcelUtils {
 
     public static long getNumOfModels(Workbook workbook) {
         if (workbook instanceof SXSSFWorkbook) throw new UnsupportedWorkbookException();
-        return getSheets(workbook).stream().mapToInt(ExcelUtils::getNumOfModels).count();
+        return getSheets(workbook).stream().mapToInt(ExcelUtils::getNumOfModels).sum();
+    }
+
+    public static int getMaxRows(Workbook workbook) {
+        return workbook instanceof HSSFWorkbook
+                ? SpreadsheetVersion.EXCEL97.getMaxRows()
+                : SpreadsheetVersion.EXCEL2007.getMaxRows();
     }
 
     public static <T> T instantiate(Class<T> type) {
