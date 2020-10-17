@@ -51,19 +51,6 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
         expConverter.cacheExpressions(this.fields);
     }
 
-    /**
-     * Initializes excel writer.
-     *
-     * @param workbook excel workbook
-     * @param type     class type
-     * @param <W>      instance that implements {@link Workbook}
-     * @param <E>      type of the element
-     * @return excel writer
-     */
-    public static <W extends Workbook, E> ModelWriter<W, E> init(W workbook, Class<E> type) {
-        return new ModelWriter<>(workbook, type);
-    }
-
     @Override
     public ModelWriter<W, T> headerNames(List<String> headerNames) {
         super.headerNames(headerNames);
@@ -150,16 +137,16 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
      */
     @Override
     protected void writeToSheet(Sheet sheet, List<T> list) {
-        final int listSize = list.size();
-        final int fieldsSize = this.fields.size();
+        final int numOfModels = list.size();
+        final int numOfFields = this.fields.size();
 
-        for (int i = 0; i < listSize; i++) {
+        for (int i = 0; i < numOfModels; i++) {
             T model = list.get(i);
 
             // Skips the first row that is header.
             Row row = sheet.createRow(i + 1);
 
-            for (int j = 0; j < fieldsSize; j++) {
+            for (int j = 0; j < numOfFields; j++) {
                 Field field = this.fields.get(j);
                 Cell cell = row.createCell(j);
 

@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Function;
 
 public abstract class AbstractExcelWriter<W extends Workbook, T> implements ExcelWriter<W, T> {
@@ -31,17 +30,17 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     protected final W workbook;
 
     /**
-     * Name of columns in header.
+     * Headers' names.
      */
-    private final List<String> headerNames = new ArrayList<>();
+    protected final List<String> headerNames = new ArrayList<>();
 
     /**
-     * Name of excel sheet.
+     * Prefix of all the sheets' names.
      */
     protected String sheetName;
 
     protected AbstractExcelWriter(W workbook) {
-        if (Objects.isNull(workbook)) throw new IllegalArgumentException("Workbook cannot be null");
+        if (workbook == null) throw new IllegalArgumentException("Workbook cannot be null");
 
         this.workbook = workbook;
     }
@@ -54,7 +53,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      */
     @Override
     public AbstractExcelWriter<W, T> defaultValue(String defaultValue) {
-        if (Objects.isNull(defaultValue)) throw new IllegalArgumentException("Default value cannot be null");
+        if (defaultValue == null) throw new IllegalArgumentException("Default value cannot be null");
 
         this.basicConverter.setDefaultValue(defaultValue);
         return this;
@@ -76,6 +75,9 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
             throw new IllegalArgumentException("Header names cannot be null or empty");
         }
 
+        // Replaces current header names with the new things.
+        if (!this.headerNames.isEmpty()) this.headerNames.clear();
+
         this.headerNames.addAll(headerNames);
         return this;
     }
@@ -85,11 +87,11 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      */
     @Override
     public final void write(OutputStream out, List<T> list) {
-        if (Objects.isNull(list)) throw new IllegalArgumentException("List cannot be null");
+        if (list == null) throw new IllegalArgumentException("List of models cannot be null");
 
-        beforeWrite(out, list, this.headerNames);
+        beforeWrite(out, list);
 
-        Function<Integer, Sheet> createSheet = Objects.isNull(this.sheetName)
+        Function<Integer, Sheet> createSheet = this.sheetName == null
                 ? i -> this.workbook.createSheet()
                 : i -> this.workbook.createSheet(this.sheetName + i);
 
@@ -111,13 +113,13 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
         // Saves the data.
         save(out);
 
-        afterWrite(out, list, this.headerNames);
+        afterWrite(out, list);
     }
 
-    protected void beforeWrite(OutputStream out, List<T> list, List<String> headerNames) {
+    protected void beforeWrite(OutputStream out, List<T> list) {
     }
 
-    protected void afterWrite(OutputStream out, List<T> list, List<String> headerNames) {
+    protected void afterWrite(OutputStream out, List<T> list) {
     }
 
     private void createHeader(Sheet sheet) {
