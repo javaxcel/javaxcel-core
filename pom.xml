@@ -50,9 +50,17 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <apache.poi.version>4.1.2</apache.poi.version>
+        <common.utils.version>0.3.1</common.utils.version>
     </properties>
 
     <dependencies>
+        <!-- Common Utils -->
+        <dependency>
+            <groupId>io.github.imsejin</groupId>
+            <artifactId>common-utils</artifactId>
+            <version>${common.utils.version}</version>
+        </dependency>
+
         <!-- Apache POI -->
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -114,15 +122,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.12</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Common Utils -->
-        <dependency>
-            <groupId>io.github.imsejin</groupId>
-            <artifactId>common-utils</artifactId>
-            <version>0.3.1</version>
+            <version>1.18.14</version>
             <scope>test</scope>
         </dependency>
 
