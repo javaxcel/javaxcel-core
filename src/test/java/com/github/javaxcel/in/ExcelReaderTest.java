@@ -3,11 +3,11 @@ package com.github.javaxcel.in;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.exception.NoTargetedConstructorException;
+import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.model.creature.Human;
 import com.github.javaxcel.model.etc.FinalFieldModel;
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
-import com.github.javaxcel.out.ExcelWriter;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
@@ -17,7 +17,9 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -85,7 +87,7 @@ public class ExcelReaderTest {
         stopWatch.stop();
 
         stopWatch.start(String.format("write %,d models", numOfMocks));
-        ExcelWriter.init(workbook, Product.class).write(out, mocks);
+        ExcelWriterFactory.create(workbook, Product.class).write(out, mocks);
         stopWatch.stop();
 
         stopWatch.start(String.format("load '%s' file", filename));
@@ -132,7 +134,7 @@ public class ExcelReaderTest {
         stopWatch.stop();
 
         stopWatch.start(String.format("write %,d models", numOfMocks));
-        ExcelWriter.init(workbook, EducationToy.class).write(out, mocks);
+        ExcelWriterFactory.create(workbook, EducationToy.class).write(out, mocks);
         stopWatch.stop();
 
         stopWatch.start(String.format("load '%s' file", filename));
@@ -223,7 +225,7 @@ public class ExcelReaderTest {
         stopWatch.stop();
 
         stopWatch.start(String.format("write %,d models", numOfMocks));
-        ExcelWriter.init(workbook, Human.class).write(out, mocks);
+        ExcelWriterFactory.create(workbook, Human.class).write(out, mocks);
         stopWatch.stop();
 
         stopWatch.start(String.format("load '%s' file", filename));

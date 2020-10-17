@@ -1,6 +1,7 @@
 package com.github.javaxcel.converter;
 
 import com.github.javaxcel.annotation.ExcelColumn;
+import com.github.javaxcel.out.ModelWriter;
 import io.github.imsejin.common.util.StringUtils;
 
 import java.lang.reflect.Field;
@@ -13,7 +14,7 @@ public interface WritingConverter<T> {
      * @param maybeDefault value that may be null or empty
      * @param defaultValue default value
      * @param field        field of model
-     * @return origin value or {@link com.github.javaxcel.out.ExcelWriter#defaultValue(String)}
+     * @return origin value or {@link ModelWriter#defaultValue(String)}
      */
     static String convertIfDefault(String maybeDefault, String defaultValue, Field field) {
         return StringUtils.ifNullOrEmpty(maybeDefault, () -> {

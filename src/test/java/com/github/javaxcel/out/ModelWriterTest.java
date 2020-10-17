@@ -1,6 +1,7 @@
 package com.github.javaxcel.out;
 
 import com.github.javaxcel.exception.NoTargetedFieldException;
+import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.model.creature.Human;
 import com.github.javaxcel.model.etc.AllIgnoredModel;
 import com.github.javaxcel.model.etc.NoFieldModel;
@@ -12,6 +13,7 @@ import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -29,17 +31,15 @@ import java.util.function.BiFunction;
 
 import static org.assertj.core.api.Assertions.*;
 
-public class ExcelWriterTest {
+public class ModelWriterTest {
 
     @SneakyThrows
-    private static int getNumOfWrittenModels(Class<? extends Workbook> type, File file) {
+    private static long getNumOfWrittenModels(Class<? extends Workbook> type, File file) {
         @Cleanup
         Workbook workbook = type == HSSFWorkbook.class
                 ? new HSSFWorkbook(new FileInputStream(file))
                 : new XSSFWorkbook(file);
-
-        Sheet sheet = workbook.getSheetAt(0);
-        return ExcelUtils.getNumOfModels(sheet);
+        return ExcelUtils.getNumOfModels(workbook);
     }
 
     /**
@@ -68,7 +68,7 @@ public class ExcelWriterTest {
 
         // when
         stopWatch.start(String.format("write %,d models", numOfMocks));
-        ExcelWriter.init(workbook, Product.class)
+        ExcelWriterFactory.create(workbook, Product.class)
                 .sheetName("Products")
                 .write(out, products);
         stopWatch.stop();
@@ -104,7 +104,7 @@ public class ExcelWriterTest {
 
         // when
         stopWatch.start(String.format("write %,d models", numOfMocks));
-        ExcelWriter.init(workbook, EducationToy.class).write(out, toys);
+        ExcelWriterFactory.create(workbook, EducationToy.class).write(out, toys);
         stopWatch.stop();
 
         // then
@@ -129,7 +129,7 @@ public class ExcelWriterTest {
         @Cleanup HSSFWorkbook workbook = new HSSFWorkbook();
 
         // when & then
-        assertThatThrownBy(() -> ExcelWriter.init(workbook, type).write(out, new ArrayList<>()))
+        assertThatThrownBy(() -> ExcelWriterFactory.create(workbook, type).write(out, new ArrayList<>()))
                 .as("When write with a model that has targeted fields")
                 .isInstanceOf(NoTargetedFieldException.class);
     }
@@ -169,7 +169,7 @@ public class ExcelWriterTest {
         stopWatch.stop();
 
         stopWatch.start(String.format("write and decorate %,d models", numOfMocks));
-        ExcelWriter.init(workbook, Human.class)
+        ExcelWriterFactory.create(workbook, Human.class)
                 .sheetName("People")
                 .adjustSheet((sheet, numOfRows, numOfColumns) -> {
                     ExcelStyler.autoResizeColumns(sheet, numOfColumns);
@@ -204,14 +204,14 @@ public class ExcelWriterTest {
         @Cleanup Workbook workbook = new HSSFWorkbook();
         stopWatch.stop();
 
-        int numOfMocks = ExcelStyler.HSSF_MAX_ROWS - 1;
+        int numOfMocks = SpreadsheetVersion.EXCEL97.getMaxRows() + 10_000;
         stopWatch.start(String.format("create %,d mocks", numOfMocks));
         List<Human> people = new Human().createRandoms(numOfMocks);
         stopWatch.stop();
 
         // when
         stopWatch.start(String.format("write %,d models", numOfMocks));
-        ExcelWriter.init(workbook, Human.class).write(out, people);
+        ExcelWriterFactory.create(workbook, Human.class).write(out, people);
         stopWatch.stop();
 
         // then

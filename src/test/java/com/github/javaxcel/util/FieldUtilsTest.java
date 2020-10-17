@@ -39,10 +39,10 @@ public class FieldUtilsTest {
         List<Field> targetedFields = FieldUtils.getTargetedFields(type);
 
         // when
-        String[] headerNames = FieldUtils.toHeaderNames(targetedFields);
+        List<String> headerNames = FieldUtils.toHeaderNames(targetedFields);
 
         // then
-        Arrays.stream(headerNames).forEach(System.out::println);
+        headerNames.forEach(System.out::println);
     }
 
 }
