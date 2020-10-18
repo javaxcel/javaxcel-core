@@ -2,6 +2,7 @@ package com.github.javaxcel.out;
 
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelWriterExpression;
+import com.github.javaxcel.converter.impl.BasicWritingConverter;
 import com.github.javaxcel.converter.impl.ExpressiveWritingConverter;
 import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.util.FieldUtils;
@@ -22,7 +23,9 @@ import java.util.function.BiFunction;
  */
 public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T> {
 
-    private final ExpressiveWritingConverter<T> expConverter = new ExpressiveWritingConverter<>();
+    private final BasicWritingConverter<T> basicConverter = new BasicWritingConverter<>();
+
+    private final ExpressiveWritingConverter<T> expConverter;
 
     private final Class<T> type;
 
@@ -43,12 +46,17 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
 
     private ModelWriter(W workbook, Class<T> type) {
         super(workbook);
+
+        if (type == null) throw new IllegalArgumentException("Type cannot be null");
         this.type = type;
+
+        // Finds targeted fields.
         this.fields = FieldUtils.getTargetedFields(type);
+        if (this.fields.isEmpty()) throw new NoTargetedFieldException(type);
 
-        if (this.fields.isEmpty()) throw new NoTargetedFieldException(this.type);
+        // Caches expressions for each fields to improve performance.
+        this.expConverter = new ExpressiveWritingConverter<>(this.fields);
 
-        expConverter.cacheExpressions(this.fields);
     }
 
     @Override
@@ -71,6 +79,7 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
     @Override
     public ModelWriter<W, T> defaultValue(String defaultValue) {
         super.defaultValue(defaultValue);
+        this.basicConverter.setDefaultValue(defaultValue);
         this.expConverter.setDefaultValue(defaultValue);
         return this;
     }

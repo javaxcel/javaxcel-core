@@ -2,6 +2,7 @@ package com.github.javaxcel.converter.impl;
 
 import com.github.javaxcel.annotation.ExcelWriterExpression;
 import com.github.javaxcel.converter.WritingConverter;
+import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.expression.Expression;
 import io.github.imsejin.expression.ExpressionParser;
 import io.github.imsejin.expression.spel.standard.SpelExpressionParser;
@@ -18,22 +19,15 @@ public class ExpressiveWritingConverter<T> implements WritingConverter<T> {
 
     private final StandardEvaluationContext context = new StandardEvaluationContext();
 
-    private final Map<String, Expression> cache = new HashMap<>();
+    private final Map<String, Expression> caches;
 
     private String defaultValue;
 
     private Map<String, Object> variables;
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setDefaultValue(String defaultValue) {
-        this.defaultValue = defaultValue;
-    }
-
-    /**
-     * Parses expressions for each fields and caches them.
+     * Brings default values for each fields and caches them and
+     * parses expressions for each fields and caches them, too.
      *
      * <p> The following table is a benchmark.
      *
@@ -57,15 +51,34 @@ public class ExpressiveWritingConverter<T> implements WritingConverter<T> {
      *
      * @param fields fields of model
      */
-    public void cacheExpressions(List<Field> fields) {
-        for (Field field : fields) {
-            ExcelWriterExpression annotation = field.getAnnotation(ExcelWriterExpression.class);
-            if (annotation == null) continue;
+    public ExpressiveWritingConverter(List<Field> fields) {
+        Map<String, Expression> caches = new HashMap<>();
 
-            String fieldName = field.getName();
-            Expression expression = parser.parseExpression(annotation.value());
-            this.cache.put(fieldName, expression);
+        for (Field field : fields) {
+            ExcelWriterExpression writerExpression = field.getAnnotation(ExcelWriterExpression.class);
+            if (writerExpression == null) continue;
+
+            Expression expression = parser.parseExpression(writerExpression.value());
+            caches.put(field.getName(), expression);
         }
+
+        this.caches = caches;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getDefaultValue() {
+        return this.defaultValue;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
     }
 
     /**
@@ -92,7 +105,7 @@ public class ExpressiveWritingConverter<T> implements WritingConverter<T> {
         context.setRootObject(model);
         context.setVariables(this.variables);
 
-        String result = this.cache.get(field.getName()).getValue(context, String.class);
+        String result = this.caches.get(field.getName()).getValue(context, String.class);
 
         return FieldUtils.convertIfFaulty(result, this.defaultValue, field);
     }

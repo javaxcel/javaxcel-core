@@ -20,6 +20,14 @@ public class BasicWritingConverter<T> implements WritingConverter<T> {
      * {@inheritDoc}
      */
     @Override
+    public String getDefaultValue() {
+        return this.defaultValue;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
     }
