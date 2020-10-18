@@ -16,9 +16,20 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
 
     private final List<String> keys = new ArrayList<>();
 
+    private String defaultValue;
+
     private MapWriter(W workbook) {
         super(workbook);
     }
+
+    @Override
+    public AbstractExcelWriter<W, T> defaultValue(String defaultValue) {
+        super.defaultValue(defaultValue);
+        this.defaultValue = defaultValue;
+        return this;
+    }
+
+    //////////////////////////////////////// Hooks ////////////////////////////////////////
 
     /**
      * {@inheritDoc}
@@ -67,7 +78,11 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
                 Object value = map.get(this.keys.get(j));
                 Cell cell = row.createCell(j);
 
-                if (value != null) cell.setCellValue(value.toString());
+                if (value != null) {
+                    cell.setCellValue(value.toString());
+                } else if (this.defaultValue != null) {
+                    cell.setCellValue(this.defaultValue);
+                }
             }
         }
     }
