@@ -33,7 +33,7 @@ public class BasicWritingConverter<T> implements WritingConverter<T> {
     @Override
     public String convert(T model, Field field) {
         String value = stringify(model, field);
-        return WritingConverter.convertIfDefault(value, this.defaultValue, field);
+        return FieldUtils.convertIfFaulty(value, this.defaultValue, field);
     }
 
     /**

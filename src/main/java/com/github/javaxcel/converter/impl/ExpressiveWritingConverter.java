@@ -94,7 +94,7 @@ public class ExpressiveWritingConverter<T> implements WritingConverter<T> {
 
         String result = this.cache.get(field.getName()).getValue(context, String.class);
 
-        return WritingConverter.convertIfDefault(result, this.defaultValue, field);
+        return FieldUtils.convertIfFaulty(result, this.defaultValue, field);
     }
 
 }
