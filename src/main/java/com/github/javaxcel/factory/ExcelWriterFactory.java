@@ -1,6 +1,7 @@
 package com.github.javaxcel.factory;
 
 import com.github.javaxcel.exception.NoTargetedConstructorException;
+import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.out.ExcelWriter;
 import com.github.javaxcel.out.MapWriter;
 import com.github.javaxcel.out.ModelWriter;
@@ -77,6 +78,8 @@ public abstract class ExcelWriterFactory {
         try {
             writer = (ModelWriter<W, T>) constructor.newInstance(workbook, type);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            if (e.getCause() instanceof IllegalArgumentException) throw new IllegalArgumentException(e);
+            if (e.getCause() instanceof NoTargetedFieldException) throw new NoTargetedFieldException(e);
             throw new RuntimeException(String.format("Failed to instantiate of the class(%s)", type.getName()));
         }
 
