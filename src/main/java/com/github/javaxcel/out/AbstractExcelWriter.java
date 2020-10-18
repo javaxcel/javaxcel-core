@@ -1,6 +1,5 @@
 package com.github.javaxcel.out;
 
-import com.github.javaxcel.converter.impl.BasicWritingConverter;
 import com.github.javaxcel.exception.WritingExcelException;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.util.CollectionUtils;
@@ -17,8 +16,6 @@ import java.util.List;
 import java.util.function.Function;
 
 public abstract class AbstractExcelWriter<W extends Workbook, T> implements ExcelWriter<W, T> {
-
-    protected final BasicWritingConverter<T> basicConverter = new BasicWritingConverter<>();
 
     /**
      * Apache POI workbook.
@@ -53,9 +50,10 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      */
     @Override
     public AbstractExcelWriter<W, T> defaultValue(String defaultValue) {
-        if (defaultValue == null) throw new IllegalArgumentException("Default value cannot be null");
+        if (StringUtils.isNullOrEmpty(defaultValue)) {
+            throw new IllegalArgumentException("Default value cannot be null or empty");
+        }
 
-        this.basicConverter.setDefaultValue(defaultValue);
         return this;
     }
 
