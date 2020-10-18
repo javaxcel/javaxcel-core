@@ -2,8 +2,13 @@ package com.github.javaxcel.util;
 
 import com.github.javaxcel.exception.NoTargetedConstructorException;
 import com.github.javaxcel.exception.UnsupportedWorkbookException;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.SpreadsheetVersion;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
@@ -58,9 +63,25 @@ public final class ExcelUtils {
     }
 
     public static int getMaxRows(Workbook workbook) {
-        return workbook instanceof HSSFWorkbook
+        return isExcel97(workbook)
                 ? SpreadsheetVersion.EXCEL97.getMaxRows()
                 : SpreadsheetVersion.EXCEL2007.getMaxRows();
+    }
+
+    public static boolean isExcel97(Workbook workbook) {
+        return workbook instanceof HSSFWorkbook;
+    }
+
+    public static boolean isExcel97(Sheet sheet) {
+        return sheet instanceof HSSFSheet;
+    }
+
+    public static boolean isExcel97(Row row) {
+        return row instanceof HSSFRow;
+    }
+
+    public static boolean isExcel97(Cell cell) {
+        return cell instanceof HSSFCell;
     }
 
     public static <T> T instantiate(Class<T> type) {

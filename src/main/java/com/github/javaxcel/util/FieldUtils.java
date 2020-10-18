@@ -8,6 +8,7 @@ import com.github.javaxcel.exception.GettingFieldValueException;
 import com.github.javaxcel.exception.SettingFieldValueException;
 import io.github.imsejin.common.util.StringUtils;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Stream;
@@ -139,6 +140,31 @@ public final class FieldUtils {
         } catch (IllegalAccessException e) {
             throw new SettingFieldValueException(e, model.getClass(), field);
         }
+    }
+
+    /**
+     * If the value is null or empty string, converts a value to default value.
+     *
+     * @param maybeFaulty  value that may be null or empty
+     * @param defaultValue 1. {@link com.github.javaxcel.out.ExcelWriter#defaultValue(String)}
+     *                     2. {@link ExcelModel#defaultValue()}
+     *                     3. {@link ExcelColumn#defaultValue()}
+     * @param field        field of model
+     * @return origin value or default value
+     */
+    @Nullable
+    public static String convertIfFaulty(String maybeFaulty, String defaultValue, Field field) {
+        if (!StringUtils.isNullOrEmpty(maybeFaulty)) return maybeFaulty;
+
+        // Default value assigned by ExcelWriter takes precedence over ExcelColumn's default value.
+        if (!StringUtils.isNullOrEmpty(defaultValue)) return defaultValue;
+
+        ExcelColumn excelColumn = field.getAnnotation(ExcelColumn.class);
+        if (excelColumn != null && !excelColumn.defaultValue().equals("")) {
+            return excelColumn.defaultValue();
+        }
+
+        return null;
     }
 
 }
