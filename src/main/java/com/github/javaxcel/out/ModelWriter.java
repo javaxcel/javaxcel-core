@@ -135,6 +135,8 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
         return this;
     }
 
+    //////////////////////////////////////// Hooks ////////////////////////////////////////
+
     /**
      * {@inheritDoc}
      *
