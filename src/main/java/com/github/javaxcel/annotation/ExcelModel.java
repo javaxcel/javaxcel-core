@@ -16,4 +16,11 @@ public @interface ExcelModel {
      */
     TargetedFieldPolicy policy() default TargetedFieldPolicy.OWN_FIELDS;
 
+    /**
+     * Replacement of the value when the value is null or empty string.
+     *
+     * @return replacement of the value when the value is null or empty string
+     */
+    String defaultValue() default "";
+
 }

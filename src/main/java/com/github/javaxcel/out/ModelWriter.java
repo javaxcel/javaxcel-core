@@ -1,6 +1,7 @@
 package com.github.javaxcel.out;
 
 import com.github.javaxcel.annotation.ExcelColumn;
+import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.annotation.ExcelWriterExpression;
 import com.github.javaxcel.converter.impl.BasicWritingConverter;
 import com.github.javaxcel.converter.impl.ExpressiveWritingConverter;
@@ -57,6 +58,12 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
         // Caches expressions for each fields to improve performance.
         this.expConverter = new ExpressiveWritingConverter<>(this.fields);
 
+        // If default value for all fields is not empty string, sets it into converters.
+        ExcelModel excelModel = type.getAnnotation(ExcelModel.class);
+        if (excelModel != null && !excelModel.defaultValue().equals("")) {
+            this.basicConverter.setDefaultValue(excelModel.defaultValue());
+            this.expConverter.setDefaultValue(excelModel.defaultValue());
+        }
     }
 
     @Override
