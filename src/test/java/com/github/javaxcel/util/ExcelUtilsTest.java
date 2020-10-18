@@ -2,9 +2,17 @@ package com.github.javaxcel.util;
 
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.converter.impl.BasicWritingConverter;
+import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
+import com.github.javaxcel.out.ExcelWriter;
+import com.github.javaxcel.out.ModelWriter;
+import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.usermodel.HSSFWorkbookFactory;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Color;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.*;
@@ -12,6 +20,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -21,9 +30,10 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 public class ExcelUtilsTest {
 
@@ -152,6 +162,48 @@ public class ExcelUtilsTest {
         // then
         assertThat(strBigInt).isEqualTo(bigInteger);
         assertThat(strBigDec).isEqualTo(bigDecimal);
+    }
+
+    @Test
+    @SneakyThrows
+    @SuppressWarnings("unchecked")
+    public void instantiateByClassName() {
+        Stopwatch stopwatch = new Stopwatch(TimeUnit.MILLISECONDS);
+
+        // given
+        String className = "com.github.javaxcel.out.ModelWriter";
+
+        // when
+        stopwatch.start("load class");
+        Class<?> clazz = Class.forName(className, true, ExcelUtilsTest.class.getClassLoader());
+        stopwatch.stop();
+
+        stopwatch.start("get constructor");
+        Constructor<?> constructor = clazz.getDeclaredConstructor(Workbook.class, Class.class);
+        stopwatch.stop();
+
+        stopwatch.start("set accessible");
+        constructor.setAccessible(true);
+        stopwatch.stop();
+
+        Workbook workbook = new XSSFWorkbook();
+        stopwatch.start("instantiate");
+//        ExcelWriter<XSSFWorkbook, Product> instance = ModelWriter.init(new XSSFWorkbook(), Product.class);
+        ExcelWriter<Workbook, Product> instance = (ExcelWriter<Workbook, Product>) constructor.newInstance(workbook, Product.class);
+        stopwatch.stop();
+
+        // then
+        assertThat(instance)
+                .isNotNull()
+                .isInstanceOf(ModelWriter.class);
+        System.out.println(stopwatch.getStatistics());
+    }
+
+    @Test
+    public void test() {
+        HSSFWorkbook workbook = HSSFWorkbookFactory.createWorkbook();
+        CellStyle style = workbook.createCellStyle();
+        Color color = style.getFillForegroundColorColor();
     }
 
 }

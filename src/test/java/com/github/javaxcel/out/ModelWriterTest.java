@@ -96,6 +96,7 @@ public class ModelWriterTest {
         File file = new File("/data", filename);
         @Cleanup FileOutputStream out = new FileOutputStream(file);
         @Cleanup XSSFWorkbook workbook = new XSSFWorkbook();
+        stopWatch.stop();
 
         int numOfMocks = 10_000;
         stopWatch.start(String.format("create %,d mocks", numOfMocks));
