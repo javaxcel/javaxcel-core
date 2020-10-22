@@ -33,6 +33,8 @@ import static org.assertj.core.api.Assertions.*;
 
 public class ModelWriterTest {
 
+    private Stopwatch stopWatch;
+
     @SneakyThrows
     private static long getNumOfWrittenModels(Class<? extends Workbook> type, File file) {
         @Cleanup
@@ -42,16 +44,25 @@ public class ModelWriterTest {
         return ExcelUtils.getNumOfModels(workbook);
     }
 
+    @BeforeEach
+    public void beforeEach() {
+        this.stopWatch = new Stopwatch(TimeUnit.SECONDS);
+    }
+
+    @AfterEach
+    public void afterEach() {
+        System.out.println(this.stopWatch.getStatistics());
+    }
+
     /**
      * When write 349,525 mocks,
      * <p> 1. XSSFWorkbook: 45 sec
      * <p> 2. SXSSFWorkbook: 6 sec
      */
     @Test
-    @DisplayName("Default value + @ExcelIgnore")
+    @DisplayName("@ExcelIgnore + @ExcelColumn(defaultValue = \"-1\")")
     @SneakyThrows
-    public void writeWithIgnoreAndDefaultValue() {
-        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
+    public void writeWithProducts() {
         String filename = "products.xlsx";
 
         // given
@@ -81,14 +92,12 @@ public class ModelWriterTest {
         assertThat(getNumOfWrittenModels(XSSFWorkbook.class, file))
                 .as("#2 The number of actually written model is %,d", products.size())
                 .isEqualTo(products.size());
-        System.out.println(stopWatch.getStatistics());
     }
 
     @Test
-    @DisplayName("Including inherited fields + @ExcelDateTimeFormat")
+    @DisplayName("@ExcelModel(includeSuper = true) + @ExcelDateTimeFormat")
     @SneakyThrows
-    public void writeWithTargetedFieldPolicyAndDateTimePattern() {
-        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
+    public void writeWithEducationToys() {
         String filename = "toys.xlsx";
 
         // given
@@ -116,14 +125,13 @@ public class ModelWriterTest {
         assertThat(getNumOfWrittenModels(XSSFWorkbook.class, file))
                 .as("#2 The number of actually written model is %,d", toys.size())
                 .isEqualTo(toys.size());
-        System.out.println(stopWatch.getStatistics());
     }
 
     @ParameterizedTest
     @ValueSource(classes = {NoFieldModel.class, AllIgnoredModel.class})
     @DisplayName("Model without targeted fields")
     @SneakyThrows
-    public void writeWithClassThatHasNoTargetFields(Class<?> type) {
+    public void writeWithModelThatHasNoTargetFields(Class<?> type) {
         // given
         File file = new File("/data", "no-field-model.xls");
         @Cleanup FileOutputStream out = new FileOutputStream(file);
@@ -139,7 +147,6 @@ public class ModelWriterTest {
     @DisplayName("Adjust sheet + styling")
     @SneakyThrows
     public void writeAndDecorate() {
-        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
         String filename = "people-styled.xlsx";
 
         // given
@@ -188,14 +195,12 @@ public class ModelWriterTest {
                 .as("#1 Excel file will be created")
                 .isNotNull()
                 .exists();
-        System.out.println(stopWatch.getStatistics());
     }
 
     @Test
-    @DisplayName("Including inherited fields + @ExcelWriterConversion")
+    @DisplayName("@ExcelModel(includeSuper = true) + @ExcelWriterExpression")
     @SneakyThrows
     public void writePeople() {
-        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
         String filename = "people.xls";
 
         // given
@@ -223,7 +228,6 @@ public class ModelWriterTest {
         assertThat(getNumOfWrittenModels(HSSFWorkbook.class, file))
                 .as("#2 The number of actually written model is %,d", people.size())
                 .isEqualTo(people.size());
-        System.out.println(stopWatch.getStatistics());
     }
 
 }
