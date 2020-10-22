@@ -96,7 +96,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
         int maxModels = ExcelUtils.getMaxRows(this.workbook) - 1;
         List<List<T>> lists = CollectionUtils.partitionBySize(list, maxModels);
 
-        // Writes each sheets.
+        // Writes each sheet.
         int numOfSheets = lists.size();
         for (int i = 0; i < numOfSheets; i++) {
             // Writes header.

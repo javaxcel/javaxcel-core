@@ -26,8 +26,8 @@ public class ExpressiveWritingConverter<T> implements WritingConverter<T> {
     private Map<String, Object> variables;
 
     /**
-     * Brings default values for each fields and caches them and
-     * parses expressions for each fields and caches them, too.
+     * Brings default values for each field and caches them and
+     * parses expressions for each field and caches them, too.
      *
      * <p> The following table is a benchmark.
      *

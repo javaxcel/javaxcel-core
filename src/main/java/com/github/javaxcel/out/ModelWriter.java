@@ -55,7 +55,7 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
         this.fields = FieldUtils.getTargetedFields(type);
         if (this.fields.isEmpty()) throw new NoTargetedFieldException(type);
 
-        // Caches expressions for each fields to improve performance.
+        // Caches expressions for each field to improve performance.
         this.expConverter = new ExpressiveWritingConverter<>(this.fields);
 
         // If default value for all fields is not empty string, sets it into converters.
@@ -187,7 +187,7 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
                 if (this.columnStyles != null) {
                     CellStyle columnStyle = this.columnStyles.length == 1
                             ? this.columnStyles[0] // common style
-                            : this.columnStyles[j]; // each columns's style
+                            : this.columnStyles[j]; // each column's style
                     cell.setCellStyle(columnStyle);
                 }
             }
