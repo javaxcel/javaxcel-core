@@ -3,7 +3,6 @@ package com.github.javaxcel.util;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelIgnore;
 import com.github.javaxcel.annotation.ExcelModel;
-import com.github.javaxcel.constant.TargetedFieldPolicy;
 import com.github.javaxcel.exception.GettingFieldValueException;
 import com.github.javaxcel.exception.SettingFieldValueException;
 import io.github.imsejin.common.util.StringUtils;
@@ -11,6 +10,7 @@ import io.github.imsejin.common.util.StringUtils;
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -23,29 +23,30 @@ public final class FieldUtils {
     /**
      * Gets the targeted fields depending on the policy.
      *
-     * <p> If the targeting policy is {@link TargetedFieldPolicy#OWN_FIELDS},
-     * this returns its own declared fields.
-     * Otherwise({@link TargetedFieldPolicy#INCLUDES_INHERITED}) this returns
-     * its own declared fields including super classes's fields.
+     * <p> If the targeting policy depended on {@link ExcelModel#includeSuper()} is
+     * {@code true}, this returns its own declared fields.
+     * Otherwise, this returns its own declared fields including super classes' fields.
      *
      * <p> This doesn't return the fields annotated with {@link ExcelIgnore}.
      *
      * @param type type of the object
      * @return targeted fields
-     * @see ExcelModel#policy()
-     * @see TargetedFieldPolicy
+     * @see ExcelModel#includeSuper()
+     * @see ExcelModel#explicit()
      * @see ExcelIgnore
      */
     public static List<Field> getTargetedFields(Class<?> type) {
-        // Gets fields depending on the policy.
-        ExcelModel annotation = type.getAnnotation(ExcelModel.class);
-        Stream<Field> stream = annotation == null || annotation.policy() == TargetedFieldPolicy.OWN_FIELDS
+        // Gets fields depending on the policies.
+        ExcelModel excelModel = type.getAnnotation(ExcelModel.class);
+        Stream<Field> stream = excelModel == null || !excelModel.includeSuper()
                 ? Arrays.stream(type.getDeclaredFields())
                 : getInheritedFields(type).stream();
 
         // Excludes the fields to be ignored.
-        return stream.filter(field -> field.getAnnotation(ExcelIgnore.class) == null)
-                .collect(toList());
+        final Predicate<Field> predicate = excelModel == null || !excelModel.explicit()
+                ? field -> field.getAnnotation(ExcelIgnore.class) == null
+                : field -> field.getAnnotation(ExcelIgnore.class) == null && field.getAnnotation(ExcelColumn.class) != null;
+        return stream.filter(predicate).collect(toList());
     }
 
     /**

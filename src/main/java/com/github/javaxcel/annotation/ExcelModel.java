@@ -1,7 +1,5 @@
 package com.github.javaxcel.annotation;
 
-import com.github.javaxcel.constant.TargetedFieldPolicy;
-
 import java.lang.annotation.*;
 
 @Documented
@@ -10,11 +8,24 @@ import java.lang.annotation.*;
 public @interface ExcelModel {
 
     /**
-     * Policy that determines the range of fields to use as columns of excel sheet.
+     * Policy that determines whether this will select super classes' fields or own fields.
      *
-     * @return policy that determines the range of fields to use as columns of excel sheet
+     * <p> If this is {@code true}, this will select declared own fields including the inherited.
+     * Otherwise, this will select only declared own fields except the inherited.
+     *
+     * @return policy that determines whether this will select super classes' fields or not
      */
-    TargetedFieldPolicy policy() default TargetedFieldPolicy.OWN_FIELDS;
+    boolean includeSuper() default false;
+
+    /**
+     * Policy that determines whether this will select explicitly designated fields or not.
+     *
+     * <p> If this is {@code true}, this will select the fields that annotated with {@link ExcelColumn}.
+     * Otherwise, this will select all the fields whether it is annotated with {@link ExcelColumn} or not.
+     *
+     * @return policy that determines whether this will select explicitly designated fields or not.
+     */
+    boolean explicit() default false;
 
     /**
      * Replacement of the value when the value is null or empty string.
