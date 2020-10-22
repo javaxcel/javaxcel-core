@@ -2,6 +2,7 @@ package com.github.javaxcel.out;
 
 import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.factory.ExcelWriterFactory;
+import com.github.javaxcel.model.computer.Computer;
 import com.github.javaxcel.model.creature.Human;
 import com.github.javaxcel.model.etc.AllIgnoredModel;
 import com.github.javaxcel.model.etc.NoFieldModel;
@@ -92,6 +93,39 @@ public class ModelWriterTest {
         assertThat(getNumOfWrittenModels(XSSFWorkbook.class, file))
                 .as("#2 The number of actually written model is %,d", products.size())
                 .isEqualTo(products.size());
+    }
+
+    @Test
+    @DisplayName("@ExcelModel(explicit = true)")
+    @SneakyThrows
+    public void writeWithComputers() {
+        String filename = "computers.xlsx";
+
+        // given
+        stopWatch.start(String.format("create '%s' file", filename));
+        File file = new File("/data", filename);
+        @Cleanup FileOutputStream out = new FileOutputStream(file);
+        @Cleanup Workbook workbook = new SXSSFWorkbook();
+        stopWatch.stop();
+
+        int numOfMocks = 10_000;
+        stopWatch.start(String.format("create %,d mocks", numOfMocks));
+        List<Computer> computers = Computer.createRandoms(numOfMocks);
+        stopWatch.stop();
+
+        // when
+        stopWatch.start(String.format("write %,d models", numOfMocks));
+        ExcelWriterFactory.create(workbook, Computer.class).write(out, computers);
+        stopWatch.stop();
+
+        // then
+        assertThat(file)
+                .as("#1 Excel file will be created")
+                .isNotNull()
+                .exists();
+        assertThat(getNumOfWrittenModels(XSSFWorkbook.class, file))
+                .as("#2 The number of actually written model is %,d", computers.size())
+                .isEqualTo(computers.size());
     }
 
     @Test
