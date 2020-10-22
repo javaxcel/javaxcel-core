@@ -3,7 +3,6 @@ package com.github.javaxcel.model.toy;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.annotation.ExcelModel;
-import com.github.javaxcel.constant.TargetedFieldPolicy;
 import com.github.javaxcel.model.Mockables;
 import lombok.*;
 
@@ -19,7 +18,7 @@ import java.util.List;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true, exclude = "targetAges")
 @NoArgsConstructor
-@ExcelModel(policy = TargetedFieldPolicy.INCLUDES_INHERITED)
+@ExcelModel(includeSuper = true)
 public class EducationToy extends Toy implements Mockables<EducationToy> {
 
     @ExcelColumn(defaultValue = "<null>")

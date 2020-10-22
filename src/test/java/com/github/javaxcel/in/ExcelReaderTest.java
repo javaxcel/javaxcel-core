@@ -63,7 +63,7 @@ public class ExcelReaderTest {
     }
 
     /**
-     * 1. {@link ExcelModel#policy()}, {@link com.github.javaxcel.constant.TargetedFieldPolicy#OWN_FIELDS}
+     * 1. {@link ExcelModel#includeSuper()}
      * <br>
      * 2. {@link com.github.javaxcel.annotation.ExcelIgnore}
      */
@@ -110,7 +110,7 @@ public class ExcelReaderTest {
     }
 
     /**
-     * 1. {@link ExcelModel#policy()}, {@link com.github.javaxcel.constant.TargetedFieldPolicy#INCLUDES_INHERITED}
+     * 1. {@link ExcelModel#includeSuper()}
      * <br>
      * 2. {@link ExcelDateTimeFormat#pattern()}
      */

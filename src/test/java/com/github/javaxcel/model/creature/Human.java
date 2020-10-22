@@ -1,7 +1,6 @@
 package com.github.javaxcel.model.creature;
 
 import com.github.javaxcel.annotation.*;
-import com.github.javaxcel.constant.TargetedFieldPolicy;
 import com.github.javaxcel.model.Mockables;
 import lombok.*;
 
@@ -19,7 +18,7 @@ import java.util.UUID;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true, exclude = "agesFromTwilightToDeath")
 @NoArgsConstructor
-@ExcelModel(policy = TargetedFieldPolicy.INCLUDES_INHERITED)
+@ExcelModel(includeSuper = true)
 public class Human extends Creature implements Mockables<Human> {
 
     @ExcelColumn(name = "Name")
