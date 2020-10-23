@@ -20,7 +20,7 @@ public abstract class ExcelWriterFactory {
     private ExcelWriterFactory() {
     }
 
-    public static <W extends Workbook, V> ExcelWriter<W, Map<String, V>> create(W workbook) {
+    public static <W extends Workbook, V> MapWriter<W, Map<String, V>> create(W workbook) {
         return instantiate(workbook);
     }
 
