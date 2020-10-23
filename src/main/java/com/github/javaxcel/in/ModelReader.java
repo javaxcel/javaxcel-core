@@ -24,7 +24,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Excel reader
  */
-public final class ExcelReader<W extends Workbook, T> {
+public final class ModelReader<W extends Workbook, T> {
 
     /**
      * Formatter that stringifies the value in a cell with {@link FormulaEvaluator}.
@@ -60,19 +60,19 @@ public final class ExcelReader<W extends Workbook, T> {
     private final Map<String, Expression> cache;
 
     /**
-     * Sheet's indexes that {@link ExcelReader} will read.
+     * Sheet's indexes that {@link ModelReader} will read.
      * <br>
      * Default value is {@code {0}} (it means index of the first sheet).
      */
     private int[] sheetIndexes = {0};
 
     /**
-     * Row's index that {@link ExcelReader} will start to read.
+     * Row's index that {@link ModelReader} will start to read.
      */
     private int startIndex;
 
     /**
-     * Row's index that {@link ExcelReader} will end to read.
+     * Row's index that {@link ModelReader} will end to read.
      * <br>
      * Default value is {@code -1} (it means index of the last row).
      */
@@ -80,7 +80,7 @@ public final class ExcelReader<W extends Workbook, T> {
 
     private boolean parallel;
 
-    private ExcelReader(W workbook, Class<T> type) {
+    private ModelReader(W workbook, Class<T> type) {
         this.workbook = workbook;
         this.type = type;
         this.formulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
@@ -91,12 +91,12 @@ public final class ExcelReader<W extends Workbook, T> {
         this.cache = ExpressiveReadingConverter.createCache(this.fields);
     }
 
-    public static <W extends Workbook, E> ExcelReader<W, E> init(W workbook, Class<E> type) {
+    public static <W extends Workbook, E> ModelReader<W, E> init(W workbook, Class<E> type) {
         if (workbook instanceof SXSSFWorkbook) throw new UnsupportedWorkbookException();
-        return new ExcelReader<>(workbook, type);
+        return new ModelReader<>(workbook, type);
     }
 
-    public ExcelReader<W, T> sheetIndexes(int... sheetIndexes) {
+    public ModelReader<W, T> sheetIndexes(int... sheetIndexes) {
         if (sheetIndexes == null || sheetIndexes.length == 0 || IntStream.of(sheetIndexes).anyMatch(i -> i < 0)) {
             throw new IllegalArgumentException("Sheet indexes cannot be null, empty or less than 0.");
         }
@@ -105,14 +105,14 @@ public final class ExcelReader<W extends Workbook, T> {
         return this;
     }
 
-    public ExcelReader<W, T> startIndex(int startIndex) {
+    public ModelReader<W, T> startIndex(int startIndex) {
         if (startIndex < 0) throw new IllegalArgumentException("Start index cannot be less than 0.");
 
         this.startIndex = startIndex;
         return this;
     }
 
-    public ExcelReader<W, T> endIndex(int endIndex) {
+    public ModelReader<W, T> endIndex(int endIndex) {
         if (endIndex < 0) throw new IllegalArgumentException("End index cannot be less than 0.");
 
         this.endIndex = endIndex;
@@ -139,9 +139,9 @@ public final class ExcelReader<W extends Workbook, T> {
      *     +------------+------------+----------+
      * }</pre>
      *
-     * @return {@link ExcelReader}
+     * @return {@link ModelReader}
      */
-    public ExcelReader<W, T> parallel() {
+    public ModelReader<W, T> parallel() {
         this.parallel = true;
         return this;
     }

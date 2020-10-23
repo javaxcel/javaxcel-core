@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ExcelReaderTest {
+public class ModelReaderTest {
 
     @Test
     @DisplayName("Find constructor with min params")
@@ -96,7 +96,7 @@ public class ExcelReaderTest {
 
         // when
         stopWatch.start(String.format("read %,d models", numOfMocks));
-        List<Product> products = ExcelReader.init(wb, Product.class).read();
+        List<Product> products = ModelReader.init(wb, Product.class).read();
         stopWatch.stop();
 
         // then
@@ -143,7 +143,7 @@ public class ExcelReaderTest {
 
         // when
         stopWatch.start(String.format("read %,d models", numOfMocks));
-        List<EducationToy> educationToys = ExcelReader.init(wb, EducationToy.class).read();
+        List<EducationToy> educationToys = ModelReader.init(wb, EducationToy.class).read();
         stopWatch.stop();
 
         // then
@@ -165,7 +165,7 @@ public class ExcelReaderTest {
         @Cleanup Workbook workbook = HSSFWorkbookFactory.create(file);
 
         // when
-        List<FinalFieldModel> list = ExcelReader.init(workbook, FinalFieldModel.class).read();
+        List<FinalFieldModel> list = ModelReader.init(workbook, FinalFieldModel.class).read();
 
         // then
         list.forEach(it -> {
@@ -191,8 +191,8 @@ public class ExcelReaderTest {
         @Cleanup Workbook workbook = WorkbookFactory.create(file);
 
         // when
-        List<Product> sheet1 = ExcelReader.init(workbook, Product.class).sheetIndexes(0).read();
-        List<EducationToy> sheet2 = ExcelReader.init(workbook, EducationToy.class).sheetIndexes(1).read();
+        List<Product> sheet1 = ModelReader.init(workbook, Product.class).sheetIndexes(0).read();
+        List<EducationToy> sheet2 = ModelReader.init(workbook, EducationToy.class).sheetIndexes(1).read();
 
         // then
         assertThat(products.stream()
@@ -234,7 +234,7 @@ public class ExcelReaderTest {
 
         // when
         stopWatch.start(String.format("read %,d models", numOfMocks));
-        List<Human> people = ExcelReader.init(wb, Human.class).parallel().read();
+        List<Human> people = ModelReader.init(wb, Human.class).parallel().read();
         stopWatch.stop();
 
         // then
