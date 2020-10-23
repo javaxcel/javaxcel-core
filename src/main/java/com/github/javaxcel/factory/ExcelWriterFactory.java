@@ -12,8 +12,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 /**
- * Factory for creating the appropriate type of {@link ExcelWriter}.
- * This will create.
+ * Factory for creating the appropriate implementation of {@link ExcelWriter}.
+ * This will create instance of {@link ModelWriter} or {@link MapWriter}.
  */
 public abstract class ExcelWriterFactory {
 
@@ -29,7 +29,7 @@ public abstract class ExcelWriterFactory {
      * Instantiates {@link MapWriter}.
      *
      * @param workbook excel workbook
-     * @param <W>      instance that implements {@link Workbook}
+     * @param <W>      implementation of {@link Workbook}
      * @param <V>      {@link Map}'s value
      * @return {@link MapWriter}
      */
@@ -59,7 +59,7 @@ public abstract class ExcelWriterFactory {
      *
      * @param workbook excel workbook
      * @param type     type of model
-     * @param <W>      instance that implements {@link Workbook}
+     * @param <W>      implementation of {@link Workbook}
      * @param <T>      type of the element
      * @return {@link ModelWriter}
      */

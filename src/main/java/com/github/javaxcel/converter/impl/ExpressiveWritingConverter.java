@@ -21,6 +21,9 @@ public class ExpressiveWritingConverter<T> implements WritingConverter<T> {
 
     private final Map<String, Expression> caches;
 
+    /**
+     * Replacement for field value when it is null or empty.
+     */
     private String defaultValue;
 
     private Map<String, Object> variables;

@@ -148,8 +148,8 @@ public final class FieldUtils {
      *
      * @param maybeFaulty  value that may be null or empty
      * @param defaultValue 1. {@link com.github.javaxcel.out.ExcelWriter#defaultValue(String)}
-     *                     2. {@link ExcelModel#defaultValue()}
-     *                     3. {@link ExcelColumn#defaultValue()}
+     *                     2. {@link ExcelColumn#defaultValue()}
+     *                     3. {@link ExcelModel#defaultValue()}
      * @param field        field of model
      * @return origin value or default value
      */

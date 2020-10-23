@@ -14,6 +14,9 @@ import java.time.format.DateTimeFormatter;
 
 public class BasicWritingConverter<T> implements WritingConverter<T> {
 
+    /**
+     * Replacement for field value when it is null or empty.
+     */
     private String defaultValue;
 
     /**
