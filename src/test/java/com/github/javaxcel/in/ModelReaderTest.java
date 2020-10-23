@@ -18,9 +18,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,11 +35,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ModelReaderTest {
 
+    private Stopwatch stopWatch;
+
+    @BeforeEach
+    public void beforeEach() {
+        this.stopWatch = new Stopwatch(TimeUnit.SECONDS);
+    }
+
+    @AfterEach
+    public void afterEach() {
+        System.out.println(this.stopWatch.getStatistics());
+    }
+
     @Test
     @DisplayName("Find constructor with min params")
     @SneakyThrows
     public void getDeclaredConstructorWithMinimumParameters() {
         // given
+        stopWatch.start();
         Class<Product> clazz = Product.class;
 
         // when
@@ -55,24 +66,22 @@ public class ModelReaderTest {
                 .min(Comparator.comparingInt(Constructor::getParameterCount))
                 .orElseThrow(() -> new NoTargetedConstructorException(clazz));
         constructor.setAccessible(true);
-        Arrays.stream(constructor.getParameterTypes()).forEach(System.out::println);
+        stopWatch.stop();
 
         assertThat(constructor.newInstance())
                 .as("Instantiates class without params")
                 .isInstanceOf(clazz);
-        System.out.println("Constructor with minimum parameters: " + constructor);
+        Arrays.stream(constructor.getParameterTypes()).forEach(System.out::println);
+        System.out.printf("Constructor with minimum parameters: %s\n", constructor);
     }
 
     /**
-     * 1. {@link ExcelModel#includeSuper()}
-     * <br>
-     * 2. {@link com.github.javaxcel.annotation.ExcelIgnore}
+     * @see com.github.javaxcel.annotation.ExcelIgnore
      */
     @Test
-    @DisplayName("Own fields + @ExcelIgnore")
+    @DisplayName("@ExcelIgnore + @ExcelModel(includeSuper = false)")
     @SneakyThrows
-    public void readWithNotInheritedTypeAndExcelIgnore() {
-        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
+    public void readProducts() {
         String filename = "products.xls";
 
         // given
@@ -107,19 +116,16 @@ public class ModelReaderTest {
         assertThat(products)
                 .as("#2 Each loaded model is equal to each mock")
                 .containsExactly(mocks.toArray(new Product[0]));
-        System.out.println(stopWatch.getStatistics());
     }
 
     /**
-     * 1. {@link ExcelModel#includeSuper()}
-     * <br>
-     * 2. {@link ExcelDateTimeFormat#pattern()}
+     * @see ExcelModel#includeSuper()
+     * @see ExcelDateTimeFormat#pattern()
      */
     @Test
-    @DisplayName("Including inherited fields + @ExcelDateTimeFormat")
+    @DisplayName("@ExcelModel(includeSuper = true) + @ExcelDateTimeFormat")
     @SneakyThrows
-    public void readWithTargetedFieldPolicyAndDateTimePattern() {
-        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
+    public void readEducationToys() {
         String filename = "toys.xlsx";
 
         // given
@@ -153,14 +159,14 @@ public class ModelReaderTest {
                 .isEqualTo(mocks.size());
         assertThat(educationToys)
                 .as("#2 Each loaded model is equal to each mock")
-                .containsAll(mocks);
-        System.out.println(stopWatch.getStatistics());
+                .containsExactly(mocks.toArray(new EducationToy[0]));
     }
 
     @Test
+    @Disabled
     @DisplayName("Model with final fields")
     @SneakyThrows
-    public void readWithFinalFields() {
+    public void readFinalFields() {
         // given
         File file = new File("/data", "final-fields.xls");
         @Cleanup Workbook workbook = HSSFWorkbookFactory.create(file);
@@ -206,11 +212,14 @@ public class ModelReaderTest {
                 .isTrue();
     }
 
+    /**
+     * @see ExcelModel#includeSuper()
+     * @see com.github.javaxcel.annotation.ExcelReaderExpression
+     */
     @Test
-    @DisplayName("Including inherited fields + @ExcelReaderConversion")
+    @DisplayName("@ExcelModel(includeSuper = true) + @ExcelReaderExpression")
     @SneakyThrows
     public void readPeople() {
-        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
         String filename = "people.xlsx";
 
         // given
@@ -244,8 +253,7 @@ public class ModelReaderTest {
                 .isEqualTo(mocks.size());
         assertThat(people)
                 .as("#2 Each loaded model is equal to each mock")
-                .containsAll(mocks);
-        System.out.println(stopWatch.getStatistics());
+                .containsExactly(mocks.toArray(new Human[0]));
     }
 
 }
