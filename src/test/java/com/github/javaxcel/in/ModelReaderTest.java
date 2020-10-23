@@ -3,6 +3,7 @@ package com.github.javaxcel.in;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.exception.NoTargetedConstructorException;
+import com.github.javaxcel.factory.ExcelReaderFactory;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.model.creature.Human;
 import com.github.javaxcel.model.etc.FinalFieldModel;
@@ -96,7 +97,7 @@ public class ModelReaderTest {
 
         // when
         stopWatch.start(String.format("read %,d models", numOfMocks));
-        List<Product> products = ModelReader.init(wb, Product.class).read();
+        List<Product> products = ExcelReaderFactory.create(wb, Product.class).read();
         stopWatch.stop();
 
         // then
@@ -105,7 +106,7 @@ public class ModelReaderTest {
                 .isEqualTo(mocks.size());
         assertThat(products)
                 .as("#2 Each loaded model is equal to each mock")
-                .containsAll(mocks);
+                .containsExactly(mocks.toArray(new Product[0]));
         System.out.println(stopWatch.getStatistics());
     }
 
@@ -143,7 +144,7 @@ public class ModelReaderTest {
 
         // when
         stopWatch.start(String.format("read %,d models", numOfMocks));
-        List<EducationToy> educationToys = ModelReader.init(wb, EducationToy.class).read();
+        List<EducationToy> educationToys = ExcelReaderFactory.create(wb, EducationToy.class).read();
         stopWatch.stop();
 
         // then
@@ -165,7 +166,7 @@ public class ModelReaderTest {
         @Cleanup Workbook workbook = HSSFWorkbookFactory.create(file);
 
         // when
-        List<FinalFieldModel> list = ModelReader.init(workbook, FinalFieldModel.class).read();
+        List<FinalFieldModel> list = ExcelReaderFactory.create(workbook, FinalFieldModel.class).read();
 
         // then
         list.forEach(it -> {
@@ -191,8 +192,8 @@ public class ModelReaderTest {
         @Cleanup Workbook workbook = WorkbookFactory.create(file);
 
         // when
-        List<Product> sheet1 = ModelReader.init(workbook, Product.class).sheetIndexes(0).read();
-        List<EducationToy> sheet2 = ModelReader.init(workbook, EducationToy.class).sheetIndexes(1).read();
+        List<Product> sheet1 = ExcelReaderFactory.create(workbook, Product.class).sheetIndexes(0).read();
+        List<EducationToy> sheet2 = ExcelReaderFactory.create(workbook, EducationToy.class).sheetIndexes(1).read();
 
         // then
         assertThat(products.stream()
@@ -234,7 +235,7 @@ public class ModelReaderTest {
 
         // when
         stopWatch.start(String.format("read %,d models", numOfMocks));
-        List<Human> people = ModelReader.init(wb, Human.class).parallel().read();
+        List<Human> people = ExcelReaderFactory.create(wb, Human.class).parallel().read();
         stopWatch.stop();
 
         // then

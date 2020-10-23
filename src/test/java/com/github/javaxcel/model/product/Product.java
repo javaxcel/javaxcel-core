@@ -15,7 +15,7 @@ import java.util.UUID;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"depth", "weight"})
+@EqualsAndHashCode(exclude = {"width", "weight"})
 public class Product implements Mockables<Product> {
 
     @ExcelColumn(name = "상품번호")
