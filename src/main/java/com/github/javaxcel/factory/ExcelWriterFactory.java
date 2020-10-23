@@ -17,6 +17,9 @@ import java.util.Map;
  */
 public abstract class ExcelWriterFactory {
 
+    private ExcelWriterFactory() {
+    }
+
     public static <W extends Workbook, V> ExcelWriter<W, Map<String, V>> create(W workbook) {
         return instantiate(workbook);
     }
@@ -37,18 +40,17 @@ public abstract class ExcelWriterFactory {
     private static <W extends Workbook, V> MapWriter<W, Map<String, V>> instantiate(W workbook) {
         Constructor<?> constructor;
         try {
-            Class<?> clazz = Class.forName("com.github.javaxcel.out.MapWriter", true, ExcelWriterFactory.class.getClassLoader());
-            constructor = clazz.getDeclaredConstructor(Workbook.class);
+            constructor = findConstructor("com.github.javaxcel.out.MapWriter",
+                    Workbook.class);
         } catch (ClassNotFoundException | NoSuchMethodException e) {
             throw new NoTargetedConstructorException(e, Map.class);
         }
-        constructor.setAccessible(true);
 
         MapWriter<W, Map<String, V>> writer;
         try {
             writer = (MapWriter<W, Map<String, V>>) constructor.newInstance(workbook);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(String.format("Failed to instantiate of the class(%s)", Map.class.getName()));
+            throw new RuntimeException(String.format("Failed to instantiate of the class(%s)", Map.class.getName())); // TODO: Change error message.
         }
 
         return writer;
@@ -67,12 +69,11 @@ public abstract class ExcelWriterFactory {
     private static <W extends Workbook, T> ModelWriter<W, T> instantiate(W workbook, Class<T> type) {
         Constructor<?> constructor;
         try {
-            Class<?> clazz = Class.forName("com.github.javaxcel.out.ModelWriter", true, ExcelWriterFactory.class.getClassLoader());
-            constructor = clazz.getDeclaredConstructor(Workbook.class, Class.class);
+            constructor = findConstructor("com.github.javaxcel.out.ModelWriter",
+                    Workbook.class, Class.class);
         } catch (ClassNotFoundException | NoSuchMethodException e) {
             throw new NoTargetedConstructorException(e, type);
         }
-        constructor.setAccessible(true);
 
         ModelWriter<W, T> writer;
         try {
@@ -84,6 +85,15 @@ public abstract class ExcelWriterFactory {
         }
 
         return writer;
+    }
+
+    private static Constructor<?> findConstructor(String className, Class<?>... paramTypes)
+            throws ClassNotFoundException, NoSuchMethodException {
+        Class<?> clazz = Class.forName(className, true, ExcelWriterFactory.class.getClassLoader());
+        Constructor<?> constructor = clazz.getDeclaredConstructor(paramTypes);
+        constructor.setAccessible(true);
+
+        return constructor;
     }
 
 }
