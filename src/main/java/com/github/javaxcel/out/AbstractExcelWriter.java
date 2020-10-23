@@ -43,9 +43,8 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     }
 
     /**
-     * Sets up default value.
+     * {@inheritDoc}
      *
-     * @param defaultValue replacement of the value when it is null or empty string.
      * @return {@link AbstractExcelWriter}
      */
     @Override
@@ -57,6 +56,11 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link AbstractExcelWriter}
+     */
     @Override
     public AbstractExcelWriter<W, T> sheetName(String sheetName) {
         if (StringUtils.isNullOrEmpty(sheetName)) {
@@ -67,6 +71,11 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link AbstractExcelWriter}
+     */
     @Override
     public AbstractExcelWriter<W, T> headerNames(List<String> headerNames) {
         if (CollectionUtils.isNullOrEmpty(headerNames)) {

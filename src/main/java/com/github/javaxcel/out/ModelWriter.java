@@ -66,6 +66,11 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link ModelWriter}
+     */
     @Override
     public ModelWriter<W, T> headerNames(List<String> headerNames) {
         super.headerNames(headerNames);
@@ -78,9 +83,8 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
     }
 
     /**
-     * Sets up default value.
+     * {@inheritDoc}
      *
-     * @param defaultValue replacement of the value when it is null or empty string.
      * @return {@link ModelWriter}
      */
     @Override
@@ -91,6 +95,11 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link ModelWriter}
+     */
     @Override
     public ModelWriter<W, T> sheetName(String sheetName) {
         super.sheetName(sheetName);
