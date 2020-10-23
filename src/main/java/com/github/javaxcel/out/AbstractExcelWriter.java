@@ -36,6 +36,14 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      */
     protected String sheetName;
 
+    /**
+     * When the number of rows to be written is greater than maximum rows of sheet,
+     * whether to write excess rows to the next sheet.
+     *
+     * <p> Default is {@code true}.
+     */
+    protected boolean rolling = true;
+
     protected AbstractExcelWriter(W workbook) {
         if (workbook == null) throw new IllegalArgumentException("Workbook cannot be null");
 
@@ -86,6 +94,16 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
         if (!this.headerNames.isEmpty()) this.headerNames.clear();
 
         this.headerNames.addAll(headerNames);
+        return this;
+    }
+
+    /**
+     * Disables rolling excess rows.
+     *
+     * @return {@link AbstractExcelWriter}
+     */
+    public AbstractExcelWriter<W, T> disableRolling() {
+        this.rolling = false;
         return this;
     }
 
