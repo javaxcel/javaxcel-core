@@ -23,7 +23,7 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
     }
 
     @Override
-    public AbstractExcelWriter<W, T> defaultValue(String defaultValue) {
+    public MapWriter<W, T> defaultValue(String defaultValue) {
         super.defaultValue(defaultValue);
         this.defaultValue = defaultValue;
         return this;
