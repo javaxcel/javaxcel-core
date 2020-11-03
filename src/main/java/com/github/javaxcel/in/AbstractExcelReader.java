@@ -67,10 +67,14 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
     public final List<T> read() {
         List<T> list = new ArrayList<>();
 
+        beforeRead(list);
+
         List<Sheet> sheets = ExcelUtils.getSheets(this.workbook);
         for (Sheet sheet : sheets) {
             list.addAll(readSheet(sheet));
         }
+
+        afterRead(list);
 
         return list;
     }
@@ -114,6 +118,12 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
         }
 
         return map;
+    }
+
+    protected void beforeRead(List<T> list) {
+    }
+
+    protected void afterRead(List<T> list) {
     }
 
     protected abstract List<T> readSheet(Sheet sheet);
