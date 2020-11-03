@@ -57,6 +57,8 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
      */
     private int endIndex = -1;
 
+    private boolean parallel;
+
     private ModelReader(W workbook, Class<T> type) {
         super(workbook);
 
@@ -112,13 +114,31 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
     }
 
     /**
-     * {@inheritDoc}
+     * Makes the conversion from simulated model into real model parallel.
+     *
+     * <p> We recommend processing in parallel only when
+     * dealing with large data. The following table is a benchmark.
+     *
+     * <pre>{@code
+     *     +------------+------------+----------+
+     *     | row \ type | sequential | parallel |
+     *     +------------+------------+----------+
+     *     | 10,000     | 16s        | 13s      |
+     *     +------------+------------+----------+
+     *     | 25,000     | 31s        | 21s      |
+     *     +------------+------------+----------+
+     *     | 100,000    | 2m 7s      | 1m 31s   |
+     *     +------------+------------+----------+
+     *     | 150,000    | 3m 28s     | 2m 1s    |
+     *     +------------+------------+----------+
+     * }</pre>
      *
      * @return {@link ModelReader}
      */
-    @Override
     public ModelReader<W, T> parallel() {
-        super.parallel();
+        if (this.parallel) return this;
+
+        this.parallel = true;
         return this;
     }
 

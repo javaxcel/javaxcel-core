@@ -61,35 +61,6 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
     }
 
     /**
-     * Makes the conversion from simulated model into real model parallel.
-     *
-     * <p> We recommend processing in parallel only when
-     * dealing with large data. The following table is a benchmark.
-     *
-     * <pre>{@code
-     *     +------------+------------+----------+
-     *     | row \ type | sequential | parallel |
-     *     +------------+------------+----------+
-     *     | 10,000     | 16s        | 13s      |
-     *     +------------+------------+----------+
-     *     | 25,000     | 31s        | 21s      |
-     *     +------------+------------+----------+
-     *     | 100,000    | 2m 7s      | 1m 31s   |
-     *     +------------+------------+----------+
-     *     | 150,000    | 3m 28s     | 2m 1s    |
-     *     +------------+------------+----------+
-     * }</pre>
-     *
-     * @return {@link AbstractExcelReader}
-     */
-    public AbstractExcelReader<W, T> parallel() {
-        if (this.parallel) return this;
-
-        this.parallel = true;
-        return this;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
