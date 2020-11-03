@@ -183,15 +183,21 @@ public class ModelWriterTest {
     @DisplayName("Model without targeted fields")
     @SneakyThrows
     public void writeWithModelThatHasNoTargetFields(Class<?> type) {
+        String filename = type.getSimpleName().toLowerCase() + ".xls";
+
         // given
-        File file = new File("/data", "no-field-model.xls");
+        stopWatch.start(String.format("create '%s' file", filename));
+        File file = new File("/data", filename);
         @Cleanup FileOutputStream out = new FileOutputStream(file);
         @Cleanup HSSFWorkbook workbook = new HSSFWorkbook();
+        stopWatch.stop();
 
         // when & then
+        stopWatch.start(String.format("write '%s' file", filename));
         assertThatThrownBy(() -> ExcelWriterFactory.create(workbook, type).write(out, new ArrayList<>()))
                 .as("When write with a model that has targeted fields")
                 .isInstanceOf(NoTargetedFieldException.class);
+        stopWatch.stop();
     }
 
     @Test
