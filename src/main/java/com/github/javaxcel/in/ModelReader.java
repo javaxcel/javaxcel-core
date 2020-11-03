@@ -175,7 +175,8 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
      * @return simulated models
      */
     private List<Map<String, Object>> getSimulatedModels(Sheet sheet) {
-        final int numOfRows = this.limit < 0 ? ExcelUtils.getNumOfModels(sheet) : this.limit;
+        int numOfRows = ExcelUtils.getNumOfModels(sheet);
+        if (this.limit >= 0 && this.limit < numOfRows) numOfRows = this.limit;
 
         // 인덱스 유효성을 체크한다
         if (this.endRowNum < 0 || this.endRowNum > numOfRows) this.endRowNum = numOfRows;
