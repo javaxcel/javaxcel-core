@@ -1,5 +1,6 @@
 package com.github.javaxcel.out;
 
+import io.github.imsejin.common.util.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -78,8 +79,9 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
                 Object value = map.get(this.keys.get(j));
                 Cell cell = row.createCell(j);
 
+                // Not allows empty string to be written.
                 if (value != null) {
-                    cell.setCellValue(value.toString());
+                    cell.setCellValue(StringUtils.ifNullOrEmpty(value.toString(), (String) null));
                 } else if (this.defaultValue != null) {
                     cell.setCellValue(this.defaultValue);
                 }
