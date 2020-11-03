@@ -2,58 +2,59 @@ package com.github.javaxcel.factory;
 
 import com.github.javaxcel.exception.NoTargetedConstructorException;
 import com.github.javaxcel.exception.NoTargetedFieldException;
+import com.github.javaxcel.in.MapReader;
 import com.github.javaxcel.in.ModelReader;
+import com.github.javaxcel.out.MapWriter;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
 
 /**
  * Factory for creating the appropriate implementation of {@link com.github.javaxcel.in.ExcelReader}.
- * This will create instance of {@link ModelReader} or {@code MapReader}.
+ * This will create instance of {@link ModelReader} or {@link MapReader}.
  */
 public abstract class ExcelReaderFactory {
 
     private ExcelReaderFactory() {
     }
 
-    /*
-    public static <W extends Workbook, V> ExcelWriter<W, Map<String, V>> create(W workbook) {
+    public static <W extends Workbook, V> MapReader<W, Map<String, V>> create(W workbook) {
         return instantiate(workbook);
     }
-     */
 
     public static <W extends Workbook, T> ModelReader<W, T> create(W workbook, Class<T> type) {
         return instantiate(workbook, type);
     }
 
-    /*
+    /**
      * Instantiates {@link MapWriter}.
      *
      * @param workbook excel workbook
      * @param <W>      implementation of {@link Workbook}
      * @param <V>      {@link Map}'s value
      * @return {@link MapWriter}
+     */
     @SuppressWarnings("unchecked")
-    private static <W extends Workbook, V> MapWriter<W, Map<String, V>> instantiate(W workbook) {
+    private static <W extends Workbook, V> MapReader<W, Map<String, V>> instantiate(W workbook) {
         Constructor<?> constructor;
         try {
-            constructor = findConstructor("com.github.javaxcel.out.MapWriter",
+            constructor = findConstructor("com.github.javaxcel.in.MapReader",
                     Workbook.class);
         } catch (ClassNotFoundException | NoSuchMethodException e) {
             throw new NoTargetedConstructorException(e, Map.class);
         }
 
-        MapWriter<W, Map<String, V>> writer;
+        MapReader<W, Map<String, V>> writer;
         try {
-            writer = (MapWriter<W, Map<String, V>>) constructor.newInstance(workbook);
+            writer = (MapReader<W, Map<String, V>>) constructor.newInstance(workbook);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(String.format("Failed to instantiate of the class(%s)", Map.class.getName())); // TODO: Change error message.
         }
 
         return writer;
     }
-     */
 
     /**
      * Instantiates {@link ModelReader}.
