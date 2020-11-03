@@ -48,14 +48,14 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
     /**
      * Row's index that {@link ModelReader} will start to read.
      */
-    private int startIndex;
+    private int startRowNum;
 
     /**
      * Row's index that {@link ModelReader} will end to read.
      * <br>
      * Default value is {@code -1} (it means index of the last row).
      */
-    private int endIndex = -1;
+    private int endRowNum = -1;
 
     private boolean parallel;
 
@@ -86,19 +86,17 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
         return this;
     }
 
-    @Deprecated
-    public ModelReader<W, T> startIndex(int startIndex) {
-        if (startIndex < 0) throw new IllegalArgumentException("Start index cannot be less than 0.");
+    public ModelReader<W, T> startRow(int rowNum) {
+        if (rowNum < 0) throw new IllegalArgumentException("Start row number cannot be less than 0.");
 
-        this.startIndex = startIndex;
+        this.startRowNum = rowNum;
         return this;
     }
 
-    @Deprecated
-    public ModelReader<W, T> endIndex(int endIndex) {
-        if (endIndex < 0) throw new IllegalArgumentException("End index cannot be less than 0.");
+    public ModelReader<W, T> endRow(int rowNum) {
+        if (rowNum < 0) throw new IllegalArgumentException("End row number cannot be less than 0.");
 
-        this.endIndex = endIndex;
+        this.endRowNum = rowNum;
         return this;
     }
 
@@ -180,11 +178,11 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
         final int numOfRows = this.limit < 0 ? ExcelUtils.getNumOfModels(sheet) : this.limit;
 
         // 인덱스 유효성을 체크한다
-        if (this.endIndex == -1 || this.endIndex > numOfRows) this.endIndex = numOfRows;
+        if (this.endRowNum < 0 || this.endRowNum > numOfRows) this.endRowNum = numOfRows;
 
         // Reads rows.
         List<Map<String, Object>> simulatedModels = new ArrayList<>();
-        for (int i = this.startIndex; i < this.endIndex; i++) {
+        for (int i = this.startRowNum; i < this.endRowNum; i++) {
             // Skips the first row that is header.
             Row row = sheet.getRow(i + 1);
 
