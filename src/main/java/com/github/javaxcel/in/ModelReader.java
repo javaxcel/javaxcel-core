@@ -7,6 +7,7 @@ import com.github.javaxcel.exception.UnsupportedWorkbookException;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.expression.Expression;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -138,12 +139,12 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
     }
 
     @Override
-    protected int getNumOfColumns() {
+    protected int getNumOfColumns(Row row) {
         return this.fields.size();
     }
 
     @Override
-    protected String getColumnName(int columnIndex) {
+    protected String getColumnName(Cell cell, int columnIndex) {
         return this.fields.get(columnIndex).getName();
     }
 

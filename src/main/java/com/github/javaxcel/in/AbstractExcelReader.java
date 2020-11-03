@@ -130,7 +130,7 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
     protected Map<String, Object> readRow(Row row) {
         Map<String, Object> map = new HashMap<>();
 
-        int numOfColumns = getNumOfColumns();
+        int numOfColumns = getNumOfColumns(row);
         for (int i = 0; i < numOfColumns; i++) {
             // If the cell is null, creates an empty cell.
             Cell cell = row.getCell(i, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
@@ -139,7 +139,7 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
             String cellValue = dataFormatter.formatCellValue(cell, this.formulaEvaluator);
 
             // Converts empty string to null because when CellType is BLANK, DataFormatter returns empty string.
-            map.put(getColumnName(i), cellValue.equals("") ? null : cellValue);
+            map.put(getColumnName(cell, i), cellValue.equals("") ? null : cellValue);
         }
 
         return map;
@@ -147,8 +147,8 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
 
     protected abstract List<T> readSheet(Sheet sheet);
 
-    protected abstract int getNumOfColumns();
+    protected abstract int getNumOfColumns(Row row);
 
-    protected abstract String getColumnName(int columnIndex);
+    protected abstract String getColumnName(Cell cell, int columnIndex);
 
 }
