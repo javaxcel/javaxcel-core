@@ -40,8 +40,6 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
 
     protected int limit = -1;
 
-    protected boolean parallel;
-
     protected AbstractExcelReader(W workbook) {
         this.workbook = workbook;
         this.formulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();

@@ -27,7 +27,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     protected final W workbook;
 
     /**
-     * Headers' names.
+     * Header's names.
      */
     protected final List<String> headerNames = new ArrayList<>();
 
