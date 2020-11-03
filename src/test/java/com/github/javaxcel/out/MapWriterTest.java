@@ -2,7 +2,6 @@ package com.github.javaxcel.out;
 
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.model.Mockables;
-import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.styler.ExcelStyler;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
@@ -21,7 +20,6 @@ import java.io.FileOutputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
@@ -30,8 +28,6 @@ import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.*;
 
 public class MapWriterTest {
-
-    private final Random random = new Random();
 
     @SneakyThrows
     private static long getNumOfWrittenModels(Class<? extends Workbook> type, File file) {
@@ -62,15 +58,15 @@ public class MapWriterTest {
 
         int numOfMocks = ExcelStyler.XSSF_MAX_ROWS / 10;
         stopWatch.start(String.format("create %,d mocks", numOfMocks));
-        List<Map<String, Object>> products = IntStream.range(0, numOfMocks)
+        List<Map<String, Object>> maps = IntStream.range(0, numOfMocks)
                 .mapToObj(i -> getRandomMap(keys)).collect(toList());
         stopWatch.stop();
 
         // when
-        stopWatch.start(String.format("write %,d models", numOfMocks));
+        stopWatch.start(String.format("write %,d maps", numOfMocks));
         ExcelWriterFactory.create(workbook)
-                .sheetName("Products")
-                .write(out, products);
+                .sheetName("Maps")
+                .write(out, maps);
         stopWatch.stop();
 
         // then
@@ -79,8 +75,8 @@ public class MapWriterTest {
                 .isNotNull()
                 .exists();
         assertThat(getNumOfWrittenModels(XSSFWorkbook.class, file))
-                .as("#2 The number of actually written model is %,d", products.size())
-                .isEqualTo(products.size());
+                .as("#2 The number of actually written maps is %,d", maps.size())
+                .isEqualTo(maps.size());
         System.out.println(stopWatch.getStatistics());
     }
 
