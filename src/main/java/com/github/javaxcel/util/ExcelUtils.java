@@ -65,6 +65,24 @@ public final class ExcelUtils {
                 : SpreadsheetVersion.EXCEL2007.getMaxRows();
     }
 
+    public static int getMaxRows(Sheet sheet) {
+        return isExcel97(sheet)
+                ? SpreadsheetVersion.EXCEL97.getMaxRows()
+                : SpreadsheetVersion.EXCEL2007.getMaxRows();
+    }
+
+    public static int getMaxColumns(Workbook workbook) {
+        return isExcel97(workbook)
+                ? SpreadsheetVersion.EXCEL97.getMaxColumns()
+                : SpreadsheetVersion.EXCEL2007.getMaxColumns();
+    }
+
+    public static int getMaxColumns(Sheet sheet) {
+        return isExcel97(sheet)
+                ? SpreadsheetVersion.EXCEL97.getMaxColumns()
+                : SpreadsheetVersion.EXCEL2007.getMaxColumns();
+    }
+
     public static boolean isExcel97(Workbook workbook) {
         return workbook instanceof HSSFWorkbook;
     }
