@@ -100,6 +100,13 @@
             <version>5.2.9</version>
         </dependency>
 
+        <!-- Javaxcel Styler -->
+        <dependency>
+            <groupId>com.github.javaxcel</groupId>
+            <artifactId>javaxcel-styler</artifactId>
+            <version>0.2.0</version>
+        </dependency>
+
         <!-- Junit 5 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -133,14 +140,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.14</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Javaxcel Styler -->
-        <dependency>
-            <groupId>com.github.javaxcel</groupId>
-            <artifactId>javaxcel-styler</artifactId>
-            <version>0.1.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
