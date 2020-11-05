@@ -203,7 +203,9 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
             // Sets common style to all header cells or each style to each header cell.
             CellStyle headerStyle = this.headerStyles.length == 1
                     ? this.headerStyles[0] : this.headerStyles[i];
-            cell.setCellStyle(headerStyle);
+
+            // When configure styles with annotations, there is possibility that 'headerStyles' has null elements.
+            if (headerStyle != null) cell.setCellStyle(headerStyle);
         }
     }
 

@@ -204,6 +204,14 @@ public final class ExcelUtils {
         }
     }
 
+    public static CellStyle toCellStyle(Workbook workbook, ExcelStyleConfig config) {
+        CellStyle cellStyle = workbook.createCellStyle();
+        Configurer configurer = new Configurer(cellStyle, workbook.createFont());
+        config.configure(configurer);
+
+        return cellStyle;
+    }
+
     public static CellStyle[] toCellStyles(Workbook workbook, ExcelStyleConfig... configs) {
         if (configs == null || configs.length == 0) {
             throw new IllegalArgumentException("Configurations for style cannot be null or empty");
@@ -212,12 +220,7 @@ public final class ExcelUtils {
         CellStyle[] cellStyles = new CellStyle[configs.length];
         for (int i = 0; i < configs.length; i++) {
             ExcelStyleConfig config = configs[i];
-
-            CellStyle cellStyle = workbook.createCellStyle();
-            Configurer configurer = new Configurer(cellStyle, workbook.createFont());
-            config.configure(configurer);
-
-            cellStyles[i] = cellStyle;
+            cellStyles[i] = toCellStyle(workbook, config);
         }
 
         return cellStyles;

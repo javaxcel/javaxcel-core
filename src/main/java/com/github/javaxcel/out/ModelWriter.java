@@ -7,12 +7,16 @@ import com.github.javaxcel.converter.impl.BasicWritingConverter;
 import com.github.javaxcel.converter.impl.ExpressiveWritingConverter;
 import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.styler.ExcelStyleConfig;
+import com.github.javaxcel.styler.NoStyleConfig;
+import com.github.javaxcel.styler.config.Configurer;
+import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
 import org.apache.poi.ss.usermodel.*;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 /**
  * Excel writer
@@ -46,11 +50,68 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
         // Caches expressions for each field to improve performance.
         this.expConverter = new ExpressiveWritingConverter<>(this.fields);
 
-        // If default value for all fields is not empty string, sets it into converters.
         ExcelModel excelModel = type.getAnnotation(ExcelModel.class);
-        if (excelModel != null && !excelModel.defaultValue().equals("")) {
-            this.basicConverter.setDefaultValue(excelModel.defaultValue());
-            this.expConverter.setDefaultValue(excelModel.defaultValue());
+        if (excelModel != null) {
+            // If default value for all fields is not empty string, sets it into converters.
+            if (!excelModel.defaultValue().equals("")) {
+                this.basicConverter.setDefaultValue(excelModel.defaultValue());
+                this.expConverter.setDefaultValue(excelModel.defaultValue());
+            }
+
+            // Sets configurations for header and body style by 'ExcelModel'.
+            setStylesByModel(excelModel);
+        }
+
+        // Sets configurations for header and body style by 'ExcelColumn'.
+        setStylesByColumns();
+    }
+
+    private void setStylesByModel(ExcelModel excelModel) {
+        // Sets configurations for header style.
+        ExcelStyleConfig headerConfig = FieldUtils.instantiate(excelModel.headerStyle());
+        if (!(headerConfig instanceof NoStyleConfig)) {
+            CellStyle headerStyle = ExcelUtils.toCellStyle(this.workbook, headerConfig);
+            this.headerStyles = IntStream.range(0, this.fields.size())
+                    .mapToObj(i -> headerStyle).toArray(CellStyle[]::new);
+        }
+
+        // Sets configurations for body style.
+        ExcelStyleConfig bodyConfig = FieldUtils.instantiate(excelModel.bodyStyle());
+        if (!(bodyConfig instanceof NoStyleConfig)) {
+            CellStyle bodyStyle = ExcelUtils.toCellStyle(this.workbook, bodyConfig);
+            this.bodyStyles = IntStream.range(0, this.fields.size())
+                    .mapToObj(i -> bodyStyle).toArray(CellStyle[]::new);
+        }
+    }
+
+    private void setStylesByColumns() {
+        // Unless configure header/body style with 'ExcelModel', creates empty arrays.
+        if (this.headerStyles == null) this.headerStyles = new CellStyle[this.fields.size()];
+        if (this.bodyStyles == null) this.bodyStyles = new CellStyle[this.fields.size()];
+
+        for (int i = 0; i < this.fields.size(); i++) {
+            Field field = this.fields.get(i);
+
+            ExcelColumn excelColumn = field.getAnnotation(ExcelColumn.class);
+            if (excelColumn == null) continue;
+
+            // Replaces header style of 'ExcelModel' with header style of 'ExcelColumn'.
+            ExcelStyleConfig headerConfig = FieldUtils.instantiate(excelColumn.headerStyle());
+            if (!(headerConfig instanceof NoStyleConfig)) {
+                CellStyle headerStyle = this.workbook.createCellStyle();
+                Configurer headerConfigurer = new Configurer(headerStyle, this.workbook.createFont());
+                headerConfig.configure(headerConfigurer);
+                this.headerStyles[i] = headerStyle;
+            }
+
+            // Replaces body style of 'ExcelModel' with body style of 'ExcelColumn'.
+            ExcelStyleConfig bodyConfig = FieldUtils.instantiate(excelColumn.bodyStyle());
+            if (!(bodyConfig instanceof NoStyleConfig)) {
+                CellStyle bodyStyle = this.workbook.createCellStyle();
+                Configurer bodyConfigurer = new Configurer(bodyStyle, this.workbook.createFont());
+                bodyConfig.configure(bodyConfigurer);
+                this.bodyStyles[i] = bodyStyle;
+            }
         }
     }
 
@@ -227,7 +288,9 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
                 // Sets styles to body's cell.
                 CellStyle bodyStyle = this.bodyStyles.length == 1
                         ? this.bodyStyles[0] : this.bodyStyles[j];
-                cell.setCellStyle(bodyStyle);
+
+                // When configure styles with annotations, there is possibility that 'bodyStyles' has null elements.
+                if (bodyStyle != null) cell.setCellStyle(bodyStyle);
             }
         }
     }
