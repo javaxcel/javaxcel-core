@@ -11,7 +11,6 @@ import com.github.javaxcel.model.etc.AllIgnoredModel;
 import com.github.javaxcel.model.etc.NoFieldModel;
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
-import com.github.javaxcel.styler.ExcelStyler;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
@@ -83,7 +82,7 @@ public class ModelWriterTest {
         @Cleanup SXSSFWorkbook workbook = new SXSSFWorkbook();
         stopWatch.stop();
 
-        int numOfMocks = ExcelStyler.XSSF_MAX_ROWS / 10;
+        final int numOfMocks = ExcelUtils.getMaxRows(workbook) / 10;
         stopWatch.start(String.format("create %,d mocks", numOfMocks));
         List<Product> products = new Product().createRandoms(numOfMocks);
         stopWatch.stop();
@@ -237,9 +236,9 @@ public class ModelWriterTest {
         ExcelWriterFactory.create(workbook, Human.class)
                 .sheetName("People")
                 .adjustSheet((sheet, numOfRows, numOfColumns) -> {
-                    ExcelStyler.autoResizeColumns(sheet, numOfColumns);
-                    ExcelStyler.hideExtraRows(sheet, numOfRows);
-                    ExcelStyler.hideExtraColumns(sheet, numOfColumns);
+                    ExcelUtils.autoResizeColumns(sheet, numOfColumns);
+                    ExcelUtils.hideExtraRows(sheet, numOfRows);
+                    ExcelUtils.hideExtraColumns(sheet, numOfColumns);
                 })
                 .headerStyle(ExcelStyler::applyBasicHeaderStyle)
                 .columnStyles(blueColumn, greenColumn, blueColumn, greenColumn, blueColumn, greenColumn, blueColumn,

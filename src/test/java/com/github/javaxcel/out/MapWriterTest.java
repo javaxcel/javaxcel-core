@@ -2,7 +2,6 @@ package com.github.javaxcel.out;
 
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.model.Mockables;
-import com.github.javaxcel.styler.ExcelStyler;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
@@ -56,7 +55,7 @@ public class MapWriterTest {
         @Cleanup SXSSFWorkbook workbook = new SXSSFWorkbook();
         stopWatch.stop();
 
-        int numOfMocks = ExcelStyler.XSSF_MAX_ROWS / 10;
+        final int numOfMocks = ExcelUtils.getMaxRows(workbook) / 10;
         stopWatch.start(String.format("create %,d mocks", numOfMocks));
         List<Map<String, Object>> maps = IntStream.range(0, numOfMocks)
                 .mapToObj(i -> getRandomMap(keys)).collect(toList());
