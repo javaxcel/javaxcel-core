@@ -1,5 +1,6 @@
 package com.github.javaxcel.out;
 
+import com.github.javaxcel.styler.config.ExcelStyleConfig;
 import io.github.imsejin.common.util.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 
@@ -7,6 +8,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toList;
 
@@ -27,6 +29,18 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
         return this;
     }
 
+    @Override
+    public MapWriter<W, T> headerStyles(ExcelStyleConfig... configs) {
+        super.headerStyles(configs);
+        return this;
+    }
+
+    @Override
+    public MapWriter<W, T> bodyStyles(ExcelStyleConfig... configs) {
+        super.bodyStyles(configs);
+        return this;
+    }
+
     //////////////////////////////////////// Hooks ////////////////////////////////////////
 
     /**
@@ -40,8 +54,26 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
         // Gets all the maps' keys.
         this.keys.addAll(list.stream().flatMap(it -> it.keySet().stream()).distinct().collect(toList()));
 
+        /*
+        Unlike 'ModelWriter', 'MapWriter' cannot validate header names, header styles and body styles
+        before method 'write(OutputStream, List)' is invoked. So it does using this hook.
+         */
+
+        // Validates the number of header names.
         if (!this.headerNames.isEmpty() && this.headerNames.size() != this.keys.size()) {
             throw new IllegalArgumentException("The number of header names is not equal to the number of maps' keys");
+        }
+
+        Predicate<CellStyle[]> validator = them -> them == null || them.length == 1 || them.length == this.keys.size();
+
+        // Validates the number of header styles.
+        if (!validator.test(this.headerStyles)) {
+            throw new IllegalArgumentException("The number of header styles is not equal to the number of maps' keys");
+        }
+
+        // Validates the number of body styles.
+        if (!validator.test(this.bodyStyles)) {
+            throw new IllegalArgumentException("The number of body styles is not equal to the number of maps' keys");
         }
     }
 
