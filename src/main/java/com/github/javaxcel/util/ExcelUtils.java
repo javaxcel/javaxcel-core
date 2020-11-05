@@ -23,7 +23,7 @@ public final class ExcelUtils {
     }
 
     /**
-     * Gets range of the sheets.
+     * Returns range of the sheets.
      *
      * @param workbook excel workbook
      * @return range that from 0 to (the number of sheets - 1)
@@ -33,6 +33,12 @@ public final class ExcelUtils {
         return IntStream.range(0, workbook.getNumberOfSheets()).toArray();
     }
 
+    /**
+     * Returns all sheets in a workbook.
+     *
+     * @param workbook excel workbook
+     * @return all sheets
+     */
     public static List<Sheet> getSheets(Workbook workbook) {
         return IntStream.range(0, workbook.getNumberOfSheets())
                 .mapToObj(workbook::getSheetAt)
@@ -44,12 +50,20 @@ public final class ExcelUtils {
      *
      * @param sheet sheet
      * @return the number of rows
+     * @throws UnsupportedWorkbookException if instance of sheet is {@link SXSSFSheet}
      */
     public static int getNumOfRows(Sheet sheet) {
         if (sheet instanceof SXSSFSheet) throw new UnsupportedWorkbookException();
         return Math.max(0, sheet.getPhysicalNumberOfRows());
     }
 
+    /**
+     * Returns the number of rows in all sheets.
+     *
+     * @param workbook excel workbook
+     * @return the number of rows
+     * @throws UnsupportedWorkbookException if instance of workbook is {@link SXSSFWorkbook}
+     */
     public static long getNumOfRows(Workbook workbook) {
         if (workbook instanceof SXSSFWorkbook) throw new UnsupportedWorkbookException();
         return getSheets(workbook).stream().mapToInt(ExcelUtils::getNumOfRows).sum();
@@ -58,17 +72,28 @@ public final class ExcelUtils {
     /**
      * Returns the number of models in a sheet.
      *
-     * <p> This excludes header row.
-     * In other words, this returns the total number of rows minus 1.
+     * <p> This excludes header row. In other words,
+     * this returns the total number of rows minus 1.
      *
      * @param sheet sheet
      * @return the number of models
+     * @throws UnsupportedWorkbookException if instance of sheet is {@link SXSSFSheet}
      */
     public static int getNumOfModels(Sheet sheet) {
         if (sheet instanceof SXSSFSheet) throw new UnsupportedWorkbookException();
         return Math.max(0, sheet.getPhysicalNumberOfRows() - 1);
     }
 
+    /**
+     * Returns the number of models in all sheets.
+     *
+     * <p> This excludes header row. In other words,
+     * this returns the total number of rows minus number of all headers.
+     *
+     * @param workbook excel workbook
+     * @return the number of models
+     * @throws UnsupportedWorkbookException if instance of workbook is {@link SXSSFWorkbook}
+     */
     public static long getNumOfModels(Workbook workbook) {
         if (workbook instanceof SXSSFWorkbook) throw new UnsupportedWorkbookException();
         return getSheets(workbook).stream().mapToInt(ExcelUtils::getNumOfModels).sum();
@@ -123,9 +148,11 @@ public final class ExcelUtils {
      *
      * @param sheet        excel sheet
      * @param numOfColumns number of the columns that wanted to make fit contents.
+     * @throws UnsupportedWorkbookException if instance of sheet is {@link SXSSFSheet}
      * @see Sheet#autoSizeColumn(int)
      */
     public static void autoResizeColumns(Sheet sheet, int numOfColumns) {
+        if (sheet instanceof SXSSFSheet) throw new UnsupportedWorkbookException();
         IntStream.range(0, numOfColumns).parallel().forEach(sheet::autoSizeColumn);
     }
 

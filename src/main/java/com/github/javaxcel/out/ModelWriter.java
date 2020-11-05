@@ -94,6 +94,11 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link ModelWriter}
+     */
     @Override
     public ModelWriter<W, T> headerStyles(ExcelStyleConfig... configs) {
         super.headerStyles(configs);
@@ -107,6 +112,11 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link ModelWriter}
+     */
     @Override
     public ModelWriter<W, T> bodyStyles(ExcelStyleConfig... configs) {
         super.bodyStyles(configs);
@@ -120,24 +130,44 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link ModelWriter}
+     */
     @Override
     public ModelWriter<W, T> disableRolling() {
         super.disableRolling();
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link ModelWriter}
+     */
     @Override
     public ModelWriter<W, T> autoResizeCols() {
         super.autoResizeCols();
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link ModelWriter}
+     */
     @Override
     public ModelWriter<W, T> hideExtraRows() {
         super.hideExtraRows();
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link ModelWriter}
+     */
     @Override
     public ModelWriter<W, T> hideExtraCols() {
         super.hideExtraCols();

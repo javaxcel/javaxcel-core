@@ -22,6 +22,11 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
         super(workbook);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link MapWriter}
+     */
     @Override
     public MapWriter<W, T> defaultValue(String defaultValue) {
         super.defaultValue(defaultValue);
@@ -29,15 +34,36 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link MapWriter}
+     */
     @Override
     public MapWriter<W, T> headerStyles(ExcelStyleConfig... configs) {
         super.headerStyles(configs);
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link MapWriter}
+     */
     @Override
     public MapWriter<W, T> bodyStyles(ExcelStyleConfig... configs) {
         super.bodyStyles(configs);
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link MapWriter}
+     */
+    @Override
+    public MapWriter<W, T> disableRolling() {
+        super.disableRolling();
         return this;
     }
 
