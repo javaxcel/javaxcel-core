@@ -11,19 +11,18 @@ import com.github.javaxcel.model.etc.AllIgnoredModel;
 import com.github.javaxcel.model.etc.NoFieldModel;
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
+import com.github.javaxcel.style.DefaultBodyStyleConfig;
+import com.github.javaxcel.style.DefaultHeaderStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.SpreadsheetVersion;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -33,10 +32,8 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiFunction;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 public class ModelWriterTest {
 
@@ -210,20 +207,6 @@ public class ModelWriterTest {
         File file = new File("/data", filename);
         @Cleanup FileOutputStream out = new FileOutputStream(file);
         @Cleanup XSSFWorkbook workbook = new XSSFWorkbook();
-        BiFunction<CellStyle, Font, CellStyle> blueColumn = (style, font) -> {
-            font.setColor(IndexedColors.WHITE.getIndex());
-            font.setFontName("Malgun Gothic");
-            font.setBold(true);
-            style.setFont(font);
-            style.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
-            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-            return style;
-        };
-        BiFunction<CellStyle, Font, CellStyle> greenColumn = (style, font) -> {
-            style.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());
-            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-            return style;
-        };
         stopWatch.stop();
 
         // when
@@ -233,16 +216,15 @@ public class ModelWriterTest {
         stopWatch.stop();
 
         stopWatch.start(String.format("write and decorate %,d models", numOfMocks));
+        DefaultHeaderStyleConfig h = new DefaultHeaderStyleConfig();
+        DefaultBodyStyleConfig b = new DefaultBodyStyleConfig();
         ExcelWriterFactory.create(workbook, Human.class)
                 .sheetName("People")
-                .adjustSheet((sheet, numOfRows, numOfColumns) -> {
-                    ExcelUtils.autoResizeColumns(sheet, numOfColumns);
-                    ExcelUtils.hideExtraRows(sheet, numOfRows);
-                    ExcelUtils.hideExtraColumns(sheet, numOfColumns);
-                })
-//                .headerStyle(ExcelStyler::applyBasicHeaderStyle)
-//                .columnStyles(blueColumn, greenColumn, blueColumn, greenColumn, blueColumn, greenColumn, blueColumn,
-//                        greenColumn, blueColumn, greenColumn, blueColumn, greenColumn, blueColumn, greenColumn)
+                .autoResizeCols()
+//                .hideExtraRows()
+                .hideExtraCols()
+                .headerStyles(h, b, h, b, h, b, h, b, h, b, h, b, h, b)
+                .bodyStyles(b)
                 .write(out, people);
         stopWatch.stop();
 

@@ -7,7 +7,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.List;
 
 public class FieldUtilsTest {
