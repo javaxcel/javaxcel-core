@@ -32,6 +32,9 @@ public final class FieldUtils {
      *
      * <p> This doesn't return the fields annotated with {@link ExcelIgnore}.
      *
+     * <p> If the model class' {@link ExcelModel#explicit()} is {@code true},
+     * this excludes the fields not annotated with {@link ExcelColumn}.
+     *
      * @param type type of the object
      * @return targeted fields
      * @see ExcelModel#includeSuper()
