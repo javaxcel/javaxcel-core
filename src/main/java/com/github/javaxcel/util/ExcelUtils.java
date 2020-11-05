@@ -41,6 +41,22 @@ public final class ExcelUtils {
     }
 
     /**
+     * Returns the number of rows in a sheet.
+     *
+     * @param sheet sheet
+     * @return the number of rows
+     */
+    public static int getNumOfRows(Sheet sheet) {
+        if (sheet instanceof SXSSFSheet) throw new UnsupportedWorkbookException();
+        return Math.max(0, sheet.getPhysicalNumberOfRows());
+    }
+
+    public static long getNumOfRows(Workbook workbook) {
+        if (workbook instanceof SXSSFWorkbook) throw new UnsupportedWorkbookException();
+        return getSheets(workbook).stream().mapToInt(ExcelUtils::getNumOfRows).sum();
+    }
+
+    /**
      * Returns the number of models in a sheet.
      *
      * <p> This excludes header row.
