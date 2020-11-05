@@ -1,15 +1,14 @@
 package com.github.javaxcel.util;
 
 import com.github.javaxcel.exception.UnsupportedWorkbookException;
+import com.github.javaxcel.styler.config.Configurer;
+import com.github.javaxcel.styler.config.ExcelStyleConfig;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.SpreadsheetVersion;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
@@ -176,6 +175,25 @@ public final class ExcelUtils {
         for (int i = numOfColumns; i < maxColumns; i++) {
             sheet.setColumnHidden(i, true);
         }
+    }
+
+    public static CellStyle[] toCellStyles(Workbook workbook, ExcelStyleConfig... configs) {
+        if (configs == null || configs.length == 0) {
+            throw new IllegalArgumentException("Configurations for style cannot be null or empty");
+        }
+
+        CellStyle[] cellStyles = new CellStyle[configs.length];
+        for (int i = 0; i < configs.length; i++) {
+            ExcelStyleConfig config = configs[i];
+
+            CellStyle cellStyle = workbook.createCellStyle();
+            Configurer configurer = new Configurer(cellStyle, workbook.createFont());
+            config.configure(configurer);
+
+            cellStyles[i] = cellStyle;
+        }
+
+        return cellStyles;
     }
 
 }

@@ -1,19 +1,16 @@
 package com.github.javaxcel.out;
 
 import com.github.javaxcel.exception.WritingExcelException;
+import com.github.javaxcel.styler.config.ExcelStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.util.CollectionUtils;
 import io.github.imsejin.common.util.StringUtils;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 public abstract class AbstractExcelWriter<W extends Workbook, T> implements ExcelWriter<W, T> {
 
@@ -44,9 +41,16 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      */
     protected boolean rolling = true;
 
+    //////////////////////////////////////// Style ////////////////////////////////////////
+
+    protected CellStyle[] headerStyles;
+
+    protected CellStyle[] bodyStyles;
+
+    ///////////////////////////////////////////////////////////////////////////////////////
+
     protected AbstractExcelWriter(W workbook) {
         if (workbook == null) throw new IllegalArgumentException("Workbook cannot be null");
-
         this.workbook = workbook;
     }
 
@@ -107,6 +111,16 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
         return this;
     }
 
+    public AbstractExcelWriter<W, T> headerStyles(ExcelStyleConfig... configs) {
+        this.headerStyles = ExcelUtils.toCellStyles(this.workbook, configs);
+        return this;
+    }
+
+    public AbstractExcelWriter<W, T> bodyStyles(ExcelStyleConfig... configs) {
+        this.bodyStyles = ExcelUtils.toCellStyles(this.workbook, configs);
+        return this;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -116,18 +130,16 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
 
         beforeWrite(out, list);
 
-        Function<Integer, Sheet> createSheet = this.sheetName == null
-                ? i -> this.workbook.createSheet()
-                : i -> this.workbook.createSheet(this.sheetName + i);
-
-        int maxModels = ExcelUtils.getMaxRows(this.workbook) - 1;
+        final int maxModels = ExcelUtils.getMaxRows(this.workbook) - 1;
         List<List<T>> lists = CollectionUtils.partitionBySize(list, maxModels);
 
         // Writes each sheet.
-        int numOfSheets = lists.size();
+        final int numOfSheets = lists.size();
         for (int i = 0; i < numOfSheets; i++) {
             // Writes header.
-            Sheet sheet = createSheet.apply(i);
+            Sheet sheet = this.sheetName == null
+                    ? this.workbook.createSheet()
+                    : this.workbook.createSheet(this.sheetName + i);
             createHeader(sheet);
 
             List<T> those = lists.get(i);
@@ -154,15 +166,19 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
         if (this.headerNames.isEmpty()) ifHeaderNamesAreEmpty(this.headerNames);
 
         // Names the header given values.
-        int numOfHeaders = this.headerNames.size();
+        final int numOfHeaders = this.headerNames.size();
         for (int i = 0; i < numOfHeaders; i++) {
             String name = this.headerNames.get(i);
 
             Cell cell = row.createCell(i);
             cell.setCellValue(name);
 
-            // Sets up style of the header.
-//            if (this.headerStyle != null) cell.setCellStyle(this.headerStyle); TODO: Support custom styling
+            if (this.headerStyles == null) continue;
+
+            // Sets common style to all header cells or each style to each header cell.
+            CellStyle headerStyle = this.headerStyles.length == 1
+                    ? this.headerStyles[0] : this.headerStyles[i];
+            cell.setCellStyle(headerStyle);
         }
     }
 

@@ -240,9 +240,9 @@ public class ModelWriterTest {
                     ExcelUtils.hideExtraRows(sheet, numOfRows);
                     ExcelUtils.hideExtraColumns(sheet, numOfColumns);
                 })
-                .headerStyle(ExcelStyler::applyBasicHeaderStyle)
-                .columnStyles(blueColumn, greenColumn, blueColumn, greenColumn, blueColumn, greenColumn, blueColumn,
-                        greenColumn, blueColumn, greenColumn, blueColumn, greenColumn, blueColumn, greenColumn)
+//                .headerStyle(ExcelStyler::applyBasicHeaderStyle)
+//                .columnStyles(blueColumn, greenColumn, blueColumn, greenColumn, blueColumn, greenColumn, blueColumn,
+//                        greenColumn, blueColumn, greenColumn, blueColumn, greenColumn, blueColumn, greenColumn)
                 .write(out, people);
         stopWatch.stop();
 

@@ -6,15 +6,14 @@ import com.github.javaxcel.annotation.ExcelWriterExpression;
 import com.github.javaxcel.converter.impl.BasicWritingConverter;
 import com.github.javaxcel.converter.impl.ExpressiveWritingConverter;
 import com.github.javaxcel.exception.NoTargetedFieldException;
+import com.github.javaxcel.styler.config.ExcelStyleConfig;
 import com.github.javaxcel.util.FieldUtils;
 import com.github.javaxcel.util.TriConsumer;
 import org.apache.poi.ss.usermodel.*;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
 
 /**
  * Excel writer
@@ -38,10 +37,6 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
     //////////////////////////////////////// Style ////////////////////////////////////////
 
     private TriConsumer<Sheet, Integer, Integer> adjustSheet;
-
-    private CellStyle headerStyle;
-
-    private CellStyle[] columnStyles;
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -76,7 +71,7 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
         super.headerNames(headerNames);
         if (headerNames.size() != this.fields.size()) {
             throw new IllegalArgumentException(String.format(
-                    "The number of header names is not equal to the number of targeted fields in the class %s", this.type.getName()));
+                    "The number of header names is not equal to the number of targeted fields in the class '%s'", this.type.getName()));
         }
 
         return this;
@@ -117,30 +112,29 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
         return this;
     }
 
-    public ModelWriter<W, T> headerStyle(BiFunction<CellStyle, Font, CellStyle> biFunction) {
-        if (biFunction == null) throw new IllegalArgumentException("Bi-function for header style cannot be null");
+    @Override
+    public ModelWriter<W, T> headerStyles(ExcelStyleConfig... configs) {
+        super.headerStyles(configs);
 
-        CellStyle headerStyle = biFunction.apply(this.workbook.createCellStyle(), this.workbook.createFont());
-        if (headerStyle == null) throw new IllegalArgumentException("Header style cannot be null");
-
-        this.headerStyle = headerStyle;
-        return this;
-    }
-
-    @SafeVarargs
-    public final ModelWriter<W, T> columnStyles(BiFunction<CellStyle, Font, CellStyle>... biFunctions) {
-        if (biFunctions == null) throw new IllegalArgumentException("Bi-functions for column styles cannot be null");
-
-        CellStyle[] columnStyles = Arrays.stream(biFunctions)
-                .map(func -> func.apply(this.workbook.createCellStyle(), this.workbook.createFont()))
-                .toArray(CellStyle[]::new);
-        if (columnStyles.length != 1 && columnStyles.length != this.fields.size()) {
+        if (this.headerStyles.length != 1 && this.headerStyles.length != this.fields.size()) {
             throw new IllegalArgumentException(String.format(
-                    "The number of column styles is not equal to the number of targeted fields in the class %s (the number of column styles can be 1 for common style)",
+                    "The number of header styles is not equal to the number of targeted fields in the class '%s' (the number of header styles can be 1 for common style)",
                     this.type.getName()));
         }
 
-        this.columnStyles = columnStyles;
+        return this;
+    }
+
+    @Override
+    public ModelWriter<W, T> bodyStyles(ExcelStyleConfig... configs) {
+        super.bodyStyles(configs);
+
+        if (this.bodyStyles.length != 1 && this.bodyStyles.length != this.fields.size()) {
+            throw new IllegalArgumentException(String.format(
+                    "The number of body styles is not equal to the number of targeted fields in the class '%s' (the number of body styles can be 1 for common style)",
+                    this.type.getName()));
+        }
+
         return this;
     }
 
@@ -192,13 +186,12 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
 
                 if (value != null) cell.setCellValue(value);
 
-                // Sets up style to the column.
-                if (this.columnStyles != null) {
-                    CellStyle columnStyle = this.columnStyles.length == 1
-                            ? this.columnStyles[0] // common style
-                            : this.columnStyles[j]; // each column's style
-                    cell.setCellStyle(columnStyle);
-                }
+                if (this.bodyStyles == null) continue;
+
+                // Sets styles to body's cell.
+                CellStyle bodyStyle = this.bodyStyles.length == 1
+                        ? this.bodyStyles[0] : this.bodyStyles[j];
+                cell.setCellStyle(bodyStyle);
             }
         }
     }

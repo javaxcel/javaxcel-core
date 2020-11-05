@@ -1,10 +1,7 @@
 package com.github.javaxcel.out;
 
 import io.github.imsejin.common.util.StringUtils;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -85,6 +82,13 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
                 } else if (this.defaultValue != null) {
                     cell.setCellValue(this.defaultValue);
                 }
+
+                if (this.bodyStyles == null) continue;
+
+                // Sets styles to body's cell.
+                CellStyle bodyStyle = this.bodyStyles.length == 1
+                        ? this.bodyStyles[0] : this.bodyStyles[j];
+                cell.setCellStyle(bodyStyle);
             }
         }
     }
@@ -94,7 +98,6 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
      */
     @Override
     protected void decorate(Sheet sheet, int numOfModels) {
-
     }
 
 }
