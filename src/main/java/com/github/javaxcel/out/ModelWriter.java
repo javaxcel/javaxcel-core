@@ -8,7 +8,6 @@ import com.github.javaxcel.converter.impl.ExpressiveWritingConverter;
 import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.styler.config.ExcelStyleConfig;
 import com.github.javaxcel.util.FieldUtils;
-import com.github.javaxcel.util.TriConsumer;
 import org.apache.poi.ss.usermodel.*;
 
 import java.lang.reflect.Field;
@@ -33,12 +32,6 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
      * The type's fields that will be actually written in excel.
      */
     private final List<Field> fields;
-
-    //////////////////////////////////////// Style ////////////////////////////////////////
-
-    private TriConsumer<Sheet, Integer, Integer> adjustSheet;
-
-    ///////////////////////////////////////////////////////////////////////////////////////
 
     private ModelWriter(W workbook, Class<T> type) {
         super(workbook);
@@ -101,25 +94,14 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
         return this;
     }
 
-    /**
-     * @param triConsumer sheet, numOfRows, numOfColumns
-     * @return {@code ExcelWriter}
-     */
-    public ModelWriter<W, T> adjustSheet(TriConsumer<Sheet, Integer, Integer> triConsumer) {
-        if (triConsumer == null) throw new IllegalArgumentException("Tri-consumer cannot be null");
-
-        this.adjustSheet = triConsumer;
-        return this;
-    }
-
     @Override
     public ModelWriter<W, T> headerStyles(ExcelStyleConfig... configs) {
         super.headerStyles(configs);
 
         if (this.headerStyles.length != 1 && this.headerStyles.length != this.fields.size()) {
             throw new IllegalArgumentException(String.format(
-                    "The number of header styles is not equal to the number of targeted fields in the class '%s' (the number of header styles can be 1 for common style)",
-                    this.type.getName()));
+                    "Number of header styles(%d) must be 1 or equal to number of targeted fields(%d) in the class '%s'",
+                    this.headerStyles.length, this.fields.size(), this.type.getName()));
         }
 
         return this;
@@ -131,10 +113,34 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
 
         if (this.bodyStyles.length != 1 && this.bodyStyles.length != this.fields.size()) {
             throw new IllegalArgumentException(String.format(
-                    "The number of body styles is not equal to the number of targeted fields in the class '%s' (the number of body styles can be 1 for common style)",
-                    this.type.getName()));
+                    "Number of body styles(%d) must be 1 or equal to number of targeted fields(%d) in the class '%s'",
+                    this.bodyStyles.length, this.fields.size(), this.type.getName()));
         }
 
+        return this;
+    }
+
+    @Override
+    public ModelWriter<W, T> disableRolling() {
+        super.disableRolling();
+        return this;
+    }
+
+    @Override
+    public ModelWriter<W, T> autoResizeCols() {
+        super.autoResizeCols();
+        return this;
+    }
+
+    @Override
+    public ModelWriter<W, T> hideExtraRows() {
+        super.hideExtraRows();
+        return this;
+    }
+
+    @Override
+    public ModelWriter<W, T> hideExtraCols() {
+        super.hideExtraCols();
         return this;
     }
 
@@ -198,12 +204,10 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
 
     /**
      * {@inheritDoc}
-     *
-     * <p> This method adjusts the sheet, rows and columns.
      */
     @Override
-    protected void decorate(Sheet sheet, int numOfModels) {
-        if (this.adjustSheet != null) this.adjustSheet.accept(sheet, numOfModels + 1, this.fields.size());
+    protected int getNumOfColumns() {
+        return this.fields.size();
     }
 
 }

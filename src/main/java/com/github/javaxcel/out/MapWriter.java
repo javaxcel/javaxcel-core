@@ -41,6 +41,39 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link MapWriter}
+     */
+    @Override
+    public MapWriter<W, T> autoResizeCols() {
+        super.autoResizeCols();
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link MapWriter}
+     */
+    @Override
+    public MapWriter<W, T> hideExtraRows() {
+        super.hideExtraRows();
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link MapWriter}
+     */
+    @Override
+    public MapWriter<W, T> hideExtraCols() {
+        super.hideExtraCols();
+        return this;
+    }
+
     //////////////////////////////////////// Hooks ////////////////////////////////////////
 
     /**
@@ -68,12 +101,16 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
 
         // Validates the number of header styles.
         if (!validator.test(this.headerStyles)) {
-            throw new IllegalArgumentException("The number of header styles is not equal to the number of maps' keys");
+            throw new IllegalArgumentException(String.format(
+                    "Number of header styles(%d) must be 1 or equal to number of maps' keys(%d)",
+                    this.headerStyles.length, this.keys.size()));
         }
 
         // Validates the number of body styles.
         if (!validator.test(this.bodyStyles)) {
-            throw new IllegalArgumentException("The number of body styles is not equal to the number of maps' keys");
+            throw new IllegalArgumentException(String.format(
+                    "Number of body styles(%d) must be 1 or equal to number of maps' keys(%d)",
+                    this.bodyStyles.length, this.keys.size()));
         }
     }
 
@@ -129,7 +166,8 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
      * {@inheritDoc}
      */
     @Override
-    protected void decorate(Sheet sheet, int numOfModels) {
+    protected int getNumOfColumns() {
+        return this.keys.size();
     }
 
 }

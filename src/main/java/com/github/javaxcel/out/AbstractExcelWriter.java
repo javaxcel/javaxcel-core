@@ -47,6 +47,12 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
 
     protected CellStyle[] bodyStyles;
 
+    protected boolean willAutoResize;
+
+    protected boolean willHideRows;
+
+    protected boolean willHideCols;
+
     ///////////////////////////////////////////////////////////////////////////////////////
 
     protected AbstractExcelWriter(W workbook) {
@@ -121,6 +127,21 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
         return this;
     }
 
+    public AbstractExcelWriter<W, T> autoResizeCols() {
+        this.willAutoResize = true;
+        return this;
+    }
+
+    public AbstractExcelWriter<W, T> hideExtraRows() {
+        this.willHideRows = true;
+        return this;
+    }
+
+    public AbstractExcelWriter<W, T> hideExtraCols() {
+        this.willHideCols = true;
+        return this;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -144,7 +165,11 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
 
             List<T> those = lists.get(i);
             writeToSheet(sheet, those);
-            decorate(sheet, those.size());
+
+            // Adjusts rows and columns.
+            if (this.willAutoResize) ExcelUtils.autoResizeColumns(sheet, getNumOfColumns());
+            if (this.willHideRows) ExcelUtils.hideExtraRows(sheet, those.size() + 1);
+            if (this.willHideCols) ExcelUtils.hideExtraColumns(sheet, getNumOfColumns());
         }
 
         // Saves the data.
@@ -215,12 +240,10 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     protected abstract void writeToSheet(Sheet sheet, List<T> list);
 
     /**
-     * Decorates the sheet.
+     * Returns the number of columns.
      *
-     * @param sheet       sheet
-     * @param numOfModels the number of models
-     *                    (it is equal to the number of rows in the sheet)
+     * @return the number of columns
      */
-    protected abstract void decorate(Sheet sheet, int numOfModels);
+    protected abstract int getNumOfColumns();
 
 }
