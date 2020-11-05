@@ -1,7 +1,7 @@
 package com.github.javaxcel.style;
 
 import com.github.javaxcel.styler.config.Configurer;
-import com.github.javaxcel.styler.config.ExcelStyleConfig;
+import com.github.javaxcel.styler.ExcelStyleConfig;
 import org.apache.poi.ss.usermodel.*;
 
 public class DefaultHeaderStyleConfig implements ExcelStyleConfig {

@@ -1,7 +1,7 @@
 package com.github.javaxcel.out;
 
 import com.github.javaxcel.exception.WritingExcelException;
-import com.github.javaxcel.styler.config.ExcelStyleConfig;
+import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.util.CollectionUtils;
 import io.github.imsejin.common.util.StringUtils;

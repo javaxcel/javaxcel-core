@@ -1,6 +1,6 @@
 package com.github.javaxcel.out;
 
-import com.github.javaxcel.styler.config.ExcelStyleConfig;
+import com.github.javaxcel.styler.ExcelStyleConfig;
 import io.github.imsejin.common.util.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 

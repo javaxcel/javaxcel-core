@@ -6,7 +6,7 @@ import com.github.javaxcel.annotation.ExcelWriterExpression;
 import com.github.javaxcel.converter.impl.BasicWritingConverter;
 import com.github.javaxcel.converter.impl.ExpressiveWritingConverter;
 import com.github.javaxcel.exception.NoTargetedFieldException;
-import com.github.javaxcel.styler.config.ExcelStyleConfig;
+import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.util.FieldUtils;
 import org.apache.poi.ss.usermodel.*;
 

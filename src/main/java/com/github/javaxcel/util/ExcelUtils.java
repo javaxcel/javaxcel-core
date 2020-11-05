@@ -1,8 +1,8 @@
 package com.github.javaxcel.util;
 
 import com.github.javaxcel.exception.UnsupportedWorkbookException;
+import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.styler.config.Configurer;
-import com.github.javaxcel.styler.config.ExcelStyleConfig;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
