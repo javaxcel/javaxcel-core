@@ -201,7 +201,7 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
      * @return real model
      */
     private T toRealModel(Map<String, Object> sModel) {
-        T model = ExcelUtils.instantiate(this.type);
+        T model = FieldUtils.instantiate(this.type);
 
         for (Field field : this.fields) {
             String cellValue = (String) sModel.get(field.getName());

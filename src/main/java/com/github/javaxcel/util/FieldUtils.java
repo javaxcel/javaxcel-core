@@ -4,11 +4,14 @@ import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelIgnore;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.exception.GettingFieldValueException;
+import com.github.javaxcel.exception.NoTargetedConstructorException;
 import com.github.javaxcel.exception.SettingFieldValueException;
 import io.github.imsejin.common.util.StringUtils;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -166,6 +169,27 @@ public final class FieldUtils {
         }
 
         return null;
+    }
+
+    public static <T> T instantiate(Class<T> type) {
+        // Allows only constructor without parameter. TODO: write it in javadoc.
+        Constructor<T> constructor;
+        try {
+            constructor = type.getDeclaredConstructor();
+        } catch (NoSuchMethodException e) {
+            throw new NoTargetedConstructorException(e, type);
+        }
+        constructor.setAccessible(true);
+
+        // Instantiates new model and sets up data into the model's fields.
+        T model;
+        try {
+            model = constructor.newInstance();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(String.format("Failed to instantiate of the class(%s)", type.getName()));
+        }
+
+        return model;
     }
 
 }

@@ -1,6 +1,5 @@
 package com.github.javaxcel.util;
 
-import com.github.javaxcel.exception.NoTargetedConstructorException;
 import com.github.javaxcel.exception.UnsupportedWorkbookException;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -14,8 +13,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -82,27 +79,6 @@ public final class ExcelUtils {
 
     public static boolean isExcel97(Cell cell) {
         return cell instanceof HSSFCell;
-    }
-
-    public static <T> T instantiate(Class<T> type) {
-        // Allows only constructor without parameter. TODO: write it in javadoc.
-        Constructor<T> constructor;
-        try {
-            constructor = type.getDeclaredConstructor();
-        } catch (NoSuchMethodException e) {
-            throw new NoTargetedConstructorException(e, type);
-        }
-        constructor.setAccessible(true);
-
-        // Instantiates new model and sets up data into the model's fields.
-        T model;
-        try {
-            model = constructor.newInstance();
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(String.format("Failed to instantiate of the class(%s)", type.getName()));
-        }
-
-        return model;
     }
 
 }
