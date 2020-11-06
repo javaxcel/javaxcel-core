@@ -5,6 +5,7 @@ import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.exception.NoTargetedConstructorException;
 import com.github.javaxcel.factory.ExcelReaderFactory;
 import com.github.javaxcel.factory.ExcelWriterFactory;
+import com.github.javaxcel.model.computer.Computer;
 import com.github.javaxcel.model.creature.Human;
 import com.github.javaxcel.model.etc.FinalFieldModel;
 import com.github.javaxcel.model.product.Product;
@@ -118,6 +119,51 @@ public class ModelReaderTest {
         assertThat(products)
                 .as("#2 Each loaded model is equal to each mock")
                 .containsExactly(mocks.toArray(new Product[0]));
+    }
+
+    /**
+     * @see ExcelReader#limit(int)
+     */
+    @Test
+    @DisplayName("ExcelReader#limit(int)")
+    @SneakyThrows
+    public void readComputers(@TempDir Path path) {
+        String filename = "computers.xlsx";
+
+        // given
+        stopWatch.start(String.format("create '%s' file", filename));
+        File file = new File(path.toFile(), filename);
+        @Cleanup Workbook workbook = new SXSSFWorkbook();
+        @Cleanup OutputStream out = new FileOutputStream(file);
+        stopWatch.stop();
+
+        int limit = 10;
+        int numOfMocks = 1000;
+        stopWatch.start(String.format("create %,d mocks", numOfMocks));
+        List<Computer> mocks = Computer.createRandoms(numOfMocks);
+        stopWatch.stop();
+
+        stopWatch.start(String.format("write %,d models", numOfMocks));
+        ExcelWriterFactory.create(workbook, Computer.class).write(out, mocks);
+        stopWatch.stop();
+
+        stopWatch.start(String.format("load '%s' file", filename));
+        @Cleanup Workbook wb = new XSSFWorkbook(file);
+        stopWatch.stop();
+
+        // when
+        stopWatch.start(String.format("read %,d models", numOfMocks));
+        List<Computer> educationToys = ExcelReaderFactory.create(wb, Computer.class)
+                .limit(limit).read();
+        stopWatch.stop();
+
+        // then
+        assertThat(educationToys.size())
+                .as("#1 The number of loaded models is %,s", mocks.size())
+                .isEqualTo(Math.min(limit, educationToys.size()));
+        assertThat(educationToys)
+                .as("#2 Each loaded model is equal to each mock")
+                .containsExactly(mocks.stream().limit(limit).toArray(Computer[]::new));
     }
 
     /**

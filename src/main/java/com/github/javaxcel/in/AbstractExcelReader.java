@@ -38,7 +38,19 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
      */
     protected final FormulaEvaluator formulaEvaluator;
 
+    /**
+     * Limitation of reading rows.
+     *
+     * @see #limit(int)
+     */
     protected int limit = -1;
+
+    /**
+     * Total number of rows that are read by {@link AbstractExcelReader}.
+     *
+     * @see #limit(int)
+     */
+    protected int readRowCount;
 
     protected AbstractExcelReader(W workbook) {
         this.workbook = workbook;
@@ -114,6 +126,9 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
             // Converts empty string to null because when CellType is BLANK, DataFormatter returns empty string.
             map.put(getColumnName(cell, i), cellValue.equals("") ? null : cellValue);
         }
+
+        // Increase count of reading row.
+        readRowCount++;
 
         return map;
     }

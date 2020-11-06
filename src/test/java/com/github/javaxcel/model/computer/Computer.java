@@ -3,16 +3,22 @@ package com.github.javaxcel.model.computer;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.model.Mockable;
+import com.github.javaxcel.style.DefaultBodyStyleConfig;
+import com.github.javaxcel.style.DefaultHeaderStyleConfig;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
-@ExcelModel(explicit = true)
+@EqualsAndHashCode(of = {"cpu", "disk", "manufacturer", "price"})
+@ExcelModel(explicit = true, headerStyle = DefaultHeaderStyleConfig.class, bodyStyle = DefaultBodyStyleConfig.class)
 public class Computer {
 
     @ExcelColumn(name = "CPU_CLOCK")

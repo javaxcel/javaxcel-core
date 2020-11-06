@@ -63,6 +63,8 @@ public final class MapReader<W extends Workbook, T extends Map<String, ?>> exten
         // Reads rows.
         List<Map<String, Object>> maps = new ArrayList<>();
         for (int i = 0; i < numOfRows; i++) {
+            if (this.readRowCount == this.limit) break;
+
             // Skips the first row that is header.
             Row row = sheet.getRow(i + 1);
 

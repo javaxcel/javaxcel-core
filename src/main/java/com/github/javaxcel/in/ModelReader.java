@@ -184,6 +184,8 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
         // Reads rows.
         List<Map<String, Object>> simulatedModels = new ArrayList<>();
         for (int i = this.startRowNum; i < this.endRowNum; i++) {
+            if (this.readRowCount == this.limit) break;
+
             // Skips the first row that is header.
             Row row = sheet.getRow(i + 1);
 
