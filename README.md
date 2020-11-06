@@ -34,7 +34,7 @@ Javaxcel core is interconverter DTO list and excel file with simple usage based 
 
 ```groovy
 // Gradle
-implementation 'com.github.javaxcel:javaxcel-core:$javaxcel_version'
+implementation 'com.github.javaxcel:javaxcel-core:$javaxcel_core_version'
 ```
 
 <br>
