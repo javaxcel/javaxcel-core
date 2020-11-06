@@ -4,7 +4,7 @@ import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.converter.WritingConverter;
 import com.github.javaxcel.util.FieldUtils;
-import com.github.javaxcel.util.StringUtils;
+import io.github.imsejin.common.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
@@ -14,7 +14,18 @@ import java.time.format.DateTimeFormatter;
 
 public class BasicWritingConverter<T> implements WritingConverter<T> {
 
+    /**
+     * Replacement for field value when it is null or empty.
+     */
     private String defaultValue;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getDefaultValue() {
+        return this.defaultValue;
+    }
 
     /**
      * {@inheritDoc}
@@ -33,7 +44,7 @@ public class BasicWritingConverter<T> implements WritingConverter<T> {
     @Override
     public String convert(T model, Field field) {
         String value = stringify(model, field);
-        return WritingConverter.convertIfDefault(value, this.defaultValue, field);
+        return FieldUtils.convertIfFaulty(value, this.defaultValue, field);
     }
 
     /**

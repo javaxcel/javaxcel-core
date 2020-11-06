@@ -7,7 +7,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.List;
 
 public class FieldUtilsTest {
@@ -39,10 +38,10 @@ public class FieldUtilsTest {
         List<Field> targetedFields = FieldUtils.getTargetedFields(type);
 
         // when
-        String[] headerNames = FieldUtils.toHeaderNames(targetedFields);
+        List<String> headerNames = FieldUtils.toHeaderNames(targetedFields);
 
         // then
-        Arrays.stream(headerNames).forEach(System.out::println);
+        headerNames.forEach(System.out::println);
     }
 
 }

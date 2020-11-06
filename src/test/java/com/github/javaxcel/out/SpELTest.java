@@ -2,7 +2,7 @@ package com.github.javaxcel.out;
 
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
-import com.github.javaxcel.util.StringUtils;
+import io.github.imsejin.common.util.StringUtils;
 import io.github.imsejin.expression.Expression;
 import io.github.imsejin.expression.ExpressionParser;
 import io.github.imsejin.expression.ParserContext;

@@ -1,28 +1,15 @@
 package com.github.javaxcel.converter;
 
-import com.github.javaxcel.annotation.ExcelColumn;
-import com.github.javaxcel.util.StringUtils;
-
 import java.lang.reflect.Field;
 
 public interface WritingConverter<T> {
 
     /**
-     * If the value is null or empty string, converts a value to default value.
+     * Returns the default value.
      *
-     * @param maybeDefault value that may be null or empty
-     * @param defaultValue default value
-     * @param field        field of model
-     * @return origin value or {@link com.github.javaxcel.out.ExcelWriter#defaultValue(String)}
+     * @return default value
      */
-    static String convertIfDefault(String maybeDefault, String defaultValue, Field field) {
-        return StringUtils.ifNullOrEmpty(maybeDefault, () -> {
-            // Default value assigned by ExcelWriter takes precedence over ExcelColumn's default value.
-            if (!StringUtils.isNullOrEmpty(defaultValue)) return defaultValue;
-            ExcelColumn column = field.getAnnotation(ExcelColumn.class);
-            return column == null || column.defaultValue().equals("") ? null : column.defaultValue();
-        });
-    }
+    String getDefaultValue();
 
     /**
      * Sets up the default value.

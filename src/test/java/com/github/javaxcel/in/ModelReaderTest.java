@@ -3,11 +3,13 @@ package com.github.javaxcel.in;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.exception.NoTargetedConstructorException;
+import com.github.javaxcel.factory.ExcelReaderFactory;
+import com.github.javaxcel.factory.ExcelWriterFactory;
+import com.github.javaxcel.model.computer.Computer;
 import com.github.javaxcel.model.creature.Human;
 import com.github.javaxcel.model.etc.FinalFieldModel;
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
-import com.github.javaxcel.out.ExcelWriter;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
@@ -17,14 +19,15 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -33,13 +36,26 @@ import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ExcelReaderTest {
+public class ModelReaderTest {
+
+    private Stopwatch stopWatch;
+
+    @BeforeEach
+    public void beforeEach() {
+        this.stopWatch = new Stopwatch(TimeUnit.SECONDS);
+    }
+
+    @AfterEach
+    public void afterEach() {
+        System.out.println(this.stopWatch.getStatistics());
+    }
 
     @Test
     @DisplayName("Find constructor with min params")
     @SneakyThrows
     public void getDeclaredConstructorWithMinimumParameters() {
         // given
+        stopWatch.start();
         Class<Product> clazz = Product.class;
 
         // when
@@ -53,29 +69,27 @@ public class ExcelReaderTest {
                 .min(Comparator.comparingInt(Constructor::getParameterCount))
                 .orElseThrow(() -> new NoTargetedConstructorException(clazz));
         constructor.setAccessible(true);
-        Arrays.stream(constructor.getParameterTypes()).forEach(System.out::println);
+        stopWatch.stop();
 
         assertThat(constructor.newInstance())
                 .as("Instantiates class without params")
                 .isInstanceOf(clazz);
-        System.out.println("Constructor with minimum parameters: " + constructor);
+        Arrays.stream(constructor.getParameterTypes()).forEach(System.out::println);
+        System.out.printf("Constructor with minimum parameters: %s\n", constructor);
     }
 
     /**
-     * 1. {@link ExcelModel#policy()}, {@link com.github.javaxcel.constant.TargetedFieldPolicy#OWN_FIELDS}
-     * <br>
-     * 2. {@link com.github.javaxcel.annotation.ExcelIgnore}
+     * @see com.github.javaxcel.annotation.ExcelIgnore
      */
     @Test
-    @DisplayName("Own fields + @ExcelIgnore")
+    @DisplayName("@ExcelIgnore + @ExcelModel(includeSuper = false)")
     @SneakyThrows
-    public void readWithNotInheritedTypeAndExcelIgnore() {
-        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
+    public void readProducts(@TempDir Path path) {
         String filename = "products.xls";
 
         // given
         stopWatch.start(String.format("create '%s' file", filename));
-        File file = new File("/data", filename);
+        File file = new File(path.toFile(), filename);
         @Cleanup HSSFWorkbook workbook = new HSSFWorkbook();
         @Cleanup OutputStream out = new FileOutputStream(file);
         stopWatch.stop();
@@ -86,7 +100,7 @@ public class ExcelReaderTest {
         stopWatch.stop();
 
         stopWatch.start(String.format("write %,d models", numOfMocks));
-        ExcelWriter.init(workbook, Product.class).write(out, mocks);
+        ExcelWriterFactory.create(workbook, Product.class).write(out, mocks);
         stopWatch.stop();
 
         stopWatch.start(String.format("load '%s' file", filename));
@@ -95,7 +109,7 @@ public class ExcelReaderTest {
 
         // when
         stopWatch.start(String.format("read %,d models", numOfMocks));
-        List<Product> products = ExcelReader.init(wb, Product.class).read();
+        List<Product> products = ExcelReaderFactory.create(wb, Product.class).read();
         stopWatch.stop();
 
         // then
@@ -104,36 +118,78 @@ public class ExcelReaderTest {
                 .isEqualTo(mocks.size());
         assertThat(products)
                 .as("#2 Each loaded model is equal to each mock")
-                .containsAll(mocks);
-        System.out.println(stopWatch.getStatistics());
+                .containsExactly(mocks.toArray(new Product[0]));
     }
 
     /**
-     * 1. {@link ExcelModel#policy()}, {@link com.github.javaxcel.constant.TargetedFieldPolicy#INCLUDES_INHERITED}
-     * <br>
-     * 2. {@link ExcelDateTimeFormat#pattern()}
+     * @see ExcelReader#limit(int)
      */
     @Test
-    @DisplayName("Including inherited fields + @ExcelDateTimeFormat")
+    @DisplayName("ExcelReader#limit(int)")
     @SneakyThrows
-    public void readWithTargetedFieldPolicyAndDateTimePattern() {
-        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
-        String filename = "toys.xlsx";
+    public void readComputers(@TempDir Path path) {
+        String filename = "computers.xlsx";
 
         // given
         stopWatch.start(String.format("create '%s' file", filename));
-        File file = new File("/data", filename);
+        File file = new File(path.toFile(), filename);
         @Cleanup Workbook workbook = new SXSSFWorkbook();
         @Cleanup OutputStream out = new FileOutputStream(file);
         stopWatch.stop();
 
-        int numOfMocks = 100_000;
+        int limit = 10;
+        int numOfMocks = 1000;
+        stopWatch.start(String.format("create %,d mocks", numOfMocks));
+        List<Computer> mocks = Computer.createRandoms(numOfMocks);
+        stopWatch.stop();
+
+        stopWatch.start(String.format("write %,d models", numOfMocks));
+        ExcelWriterFactory.create(workbook, Computer.class).write(out, mocks);
+        stopWatch.stop();
+
+        stopWatch.start(String.format("load '%s' file", filename));
+        @Cleanup Workbook wb = new XSSFWorkbook(file);
+        stopWatch.stop();
+
+        // when
+        stopWatch.start(String.format("read %,d models", Math.min(limit, numOfMocks)));
+        List<Computer> educationToys = ExcelReaderFactory.create(wb, Computer.class)
+                .limit(limit).read();
+        stopWatch.stop();
+
+        // then
+        assertThat(educationToys.size())
+                .as("#1 The number of loaded models is %,s", mocks.size())
+                .isEqualTo(Math.min(limit, educationToys.size()));
+        assertThat(educationToys)
+                .as("#2 Each loaded model is equal to each mock")
+                .containsExactly(mocks.stream().limit(limit).toArray(Computer[]::new));
+    }
+
+    /**
+     * @see ExcelModel#includeSuper()
+     * @see ExcelDateTimeFormat#pattern()
+     */
+    @Test
+    @DisplayName("@ExcelModel(includeSuper = true) + @ExcelDateTimeFormat")
+    @SneakyThrows
+    public void readEducationToys(@TempDir Path path) {
+        String filename = "toys.xlsx";
+
+        // given
+        stopWatch.start(String.format("create '%s' file", filename));
+        File file = new File(path.toFile(), filename);
+        @Cleanup Workbook workbook = new SXSSFWorkbook();
+        @Cleanup OutputStream out = new FileOutputStream(file);
+        stopWatch.stop();
+
+        int numOfMocks = 10_000;
         stopWatch.start(String.format("create %,d mocks", numOfMocks));
         List<EducationToy> mocks = new EducationToy().createRandoms(numOfMocks);
         stopWatch.stop();
 
         stopWatch.start(String.format("write %,d models", numOfMocks));
-        ExcelWriter.init(workbook, EducationToy.class).write(out, mocks);
+        ExcelWriterFactory.create(workbook, EducationToy.class).write(out, mocks);
         stopWatch.stop();
 
         stopWatch.start(String.format("load '%s' file", filename));
@@ -142,7 +198,7 @@ public class ExcelReaderTest {
 
         // when
         stopWatch.start(String.format("read %,d models", numOfMocks));
-        List<EducationToy> educationToys = ExcelReader.init(wb, EducationToy.class).read();
+        List<EducationToy> educationToys = ExcelReaderFactory.create(wb, EducationToy.class).read();
         stopWatch.stop();
 
         // then
@@ -151,20 +207,20 @@ public class ExcelReaderTest {
                 .isEqualTo(mocks.size());
         assertThat(educationToys)
                 .as("#2 Each loaded model is equal to each mock")
-                .containsAll(mocks);
-        System.out.println(stopWatch.getStatistics());
+                .containsExactly(mocks.toArray(new EducationToy[0]));
     }
 
     @Test
+    @Disabled
     @DisplayName("Model with final fields")
     @SneakyThrows
-    public void readWithFinalFields() {
+    public void readFinalFields(@TempDir Path path) {
         // given
-        File file = new File("/data", "final-fields.xls");
+        File file = new File(path.toFile(), "final-fields.xls");
         @Cleanup Workbook workbook = HSSFWorkbookFactory.create(file);
 
         // when
-        List<FinalFieldModel> list = ExcelReader.init(workbook, FinalFieldModel.class).read();
+        List<FinalFieldModel> list = ExcelReaderFactory.create(workbook, FinalFieldModel.class).read();
 
         // then
         list.forEach(it -> {
@@ -180,17 +236,18 @@ public class ExcelReaderTest {
     }
 
     @Test
+    @Disabled
     @SneakyThrows
-    public void readMultipleSheets() {
+    public void readMultipleSheets(@TempDir Path path) {
         // given
         List<Product> products = new Product().createDesignees();
         List<EducationToy> educationToys = new EducationToy().createDesignees();
-        File file = new File("/data", "merged.xlsx");
+        File file = new File(path.toFile(), "merged.xlsx");
         @Cleanup Workbook workbook = WorkbookFactory.create(file);
 
         // when
-        List<Product> sheet1 = ExcelReader.init(workbook, Product.class).sheetIndexes(0).read();
-        List<EducationToy> sheet2 = ExcelReader.init(workbook, EducationToy.class).sheetIndexes(1).read();
+        List<Product> sheet1 = ExcelReaderFactory.create(workbook, Product.class).read();
+        List<EducationToy> sheet2 = ExcelReaderFactory.create(workbook, EducationToy.class).read();
 
         // then
         assertThat(products.stream()
@@ -203,16 +260,19 @@ public class ExcelReaderTest {
                 .isTrue();
     }
 
+    /**
+     * @see ExcelModel#includeSuper()
+     * @see com.github.javaxcel.annotation.ExcelReaderExpression
+     */
     @Test
-    @DisplayName("Including inherited fields + @ExcelReaderConversion")
+    @DisplayName("@ExcelModel(includeSuper = true) + @ExcelReaderExpression")
     @SneakyThrows
-    public void readPeople() {
-        Stopwatch stopWatch = new Stopwatch(TimeUnit.SECONDS);
+    public void readPeople(@TempDir Path path) {
         String filename = "people.xlsx";
 
         // given
         stopWatch.start(String.format("create '%s' file", filename));
-        File file = new File("/data", "people.xlsx");
+        File file = new File(path.toFile(), "people.xlsx");
         @Cleanup Workbook workbook = new SXSSFWorkbook();
         @Cleanup OutputStream out = new FileOutputStream(file);
         stopWatch.stop();
@@ -223,7 +283,7 @@ public class ExcelReaderTest {
         stopWatch.stop();
 
         stopWatch.start(String.format("write %,d models", numOfMocks));
-        ExcelWriter.init(workbook, Human.class).write(out, mocks);
+        ExcelWriterFactory.create(workbook, Human.class).write(out, mocks);
         stopWatch.stop();
 
         stopWatch.start(String.format("load '%s' file", filename));
@@ -232,7 +292,7 @@ public class ExcelReaderTest {
 
         // when
         stopWatch.start(String.format("read %,d models", numOfMocks));
-        List<Human> people = ExcelReader.init(wb, Human.class).parallel().read();
+        List<Human> people = ExcelReaderFactory.create(wb, Human.class).parallel().read();
         stopWatch.stop();
 
         // then
@@ -241,8 +301,7 @@ public class ExcelReaderTest {
                 .isEqualTo(mocks.size());
         assertThat(people)
                 .as("#2 Each loaded model is equal to each mock")
-                .containsAll(mocks);
-        System.out.println(stopWatch.getStatistics());
+                .containsExactly(mocks.toArray(new Human[0]));
     }
 
 }

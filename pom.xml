@@ -6,7 +6,7 @@
 
     <groupId>com.github.javaxcel</groupId>
     <artifactId>javaxcel-core</artifactId>
-    <version>0.4.2</version>
+    <version>0.5.0</version>
     <packaging>jar</packaging>
 
     <name>Javaxcel Core</name>
@@ -50,9 +50,28 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <apache.poi.version>4.1.2</apache.poi.version>
+        <javaxcel.styler.version>0.2.1</javaxcel.styler.version>
+        <common.utils.version>0.3.2</common.utils.version>
     </properties>
 
     <dependencies>
+        <!-- Common Utils -->
+        <dependency>
+            <groupId>io.github.imsejin</groupId>
+            <artifactId>common-utils</artifactId>
+            <version>${common.utils.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.code.gson</groupId>
+                    <artifactId>gson</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.ini4j</groupId>
+                    <artifactId>ini4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
         <!-- Apache POI -->
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -80,6 +99,13 @@
             <groupId>io.github.imsejin</groupId>
             <artifactId>spel</artifactId>
             <version>5.2.9</version>
+        </dependency>
+
+        <!-- Javaxcel Styler -->
+        <dependency>
+            <groupId>com.github.javaxcel</groupId>
+            <artifactId>javaxcel-styler</artifactId>
+            <version>${javaxcel.styler.version}</version>
         </dependency>
 
         <!-- Junit 5 -->
@@ -114,23 +140,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.12</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Common Utils -->
-        <dependency>
-            <groupId>io.github.imsejin</groupId>
-            <artifactId>common-utils</artifactId>
-            <version>0.3.1</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Javaxcel Styler -->
-        <dependency>
-            <groupId>com.github.javaxcel</groupId>
-            <artifactId>javaxcel-styler</artifactId>
-            <version>0.1.0</version>
+            <version>1.18.14</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

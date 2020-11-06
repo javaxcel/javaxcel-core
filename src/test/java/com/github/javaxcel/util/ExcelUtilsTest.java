@@ -2,16 +2,28 @@ package com.github.javaxcel.util;
 
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.converter.impl.BasicWritingConverter;
+import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
+import com.github.javaxcel.out.ExcelWriter;
+import com.github.javaxcel.out.ModelWriter;
+import io.github.imsejin.common.tool.Stopwatch;
+import io.github.imsejin.common.util.StringUtils;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.hssf.usermodel.HSSFPalette;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.usermodel.HSSFWorkbookFactory;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -21,6 +33,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,9 +78,10 @@ public class ExcelUtilsTest {
 
     @ParameterizedTest
     @ValueSource(strings = {
-            "E:\\works\\대한상공회의소 - 유통상품지식뱅크 서비스포털\\2020\\06\\20200618_미기재 설명 등록\\상품분류별 부가속성\\200519_분류별_부가속성예시.xlsx",
-            "E:\\works\\대한상공회의소 - 유통상품지식뱅크 서비스포털\\2020\\06\\20200618_미기재 설명 등록\\상품분류별 부가속성\\[가공] 상품분류별_부가속성_설명.xlsx",
+            "E:/works/대한상공회의소 - 유통상품지식뱅크 서비스포털/2020/06/20200618_미기재 설명 등록/상품분류별 부가속성/200519_분류별_부가속성예시.xlsx",
+            "E:/works/대한상공회의소 - 유통상품지식뱅크 서비스포털/2020/06/20200618_미기재 설명 등록/상품분류별 부가속성/[가공] 상품분류별_부가속성_설명.xlsx",
     })
+    @Disabled
     @SneakyThrows
     public void getSheetRange(String pathname) {
         // given
@@ -88,7 +102,7 @@ public class ExcelUtilsTest {
         // given
         BasicWritingConverter<EducationToy> converter = new BasicWritingConverter<>();
 
-        for (EducationToy toy : new EducationToy().createRandoms(1000)) {
+        for (EducationToy toy : new EducationToy().createRandoms(10)) {
             // when
             String stringifyValue = converter.convert(toy, toy.getClass().getDeclaredField(fieldName));
 
@@ -98,6 +112,7 @@ public class ExcelUtilsTest {
     }
 
     @Test
+    @Disabled
     public void convert() {
         // given
         List<String> values = Arrays.asList("Toy.name", "ADULT", "645.70", "[1,2,3,4]", "educationToys.goals", "2020-08-31", "01/23/45/678", "2020-08-31T01:23:45");
@@ -118,6 +133,7 @@ public class ExcelUtilsTest {
     }
 
     @Test
+    @Disabled
     public void formatDateTime() {
         // given
         LocalDate date = LocalDate.now();
@@ -136,6 +152,7 @@ public class ExcelUtilsTest {
     }
 
     @Test
+    @Disabled
     public void stringifyBigNumbers() {
         // given
         String strBigInt = Long.valueOf(Long.MAX_VALUE).toString();
@@ -148,6 +165,91 @@ public class ExcelUtilsTest {
         // then
         assertThat(strBigInt).isEqualTo(bigInteger);
         assertThat(strBigDec).isEqualTo(bigDecimal);
+    }
+
+    @Test
+    @SneakyThrows
+    @SuppressWarnings("unchecked")
+    public void instantiateByClassName() {
+        Stopwatch stopwatch = new Stopwatch(TimeUnit.MILLISECONDS);
+
+        // given
+        String className = "com.github.javaxcel.out.ModelWriter";
+
+        // when
+        stopwatch.start("load class");
+        Class<?> clazz = Class.forName(className, true, ExcelUtilsTest.class.getClassLoader());
+        stopwatch.stop();
+
+        stopwatch.start("get constructor");
+        Constructor<?> constructor = clazz.getDeclaredConstructor(Workbook.class, Class.class);
+        stopwatch.stop();
+
+        stopwatch.start("set accessible");
+        constructor.setAccessible(true);
+        stopwatch.stop();
+
+        Workbook workbook = new XSSFWorkbook();
+        stopwatch.start("instantiate");
+        ExcelWriter<Workbook, Product> instance = (ExcelWriter<Workbook, Product>) constructor.newInstance(workbook, Product.class);
+        stopwatch.stop();
+
+        // then
+        assertThat(instance)
+                .isNotNull()
+                .isInstanceOf(ModelWriter.class);
+        System.out.println(stopwatch.getStatistics());
+    }
+
+    @Test
+    @Disabled
+    @SneakyThrows
+    public void test() {
+        // given
+        File file = new File("/data/hssf-rgb.xls");
+        HSSFWorkbook workbook = HSSFWorkbookFactory.createWorkbook();
+        Sheet sheet = workbook.createSheet();
+        Row row = sheet.createRow(0);
+        Cell cell = row.createCell(0);
+
+        // when
+        HSSFPalette palette = workbook.getCustomPalette();
+        // `HSSFColorPredefined.WHITE`의 RGB를 사용자지정 RGB로 대체한다.
+        palette.setColorAtIndex(HSSFColor.HSSFColorPredefined.WHITE.getIndex(),
+                (byte) 192, (byte) 168, (byte) 7);
+//        palette.addColor((byte) 192, (byte) 168, (byte) 7); // RuntimeException: Could not find free color index
+
+        // 해당 RGB를 갖는 `HSSFColorPredefined`를 찾는다.
+        HSSFColor hssfColor = palette.findColor((byte) 192, (byte) 168, (byte) 7);
+
+        CellStyle cellStyle = workbook.createCellStyle();
+        cellStyle.setFillForegroundColor(hssfColor.getIndex()); // Hexadecimal
+        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        cell.setCellStyle(cellStyle);
+
+        cell.setCellValue("RGB");
+
+        workbook.write(file);
+
+        // then
+        assertThat(file).exists();
+    }
+
+    @Test
+    @Disabled
+    @SneakyThrows
+    public void func() {
+        // given
+        File file = new File("/data/hssf-rgb.xls");
+        @Cleanup Workbook workbook = new HSSFWorkbook(new FileInputStream(file));
+        Sheet sheet = workbook.getSheetAt(0);
+        Row row = sheet.getRow(0);
+        Cell cell = row.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+
+        // when
+        CellStyle cellStyle = cell.getCellStyle();
+        System.out.println(cellStyle.getFillForegroundColor()); // decimal
+        System.out.println(cellStyle.getFillForegroundColorColor());
     }
 
 }

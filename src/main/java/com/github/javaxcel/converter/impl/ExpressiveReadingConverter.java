@@ -57,11 +57,9 @@ public class ExpressiveReadingConverter<T> implements ReadingConverter<T> {
     }
 
     /**
-     * Parses a expression to be assigned as field value.
+     * {@inheritDoc}
      *
-     * @param value value
-     * @param field targeted field
-     * @return converted model
+     * <p> Parses a expression to be assigned as field value.
      */
     @Override
     public Object convert(String value, Field field) {
@@ -74,10 +72,10 @@ public class ExpressiveReadingConverter<T> implements ReadingConverter<T> {
     /**
      * Converts cached expression into field value.
      *
-     * @param value      value
-     * @param field      targeted field
+     * @param value      string that is cell value
+     * @param field      targeted field of model
      * @param expression expression
-     * @return converted model
+     * @return value converted to the type of field
      */
     public Object convert(String value, Field field, Expression expression) {
         context.setVariables(this.variables);
