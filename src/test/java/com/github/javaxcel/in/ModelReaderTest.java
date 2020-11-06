@@ -19,12 +19,14 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -81,12 +83,12 @@ public class ModelReaderTest {
     @Test
     @DisplayName("@ExcelIgnore + @ExcelModel(includeSuper = false)")
     @SneakyThrows
-    public void readProducts() {
+    public void readProducts(@TempDir Path path) {
         String filename = "products.xls";
 
         // given
         stopWatch.start(String.format("create '%s' file", filename));
-        File file = new File("/data", filename);
+        File file = new File(path.toFile(), filename);
         @Cleanup HSSFWorkbook workbook = new HSSFWorkbook();
         @Cleanup OutputStream out = new FileOutputStream(file);
         stopWatch.stop();
@@ -125,12 +127,12 @@ public class ModelReaderTest {
     @Test
     @DisplayName("@ExcelModel(includeSuper = true) + @ExcelDateTimeFormat")
     @SneakyThrows
-    public void readEducationToys() {
+    public void readEducationToys(@TempDir Path path) {
         String filename = "toys.xlsx";
 
         // given
         stopWatch.start(String.format("create '%s' file", filename));
-        File file = new File("/data", filename);
+        File file = new File(path.toFile(), filename);
         @Cleanup Workbook workbook = new SXSSFWorkbook();
         @Cleanup OutputStream out = new FileOutputStream(file);
         stopWatch.stop();
@@ -166,9 +168,9 @@ public class ModelReaderTest {
     @Disabled
     @DisplayName("Model with final fields")
     @SneakyThrows
-    public void readFinalFields() {
+    public void readFinalFields(@TempDir Path path) {
         // given
-        File file = new File("/data", "final-fields.xls");
+        File file = new File(path.toFile(), "final-fields.xls");
         @Cleanup Workbook workbook = HSSFWorkbookFactory.create(file);
 
         // when
@@ -190,11 +192,11 @@ public class ModelReaderTest {
     @Test
     @Disabled
     @SneakyThrows
-    public void readMultipleSheets() {
+    public void readMultipleSheets(@TempDir Path path) {
         // given
         List<Product> products = new Product().createDesignees();
         List<EducationToy> educationToys = new EducationToy().createDesignees();
-        File file = new File("/data", "merged.xlsx");
+        File file = new File(path.toFile(), "merged.xlsx");
         @Cleanup Workbook workbook = WorkbookFactory.create(file);
 
         // when
@@ -219,12 +221,12 @@ public class ModelReaderTest {
     @Test
     @DisplayName("@ExcelModel(includeSuper = true) + @ExcelReaderExpression")
     @SneakyThrows
-    public void readPeople() {
+    public void readPeople(@TempDir Path path) {
         String filename = "people.xlsx";
 
         // given
         stopWatch.start(String.format("create '%s' file", filename));
-        File file = new File("/data", "people.xlsx");
+        File file = new File(path.toFile(), "people.xlsx");
         @Cleanup Workbook workbook = new SXSSFWorkbook();
         @Cleanup OutputStream out = new FileOutputStream(file);
         stopWatch.stop();

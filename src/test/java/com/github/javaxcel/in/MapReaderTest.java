@@ -11,10 +11,12 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -46,13 +48,13 @@ public class MapReaderTest {
     @Test
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public void read() {
+    public void read(@TempDir Path path) {
         String filename = "maps.xlsx";
         List<String> keys = Arrays.asList("race", "name", "height", "weight", "eyesight", "favoriteFood");
 
         // given
         stopWatch.start(String.format("create '%s' file", filename));
-        File file = new File("/data", filename);
+        File file = new File(path.toFile(), filename);
         @Cleanup FileOutputStream out = new FileOutputStream(file);
         @Cleanup Workbook workbook = new XSSFWorkbook();
         stopWatch.stop();
