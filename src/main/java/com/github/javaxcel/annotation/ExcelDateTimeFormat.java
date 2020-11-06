@@ -23,6 +23,7 @@ public @interface ExcelDateTimeFormat {
      *
      * @return timezone for formatting datetime
      */
+    @Deprecated
     String timezone() default "";
 
 }
