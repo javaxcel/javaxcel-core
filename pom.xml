@@ -10,8 +10,8 @@
     <packaging>jar</packaging>
 
     <name>Javaxcel Core</name>
-    <description>Excel utilities with simple usage based annotations.</description>
-    <url>https://github.com/javaxcel/javaxcel-core</url>
+    <description>Interconverter DTO list and excel file with simple usage based annotations.</description>
+    <url>https://github.com/javaxcel/${artifactId}</url>
 
     <licenses>
         <license>
