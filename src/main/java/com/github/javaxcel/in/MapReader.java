@@ -46,7 +46,8 @@ public final class MapReader<W extends Workbook, T extends Map<String, ?>> exten
 
     @Override
     protected List<T> readSheet(Sheet sheet) {
-        final int numOfRows = this.limit < 0 ? ExcelUtils.getNumOfModels(sheet) : this.limit;
+        int numOfRows = ExcelUtils.getNumOfModels(sheet);
+        if (this.limit >= 0) numOfRows = Math.min(this.limit, numOfRows);
 
         Row header = sheet.getRow(0);
         this.numOfColumns = header.getPhysicalNumberOfCells();
