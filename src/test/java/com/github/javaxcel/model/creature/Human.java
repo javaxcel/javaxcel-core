@@ -2,6 +2,8 @@ package com.github.javaxcel.model.creature;
 
 import com.github.javaxcel.annotation.*;
 import com.github.javaxcel.model.Mockables;
+import com.github.javaxcel.style.DefaultBodyStyleConfig;
+import com.github.javaxcel.style.DefaultHeaderStyleConfig;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -18,10 +20,10 @@ import java.util.UUID;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true, exclude = "agesFromTwilightToDeath")
 @NoArgsConstructor
-@ExcelModel(includeSuper = true)
+@ExcelModel(includeSuper = true, headerStyle = DefaultHeaderStyleConfig.class, bodyStyle = DefaultBodyStyleConfig.class)
 public class Human extends Creature implements Mockables<Human> {
 
-    @ExcelColumn(name = "Name")
+    @ExcelColumn(name = "Name", bodyStyle = DefaultHeaderStyleConfig.class)
     private String name;
 
     @ExcelColumn(name = "Birthday")

@@ -13,6 +13,7 @@ import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
 import com.github.javaxcel.style.DefaultBodyStyleConfig;
 import com.github.javaxcel.style.DefaultHeaderStyleConfig;
+import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
@@ -22,7 +23,10 @@ import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -33,7 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class ModelWriterTest {
 
@@ -196,47 +201,12 @@ public class ModelWriterTest {
         stopWatch.stop();
     }
 
-    @Test
-    @DisplayName("Adjust sheet + styling")
-    @SneakyThrows
-    public void writeAndDecorate() {
-        String filename = "people-styled.xlsx";
-
-        // given
-        stopWatch.start(String.format("create '%s' file", filename));
-        File file = new File("/data", filename);
-        @Cleanup FileOutputStream out = new FileOutputStream(file);
-        @Cleanup XSSFWorkbook workbook = new XSSFWorkbook();
-        stopWatch.stop();
-
-        // when
-        int numOfMocks = 1000;
-        stopWatch.start(String.format("create %,d mocks", numOfMocks));
-        List<Human> people = new Human().createRandoms(numOfMocks);
-        stopWatch.stop();
-
-        stopWatch.start(String.format("write and decorate %,d models", numOfMocks));
-        DefaultHeaderStyleConfig h = new DefaultHeaderStyleConfig();
-        DefaultBodyStyleConfig b = new DefaultBodyStyleConfig();
-        ExcelWriterFactory.create(workbook, Human.class)
-                .sheetName("People")
-                .autoResizeCols()
-//                .hideExtraRows()
-                .hideExtraCols()
-                .headerStyles(h, b, h, b, h, b, h, b, h, b, h, b, h, b)
-                .bodyStyles(b)
-                .write(out, people);
-        stopWatch.stop();
-
-        // then
-        assertThat(file)
-                .as("#1 Excel file will be created")
-                .isNotNull()
-                .exists();
-    }
-
     /**
      * @see ExcelModel#includeSuper()
+     * @see ExcelModel#headerStyle()
+     * @see ExcelModel#bodyStyle()
+     * @see ExcelColumn#headerStyle()
+     * @see ExcelColumn#bodyStyle()
      * @see com.github.javaxcel.annotation.ExcelWriterExpression
      */
     @Test
@@ -252,7 +222,7 @@ public class ModelWriterTest {
         @Cleanup Workbook workbook = new HSSFWorkbook();
         stopWatch.stop();
 
-        int numOfMocks = SpreadsheetVersion.EXCEL97.getMaxRows() + 10_000;
+        int numOfMocks = SpreadsheetVersion.EXCEL97.getMaxRows() - 1;
         stopWatch.start(String.format("create %,d mocks", numOfMocks));
         List<Human> people = new Human().createRandoms(numOfMocks);
         stopWatch.stop();
@@ -270,6 +240,47 @@ public class ModelWriterTest {
         assertThat(getNumOfWrittenModels(HSSFWorkbook.class, file))
                 .as("#2 The number of actually written model is %,d", people.size())
                 .isEqualTo(people.size());
+    }
+
+    /**
+     * @see AbstractExcelWriter#autoResizeCols()
+     * @see AbstractExcelWriter#hideExtraRows()
+     * @see AbstractExcelWriter#hideExtraCols()
+     * @see AbstractExcelWriter#headerStyles(ExcelStyleConfig...)
+     * @see AbstractExcelWriter#bodyStyles(ExcelStyleConfig...)
+     */
+    @Test
+    @DisplayName("Adjust sheet + header/body style")
+    @SneakyThrows
+    public void writeAndDecorate() {
+        String filename = "people-styled.xls";
+
+        // given
+        stopWatch.start(String.format("create '%s' file", filename));
+        File file = new File("/data", filename);
+        @Cleanup FileOutputStream out = new FileOutputStream(file);
+        @Cleanup HSSFWorkbook workbook = new HSSFWorkbook();
+        stopWatch.stop();
+
+        // when
+        int numOfMocks = 1000;
+        stopWatch.start(String.format("create %,d mocks", numOfMocks));
+        List<Human> people = new Human().createRandoms(numOfMocks);
+        stopWatch.stop();
+
+        stopWatch.start(String.format("write and decorate %,d models", numOfMocks));
+        ExcelWriterFactory.create(workbook, Human.class).sheetName("People")
+                .autoResizeCols().hideExtraRows().hideExtraCols()
+                .headerStyles(new DefaultHeaderStyleConfig())
+                .bodyStyles(new DefaultBodyStyleConfig())
+                .write(out, people);
+        stopWatch.stop();
+
+        // then
+        assertThat(file)
+                .as("#1 Excel file will be created")
+                .isNotNull()
+                .exists();
     }
 
 }
