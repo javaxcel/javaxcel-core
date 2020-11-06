@@ -20,10 +20,23 @@ public abstract class ExcelReaderFactory {
     private ExcelReaderFactory() {
     }
 
+    /**
+     * Returns instance of {@link MapReader}.
+     *
+     * @param workbook excel workbook
+     * @return {@link MapReader}
+     */
     public static <W extends Workbook, V> MapReader<W, Map<String, V>> create(W workbook) {
         return instantiate(workbook);
     }
 
+    /**
+     * Returns instance of {@link ModelReader}.
+     *
+     * @param workbook excel workbook
+     * @param type     type of model
+     * @return {@link ModelReader}
+     */
     public static <W extends Workbook, T> ModelReader<W, T> create(W workbook, Class<T> type) {
         return instantiate(workbook, type);
     }

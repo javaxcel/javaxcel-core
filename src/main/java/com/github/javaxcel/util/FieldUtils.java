@@ -18,6 +18,9 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
+/**
+ * Utilities for reflection.
+ */
 public final class FieldUtils {
 
     private FieldUtils() {
@@ -174,10 +177,19 @@ public final class FieldUtils {
         return null;
     }
 
+    /**
+     * Returns instance of type.
+     *
+     * <p> this can instantiate the type that has constructor without parameter.
+     *
+     * @param type class
+     * @return instance of type
+     * @throws NoTargetedConstructorException if the type doesn't have default constructor
+     */
     public static <T> T instantiate(Class<T> type) {
-        // Allows only constructor without parameter. TODO: write it in javadoc.
         Constructor<T> constructor;
         try {
+            // Allows only constructor without parameter.
             constructor = type.getDeclaredConstructor();
         } catch (NoSuchMethodException e) {
             throw new NoTargetedConstructorException(e, type);

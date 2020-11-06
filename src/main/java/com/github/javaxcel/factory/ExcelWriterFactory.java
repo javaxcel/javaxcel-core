@@ -20,10 +20,23 @@ public abstract class ExcelWriterFactory {
     private ExcelWriterFactory() {
     }
 
+    /**
+     * Returns instance of {@link MapWriter}.
+     *
+     * @param workbook excel workbook
+     * @return {@link MapWriter}
+     */
     public static <W extends Workbook, V> MapWriter<W, Map<String, V>> create(W workbook) {
         return instantiate(workbook);
     }
 
+    /**
+     * Returns instance of {@link ModelWriter}.
+     *
+     * @param workbook excel workbook
+     * @param type     type of model
+     * @return {@link ModelWriter}
+     */
     public static <W extends Workbook, T> ModelWriter<W, T> create(W workbook, Class<T> type) {
         return instantiate(workbook, type);
     }

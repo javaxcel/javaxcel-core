@@ -3,7 +3,7 @@ package com.github.javaxcel.annotation;
 import java.lang.annotation.*;
 
 /**
- * Expression for converting field value to cell value.
+ * Expression for conversion of field value to cell value.
  *
  * @see io.github.imsejin.expression.spel.standard.SpelExpressionParser
  * @see io.github.imsejin.expression.spel.support.StandardEvaluationContext
@@ -18,6 +18,8 @@ public @interface ExcelWriterExpression {
      * Expression to be written as cell value.
      *
      * @return expression to be parsed
+     * @see com.github.javaxcel.converter.impl.ExpressiveWritingConverter
+     * @see io.github.imsejin.expression.Expression
      */
     String value();
 

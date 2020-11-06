@@ -17,6 +17,15 @@ import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
 
+/**
+ * Utilities for spreadsheet excel with Apache POI.
+ *
+ * @see Workbook
+ * @see Sheet
+ * @see Row
+ * @see Cell
+ * @see CellStyle
+ */
 public final class ExcelUtils {
 
     private ExcelUtils() {
@@ -99,42 +108,90 @@ public final class ExcelUtils {
         return getSheets(workbook).stream().mapToInt(ExcelUtils::getNumOfModels).sum();
     }
 
+    /**
+     * Returns maximum number of rows in a spreadsheet.
+     *
+     * @param workbook excel workbook
+     * @return maximum number of rows in a spreadsheet
+     */
     public static int getMaxRows(Workbook workbook) {
         return isExcel97(workbook)
                 ? SpreadsheetVersion.EXCEL97.getMaxRows()
                 : SpreadsheetVersion.EXCEL2007.getMaxRows();
     }
 
+    /**
+     * Returns maximum number of rows in a spreadsheet.
+     *
+     * @param sheet sheet
+     * @return maximum number of rows in a spreadsheet
+     */
     public static int getMaxRows(Sheet sheet) {
         return isExcel97(sheet)
                 ? SpreadsheetVersion.EXCEL97.getMaxRows()
                 : SpreadsheetVersion.EXCEL2007.getMaxRows();
     }
 
+    /**
+     * Returns maximum number of columns in a spreadsheet.
+     *
+     * @param workbook excel workbook
+     * @return maximum number of columns in a spreadsheet
+     */
     public static int getMaxColumns(Workbook workbook) {
         return isExcel97(workbook)
                 ? SpreadsheetVersion.EXCEL97.getMaxColumns()
                 : SpreadsheetVersion.EXCEL2007.getMaxColumns();
     }
 
+    /**
+     * Returns maximum number of columns in a spreadsheet.
+     *
+     * @param sheet sheet
+     * @return maximum number of columns in a spreadsheet
+     */
     public static int getMaxColumns(Sheet sheet) {
         return isExcel97(sheet)
                 ? SpreadsheetVersion.EXCEL97.getMaxColumns()
                 : SpreadsheetVersion.EXCEL2007.getMaxColumns();
     }
 
+    /**
+     * Checks if spreadsheet's version is 97.
+     *
+     * @param workbook excel workbook
+     * @return whether spreadsheet's version is 97 or not
+     */
     public static boolean isExcel97(Workbook workbook) {
         return workbook instanceof HSSFWorkbook;
     }
 
+    /**
+     * Checks if spreadsheet's version is 97.
+     *
+     * @param sheet excel sheet
+     * @return whether spreadsheet's version is 97 or not
+     */
     public static boolean isExcel97(Sheet sheet) {
         return sheet instanceof HSSFSheet;
     }
 
+    /**
+     * Checks if spreadsheet's version is 97.
+     *
+     * @param row row
+     * @return whether spreadsheet's version is 97 or not
+     */
     public static boolean isExcel97(Row row) {
         return row instanceof HSSFRow;
     }
 
+    /**
+     * Checks if spreadsheet's version is 97.
+     *
+     * @param cell cell
+     * @return whether spreadsheet's version is 97 or not
+     */
     public static boolean isExcel97(Cell cell) {
         return cell instanceof HSSFCell;
     }
@@ -204,6 +261,13 @@ public final class ExcelUtils {
         }
     }
 
+    /**
+     * Converts configuration to cell style.
+     *
+     * @param workbook excel workbook
+     * @param config   configuration of cell style
+     * @return cell style
+     */
     public static CellStyle toCellStyle(Workbook workbook, ExcelStyleConfig config) {
         CellStyle cellStyle = workbook.createCellStyle();
         Configurer configurer = new Configurer(cellStyle, workbook.createFont());
@@ -212,6 +276,13 @@ public final class ExcelUtils {
         return cellStyle;
     }
 
+    /**
+     * Converts configurations to cell styles.
+     *
+     * @param workbook excel workbook
+     * @param configs  configurations of cell style
+     * @return cell styles
+     */
     public static CellStyle[] toCellStyles(Workbook workbook, ExcelStyleConfig... configs) {
         if (configs == null || configs.length == 0) {
             throw new IllegalArgumentException("Configurations for style cannot be null or empty");

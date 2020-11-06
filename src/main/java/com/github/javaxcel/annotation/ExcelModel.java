@@ -37,8 +37,24 @@ public @interface ExcelModel {
      */
     String defaultValue() default "";
 
+    /**
+     * Configuration of common header style.
+     *
+     * <p> this configuration is applied to all header cells.
+     *
+     * @return configuration of common header style
+     * @see ExcelColumn#headerStyle()
+     */
     Class<? extends ExcelStyleConfig> headerStyle() default NoStyleConfig.class;
 
+    /**
+     * Configuration of common body style.
+     *
+     * <p> this configuration is applied to all body cells.
+     *
+     * @return configuration of common body style
+     * @see ExcelColumn#bodyStyle()
+     */
     Class<? extends ExcelStyleConfig> bodyStyle() default NoStyleConfig.class;
 
 }
