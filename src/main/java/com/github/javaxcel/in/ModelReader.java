@@ -3,7 +3,6 @@ package com.github.javaxcel.in;
 import com.github.javaxcel.annotation.ExcelReaderExpression;
 import com.github.javaxcel.converter.impl.ExpressiveReadingConverter;
 import com.github.javaxcel.exception.NoTargetedFieldException;
-import com.github.javaxcel.exception.UnsupportedWorkbookException;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.expression.Expression;
@@ -11,13 +10,11 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -38,25 +35,6 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
 
     private final Map<String, Expression> cache;
 
-    /**
-     * Sheet's indexes that {@link ModelReader} will read.
-     * <br>
-     * Default value is {@code {0}} (it means index of the first sheet).
-     */
-    private int[] sheetIndexes = {0};
-
-    /**
-     * Row's index that {@link ModelReader} will start to read.
-     */
-    private int startRowNum;
-
-    /**
-     * Row's index that {@link ModelReader} will end to read.
-     * <br>
-     * Default value is {@code -1} (it means index of the last row).
-     */
-    private int endRowNum = -1;
-
     private boolean parallel;
 
     private ModelReader(W workbook, Class<T> type) {
@@ -68,36 +46,6 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
         if (this.fields.isEmpty()) throw new NoTargetedFieldException(this.type);
 
         this.cache = ExpressiveReadingConverter.createCache(this.fields);
-    }
-
-    @Deprecated
-    public static <W extends Workbook, E> ModelReader<W, E> init(W workbook, Class<E> type) {
-        if (workbook instanceof SXSSFWorkbook) throw new UnsupportedWorkbookException();
-        return new ModelReader<>(workbook, type);
-    }
-
-    @Deprecated
-    public ModelReader<W, T> sheetIndexes(int... sheetIndexes) {
-        if (sheetIndexes == null || sheetIndexes.length == 0 || IntStream.of(sheetIndexes).anyMatch(i -> i < 0)) {
-            throw new IllegalArgumentException("Sheet indexes cannot be null, empty or less than 0.");
-        }
-
-        this.sheetIndexes = sheetIndexes;
-        return this;
-    }
-
-    public ModelReader<W, T> startRow(int rowNum) {
-        if (rowNum < 0) throw new IllegalArgumentException("Start row number cannot be less than 0.");
-
-        this.startRowNum = rowNum;
-        return this;
-    }
-
-    public ModelReader<W, T> endRow(int rowNum) {
-        if (rowNum < 0) throw new IllegalArgumentException("End row number cannot be less than 0.");
-
-        this.endRowNum = rowNum;
-        return this;
     }
 
     /**
@@ -176,14 +124,11 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
      */
     private List<Map<String, Object>> getSimulatedModels(Sheet sheet) {
         int numOfRows = ExcelUtils.getNumOfModels(sheet);
-        if (this.limit >= 0 && this.limit < numOfRows) numOfRows = this.limit;
-
-        // 인덱스 유효성을 체크한다
-        if (this.endRowNum < 0 || this.endRowNum > numOfRows) this.endRowNum = numOfRows;
+        if (this.limit >= 0) numOfRows = Math.min(this.limit, numOfRows);
 
         // Reads rows.
         List<Map<String, Object>> simulatedModels = new ArrayList<>();
-        for (int i = this.startRowNum; i < this.endRowNum; i++) {
+        for (int i = 0; i < numOfRows; i++) {
             if (this.readRowCount == this.limit) break;
 
             // Skips the first row that is header.

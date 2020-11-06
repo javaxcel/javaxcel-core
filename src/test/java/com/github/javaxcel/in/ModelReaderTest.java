@@ -246,8 +246,8 @@ public class ModelReaderTest {
         @Cleanup Workbook workbook = WorkbookFactory.create(file);
 
         // when
-        List<Product> sheet1 = ExcelReaderFactory.create(workbook, Product.class).sheetIndexes(0).read();
-        List<EducationToy> sheet2 = ExcelReaderFactory.create(workbook, EducationToy.class).sheetIndexes(1).read();
+        List<Product> sheet1 = ExcelReaderFactory.create(workbook, Product.class).read();
+        List<EducationToy> sheet2 = ExcelReaderFactory.create(workbook, EducationToy.class).read();
 
         // then
         assertThat(products.stream()
