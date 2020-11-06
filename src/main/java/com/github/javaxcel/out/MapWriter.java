@@ -12,6 +12,12 @@ import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toList;
 
+/**
+ * Excel writer for {@link Map}.
+ *
+ * @param <W> excel workbook
+ * @param <T> {@link Map}
+ */
 public final class MapWriter<W extends Workbook, T extends Map<String, ?>> extends AbstractExcelWriter<W, T> {
 
     private final List<String> keys = new ArrayList<>();

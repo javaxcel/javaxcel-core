@@ -1,5 +1,7 @@
 package com.github.javaxcel.out;
 
+import com.github.javaxcel.annotation.ExcelColumn;
+import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.exception.WritingExcelException;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
@@ -10,6 +12,7 @@ import org.apache.poi.ss.usermodel.*;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractExcelWriter<W extends Workbook, T> implements ExcelWriter<W, T> {
@@ -25,11 +28,15 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
 
     /**
      * Header's names.
+     *
+     * @see #headerNames(List)
      */
     protected final List<String> headerNames = new ArrayList<>();
 
     /**
      * Prefix of all the sheets' names.
+     *
+     * @see #sheetName(String)
      */
     protected String sheetName;
 
@@ -38,19 +45,40 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      * whether to write excess rows to the next sheet.
      *
      * <p> Default is {@code true}.
+     *
+     * @see #disableRolling()
      */
     protected boolean rolling = true;
 
     //////////////////////////////////////// Style ////////////////////////////////////////
 
+    /**
+     * @see #headerStyles(ExcelStyleConfig...)
+     * @see ExcelColumn#headerStyle()
+     * @see ExcelModel#headerStyle()
+     */
     protected CellStyle[] headerStyles;
 
+    /**
+     * @see #bodyStyles(ExcelStyleConfig...)
+     * @see ExcelColumn#bodyStyle()
+     * @see ExcelModel#bodyStyle()
+     */
     protected CellStyle[] bodyStyles;
 
+    /**
+     * @see #autoResizeCols()
+     */
     protected boolean willAutoResize;
 
+    /**
+     * @see #hideExtraRows()
+     */
     protected boolean willHideRows;
 
+    /**
+     * @see #hideExtraCols()
+     */
     protected boolean willHideCols;
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -109,6 +137,8 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
 
     /**
      * Disables rolling excess rows.
+     *
+     * <p> If this is invoked, excel file has always one sheet.
      *
      * @return {@link AbstractExcelWriter}
      */

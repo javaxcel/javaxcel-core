@@ -20,7 +20,10 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 
 /**
- * Excel reader
+ * Excel reader for model.
+ *
+ * @param <W> excel workbook
+ * @param <T> type of model
  */
 public final class ModelReader<W extends Workbook, T> extends AbstractExcelReader<W, T> {
 

@@ -20,8 +20,8 @@ import java.util.stream.IntStream;
 /**
  * Excel writer
  *
- * @param <W> workbook
- * @param <T> the type of model
+ * @param <W> excel workbook
+ * @param <T> type of model
  */
 public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T> {
 

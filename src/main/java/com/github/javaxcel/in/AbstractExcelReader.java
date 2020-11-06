@@ -17,6 +17,8 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
 
     /**
      * Formatter that stringifies the value in a cell with {@link FormulaEvaluator}.
+     *
+     * @see #readRow(Row)
      */
     protected static final DataFormatter dataFormatter = new DataFormatter();
 
@@ -35,6 +37,7 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
      *
      * @see Workbook#getCreationHelper()
      * @see CreationHelper#createFormulaEvaluator()
+     * @see #readRow(Row)
      */
     protected final FormulaEvaluator formulaEvaluator;
 

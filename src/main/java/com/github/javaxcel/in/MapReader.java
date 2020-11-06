@@ -12,6 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Excel reader for {@link Map}.
+ *
+ * @param <W> excel workbook
+ * @param <T> {@link Map}
+ */
 public final class MapReader<W extends Workbook, T extends Map<String, ?>> extends AbstractExcelReader<W, T> {
 
     private int numOfColumns;
@@ -22,6 +28,11 @@ public final class MapReader<W extends Workbook, T extends Map<String, ?>> exten
         super(workbook);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link MapReader}
+     */
     @Override
     public MapReader<W, T> limit(int limit) {
         super.limit(limit);
