@@ -8,7 +8,6 @@ import com.github.javaxcel.converter.impl.ExpressiveWritingConverter;
 import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.styler.NoStyleConfig;
-import com.github.javaxcel.styler.config.Configurer;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
 import org.apache.poi.ss.usermodel.*;
@@ -98,18 +97,14 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
             // Replaces header style of 'ExcelModel' with header style of 'ExcelColumn'.
             ExcelStyleConfig headerConfig = FieldUtils.instantiate(excelColumn.headerStyle());
             if (!(headerConfig instanceof NoStyleConfig)) {
-                CellStyle headerStyle = this.workbook.createCellStyle();
-                Configurer headerConfigurer = new Configurer(headerStyle, this.workbook.createFont());
-                headerConfig.configure(headerConfigurer);
+                CellStyle headerStyle = ExcelUtils.toCellStyle(this.workbook, headerConfig);
                 this.headerStyles[i] = headerStyle;
             }
 
             // Replaces body style of 'ExcelModel' with body style of 'ExcelColumn'.
             ExcelStyleConfig bodyConfig = FieldUtils.instantiate(excelColumn.bodyStyle());
             if (!(bodyConfig instanceof NoStyleConfig)) {
-                CellStyle bodyStyle = this.workbook.createCellStyle();
-                Configurer bodyConfigurer = new Configurer(bodyStyle, this.workbook.createFont());
-                bodyConfig.configure(bodyConfigurer);
+                CellStyle bodyStyle = ExcelUtils.toCellStyle(this.workbook, bodyConfig);
                 this.bodyStyles[i] = bodyStyle;
             }
         }
