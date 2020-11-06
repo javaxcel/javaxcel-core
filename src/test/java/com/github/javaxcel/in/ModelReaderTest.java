@@ -152,7 +152,7 @@ public class ModelReaderTest {
         stopWatch.stop();
 
         // when
-        stopWatch.start(String.format("read %,d models", numOfMocks));
+        stopWatch.start(String.format("read %,d models", Math.min(limit, numOfMocks)));
         List<Computer> educationToys = ExcelReaderFactory.create(wb, Computer.class)
                 .limit(limit).read();
         stopWatch.stop();

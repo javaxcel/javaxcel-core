@@ -7,19 +7,22 @@ import com.github.javaxcel.model.toy.EducationToy;
 import com.github.javaxcel.out.ExcelWriter;
 import com.github.javaxcel.out.ModelWriter;
 import io.github.imsejin.common.tool.Stopwatch;
+import io.github.imsejin.common.util.StringUtils;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
+import org.apache.poi.hssf.usermodel.HSSFPalette;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.usermodel.HSSFWorkbookFactory;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Color;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -33,7 +36,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ExcelUtilsTest {
 
@@ -75,8 +78,8 @@ public class ExcelUtilsTest {
 
     @ParameterizedTest
     @ValueSource(strings = {
-            "E:\\works\\대한상공회의소 - 유통상품지식뱅크 서비스포털\\2020\\06\\20200618_미기재 설명 등록\\상품분류별 부가속성\\200519_분류별_부가속성예시.xlsx",
-            "E:\\works\\대한상공회의소 - 유통상품지식뱅크 서비스포털\\2020\\06\\20200618_미기재 설명 등록\\상품분류별 부가속성\\[가공] 상품분류별_부가속성_설명.xlsx",
+            "E:/works/대한상공회의소 - 유통상품지식뱅크 서비스포털/2020/06/20200618_미기재 설명 등록/상품분류별 부가속성/200519_분류별_부가속성예시.xlsx",
+            "E:/works/대한상공회의소 - 유통상품지식뱅크 서비스포털/2020/06/20200618_미기재 설명 등록/상품분류별 부가속성/[가공] 상품분류별_부가속성_설명.xlsx",
     })
     @Disabled
     @SneakyThrows
@@ -188,7 +191,6 @@ public class ExcelUtilsTest {
 
         Workbook workbook = new XSSFWorkbook();
         stopwatch.start("instantiate");
-//        ExcelWriter<XSSFWorkbook, Product> instance = ModelWriter.init(new XSSFWorkbook(), Product.class);
         ExcelWriter<Workbook, Product> instance = (ExcelWriter<Workbook, Product>) constructor.newInstance(workbook, Product.class);
         stopwatch.stop();
 
@@ -200,10 +202,54 @@ public class ExcelUtilsTest {
     }
 
     @Test
+    @Disabled
+    @SneakyThrows
     public void test() {
+        // given
+        File file = new File("/data/hssf-rgb.xls");
         HSSFWorkbook workbook = HSSFWorkbookFactory.createWorkbook();
-        CellStyle style = workbook.createCellStyle();
-        Color color = style.getFillForegroundColorColor();
+        Sheet sheet = workbook.createSheet();
+        Row row = sheet.createRow(0);
+        Cell cell = row.createCell(0);
+
+        // when
+        HSSFPalette palette = workbook.getCustomPalette();
+        // `HSSFColorPredefined.WHITE`의 RGB를 사용자지정 RGB로 대체한다.
+        palette.setColorAtIndex(HSSFColor.HSSFColorPredefined.WHITE.getIndex(),
+                (byte) 192, (byte) 168, (byte) 7);
+//        palette.addColor((byte) 192, (byte) 168, (byte) 7); // RuntimeException: Could not find free color index
+
+        // 해당 RGB를 갖는 `HSSFColorPredefined`를 찾는다.
+        HSSFColor hssfColor = palette.findColor((byte) 192, (byte) 168, (byte) 7);
+
+        CellStyle cellStyle = workbook.createCellStyle();
+        cellStyle.setFillForegroundColor(hssfColor.getIndex()); // Hexadecimal
+        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        cell.setCellStyle(cellStyle);
+
+        cell.setCellValue("RGB");
+
+        workbook.write(file);
+
+        // then
+        assertThat(file).exists();
+    }
+
+    @Test
+    @Disabled
+    @SneakyThrows
+    public void func() {
+        // given
+        File file = new File("/data/hssf-rgb.xls");
+        @Cleanup Workbook workbook = new HSSFWorkbook(new FileInputStream(file));
+        Sheet sheet = workbook.getSheetAt(0);
+        Row row = sheet.getRow(0);
+        Cell cell = row.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+
+        // when
+        CellStyle cellStyle = cell.getCellStyle();
+        System.out.println(cellStyle.getFillForegroundColor()); // decimal
+        System.out.println(cellStyle.getFillForegroundColorColor());
     }
 
 }
