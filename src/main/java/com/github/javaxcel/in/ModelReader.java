@@ -163,7 +163,7 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
                 fieldValue = basicConverter.convert(cellValue, field);
             } else {
                 // When the field is annotated with @ExcelReaderExpression.
-                ExpressiveReadingConverter<T> expConverter = new ExpressiveReadingConverter<>(this.type);
+                ExpressiveReadingConverter expConverter = new ExpressiveReadingConverter();
                 expConverter.setVariables(sModel);
                 Expression expression = this.cache.get(field.getName());
                 fieldValue = expConverter.convert(cellValue, field, expression);
