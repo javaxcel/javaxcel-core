@@ -14,7 +14,6 @@ import org.apache.poi.ss.usermodel.*;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.IntStream;
 
 /**
@@ -264,17 +263,10 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
                 Cell cell = row.createCell(j);
 
                 // Converts field value to the string.
-                String value;
                 ExcelWriterExpression annotation = field.getAnnotation(ExcelWriterExpression.class);
-                if (annotation == null) {
-                    // When the field is not annotated with @ExcelWriterExpression.
-                    value = this.basicConverter.convert(model, field);
-                } else {
-                    // When the field is annotated with @ExcelWriterExpression.
-                    Map<String, Object> simulatedModel = FieldUtils.toMap(model, this.fields);
-                    this.expConverter.setVariables(simulatedModel);
-                    value = this.expConverter.convert(model, field);
-                }
+                String value = annotation == null
+                        ? this.basicConverter.convert(model, field)
+                        : this.expConverter.convert(model, field);
 
                 if (value != null) cell.setCellValue(value);
 

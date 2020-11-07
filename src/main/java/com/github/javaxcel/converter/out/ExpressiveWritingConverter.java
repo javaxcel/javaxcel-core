@@ -12,20 +12,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ExpressiveWritingConverter<T> implements WritingConverter<T> {
+public class ExpressiveWritingConverter<T> extends DefaultValueStore implements WritingConverter<T> {
 
     private static final ExpressionParser parser = new SpelExpressionParser();
 
     private final StandardEvaluationContext context = new StandardEvaluationContext();
 
-    private final Map<String, Expression> caches;
+    private final List<Field> fields;
 
-    /**
-     * Replacement for field value when it is null or empty.
-     */
-    private String defaultValue;
-
-    private Map<String, Object> variables;
+    private final Map<String, Expression> cache;
 
     /**
      * Brings default values for each field and caches them and
@@ -54,42 +49,18 @@ public class ExpressiveWritingConverter<T> implements WritingConverter<T> {
      * @param fields fields of model
      */
     public ExpressiveWritingConverter(List<Field> fields) {
-        Map<String, Expression> caches = new HashMap<>();
+        Map<String, Expression> cache = new HashMap<>();
 
         for (Field field : fields) {
-            ExcelWriterExpression writerExpression = field.getAnnotation(ExcelWriterExpression.class);
-            if (writerExpression == null) continue;
+            ExcelWriterExpression annotation = field.getAnnotation(ExcelWriterExpression.class);
+            if (annotation == null) continue;
 
-            Expression expression = parser.parseExpression(writerExpression.value());
-            caches.put(field.getName(), expression);
+            Expression expression = parser.parseExpression(annotation.value());
+            cache.put(field.getName(), expression);
         }
 
-        this.caches = caches;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getDefaultValue() {
-        return this.defaultValue;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setDefaultValue(String defaultValue) {
-        this.defaultValue = defaultValue;
-    }
-
-    /**
-     * Sets up the variables.
-     *
-     * @param variables {@link Map} in which key is the model's field name and value is the model's field value
-     */
-    public void setVariables(Map<String, Object> variables) {
-        this.variables = variables;
+        this.fields = fields;
+        this.cache = cache;
     }
 
     /**
@@ -104,10 +75,13 @@ public class ExpressiveWritingConverter<T> implements WritingConverter<T> {
      */
     @Override
     public String convert(T model, Field field) {
-        context.setRootObject(model);
-        context.setVariables(this.variables);
+        Map<String, Object> variables = FieldUtils.toMap(model, this.fields);
 
-        String result = this.caches.get(field.getName()).getValue(context, String.class);
+        this.context.setRootObject(model);
+        this.context.setVariables(variables);
+
+        Expression expression = this.cache.get(field.getName());
+        String result = expression.getValue(this.context, String.class);
 
         return FieldUtils.convertIfFaulty(result, this.defaultValue, field);
     }

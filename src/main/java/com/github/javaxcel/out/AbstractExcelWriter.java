@@ -147,6 +147,8 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
         return this;
     }
 
+    //////////////////////////////////////// Style ////////////////////////////////////////
+
     public AbstractExcelWriter<W, T> headerStyles(ExcelStyleConfig... configs) {
         this.headerStyles = ExcelUtils.toCellStyles(this.workbook, configs);
         return this;
@@ -171,6 +173,8 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
         this.willHideCols = true;
         return this;
     }
+
+    ///////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * {@inheritDoc}
