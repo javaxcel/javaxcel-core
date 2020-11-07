@@ -9,11 +9,8 @@ import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.io.*;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -28,11 +25,15 @@ import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 public class MapReaderTest {
 
     private Stopwatch stopWatch;
+
+    private static Map<String, Object> getRandomMap(@Nonnull List<String> keys) {
+        return keys.stream().collect(toMap(it -> it, it -> Mockables.generateRandomText(it.length())));
+    }
 
     @BeforeEach
     public void beforeEach() {
@@ -42,10 +43,6 @@ public class MapReaderTest {
     @AfterEach
     public void afterEach() {
         System.out.println(this.stopWatch.getStatistics());
-    }
-
-    private static Map<String, Object> getRandomMap(@Nonnull List<String> keys) {
-        return keys.stream().collect(toMap(it -> it, it -> Mockables.generateRandomText(it.length())));
     }
 
     @Test
