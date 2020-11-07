@@ -49,11 +49,11 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
     protected int limit = -1;
 
     /**
-     * Total number of rows that are read by {@link AbstractExcelReader}.
+     * Total number of rows read by {@link AbstractExcelReader}.
      *
      * @see #limit(int)
      */
-    protected int readRowCount;
+    protected int numOfRowsRead;
 
     protected AbstractExcelReader(W workbook) {
         this.workbook = workbook;
@@ -84,7 +84,7 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
 
         List<Sheet> sheets = ExcelUtils.getSheets(this.workbook);
         for (Sheet sheet : sheets) {
-            if (this.readRowCount == this.limit) break;
+            if (this.numOfRowsRead == this.limit) break;
             list.addAll(readSheet(sheet));
         }
 
@@ -132,7 +132,7 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
         }
 
         // Increase count of reading row.
-        readRowCount++;
+        numOfRowsRead++;
 
         return map;
     }
