@@ -2,7 +2,7 @@ package com.github.javaxcel.converter.in;
 
 import java.lang.reflect.Field;
 
-public abstract class AbstractReadingConverter<T> {
+public abstract class AbstractReadingConverter {
 
     /**
      * Converts a string in cell to the type of field.

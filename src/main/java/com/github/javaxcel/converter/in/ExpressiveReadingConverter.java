@@ -11,19 +11,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ExpressiveReadingConverter<T> extends AbstractReadingConverter<T> {
+public class ExpressiveReadingConverter extends AbstractReadingConverter {
 
     private static final ExpressionParser parser = new SpelExpressionParser();
 
     private final StandardEvaluationContext context = new StandardEvaluationContext();
 
-    private final Class<T> type;
-
     private Map<String, Object> variables;
-
-    public ExpressiveReadingConverter(Class<T> type) {
-        this.type = type;
-    }
 
     /**
      * Creates cache of expression.
