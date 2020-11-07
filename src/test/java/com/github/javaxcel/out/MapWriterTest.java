@@ -126,7 +126,7 @@ public class MapWriterTest {
         ExcelWriterFactory.create(workbook)
                 .sheetName("Maps")
                 .headerNames(keys.stream().map(String::toUpperCase).collect(toList()))
-                .autoResizeCols().hideExtraRows().hideExtraCols()
+                .autoResizeCols().hideExtraCols()
                 .headerStyles(getRainbowHeader())
                 .bodyStyles(new DefaultBodyStyleConfig())
                 .write(out, maps);
