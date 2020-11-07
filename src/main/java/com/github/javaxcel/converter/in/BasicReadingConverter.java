@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-public class BasicReadingConverter extends AbstractReadingConverter {
+public class BasicReadingConverter implements ReadingConverter {
 
     /**
      * Gets initial value of the type.

@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ExpressiveWritingConverter<T> extends AbstractWritingConverter<T> {
+public class ExpressiveWritingConverter<T> implements WritingConverter<T> {
 
     private static final ExpressionParser parser = new SpelExpressionParser();
 
