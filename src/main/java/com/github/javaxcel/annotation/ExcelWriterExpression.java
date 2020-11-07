@@ -1,5 +1,7 @@
 package com.github.javaxcel.annotation;
 
+import com.github.javaxcel.converter.out.ExpressiveWritingConverter;
+
 import java.lang.annotation.*;
 
 /**
@@ -18,7 +20,7 @@ public @interface ExcelWriterExpression {
      * Expression to be written as cell value.
      *
      * @return expression to be parsed
-     * @see com.github.javaxcel.converter.impl.ExpressiveWritingConverter
+     * @see ExpressiveWritingConverter
      * @see io.github.imsejin.expression.Expression
      */
     String value();
