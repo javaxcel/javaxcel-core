@@ -5,6 +5,7 @@ import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.util.TypeClassifier;
 import io.github.imsejin.common.util.StringUtils;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 public class BasicReadingConverter implements ReadingConverter {
 
@@ -22,6 +24,7 @@ public class BasicReadingConverter implements ReadingConverter {
      * @return initial value of the type
      * @see TypeClassifier#isPrimitiveAndNumeric(Class)
      */
+    @Nullable
     private static Object initialValueOf(Class<?> type) {
         // Value of primitive type cannot be null.
         if (TypeClassifier.isPrimitiveAndNumeric(type)) return 0;
@@ -32,6 +35,7 @@ public class BasicReadingConverter implements ReadingConverter {
         return null;
     }
 
+    @Nullable
     private static Object parse(String value, Field field) {
         Class<?> type = field.getType();
 
@@ -72,7 +76,10 @@ public class BasicReadingConverter implements ReadingConverter {
      * {@inheritDoc}
      */
     @Override
-    public Object convert(String value, Field field) {
+    @Nullable
+    public Object convert(Map<String, Object> variables, Field field) {
+        String value = (String) variables.get(field.getName());
+
         ExcelColumn excelColumn = field.getAnnotation(ExcelColumn.class);
         Class<?> type = field.getType();
 

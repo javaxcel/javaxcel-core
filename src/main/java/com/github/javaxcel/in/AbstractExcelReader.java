@@ -22,8 +22,6 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
      */
     protected static final DataFormatter dataFormatter = new DataFormatter();
 
-    protected final BasicReadingConverter basicConverter = new BasicReadingConverter();
-
     /**
      * Apache POI workbook.
      *

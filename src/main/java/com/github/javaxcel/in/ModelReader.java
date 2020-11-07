@@ -1,6 +1,7 @@
 package com.github.javaxcel.in;
 
 import com.github.javaxcel.annotation.ExcelReaderExpression;
+import com.github.javaxcel.converter.in.BasicReadingConverter;
 import com.github.javaxcel.converter.in.ExpressiveReadingConverter;
 import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.util.ExcelUtils;
@@ -26,6 +27,10 @@ import static java.util.stream.Collectors.toList;
  * @param <T> type of model
  */
 public final class ModelReader<W extends Workbook, T> extends AbstractExcelReader<W, T> {
+
+    private final BasicReadingConverter basicConverter = new BasicReadingConverter();
+
+    private final ExpressiveReadingConverter expConverter = new ExpressiveReadingConverter();
 
     private final Class<T> type;
 
@@ -154,19 +159,16 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
         T model = FieldUtils.instantiate(this.type);
 
         for (Field field : this.fields) {
-            String cellValue = (String) sModel.get(field.getName());
-
             ExcelReaderExpression annotation = field.getAnnotation(ExcelReaderExpression.class);
             Object fieldValue;
+
             if (annotation == null) {
                 // When the field is not annotated with @ExcelReaderExpression.
-                fieldValue = basicConverter.convert(cellValue, field);
+                fieldValue = this.basicConverter.convert(sModel, field);
             } else {
                 // When the field is annotated with @ExcelReaderExpression.
-                ExpressiveReadingConverter expConverter = new ExpressiveReadingConverter();
-                expConverter.setVariables(sModel);
                 Expression expression = this.cache.get(field.getName());
-                fieldValue = expConverter.convert(cellValue, field, expression);
+                fieldValue = this.expConverter.convert(sModel, field, expression);
             }
 
             FieldUtils.setFieldValue(model, field, fieldValue);

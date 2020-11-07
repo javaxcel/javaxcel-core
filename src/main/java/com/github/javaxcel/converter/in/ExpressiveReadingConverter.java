@@ -15,10 +15,6 @@ public class ExpressiveReadingConverter implements ReadingConverter {
 
     private static final ExpressionParser parser = new SpelExpressionParser();
 
-    private final StandardEvaluationContext context = new StandardEvaluationContext();
-
-    private Map<String, Object> variables;
-
     /**
      * Creates cache of expression.
      *
@@ -41,37 +37,32 @@ public class ExpressiveReadingConverter implements ReadingConverter {
     }
 
     /**
-     * Sets up the variables.
-     *
-     * @param variables {@link Map} in which key is the model's field name and value is the model's field value
-     */
-    public void setVariables(Map<String, Object> variables) {
-        this.variables = variables;
-    }
-
-    /**
      * {@inheritDoc}
      *
      * <p> Parses a expression to be assigned as field value.
      */
     @Override
-    public Object convert(String value, Field field) {
+    public Object convert(Map<String, Object> variables, Field field) {
         ExcelReaderExpression annotation = field.getAnnotation(ExcelReaderExpression.class);
-        context.setVariables(this.variables);
+        Expression expression = parser.parseExpression(annotation.value());
 
-        return parser.parseExpression(annotation.value()).getValue(context, field.getType());
+        StandardEvaluationContext context = new StandardEvaluationContext();
+        context.setVariables(variables);
+
+        return expression.getValue(context, field.getType());
     }
 
     /**
      * Converts cached expression into field value.
      *
-     * @param value      string that is cell value
+     * @param variables  {@link Map} in which key is the model's field name and value is the model's field value
      * @param field      targeted field of model
      * @param expression expression
      * @return value converted to the type of field
      */
-    public Object convert(String value, Field field, Expression expression) {
-        context.setVariables(this.variables);
+    public Object convert(Map<String, Object> variables, Field field, Expression expression) {
+        StandardEvaluationContext context = new StandardEvaluationContext();
+        context.setVariables(variables);
 
         return expression.getValue(context, field.getType());
     }
