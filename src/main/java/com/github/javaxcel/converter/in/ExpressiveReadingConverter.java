@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ExpressiveReadingConverter<T> implements ReadingConverter<T> {
+public class ExpressiveReadingConverter<T> extends AbstractReadingConverter<T> {
 
     private static final ExpressionParser parser = new SpelExpressionParser();
 

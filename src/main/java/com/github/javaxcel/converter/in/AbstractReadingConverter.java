@@ -2,7 +2,7 @@ package com.github.javaxcel.converter.in;
 
 import java.lang.reflect.Field;
 
-public interface ReadingConverter<T> {
+public abstract class AbstractReadingConverter<T> {
 
     /**
      * Converts a string in cell to the type of field.
@@ -11,6 +11,6 @@ public interface ReadingConverter<T> {
      * @param field targeted field of model
      * @return value converted to the type of field
      */
-    Object convert(String value, Field field);
+    abstract Object convert(String value, Field field);
 
 }

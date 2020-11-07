@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-public class BasicWritingConverter<T> implements WritingConverter<T> {
+public class BasicWritingConverter<T> extends AbstractWritingConverter<T> {
 
     /**
      * Replacement for field value when it is null or empty.

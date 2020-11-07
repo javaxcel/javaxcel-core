@@ -2,21 +2,21 @@ package com.github.javaxcel.converter.out;
 
 import java.lang.reflect.Field;
 
-public interface WritingConverter<T> {
+public abstract class AbstractWritingConverter<T> {
 
     /**
      * Returns the default value.
      *
      * @return default value
      */
-    String getDefaultValue();
+    abstract String getDefaultValue();
 
     /**
      * Sets up the default value.
      *
      * @param defaultValue default value
      */
-    void setDefaultValue(String defaultValue);
+    abstract void setDefaultValue(String defaultValue);
 
     /**
      * Converts a field's value to the string.
@@ -28,6 +28,6 @@ public interface WritingConverter<T> {
      * @param field field of model
      * @return stringified field's value
      */
-    String convert(T model, Field field);
+    abstract String convert(T model, Field field);
 
 }
