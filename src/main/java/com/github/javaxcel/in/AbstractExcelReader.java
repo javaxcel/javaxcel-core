@@ -84,6 +84,7 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
 
         List<Sheet> sheets = ExcelUtils.getSheets(this.workbook);
         for (Sheet sheet : sheets) {
+            if (this.readRowCount == this.limit) break;
             list.addAll(readSheet(sheet));
         }
 
