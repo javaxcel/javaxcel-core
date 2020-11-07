@@ -1,6 +1,6 @@
 package com.github.javaxcel.in;
 
-import com.github.javaxcel.converter.impl.BasicReadingConverter;
+import com.github.javaxcel.converter.in.BasicReadingConverter;
 import com.github.javaxcel.util.ExcelUtils;
 import org.apache.poi.ss.usermodel.*;
 

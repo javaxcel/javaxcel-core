@@ -1,5 +1,7 @@
 package com.github.javaxcel.annotation;
 
+import com.github.javaxcel.converter.in.ExpressiveReadingConverter;
+
 import java.lang.annotation.*;
 
 /**
@@ -18,7 +20,7 @@ public @interface ExcelReaderExpression {
      * Expression to be assigned as field value.
      *
      * @return expression to be parsed
-     * @see com.github.javaxcel.converter.impl.ExpressiveReadingConverter
+     * @see ExpressiveReadingConverter
      * @see io.github.imsejin.expression.Expression
      */
     String value();

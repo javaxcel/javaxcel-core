@@ -1,7 +1,7 @@
 package com.github.javaxcel.in;
 
 import com.github.javaxcel.annotation.ExcelReaderExpression;
-import com.github.javaxcel.converter.impl.ExpressiveReadingConverter;
+import com.github.javaxcel.converter.in.ExpressiveReadingConverter;
 import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;

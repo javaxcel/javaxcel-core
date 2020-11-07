@@ -1,4 +1,4 @@
-package com.github.javaxcel.converter;
+package com.github.javaxcel.converter.in;
 
 import java.lang.reflect.Field;
 
