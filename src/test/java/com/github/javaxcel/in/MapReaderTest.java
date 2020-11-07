@@ -76,7 +76,7 @@ public class MapReaderTest {
 
         // then
         assertThat(actual.size())
-                .as("#1 The number of loaded maps is %,s", maps.size())
+                .as("#1 The number of loaded maps is %,d", maps.size())
                 .isEqualTo(maps.size());
         assertThat(actual)
                 .as("#2 Each loaded map is equal to each mock")
