@@ -3,15 +3,22 @@ package com.github.javaxcel.util;
 import com.github.javaxcel.exception.UnsupportedWorkbookException;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.styler.config.Configurer;
+import io.github.imsejin.common.util.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -29,6 +36,29 @@ import static java.util.stream.Collectors.toList;
 public final class ExcelUtils {
 
     private ExcelUtils() {
+    }
+
+    /**
+     * Returns the instance of {@link Workbook} by reading file.
+     *
+     * @param file excel file
+     * @return excel workbook instance
+     * @throws IllegalArgumentException unless file extension is equal to 'xls' or 'xlsx'
+     */
+    public static Workbook getWorkbook(File file) {
+        final String extension = FilenameUtils.extension(file);
+        if (!extension.equals("xls") && !extension.equals("xlsx")) {
+            throw new IllegalArgumentException("Extension of excel file must be 'xls' or 'xlsx'");
+        }
+
+        Workbook workbook;
+        try (InputStream in = new FileInputStream(file)) {
+            workbook = extension.equals("xls") ? new HSSFWorkbook(in) : new XSSFWorkbook(file);
+        } catch (IOException | InvalidFormatException e) {
+            throw new RuntimeException(e);
+        }
+
+        return workbook;
     }
 
     /**
@@ -79,6 +109,17 @@ public final class ExcelUtils {
     }
 
     /**
+     * Returns the number of rows in all sheets.
+     *
+     * @param file excel file
+     * @return the number of rows
+     */
+    public static long getNumOfRows(File file) {
+        Workbook workbook = getWorkbook(file);
+        return ExcelUtils.getNumOfRows(workbook);
+    }
+
+    /**
      * Returns the number of models in a sheet.
      *
      * <p> This excludes header row. In other words,
@@ -106,6 +147,20 @@ public final class ExcelUtils {
     public static long getNumOfModels(Workbook workbook) {
         if (workbook instanceof SXSSFWorkbook) throw new UnsupportedWorkbookException();
         return getSheets(workbook).stream().mapToInt(ExcelUtils::getNumOfModels).sum();
+    }
+
+    /**
+     * Returns the number of models in all sheets.
+     *
+     * <p> This excludes header row. In other words,
+     * this returns the total number of rows minus number of all headers.
+     *
+     * @param file excel file
+     * @return the number of models
+     */
+    public static long getNumOfModels(File file) {
+        Workbook workbook = getWorkbook(file);
+        return ExcelUtils.getNumOfModels(workbook);
     }
 
     /**
