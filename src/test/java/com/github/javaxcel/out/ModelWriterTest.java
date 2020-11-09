@@ -16,7 +16,6 @@ import com.github.javaxcel.style.DefaultHeaderStyleConfig;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
-import io.github.imsejin.common.util.FilenameUtils;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -33,7 +32,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -46,15 +44,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class ModelWriterTest {
 
     private Stopwatch stopWatch;
-
-    @SneakyThrows
-    private static long getNumOfWrittenModels(File file) {
-        @Cleanup
-        Workbook workbook = FilenameUtils.extension(file).equals("xls")
-                ? new HSSFWorkbook(new FileInputStream(file))
-                : new XSSFWorkbook(file);
-        return ExcelUtils.getNumOfModels(workbook);
-    }
 
     @BeforeEach
     public void beforeEach() {
@@ -104,7 +93,7 @@ public class ModelWriterTest {
                 .as("#1 Excel file will be created")
                 .isNotNull()
                 .exists();
-        assertThat(getNumOfWrittenModels(file))
+        assertThat(ExcelUtils.getNumOfModels(file))
                 .as("#2 The number of actually written model is %,d", products.size())
                 .isEqualTo(products.size());
     }
@@ -142,7 +131,7 @@ public class ModelWriterTest {
                 .as("#1 Excel file will be created")
                 .isNotNull()
                 .exists();
-        assertThat(getNumOfWrittenModels(file))
+        assertThat(ExcelUtils.getNumOfModels(file))
                 .as("#2 The number of actually written model is %,d", computers.size())
                 .isEqualTo(computers.size());
     }
@@ -179,7 +168,7 @@ public class ModelWriterTest {
                 .as("#1 Excel file will be created")
                 .isNotNull()
                 .exists();
-        assertThat(getNumOfWrittenModels(file))
+        assertThat(ExcelUtils.getNumOfModels(file))
                 .as("#2 The number of actually written model is %,d", toys.size())
                 .isEqualTo(toys.size());
     }
@@ -242,7 +231,7 @@ public class ModelWriterTest {
                 .as("#1 Excel file will be created")
                 .isNotNull()
                 .exists();
-        assertThat(getNumOfWrittenModels(file))
+        assertThat(ExcelUtils.getNumOfModels(file))
                 .as("#2 The number of actually written model is %,d", people.size())
                 .isEqualTo(people.size());
     }
