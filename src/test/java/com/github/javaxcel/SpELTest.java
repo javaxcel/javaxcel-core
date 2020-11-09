@@ -1,4 +1,4 @@
-package com.github.javaxcel.out;
+package com.github.javaxcel;
 
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
