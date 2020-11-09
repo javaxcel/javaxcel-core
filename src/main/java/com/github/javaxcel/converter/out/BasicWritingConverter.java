@@ -1,39 +1,18 @@
-package com.github.javaxcel.converter.impl;
+package com.github.javaxcel.converter.out;
 
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
-import com.github.javaxcel.converter.WritingConverter;
 import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.util.StringUtils;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-public class BasicWritingConverter<T> implements WritingConverter<T> {
-
-    /**
-     * Replacement for field value when it is null or empty.
-     */
-    private String defaultValue;
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getDefaultValue() {
-        return this.defaultValue;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setDefaultValue(String defaultValue) {
-        this.defaultValue = defaultValue;
-    }
+public class BasicWritingConverter<T> extends DefaultValueStore implements WritingConverter<T> {
 
     /**
      * {@inheritDoc}
@@ -55,6 +34,7 @@ public class BasicWritingConverter<T> implements WritingConverter<T> {
      * @return value of the field in value object
      * @see ExcelDateTimeFormat#pattern()
      */
+    @Nullable
     private String stringify(T model, Field field) {
         Object value = FieldUtils.getFieldValue(model, field);
 

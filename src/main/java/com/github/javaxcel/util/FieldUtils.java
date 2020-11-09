@@ -120,6 +120,7 @@ public final class FieldUtils {
      * @param <T>   type of the object
      * @return field value
      */
+    @Nullable
     public static <T> Object getFieldValue(T model, Field field) {
         // Enables to have access to the field even private field.
         field.setAccessible(true);

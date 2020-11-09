@@ -105,7 +105,14 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     /**
      * {@inheritDoc}
      *
+     * <p> Prefix for each sheet name. For example, if you set 'SHEET' to this,
+     * the names you can see are <span>SHEET0, SHEET1, SHEET2, ...</span>
+     *
+     * <p> If you invoke {@link #disableRolling()}, the sheet name has no suffix.
+     * You can see the sheet name like this <span>SHEET</span>
+     *
      * @return {@link AbstractExcelWriter}
+     * @see #disableRolling()
      */
     @Override
     public AbstractExcelWriter<W, T> sheetName(String sheetName) {
@@ -138,7 +145,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     /**
      * Disables rolling excess rows.
      *
-     * <p> If this is invoked, excel file has always one sheet.
+     * <p> If this is invoked, excel file has only one sheet.
      *
      * @return {@link AbstractExcelWriter}
      */
@@ -146,6 +153,8 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
         this.rolling = false;
         return this;
     }
+
+    //////////////////////////////////////// Style ////////////////////////////////////////
 
     public AbstractExcelWriter<W, T> headerStyles(ExcelStyleConfig... configs) {
         this.headerStyles = ExcelUtils.toCellStyles(this.workbook, configs);
@@ -172,6 +181,8 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
         return this;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * {@inheritDoc}
      */
@@ -184,15 +195,17 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
         final int maxModels = ExcelUtils.getMaxRows(this.workbook) - 1;
         List<List<T>> lists = this.rolling
                 ? CollectionUtils.partitionBySize(list, maxModels)
-                : Collections.singletonList(list.subList(0, maxModels));
+                : Collections.singletonList(list.subList(0, Math.min(list.size(), maxModels)));
 
         // Writes each sheet.
         final int numOfSheets = lists.size();
         for (int i = 0; i < numOfSheets; i++) {
-            // Writes header.
+            // Names a sheet.
             Sheet sheet = this.sheetName == null
                     ? this.workbook.createSheet()
-                    : this.workbook.createSheet(this.sheetName + i);
+                    : this.workbook.createSheet(this.rolling ? this.sheetName + i : this.sheetName);
+
+            // Writes header.
             createHeader(sheet);
 
             List<T> those = lists.get(i);

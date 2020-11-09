@@ -1,7 +1,7 @@
 package com.github.javaxcel.util;
 
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
-import com.github.javaxcel.converter.impl.BasicWritingConverter;
+import com.github.javaxcel.converter.out.BasicWritingConverter;
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
 import com.github.javaxcel.out.ExcelWriter;

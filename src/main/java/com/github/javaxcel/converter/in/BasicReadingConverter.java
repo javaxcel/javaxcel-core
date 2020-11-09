@@ -1,11 +1,11 @@
-package com.github.javaxcel.converter.impl;
+package com.github.javaxcel.converter.in;
 
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
-import com.github.javaxcel.converter.ReadingConverter;
 import com.github.javaxcel.util.TypeClassifier;
 import io.github.imsejin.common.util.StringUtils;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -13,8 +13,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
-public class BasicReadingConverter<T> implements ReadingConverter<T> {
+public class BasicReadingConverter implements ReadingConverter {
 
     /**
      * Gets initial value of the type.
@@ -23,6 +24,7 @@ public class BasicReadingConverter<T> implements ReadingConverter<T> {
      * @return initial value of the type
      * @see TypeClassifier#isPrimitiveAndNumeric(Class)
      */
+    @Nullable
     private static Object initialValueOf(Class<?> type) {
         // Value of primitive type cannot be null.
         if (TypeClassifier.isPrimitiveAndNumeric(type)) return 0;
@@ -33,6 +35,7 @@ public class BasicReadingConverter<T> implements ReadingConverter<T> {
         return null;
     }
 
+    @Nullable
     private static Object parse(String value, Field field) {
         Class<?> type = field.getType();
 
@@ -73,7 +76,10 @@ public class BasicReadingConverter<T> implements ReadingConverter<T> {
      * {@inheritDoc}
      */
     @Override
-    public Object convert(String value, Field field) {
+    @Nullable
+    public Object convert(Map<String, Object> variables, Field field) {
+        String value = (String) variables.get(field.getName());
+
         ExcelColumn excelColumn = field.getAnnotation(ExcelColumn.class);
         Class<?> type = field.getType();
 

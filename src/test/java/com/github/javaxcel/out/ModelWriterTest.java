@@ -108,9 +108,10 @@ public class ModelWriterTest {
 
     /**
      * @see ExcelModel#explicit()
+     * @see AbstractExcelWriter#disableRolling()
      */
     @Test
-    @DisplayName("@ExcelModel(explicit = true)")
+    @DisplayName("@ExcelModel(explicit = true) + disableRolling()")
     @SneakyThrows
     public void writeWithComputers() {
         String filename = "computers.xlsx";
@@ -129,7 +130,8 @@ public class ModelWriterTest {
 
         // when
         stopWatch.start(String.format("write %,d models", numOfMocks));
-        ExcelWriterFactory.create(workbook, Computer.class).write(out, computers);
+        ExcelWriterFactory.create(workbook, Computer.class)
+                .disableRolling().write(out, computers);
         stopWatch.stop();
 
         // then

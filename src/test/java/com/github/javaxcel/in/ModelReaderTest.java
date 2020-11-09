@@ -20,7 +20,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.io.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,7 +34,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 public class ModelReaderTest {
 
@@ -114,7 +114,7 @@ public class ModelReaderTest {
 
         // then
         assertThat(products.size())
-                .as("#1 The number of loaded models is %,s", mocks.size())
+                .as("#1 The number of loaded models is %,d", mocks.size())
                 .isEqualTo(mocks.size());
         assertThat(products)
                 .as("#2 Each loaded model is equal to each mock")
@@ -153,15 +153,15 @@ public class ModelReaderTest {
 
         // when
         stopWatch.start(String.format("read %,d models", Math.min(limit, numOfMocks)));
-        List<Computer> educationToys = ExcelReaderFactory.create(wb, Computer.class)
+        List<Computer> computers = ExcelReaderFactory.create(wb, Computer.class)
                 .limit(limit).read();
         stopWatch.stop();
 
         // then
-        assertThat(educationToys.size())
-                .as("#1 The number of loaded models is %,s", mocks.size())
-                .isEqualTo(Math.min(limit, educationToys.size()));
-        assertThat(educationToys)
+        assertThat(computers.size())
+                .as("#1 The number of loaded models is %,d", mocks.size())
+                .isEqualTo(Math.min(limit, computers.size()));
+        assertThat(computers)
                 .as("#2 Each loaded model is equal to each mock")
                 .containsExactly(mocks.stream().limit(limit).toArray(Computer[]::new));
     }
@@ -203,7 +203,7 @@ public class ModelReaderTest {
 
         // then
         assertThat(educationToys.size())
-                .as("#1 The number of loaded models is %,s", mocks.size())
+                .as("#1 The number of loaded models is %,d", mocks.size())
                 .isEqualTo(mocks.size());
         assertThat(educationToys)
                 .as("#2 Each loaded model is equal to each mock")
@@ -297,7 +297,7 @@ public class ModelReaderTest {
 
         // then
         assertThat(people.size())
-                .as("#1 The number of loaded models is %,s", mocks.size())
+                .as("#1 The number of loaded models is %,d", mocks.size())
                 .isEqualTo(mocks.size());
         assertThat(people)
                 .as("#2 Each loaded model is equal to each mock")

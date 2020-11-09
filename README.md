@@ -17,7 +17,7 @@
 
 
 
-Javaxcel core is interconverter DTO list and excel file with simple usage based annotations.
+Javaxcel core is interconverter for DTO list and excel file with simple usage based annotations.
 
 <br><br>
 
@@ -28,7 +28,7 @@ Javaxcel core is interconverter DTO list and excel file with simple usage based 
 <dependency>
   <groupId>com.github.javaxcel</groupId>
   <artifactId>javaxcel-core</artifactId>
-  <version>${javaxcel.version}</version>
+  <version>${javaxcel.core.version}</version>
 </dependency>
 ```
 
@@ -43,8 +43,9 @@ implementation 'com.github.javaxcel:javaxcel-core:$javaxcel_core_version'
 File src = new File("/data", "old-products.xls");
 File dest = new File("/data", "new-products.xlsx");
 
-try (FileOutputStream out = new FileOutputStream(dest);
-        HSSFWorkbook oldWorkbook = new HSSFWorkbook(src);
+try (FileInputStream in = new FileInputStream(src);
+        FileOutputStream out = new FileOutputStream(dest);
+        HSSFWorkbook oldWorkbook = new HSSFWorkbook(in);
         XSSFWorkbook newWorkbook = new XSSFWorkbook()) {
     // Reads all the sheet and returns data as a list.
     List<Product> products = ExcelReaderFactory.create(oldWorkbook, Product.class).read();
