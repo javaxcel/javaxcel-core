@@ -188,7 +188,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
         final int maxModels = ExcelUtils.getMaxRows(this.workbook) - 1;
         List<List<T>> lists = this.rolling
                 ? CollectionUtils.partitionBySize(list, maxModels)
-                : Collections.singletonList(list.subList(0, maxModels));
+                : Collections.singletonList(list.subList(0, list.size()));
 
         // Writes each sheet.
         final int numOfSheets = lists.size();
