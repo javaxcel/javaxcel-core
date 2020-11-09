@@ -16,6 +16,7 @@ import com.github.javaxcel.style.DefaultHeaderStyleConfig;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
+import io.github.imsejin.common.util.FilenameUtils;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -27,12 +28,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -45,9 +48,9 @@ public class ModelWriterTest {
     private Stopwatch stopWatch;
 
     @SneakyThrows
-    private static long getNumOfWrittenModels(Class<? extends Workbook> type, File file) {
+    private static long getNumOfWrittenModels(File file) {
         @Cleanup
-        Workbook workbook = type == HSSFWorkbook.class
+        Workbook workbook = FilenameUtils.extension(file).equals("xls")
                 ? new HSSFWorkbook(new FileInputStream(file))
                 : new XSSFWorkbook(file);
         return ExcelUtils.getNumOfModels(workbook);
@@ -74,12 +77,12 @@ public class ModelWriterTest {
     @Test
     @DisplayName("@ExcelIgnore + @ExcelColumn(defaultValue = \"-1\")")
     @SneakyThrows
-    public void writeWithProducts() {
+    public void writeWithProducts(@TempDir Path path) {
         String filename = "products.xlsx";
 
         // given
         stopWatch.start(String.format("create '%s' file", filename));
-        File file = new File("/data", filename);
+        File file = new File(path.toFile(), filename);
         @Cleanup FileOutputStream out = new FileOutputStream(file);
         @Cleanup SXSSFWorkbook workbook = new SXSSFWorkbook();
         stopWatch.stop();
@@ -101,7 +104,7 @@ public class ModelWriterTest {
                 .as("#1 Excel file will be created")
                 .isNotNull()
                 .exists();
-        assertThat(getNumOfWrittenModels(XSSFWorkbook.class, file))
+        assertThat(getNumOfWrittenModels(file))
                 .as("#2 The number of actually written model is %,d", products.size())
                 .isEqualTo(products.size());
     }
@@ -113,12 +116,12 @@ public class ModelWriterTest {
     @Test
     @DisplayName("@ExcelModel(explicit = true) + disableRolling()")
     @SneakyThrows
-    public void writeWithComputers() {
+    public void writeWithComputers(@TempDir Path path) {
         String filename = "computers.xlsx";
 
         // given
         stopWatch.start(String.format("create '%s' file", filename));
-        File file = new File("/data", filename);
+        File file = new File(path.toFile(), filename);
         @Cleanup FileOutputStream out = new FileOutputStream(file);
         @Cleanup Workbook workbook = new SXSSFWorkbook();
         stopWatch.stop();
@@ -139,7 +142,7 @@ public class ModelWriterTest {
                 .as("#1 Excel file will be created")
                 .isNotNull()
                 .exists();
-        assertThat(getNumOfWrittenModels(XSSFWorkbook.class, file))
+        assertThat(getNumOfWrittenModels(file))
                 .as("#2 The number of actually written model is %,d", computers.size())
                 .isEqualTo(computers.size());
     }
@@ -151,12 +154,12 @@ public class ModelWriterTest {
     @Test
     @DisplayName("@ExcelModel(includeSuper = true) + @ExcelDateTimeFormat")
     @SneakyThrows
-    public void writeWithEducationToys() {
+    public void writeWithEducationToys(@TempDir Path path) {
         String filename = "toys.xlsx";
 
         // given
         stopWatch.start(String.format("create '%s' file", filename));
-        File file = new File("/data", filename);
+        File file = new File(path.toFile(), filename);
         @Cleanup FileOutputStream out = new FileOutputStream(file);
         @Cleanup XSSFWorkbook workbook = new XSSFWorkbook();
         stopWatch.stop();
@@ -176,7 +179,7 @@ public class ModelWriterTest {
                 .as("#1 Excel file will be created")
                 .isNotNull()
                 .exists();
-        assertThat(getNumOfWrittenModels(XSSFWorkbook.class, file))
+        assertThat(getNumOfWrittenModels(file))
                 .as("#2 The number of actually written model is %,d", toys.size())
                 .isEqualTo(toys.size());
     }
@@ -214,12 +217,12 @@ public class ModelWriterTest {
     @Test
     @DisplayName("@ExcelModel(includeSuper = true) + @ExcelWriterExpression")
     @SneakyThrows
-    public void writePeople() {
+    public void writePeople(@TempDir Path path) {
         String filename = "people.xls";
 
         // given
         stopWatch.start(String.format("create '%s' file", filename));
-        File file = new File("/data", filename);
+        File file = new File(path.toFile(), filename);
         @Cleanup FileOutputStream out = new FileOutputStream(file);
         @Cleanup Workbook workbook = new HSSFWorkbook();
         stopWatch.stop();
@@ -239,7 +242,7 @@ public class ModelWriterTest {
                 .as("#1 Excel file will be created")
                 .isNotNull()
                 .exists();
-        assertThat(getNumOfWrittenModels(HSSFWorkbook.class, file))
+        assertThat(getNumOfWrittenModels(file))
                 .as("#2 The number of actually written model is %,d", people.size())
                 .isEqualTo(people.size());
     }
