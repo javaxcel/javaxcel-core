@@ -15,7 +15,7 @@ import java.util.Map;
  * Factory for creating the appropriate implementation of {@link ExcelWriter}.
  * This will create instance of {@link ModelWriter} or {@link MapWriter}.
  */
-public abstract class ExcelWriterFactory {
+public final class ExcelWriterFactory {
 
     private ExcelWriterFactory() {
     }
