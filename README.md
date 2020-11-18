@@ -6,6 +6,10 @@
 <p align="center">
     <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/javaxcel/javaxcel-core">
     <a href="https://lgtm.com/projects/g/javaxcel/javaxcel-core/context:java"><img alt="Language grade: Java" src="https://img.shields.io/lgtm/grade/java/g/javaxcel/javaxcel-core.svg?logo=lgtm&logoWidth=18"/></a>
+    <a href="https://frontend.code-inspector.com/project/16361/dashboard"><img alt="Code Inspector" src="https://www.code-inspector.com/project/16361/score/svg"></a>
+</p>
+
+<p align="center">
     <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/javaxcel/javaxcel-core?label=github">
     <img alt="Bintray" src="https://img.shields.io/bintray/v/imsejin/Javaxcel/javaxcel-core">
     <img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.github.javaxcel/javaxcel-core">
