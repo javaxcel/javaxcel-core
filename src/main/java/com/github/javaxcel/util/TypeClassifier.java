@@ -8,15 +8,24 @@ import java.util.List;
 
 public final class TypeClassifier {
 
+    private static final List<Class<?>> PRIMITIVE_TYPES = Arrays.asList(
+            byte.class, short.class, int.class, long.class, float.class, double.class, char.class, boolean.class);
+
+    private static final List<Class<?>> WRAPPER_TYPES = Arrays.asList(
+            Byte.class, Short.class, Integer.class, Long.class, Float.class, Double.class, Character.class, Boolean.class);
+
+    private static final List<Class<?>> NUMBER_TYPES = Arrays.asList(
+            byte.class, short.class, int.class, long.class, float.class, double.class,
+            Byte.class, Short.class, Integer.class, Long.class, Float.class, Double.class);
+
+    private static final List<Class<?>> PRIMITIVE_NUMBER_TYPES = Arrays.asList(
+            byte.class, short.class, int.class, long.class, float.class, double.class);
+
+    private static final List<Class<?>> DATETIME_TYPES = Arrays.asList(
+            LocalTime.class, LocalDate.class, LocalDateTime.class);
+
     private TypeClassifier() {
     }
-
-    private static final List<Class<?>> PRIMITIVE_TYPES = Arrays.asList(byte.class, short.class, int.class, long.class, float.class, double.class, char.class, boolean.class);
-    private static final List<Class<?>> WRAPPER_TYPES = Arrays.asList(Byte.class, Short.class, Integer.class, Long.class, Float.class, Double.class, Character.class, Boolean.class);
-    private static final List<Class<?>> NUMBER_TYPES = Arrays.asList(byte.class, short.class, int.class, long.class, float.class, double.class,
-            Byte.class, Short.class, Integer.class, Long.class, Float.class, Double.class);
-    private static final List<Class<?>> PRIMITIVE_NUMBER_TYPES = Arrays.asList(byte.class, short.class, int.class, long.class, float.class, double.class);
-    private static final List<Class<?>> DATETIME_TYPES = Arrays.asList(LocalTime.class, LocalDate.class, LocalDateTime.class);
 
     /**
      * Checks if type is temporal.
