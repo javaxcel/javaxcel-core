@@ -63,7 +63,7 @@ public final class ExcelWriterFactory {
         try {
             writer = (MapWriter<W, Map<String, V>>) constructor.newInstance(workbook);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(String.format("Failed to instantiate of the class(%s)", Map.class.getName())); // TODO: Change error message.
+            throw new RuntimeException(String.format("Failed to instantiate of the class(%s)", Map.class.getName()), e);
         }
 
         return writer;
@@ -94,7 +94,7 @@ public final class ExcelWriterFactory {
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             if (e.getCause() instanceof IllegalArgumentException) throw new IllegalArgumentException(e);
             if (e.getCause() instanceof NoTargetedFieldException) throw new NoTargetedFieldException(e);
-            throw new RuntimeException(String.format("Failed to instantiate of the class(%s)", type.getName()));
+            throw new RuntimeException(String.format("Failed to instantiate of the class(%s)", type.getName()), e);
         }
 
         return writer;
