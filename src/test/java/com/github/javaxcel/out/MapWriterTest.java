@@ -116,6 +116,7 @@ public class MapWriterTest {
         stopWatch.start(String.format("write %,d maps", numOfMocks));
         ExcelWriterFactory.create(workbook)
                 .sheetName("Maps")
+                .disableRolling()
                 .headerNames(keys.stream().map(String::toUpperCase).collect(toList()))
                 .autoResizeCols().hideExtraCols()
                 .headerStyles(getRainbowHeader())
