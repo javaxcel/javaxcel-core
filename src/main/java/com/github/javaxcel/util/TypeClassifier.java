@@ -1,8 +1,6 @@
 package com.github.javaxcel.util;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,7 +20,7 @@ public final class TypeClassifier {
             byte.class, short.class, int.class, long.class, float.class, double.class);
 
     private static final List<Class<?>> DATETIME_TYPES = Arrays.asList(
-            LocalTime.class, LocalDate.class, LocalDateTime.class);
+            LocalTime.class, LocalDate.class, LocalDateTime.class, ZonedDateTime.class, OffsetDateTime.class, OffsetTime.class);
 
     private TypeClassifier() {
     }
@@ -31,7 +29,8 @@ public final class TypeClassifier {
      * Checks if type is temporal.
      *
      * @param type class
-     * @return whether type is {@link LocalDate}, {@link LocalTime} or {@link LocalDateTime}
+     * @return whether type is {@link LocalDate}, {@link LocalTime}, {@link LocalDateTime}
+     * {@link ZonedDateTime}, {@link OffsetDateTime} or {@link OffsetTime}
      */
     public static boolean isTemporal(Class<?> type) {
         return DATETIME_TYPES.contains(type);
