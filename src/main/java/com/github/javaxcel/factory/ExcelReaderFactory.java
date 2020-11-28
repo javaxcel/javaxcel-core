@@ -15,7 +15,7 @@ import java.util.Map;
  * Factory for creating the appropriate implementation of {@link com.github.javaxcel.in.ExcelReader}.
  * This will create instance of {@link ModelReader} or {@link MapReader}.
  */
-public final class ExcelReaderFactory {
+public abstract class ExcelReaderFactory {
 
     private ExcelReaderFactory() {
     }
