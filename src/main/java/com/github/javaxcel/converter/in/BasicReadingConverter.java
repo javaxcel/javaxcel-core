@@ -20,12 +20,12 @@ public class BasicReadingConverter implements ReadingConverter {
      *
      * @param type type of the object
      * @return initial value of the type
-     * @see TypeClassifier#isPrimitiveAndNumeric(Class)
+     * @see TypeClassifier#isNumericPrimitive(Class)
      */
     @Nullable
     private static Object initialValueOf(Class<?> type) {
         // Value of primitive type cannot be null.
-        if (TypeClassifier.isPrimitiveAndNumeric(type)) return 0;
+        if (TypeClassifier.isNumericPrimitive(type)) return 0;
         else if (type == char.class) return '\u0000';
         else if (type == boolean.class) return false;
 
