@@ -51,7 +51,7 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <apache.poi.version>4.1.2</apache.poi.version>
         <javaxcel.styler.version>0.2.1</javaxcel.styler.version>
-        <common.utils.version>0.3.2</common.utils.version>
+        <common.utils.version>0.3.3</common.utils.version>
     </properties>
 
     <dependencies>
