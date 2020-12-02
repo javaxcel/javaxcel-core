@@ -110,19 +110,18 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
 
     /**
      * {@inheritDoc}
+     *
+     * <p> Unlike {@link ModelWriter}, {@link MapWriter} cannot validate header names,
+     * header styles and body styles before {@link #write(OutputStream, List)} is invoked
+     * because the only way to get {@link Map} exists in that method. So it does using this hook.
      */
     @Override
     protected void beforeWrite(OutputStream out, List<T> list) {
         // To write header names, this doesn't allow to accept empty list of maps.
-        if (list.isEmpty()) throw new IllegalArgumentException("List of maps cannot be null");
+        if (list.isEmpty()) throw new IllegalArgumentException("List of maps cannot be empty");
 
         // Gets all the maps' keys.
         this.keys.addAll(list.stream().flatMap(it -> it.keySet().stream()).distinct().collect(toList()));
-
-        /*
-        Unlike 'ModelWriter', 'MapWriter' cannot validate header names, header styles and body styles
-        before method 'write(OutputStream, List)' is invoked. So it does using this hook.
-         */
 
         // Validates the number of header names.
         if (!this.headerNames.isEmpty() && this.headerNames.size() != this.keys.size()) {
@@ -149,7 +148,7 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
     /**
      * {@inheritDoc}
      *
-     * <p> If the header names are not set through {@link AbstractExcelWriter#headerNames(List)},
+     * <p> If the header names are not set through {@link #headerNames(List)},
      * this method brings the values from {@link Map#keySet()}.
      *
      * @see Map#keySet()

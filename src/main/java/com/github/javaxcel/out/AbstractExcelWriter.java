@@ -185,6 +185,9 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
 
     /**
      * {@inheritDoc}
+     *
+     * @throws IllegalArgumentException if list is null
+     * @throws IllegalArgumentException if {@link MapWriter#write(OutputStream, List)} is invoked with empty list
      */
     @Override
     public final void write(OutputStream out, List<T> list) {

@@ -234,7 +234,7 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
     /**
      * {@inheritDoc}
      *
-     * <p> If the header names are not set through {@link AbstractExcelWriter#headerNames(List)},
+     * <p> If the header names are not set through {@link #headerNames(List)},
      * this method brings the values from {@link ExcelColumn#name()}.
      *
      * @see FieldUtils#toHeaderNames(List)

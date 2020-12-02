@@ -273,8 +273,8 @@ public final class ExcelUtils {
     /**
      * Hides extraneous rows.
      *
-     * <p> This process must not be performed in parallel.
-     * If try it, this will throw {@link java.util.ConcurrentModificationException}.
+     * <p> This process will be performed in single-thread.
+     * If change this code to be in parallel, this will throw {@link java.util.ConcurrentModificationException}.
      *
      * @param sheet     excel sheet
      * @param numOfRows number of the rows that have contents.
