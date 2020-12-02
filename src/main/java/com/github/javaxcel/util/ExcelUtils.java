@@ -258,13 +258,15 @@ public final class ExcelUtils {
      * If you want this process well, set up the same font family into all cells.
      * This process will be perform in parallel.
      *
+     * <p> If instance of sheet is {@link SXSSFSheet}, the columns may be
+     * inaccurately auto-resized compared to {@link HSSFSheet} and {@link org.apache.poi.xssf.usermodel.XSSFSheet}.
+     *
      * @param sheet        excel sheet
      * @param numOfColumns number of the columns that wanted to make fit contents.
-     * @throws UnsupportedWorkbookException if instance of sheet is {@link SXSSFSheet}
      * @see Sheet#autoSizeColumn(int)
      */
     public static void autoResizeColumns(Sheet sheet, int numOfColumns) {
-        if (sheet instanceof SXSSFSheet) throw new UnsupportedWorkbookException();
+        if (sheet instanceof SXSSFSheet) ((SXSSFSheet) sheet).trackAllColumnsForAutoSizing();
         IntStream.range(0, numOfColumns).parallel().forEach(sheet::autoSizeColumn);
     }
 
