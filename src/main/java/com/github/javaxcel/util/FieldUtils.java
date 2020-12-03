@@ -157,7 +157,7 @@ public final class FieldUtils {
      * If the value is null or empty string, converts a value to default value.
      *
      * @param maybeFaulty  value that may be null or empty
-     * @param defaultValue 1. {@link com.github.javaxcel.out.ExcelWriter#defaultValue(String)}
+     * @param defaultValue 1. {@link com.github.javaxcel.out.AbstractExcelWriter#defaultValue(String)}
      *                     2. {@link ExcelColumn#defaultValue()}
      *                     3. {@link ExcelModel#defaultValue()}
      * @param field        field of model
