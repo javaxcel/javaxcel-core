@@ -35,6 +35,67 @@ public class MapWriterTest {
         return keys.stream().collect(toMap(it -> it, it -> Mockables.generateRandomText(it.length())));
     }
 
+    private static ExcelStyleConfig[] getRainbowHeader() {
+        ExcelStyleConfig r = it -> it.alignment()
+                .horizontal(HorizontalAlignment.CENTER).vertical(VerticalAlignment.CENTER)
+                .and()
+                .background(FillPatternType.SOLID_FOREGROUND, IndexedColors.RED)
+                .border().all(BorderStyle.THIN, IndexedColors.GREY_25_PERCENT)
+                .and()
+                .font().name("Arial").size(12).bold();
+        ExcelStyleConfig a = it -> it.alignment()
+                .horizontal(HorizontalAlignment.CENTER).vertical(VerticalAlignment.CENTER)
+                .and()
+                .background(FillPatternType.SOLID_FOREGROUND, IndexedColors.ORANGE)
+                .border().all(BorderStyle.THIN, IndexedColors.GREY_25_PERCENT)
+                .and()
+                .font().name("Arial").size(12).bold();
+        ExcelStyleConfig i = it -> it.alignment()
+                .horizontal(HorizontalAlignment.CENTER).vertical(VerticalAlignment.CENTER)
+                .and()
+                .background(FillPatternType.SOLID_FOREGROUND, IndexedColors.GOLD)
+                .border().all(BorderStyle.THIN, IndexedColors.GREY_25_PERCENT)
+                .and()
+                .font().name("Arial").size(12).bold();
+        ExcelStyleConfig n = it -> it.alignment()
+                .horizontal(HorizontalAlignment.CENTER).vertical(VerticalAlignment.CENTER)
+                .and()
+                .background(FillPatternType.SOLID_FOREGROUND, IndexedColors.GREEN)
+                .border().all(BorderStyle.THIN, IndexedColors.GREY_25_PERCENT)
+                .and()
+                .font().name("Arial").size(12).bold().color(IndexedColors.WHITE);
+        ExcelStyleConfig b = it -> it.alignment()
+                .horizontal(HorizontalAlignment.CENTER).vertical(VerticalAlignment.CENTER)
+                .and()
+                .background(FillPatternType.SOLID_FOREGROUND, IndexedColors.BLUE)
+                .border().all(BorderStyle.THIN, IndexedColors.GREY_25_PERCENT)
+                .and()
+                .font().name("Arial").size(12).bold().color(IndexedColors.WHITE);
+        ExcelStyleConfig o = it -> it.alignment()
+                .horizontal(HorizontalAlignment.CENTER).vertical(VerticalAlignment.CENTER)
+                .and()
+                .background(FillPatternType.SOLID_FOREGROUND, IndexedColors.INDIGO)
+                .border().all(BorderStyle.THIN, IndexedColors.GREY_25_PERCENT)
+                .and()
+                .font().name("Arial").size(12).bold().color(IndexedColors.WHITE);
+        ExcelStyleConfig w = it -> it.alignment()
+                .horizontal(HorizontalAlignment.CENTER).vertical(VerticalAlignment.CENTER)
+                .and()
+                .background(FillPatternType.SOLID_FOREGROUND, IndexedColors.VIOLET)
+                .border().all(BorderStyle.THIN, IndexedColors.GREY_25_PERCENT)
+                .and()
+                .font().name("Arial").size(12).bold().color(IndexedColors.WHITE);
+
+        return new ExcelStyleConfig[]{r, a, i, n, b, o, w};
+    }
+
+    private static <E> Map<E, Integer> toIndexedMap(Collection<E> collection) {
+        return collection.stream().collect(HashMap<E, Integer>::new,
+                (map, streamValue) -> map.put(streamValue, map.size()),
+                (map, map2) -> {
+                });
+    }
+
     @BeforeEach
     public void beforeEach() {
         this.stopWatch = new Stopwatch(TimeUnit.SECONDS);
@@ -156,60 +217,6 @@ public class MapWriterTest {
         assertThat(ExcelUtils.getNumOfModels(file))
                 .as("#2 The number of actually written maps is %,d", maps.size())
                 .isEqualTo(maps.size());
-    }
-
-    private static ExcelStyleConfig[] getRainbowHeader() {
-        ExcelStyleConfig r = it -> it.alignment()
-                .horizontal(HorizontalAlignment.CENTER).vertical(VerticalAlignment.CENTER)
-                .and()
-                .background(FillPatternType.SOLID_FOREGROUND, IndexedColors.RED)
-                .border().all(BorderStyle.THIN, IndexedColors.GREY_25_PERCENT)
-                .and()
-                .font().name("Arial").size(12).bold();
-        ExcelStyleConfig a = it -> it.alignment()
-                .horizontal(HorizontalAlignment.CENTER).vertical(VerticalAlignment.CENTER)
-                .and()
-                .background(FillPatternType.SOLID_FOREGROUND, IndexedColors.ORANGE)
-                .border().all(BorderStyle.THIN, IndexedColors.GREY_25_PERCENT)
-                .and()
-                .font().name("Arial").size(12).bold();
-        ExcelStyleConfig i = it -> it.alignment()
-                .horizontal(HorizontalAlignment.CENTER).vertical(VerticalAlignment.CENTER)
-                .and()
-                .background(FillPatternType.SOLID_FOREGROUND, IndexedColors.GOLD)
-                .border().all(BorderStyle.THIN, IndexedColors.GREY_25_PERCENT)
-                .and()
-                .font().name("Arial").size(12).bold();
-        ExcelStyleConfig n = it -> it.alignment()
-                .horizontal(HorizontalAlignment.CENTER).vertical(VerticalAlignment.CENTER)
-                .and()
-                .background(FillPatternType.SOLID_FOREGROUND, IndexedColors.GREEN)
-                .border().all(BorderStyle.THIN, IndexedColors.GREY_25_PERCENT)
-                .and()
-                .font().name("Arial").size(12).bold().color(IndexedColors.WHITE);
-        ExcelStyleConfig b = it -> it.alignment()
-                .horizontal(HorizontalAlignment.CENTER).vertical(VerticalAlignment.CENTER)
-                .and()
-                .background(FillPatternType.SOLID_FOREGROUND, IndexedColors.BLUE)
-                .border().all(BorderStyle.THIN, IndexedColors.GREY_25_PERCENT)
-                .and()
-                .font().name("Arial").size(12).bold().color(IndexedColors.WHITE);
-        ExcelStyleConfig o = it -> it.alignment()
-                .horizontal(HorizontalAlignment.CENTER).vertical(VerticalAlignment.CENTER)
-                .and()
-                .background(FillPatternType.SOLID_FOREGROUND, IndexedColors.INDIGO)
-                .border().all(BorderStyle.THIN, IndexedColors.GREY_25_PERCENT)
-                .and()
-                .font().name("Arial").size(12).bold().color(IndexedColors.WHITE);
-        ExcelStyleConfig w = it -> it.alignment()
-                .horizontal(HorizontalAlignment.CENTER).vertical(VerticalAlignment.CENTER)
-                .and()
-                .background(FillPatternType.SOLID_FOREGROUND, IndexedColors.VIOLET)
-                .border().all(BorderStyle.THIN, IndexedColors.GREY_25_PERCENT)
-                .and()
-                .font().name("Arial").size(12).bold().color(IndexedColors.WHITE);
-
-        return new ExcelStyleConfig[]{r, a, i, n, b, o, w};
     }
 
 }
