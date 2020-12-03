@@ -30,6 +30,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      * Header's names.
      *
      * @see #headerNames(List)
+     * @see MapWriter#headerNames(List, List)
      */
     protected final List<String> headerNames = new ArrayList<>();
 

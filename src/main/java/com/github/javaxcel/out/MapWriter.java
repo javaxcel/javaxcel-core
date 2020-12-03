@@ -219,7 +219,7 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
     /**
      * {@inheritDoc}
      *
-     * <p> If the header names are not set through {@link #headerNames(List)},
+     * <p> If the header names are not set through {@link #headerNames(List, List)},
      * this method brings the values from {@link Map#keySet()}.
      *
      * @see Map#keySet()
