@@ -66,7 +66,8 @@ public class MapReaderTest {
         stopWatch.stop();
 
         stopWatch.start(String.format("write %,d maps", numOfMocks));
-        ExcelWriterFactory.create(workbook).sheetName("Maps").write(out, maps);
+        ExcelWriterFactory.create(workbook).sheetName("Maps")
+                .headerNames(keys).write(out, maps);
         stopWatch.stop();
 
         // when

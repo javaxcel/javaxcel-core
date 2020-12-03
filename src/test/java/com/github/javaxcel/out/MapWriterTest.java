@@ -11,25 +11,21 @@ import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.io.*;
 
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
+import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 public class MapWriterTest {
 
@@ -50,6 +46,32 @@ public class MapWriterTest {
     }
 
     @Test
+    @DisplayName("Rearrange keys")
+    public void rearrangeKeys() {
+        // given
+        stopWatch.start();
+        List<String> keys = Arrays.asList("race", "name", "height", "weight", "eyesight", "favoriteFood");
+        System.out.printf("original keys: %s\n", keys);
+
+        // when
+        List<String> rearrangedKeys = keys.stream().sorted().collect(toList());
+        System.out.printf("rearranged keys: %s\n", rearrangedKeys);
+        Map<String, Integer> indexedMap = toIndexedMap(rearrangedKeys);
+        keys.sort(comparing(indexedMap::get));
+        stopWatch.stop();
+
+        // then
+        assertThat(rearrangedKeys)
+                .as("Original keys must be equal to rearranged keys")
+                .containsExactlyElementsOf(keys);
+        System.out.printf("original keys: %s\n", keys);
+    }
+
+    /**
+     * @see MapWriter#headerNames(List)
+     */
+    @Test
+    @DisplayName("headerNames(List)")
     @SneakyThrows
     public void write(@TempDir Path path) {
         String filename = "maps.xlsx";
@@ -72,6 +94,7 @@ public class MapWriterTest {
         stopWatch.start(String.format("write %,d maps", numOfMocks));
         ExcelWriterFactory.create(workbook)
                 .sheetName("Maps")
+                .headerNames(keys)
                 .write(out, maps);
         stopWatch.stop();
 
@@ -86,6 +109,7 @@ public class MapWriterTest {
     }
 
     /**
+     * @see MapWriter#headerNames(List, List)
      * @see AbstractExcelWriter#autoResizeCols()
      * @see AbstractExcelWriter#hideExtraRows()
      * @see AbstractExcelWriter#hideExtraCols()
@@ -93,7 +117,7 @@ public class MapWriterTest {
      * @see AbstractExcelWriter#bodyStyles(ExcelStyleConfig...)
      */
     @Test
-    @DisplayName("Adjust sheet + header/body style")
+    @DisplayName("Decorate + headerNames(List, List)")
     @SneakyThrows
     public void writeAndDecorate() {
         String filename = "maps-styled.xls";
@@ -116,8 +140,8 @@ public class MapWriterTest {
         stopWatch.start(String.format("write %,d maps", numOfMocks));
         ExcelWriterFactory.create(workbook)
                 .sheetName("Maps")
+                .headerNames(keys, Arrays.asList("RACE", "NAME", "HEIGHT", "WEIGHT", "STRENGTH", "EYE_SIGHT", "FAVORITE_FOOD"))
                 .disableRolling()
-                .headerNames(keys.stream().map(String::toUpperCase).collect(toList()))
                 .autoResizeCols().hideExtraCols()
                 .headerStyles(getRainbowHeader())
                 .bodyStyles(new DefaultBodyStyleConfig())
