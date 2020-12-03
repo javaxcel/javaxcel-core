@@ -63,7 +63,7 @@ public abstract class ExcelReaderFactory {
         try {
             writer = (MapReader<W, Map<String, V>>) constructor.newInstance(workbook);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(String.format("Failed to instantiate of the class(%s)", Map.class.getName())); // TODO: Change error message.
+            throw new RuntimeException(String.format("Failed to instantiate of the class(%s)", Map.class.getName()), e);
         }
 
         return writer;
@@ -93,7 +93,7 @@ public abstract class ExcelReaderFactory {
             writer = (ModelReader<W, T>) constructor.newInstance(workbook, type);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             if (e.getCause() instanceof NoTargetedFieldException) throw new NoTargetedFieldException(e);
-            throw new RuntimeException(String.format("Failed to instantiate of the class(%s)", type.getName()));
+            throw new RuntimeException(String.format("Failed to instantiate of the class(%s)", type.getName()), e);
         }
 
         return writer;

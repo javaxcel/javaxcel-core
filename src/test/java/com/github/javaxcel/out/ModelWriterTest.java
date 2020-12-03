@@ -27,12 +27,13 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -43,15 +44,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class ModelWriterTest {
 
     private Stopwatch stopWatch;
-
-    @SneakyThrows
-    private static long getNumOfWrittenModels(Class<? extends Workbook> type, File file) {
-        @Cleanup
-        Workbook workbook = type == HSSFWorkbook.class
-                ? new HSSFWorkbook(new FileInputStream(file))
-                : new XSSFWorkbook(file);
-        return ExcelUtils.getNumOfModels(workbook);
-    }
 
     @BeforeEach
     public void beforeEach() {
@@ -74,12 +66,12 @@ public class ModelWriterTest {
     @Test
     @DisplayName("@ExcelIgnore + @ExcelColumn(defaultValue = \"-1\")")
     @SneakyThrows
-    public void writeWithProducts() {
+    public void writeWithProducts(@TempDir Path path) {
         String filename = "products.xlsx";
 
         // given
         stopWatch.start(String.format("create '%s' file", filename));
-        File file = new File("/data", filename);
+        File file = new File(path.toFile(), filename);
         @Cleanup FileOutputStream out = new FileOutputStream(file);
         @Cleanup SXSSFWorkbook workbook = new SXSSFWorkbook();
         stopWatch.stop();
@@ -92,8 +84,7 @@ public class ModelWriterTest {
         // when
         stopWatch.start(String.format("write %,d models", numOfMocks));
         ExcelWriterFactory.create(workbook, Product.class)
-                .sheetName("Products")
-                .write(out, products);
+                .sheetName("Products").write(out, products);
         stopWatch.stop();
 
         // then
@@ -101,24 +92,24 @@ public class ModelWriterTest {
                 .as("#1 Excel file will be created")
                 .isNotNull()
                 .exists();
-        assertThat(getNumOfWrittenModels(XSSFWorkbook.class, file))
+        assertThat(ExcelUtils.getNumOfModels(file))
                 .as("#2 The number of actually written model is %,d", products.size())
                 .isEqualTo(products.size());
     }
 
     /**
      * @see ExcelModel#explicit()
-     * @see AbstractExcelWriter#disableRolling()
+     * @see AbstractExcelWriter#autoResizeCols()
      */
     @Test
-    @DisplayName("@ExcelModel(explicit = true) + disableRolling()")
+    @DisplayName("@ExcelModel(explicit = true) + autoResizeCols()")
     @SneakyThrows
-    public void writeWithComputers() {
+    public void writeWithComputers(@TempDir Path path) {
         String filename = "computers.xlsx";
 
         // given
         stopWatch.start(String.format("create '%s' file", filename));
-        File file = new File("/data", filename);
+        File file = new File(path.toFile(), filename);
         @Cleanup FileOutputStream out = new FileOutputStream(file);
         @Cleanup Workbook workbook = new SXSSFWorkbook();
         stopWatch.stop();
@@ -131,7 +122,7 @@ public class ModelWriterTest {
         // when
         stopWatch.start(String.format("write %,d models", numOfMocks));
         ExcelWriterFactory.create(workbook, Computer.class)
-                .disableRolling().write(out, computers);
+                .autoResizeCols().write(out, computers);
         stopWatch.stop();
 
         // then
@@ -139,7 +130,7 @@ public class ModelWriterTest {
                 .as("#1 Excel file will be created")
                 .isNotNull()
                 .exists();
-        assertThat(getNumOfWrittenModels(XSSFWorkbook.class, file))
+        assertThat(ExcelUtils.getNumOfModels(file))
                 .as("#2 The number of actually written model is %,d", computers.size())
                 .isEqualTo(computers.size());
     }
@@ -151,12 +142,12 @@ public class ModelWriterTest {
     @Test
     @DisplayName("@ExcelModel(includeSuper = true) + @ExcelDateTimeFormat")
     @SneakyThrows
-    public void writeWithEducationToys() {
+    public void writeWithEducationToys(@TempDir Path path) {
         String filename = "toys.xlsx";
 
         // given
         stopWatch.start(String.format("create '%s' file", filename));
-        File file = new File("/data", filename);
+        File file = new File(path.toFile(), filename);
         @Cleanup FileOutputStream out = new FileOutputStream(file);
         @Cleanup XSSFWorkbook workbook = new XSSFWorkbook();
         stopWatch.stop();
@@ -176,7 +167,7 @@ public class ModelWriterTest {
                 .as("#1 Excel file will be created")
                 .isNotNull()
                 .exists();
-        assertThat(getNumOfWrittenModels(XSSFWorkbook.class, file))
+        assertThat(ExcelUtils.getNumOfModels(file))
                 .as("#2 The number of actually written model is %,d", toys.size())
                 .isEqualTo(toys.size());
     }
@@ -210,16 +201,17 @@ public class ModelWriterTest {
      * @see ExcelColumn#headerStyle()
      * @see ExcelColumn#bodyStyle()
      * @see com.github.javaxcel.annotation.ExcelWriterExpression
+     * @see AbstractExcelWriter#disableRolling()
      */
     @Test
-    @DisplayName("@ExcelModel(includeSuper = true) + @ExcelWriterExpression")
+    @DisplayName("@ExcelModel(includeSuper = true) + @ExcelWriterExpression + disableRolling()")
     @SneakyThrows
-    public void writePeople() {
+    public void writePeople(@TempDir Path path) {
         String filename = "people.xls";
 
         // given
         stopWatch.start(String.format("create '%s' file", filename));
-        File file = new File("/data", filename);
+        File file = new File(path.toFile(), filename);
         @Cleanup FileOutputStream out = new FileOutputStream(file);
         @Cleanup Workbook workbook = new HSSFWorkbook();
         stopWatch.stop();
@@ -231,7 +223,8 @@ public class ModelWriterTest {
 
         // when
         stopWatch.start(String.format("write %,d models", numOfMocks));
-        ExcelWriterFactory.create(workbook, Human.class).write(out, people);
+        ExcelWriterFactory.create(workbook, Human.class)
+                .disableRolling().write(out, people);
         stopWatch.stop();
 
         // then
@@ -239,7 +232,7 @@ public class ModelWriterTest {
                 .as("#1 Excel file will be created")
                 .isNotNull()
                 .exists();
-        assertThat(getNumOfWrittenModels(HSSFWorkbook.class, file))
+        assertThat(ExcelUtils.getNumOfModels(file))
                 .as("#2 The number of actually written model is %,d", people.size())
                 .isEqualTo(people.size());
     }
@@ -250,9 +243,10 @@ public class ModelWriterTest {
      * @see AbstractExcelWriter#hideExtraCols()
      * @see AbstractExcelWriter#headerStyles(ExcelStyleConfig...)
      * @see AbstractExcelWriter#bodyStyles(ExcelStyleConfig...)
+     * @see AbstractExcelWriter#disableRolling()
      */
     @Test
-    @DisplayName("Adjust sheet + header/body style")
+    @DisplayName("Decorate")
     @SneakyThrows
     public void writeAndDecorate() {
         String filename = "people-styled.xls";
@@ -265,17 +259,18 @@ public class ModelWriterTest {
         stopWatch.stop();
 
         // when
-        int numOfMocks = 1000;
+        int numOfMocks = 10_000;
         stopWatch.start(String.format("create %,d mocks", numOfMocks));
         List<Human> people = new Human().createRandoms(numOfMocks);
         stopWatch.stop();
 
         stopWatch.start(String.format("write and decorate %,d models", numOfMocks));
-        ExcelWriterFactory.create(workbook, Human.class).sheetName("People")
+        ExcelWriterFactory.create(workbook, Human.class)
+                .sheetName("People")
                 .autoResizeCols().hideExtraRows().hideExtraCols()
                 .headerStyles(new DefaultHeaderStyleConfig())
                 .bodyStyles(new DefaultBodyStyleConfig())
-                .write(out, people);
+                .disableRolling().write(out, people);
         stopWatch.stop();
 
         // then

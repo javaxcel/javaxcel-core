@@ -1,7 +1,7 @@
 package com.github.javaxcel.in;
 
-import com.github.javaxcel.converter.in.BasicReadingConverter;
 import com.github.javaxcel.util.ExcelUtils;
+import io.github.imsejin.common.util.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 
 import java.lang.reflect.Field;
@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * Abstract excel reader
  */
-public abstract class AbstractExcelReader<W extends Workbook, T> implements ExcelReader<W, T> {
+public abstract class AbstractExcelReader<W extends Workbook, T> implements ExcelReader<T> {
 
     /**
      * Formatter that stringifies the value in a cell with {@link FormulaEvaluator}.
@@ -59,11 +59,11 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
     }
 
     /**
-     * {@inheritDoc}
+     * Limits the number of models.
      *
+     * @param limit limit for the number of models
      * @return {@link AbstractExcelReader}
      */
-    @Override
     public AbstractExcelReader<W, T> limit(int limit) {
         if (limit < 0) throw new IllegalArgumentException("Limit cannot be negative");
 
@@ -126,7 +126,7 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
             String cellValue = dataFormatter.formatCellValue(cell, this.formulaEvaluator);
 
             // Converts empty string to null because when CellType is BLANK, DataFormatter returns empty string.
-            map.put(getColumnName(cell, i), cellValue.equals("") ? null : cellValue);
+            map.put(getColumnName(cell, i), StringUtils.ifNullOrEmpty(cellValue, (String) null));
         }
 
         // Increase count of reading row.

@@ -122,7 +122,7 @@ public class ModelReaderTest {
     }
 
     /**
-     * @see ExcelReader#limit(int)
+     * @see AbstractExcelReader#limit(int)
      */
     @Test
     @DisplayName("ExcelReader#limit(int)")

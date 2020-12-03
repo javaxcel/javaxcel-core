@@ -9,9 +9,7 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
@@ -22,12 +20,12 @@ public class BasicReadingConverter implements ReadingConverter {
      *
      * @param type type of the object
      * @return initial value of the type
-     * @see TypeClassifier#isPrimitiveAndNumeric(Class)
+     * @see TypeClassifier#isNumericPrimitive(Class)
      */
     @Nullable
     private static Object initialValueOf(Class<?> type) {
         // Value of primitive type cannot be null.
-        if (TypeClassifier.isPrimitiveAndNumeric(type)) return 0;
+        if (TypeClassifier.isNumericPrimitive(type)) return 0;
         else if (type == char.class) return '\u0000';
         else if (type == boolean.class) return false;
 
@@ -51,21 +49,25 @@ public class BasicReadingConverter implements ReadingConverter {
         else if (type == BigInteger.class) return new BigInteger(value);
         else if (type == BigDecimal.class) return new BigDecimal(value);
         else if (TypeClassifier.isTemporal(type)) {
-            ExcelDateTimeFormat excelDateTimeFormat = field.getAnnotation(ExcelDateTimeFormat.class);
-            String pattern = excelDateTimeFormat == null ? null : excelDateTimeFormat.pattern();
-
-            if (StringUtils.isNullOrEmpty(pattern)) {
+            ExcelDateTimeFormat annotation = field.getAnnotation(ExcelDateTimeFormat.class);
+            if (annotation == null || StringUtils.isNullOrEmpty(annotation.pattern())) {
                 // When pattern is undefined or implicitly defined.
                 if (type == LocalTime.class) return LocalTime.parse(value);
                 else if (type == LocalDate.class) return LocalDate.parse(value);
                 else if (type == LocalDateTime.class) return LocalDateTime.parse(value);
+                else if (type == ZonedDateTime.class) return ZonedDateTime.parse(value);
+                else if (type == OffsetDateTime.class) return OffsetDateTime.parse(value);
+                else if (type == OffsetTime.class) return OffsetTime.parse(value);
 
             } else {
                 // When pattern is explicitly defined.
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(annotation.pattern());
                 if (type == LocalTime.class) return LocalTime.parse(value, formatter);
                 else if (type == LocalDate.class) return LocalDate.parse(value, formatter);
                 else if (type == LocalDateTime.class) return LocalDateTime.parse(value, formatter);
+                else if (type == ZonedDateTime.class) return ZonedDateTime.parse(value, formatter);
+                else if (type == OffsetDateTime.class) return OffsetDateTime.parse(value, formatter);
+                else if (type == OffsetTime.class) return OffsetTime.parse(value, formatter);
             }
         }
 

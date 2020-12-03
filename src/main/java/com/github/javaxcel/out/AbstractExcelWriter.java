@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class AbstractExcelWriter<W extends Workbook, T> implements ExcelWriter<W, T> {
+public abstract class AbstractExcelWriter<W extends Workbook, T> implements ExcelWriter<T> {
 
     /**
      * Apache POI workbook.
@@ -30,6 +30,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      * Header's names.
      *
      * @see #headerNames(List)
+     * @see MapWriter#headerNames(List, List)
      */
     protected final List<String> headerNames = new ArrayList<>();
 
@@ -89,11 +90,11 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     }
 
     /**
-     * {@inheritDoc}
+     * Sets default value when value to be written is null or empty.
      *
+     * @param defaultValue replacement of the value when it is null or empty string.
      * @return {@link AbstractExcelWriter}
      */
-    @Override
     public AbstractExcelWriter<W, T> defaultValue(String defaultValue) {
         if (StringUtils.isNullOrEmpty(defaultValue)) {
             throw new IllegalArgumentException("Default value cannot be null or empty");
@@ -103,7 +104,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     }
 
     /**
-     * {@inheritDoc}
+     * Sets sheet name.
      *
      * <p> Prefix for each sheet name. For example, if you set 'SHEET' to this,
      * the names you can see are <span>SHEET0, SHEET1, SHEET2, ...</span>
@@ -111,10 +112,10 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      * <p> If you invoke {@link #disableRolling()}, the sheet name has no suffix.
      * You can see the sheet name like this <span>SHEET</span>
      *
+     * @param sheetName sheet name
      * @return {@link AbstractExcelWriter}
      * @see #disableRolling()
      */
-    @Override
     public AbstractExcelWriter<W, T> sheetName(String sheetName) {
         if (StringUtils.isNullOrEmpty(sheetName)) {
             throw new IllegalArgumentException("Sheet name cannot be null or empty");
@@ -125,16 +126,12 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     }
 
     /**
-     * {@inheritDoc}
+     * Sets header names.
      *
+     * @param headerNames header name
      * @return {@link AbstractExcelWriter}
      */
-    @Override
     public AbstractExcelWriter<W, T> headerNames(List<String> headerNames) {
-        if (CollectionUtils.isNullOrEmpty(headerNames)) {
-            throw new IllegalArgumentException("Header names cannot be null or empty");
-        }
-
         // Replaces current header names with the new things.
         if (!this.headerNames.isEmpty()) this.headerNames.clear();
 
@@ -185,6 +182,9 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
 
     /**
      * {@inheritDoc}
+     *
+     * @throws IllegalArgumentException if list is null
+     * @throws IllegalArgumentException if {@link MapWriter#write(OutputStream, List)} is invoked with empty list
      */
     @Override
     public final void write(OutputStream out, List<T> list) {
