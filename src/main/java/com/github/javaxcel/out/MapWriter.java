@@ -135,24 +135,25 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
         this.keys.addAll(list.stream().flatMap(it -> it.keySet().stream()).distinct().collect(toList()));
 
         // Validates the number of header names.
-        if (!this.headerNames.isEmpty() && this.headerNames.size() != this.keys.size()) {
+        final int numOfKeys = this.keys.size();
+        if (!this.headerNames.isEmpty() && this.headerNames.size() != numOfKeys) {
             throw new IllegalArgumentException("The number of header names is not equal to the number of maps' keys");
         }
 
-        Predicate<CellStyle[]> validator = them -> them == null || them.length == 1 || them.length == this.keys.size();
+        Predicate<CellStyle[]> validator = them -> them == null || them.length == 1 || them.length == numOfKeys;
 
         // Validates the number of header styles.
         if (!validator.test(this.headerStyles)) {
             throw new IllegalArgumentException(String.format(
                     "Number of header styles(%d) must be 1 or equal to number of maps' keys(%d)",
-                    this.headerStyles.length, this.keys.size()));
+                    this.headerStyles.length, numOfKeys));
         }
 
         // Validates the number of body styles.
         if (!validator.test(this.bodyStyles)) {
             throw new IllegalArgumentException(String.format(
                     "Number of body styles(%d) must be 1 or equal to number of maps' keys(%d)",
-                    this.bodyStyles.length, this.keys.size()));
+                    this.bodyStyles.length, numOfKeys));
         }
     }
 
