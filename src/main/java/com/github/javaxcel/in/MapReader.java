@@ -54,7 +54,6 @@ public final class MapReader<W extends Workbook, T extends Map<String, ?>> exten
 
     //////////////////////////////////////// Hooks ////////////////////////////////////////
 
-
     @Override
     protected List<T> readSheet(Sheet sheet) {
         int numOfRows = ExcelUtils.getNumOfModels(sheet);
@@ -68,7 +67,7 @@ public final class MapReader<W extends Workbook, T extends Map<String, ?>> exten
             for (int i = 0; i < this.numOfColumns; i++) {
                 Cell cell = header.getCell(i, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
                 String headerName = StringUtils.ifNullOrEmpty(cell.getStringCellValue(), (String) null);
-                headerNames.add(headerName);
+                this.headerNames.add(headerName);
             }
         }
 

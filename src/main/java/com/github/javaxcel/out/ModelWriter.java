@@ -155,6 +155,19 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
      * @return {@link ModelWriter}
      */
     @Override
+    public ModelWriter<W, T> disableRolling() {
+        super.disableRolling();
+        return this;
+    }
+
+    //////////////////////////////////////// Style ////////////////////////////////////////
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link ModelWriter}
+     */
+    @Override
     public ModelWriter<W, T> headerStyles(ExcelStyleConfig... configs) {
         super.headerStyles(configs);
 
@@ -182,17 +195,6 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
                     this.bodyStyles.length, this.fields.size(), this.type.getName()));
         }
 
-        return this;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@link ModelWriter}
-     */
-    @Override
-    public ModelWriter<W, T> disableRolling() {
-        super.disableRolling();
         return this;
     }
 
