@@ -1,15 +1,17 @@
 package com.github.javaxcel.out;
 
 import com.github.javaxcel.styler.ExcelStyleConfig;
+import io.github.imsejin.common.util.CollectionUtils;
 import io.github.imsejin.common.util.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 
+import javax.annotation.Nullable;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
+import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -21,6 +23,14 @@ import static java.util.stream.Collectors.toList;
 public final class MapWriter<W extends Workbook, T extends Map<String, ?>> extends AbstractExcelWriter<W, T> {
 
     private final List<String> keys = new ArrayList<>();
+
+    /**
+     * Map of which key is the key and value is index number.
+     *
+     * @see #headerNames(List, List)
+     * @see #beforeWrite(OutputStream, List)
+     */
+    private Map<String, Integer> indexedMap;
 
     private String defaultValue;
 
@@ -61,6 +71,51 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
         super.disableRolling();
         return this;
     }
+
+    /**
+     * Rearranges the keys of {@link Map} with custom order.
+     *
+     * @param orderedKeys keys ordered as you want
+     * @return {@link MapWriter}
+     * @throws IllegalArgumentException if ordered keys is null or empty
+     */
+    @Override
+    public MapWriter<W, T> headerNames(List<String> orderedKeys) {
+        return headerNames(orderedKeys, null);
+    }
+
+    /**
+     * Rearranges the keys of {@link Map} with custom order and sets header names.
+     *
+     * @param orderedKeys keys ordered as you want
+     * @param headerNames header names matching key order
+     * @return {@link MapWriter}
+     * @throws IllegalArgumentException if ordered keys is null or empty
+     * @throws IllegalArgumentException if num of ordered keys is not equal to num of header names
+     */
+    public MapWriter<W, T> headerNames(List<String> orderedKeys, @Nullable List<String> headerNames) {
+        if (CollectionUtils.isNullOrEmpty(orderedKeys)) {
+            throw new IllegalArgumentException("Ordered keys cannot be null or empty");
+        }
+
+        // Validates ordered keys and header names.
+        if (headerNames != null && orderedKeys.size() != headerNames.size()) {
+            throw new IllegalArgumentException("The number of ordered keys is not equal to the number of header names");
+        }
+
+        // Creates indexed map for rearrange.
+        Map<String, Integer> indexedMap = new HashMap<>();
+        for (int i = 0; i < orderedKeys.size(); i++) {
+            indexedMap.put(orderedKeys.get(i), i);
+        }
+
+        this.indexedMap = indexedMap;
+        if (headerNames != null) super.headerNames(headerNames);
+
+        return this;
+    }
+
+    //////////////////////////////////////// Style ////////////////////////////////////////
 
     /**
      * {@inheritDoc}
@@ -128,11 +183,15 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
      */
     @Override
     protected void beforeWrite(OutputStream out, List<T> list) {
-        // To write header names, this doesn't allow to accept empty list of maps.
+        // To write a header, this doesn't allow to accept empty list of maps.
         if (list.isEmpty()) throw new IllegalArgumentException("List of maps cannot be empty");
 
         // Gets all the maps' keys.
-        this.keys.addAll(list.stream().flatMap(it -> it.keySet().stream()).distinct().collect(toList()));
+        Stream<String> stream = list.stream().flatMap(it -> it.keySet().stream()).distinct();
+
+        // Rearranges the keys as you want: it changes order of columns.
+        if (this.indexedMap != null) stream = stream.sorted(comparing(this.indexedMap::get));
+        this.keys.addAll(stream.collect(toList()));
 
         // Validates the number of header names.
         final int numOfKeys = this.keys.size();
