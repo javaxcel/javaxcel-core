@@ -10,6 +10,7 @@ import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.styler.NoStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
+import io.github.imsejin.common.util.CollectionUtils;
 import org.apache.poi.ss.usermodel.*;
 
 import java.lang.reflect.Field;
@@ -116,11 +117,16 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
      */
     @Override
     public ModelWriter<W, T> headerNames(List<String> headerNames) {
-        super.headerNames(headerNames);
+        if (CollectionUtils.isNullOrEmpty(headerNames)) {
+            throw new IllegalArgumentException("Header names cannot be null or empty");
+        }
+
         if (headerNames.size() != this.fields.size()) {
             throw new IllegalArgumentException(String.format(
                     "The number of header names is not equal to the number of targeted fields in the class '%s'", this.type.getName()));
         }
+
+        super.headerNames(headerNames);
 
         return this;
     }

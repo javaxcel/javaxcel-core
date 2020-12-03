@@ -131,10 +131,6 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      * @return {@link AbstractExcelWriter}
      */
     public AbstractExcelWriter<W, T> headerNames(List<String> headerNames) {
-        if (CollectionUtils.isNullOrEmpty(headerNames)) {
-            throw new IllegalArgumentException("Header names cannot be null or empty");
-        }
-
         // Replaces current header names with the new things.
         if (!this.headerNames.isEmpty()) this.headerNames.clear();
 
