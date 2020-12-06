@@ -6,11 +6,11 @@
 
     <groupId>com.github.javaxcel</groupId>
     <artifactId>javaxcel-core</artifactId>
-    <version>0.5.2</version>
+    <version>0.5.3</version>
     <packaging>jar</packaging>
 
     <name>Javaxcel Core</name>
-    <description>Interconverter DTO list and excel file with simple usage based annotations.</description>
+    <description>Interconverter for DTO list and excel file with simple usage based annotations.</description>
     <url>https://github.com/javaxcel/${artifactId}</url>
 
     <licenses>

@@ -256,7 +256,7 @@ public final class ExcelUtils {
      *
      * <p> This can be affected by font size and font family.
      * If you want this process well, set up the same font family into all cells.
-     * This process will be perform in parallel.
+     * This process will be perform in parallel, but if {@link SXSSFSheet} is, in single.
      *
      * <p> If instance of sheet is {@link SXSSFSheet}, the columns may be
      * inaccurately auto-resized compared to {@link HSSFSheet} and {@link org.apache.poi.xssf.usermodel.XSSFSheet}.
@@ -266,8 +266,32 @@ public final class ExcelUtils {
      * @see Sheet#autoSizeColumn(int)
      */
     public static void autoResizeColumns(Sheet sheet, int numOfColumns) {
-        if (sheet instanceof SXSSFSheet) ((SXSSFSheet) sheet).trackAllColumnsForAutoSizing();
-        IntStream.range(0, numOfColumns).parallel().forEach(sheet::autoSizeColumn);
+        if (sheet instanceof SXSSFSheet) {
+            ((SXSSFSheet) sheet).trackAllColumnsForAutoSizing();
+            /*
+            If use parallel stream, you will see the following error logs.
+
+            java.lang.NullPointerException
+                at jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+                at jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+                at jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+                at java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:500)
+                at java.lang.reflect.Constructor.newInstance(Constructor.java:481)
+                at java.util.concurrent.ForkJoinTask.getThrowableException(ForkJoinTask.java:603)
+                at java.util.concurrent.ForkJoinTask.reportException(ForkJoinTask.java:678)
+                at java.util.concurrent.ForkJoinTask.invoke(ForkJoinTask.java:737)
+                at java.util.stream.ForEachOps$ForEachOp.evaluateParallel(ForEachOps.java:159)
+                at java.util.stream.ForEachOps$ForEachOp$OfInt.evaluateParallel(ForEachOps.java:188)
+                at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:233)
+                at java.util.stream.IntPipeline.forEach(IntPipeline.java:439)
+                at java.util.stream.IntPipeline$Head.forEach(IntPipeline.java:596)
+             */
+            for (int i = 0; i < numOfColumns; i++) {
+                sheet.autoSizeColumn(i);
+            }
+        } else {
+            IntStream.range(0, numOfColumns).parallel().forEach(sheet::autoSizeColumn);
+        }
     }
 
     /**
