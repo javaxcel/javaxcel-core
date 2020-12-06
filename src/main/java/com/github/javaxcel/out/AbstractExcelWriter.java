@@ -154,24 +154,22 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      * }</pre>
      *
      * <p> To change the header names, place the names you want them changed to
-     * in the custom order like this.
+     * in the order like this.
      *
      * <pre>{@code
-     * headerNames(
-     *     ["width" "depth", "height", "weight", "serialNumber", "name", "apiId"],
-     *     ["WIDTH" "DEPTH", "HEIGHT", "WEIGHT", "SERIAL_NUMBER", "NAME", "API_ID"])
+     * headerNames(["SERIAL_NUMBER", "NAME", "API_ID", "WIDTH" "DEPTH", "HEIGHT", "WEIGHT"])
      * }</pre>
      *
      * <p> Then the header names will be changed you want.
      *
      * <pre>{@code
-     * +-------+-------+--------+--------+---------------+----------------+---------------------+
-     * | WIDTH | DEPTH | HEIGHT | WEIGHT | SERIAL_NUMBER | NAME           | API_ID              |
-     * +-------+-------+--------+--------+---------------+----------------+---------------------+
-     * |       | 0.0   | 20.5   | 580.5  | 10000         | Choco cereal   | 2a60-4973-aec0-685e |
-     * +-------+-------+--------+--------+---------------+----------------+---------------------+
-     * | 10.2  | 4.0   | 6.0    | 575.0  | 10001         | Oatmeal cereal | f15d-384d-0a4b-97ec |
-     * +-------+-------+--------+--------+---------------+----------------+---------------------+
+     * +---------------+----------------+---------------------+-------+-------+--------+--------+
+     * | SERIAL_NUMBER | NAME           | API_ID              | WIDTH | DEPTH | HEIGHT | WEIGHT |
+     * +---------------+----------------+---------------------+-------+-------+--------+--------+
+     * | 10000         | Choco cereal   | 2a60-4973-aec0-685e |       | 0.0   | 20.5   | 580.5  |
+     * +---------------+----------------+---------------------+-------+-------+--------+--------+
+     * | 10001         | Oatmeal cereal | f15d-384d-0a4b-97ec | 10.2  | 4.0   | 6.0    | 575.0  |
+     * +---------------+----------------+---------------------+-------+-------+--------+--------+
      * }</pre>
      *
      * @param headerNames header name
