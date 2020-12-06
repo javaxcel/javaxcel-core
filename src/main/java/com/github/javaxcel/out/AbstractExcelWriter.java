@@ -128,6 +128,52 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     /**
      * Sets header names.
      *
+     * <p> For example, the following list will be exported.
+     *
+     * <pre>{@code
+     * [
+     *     {
+     *         "serialNumber": 10000,
+     *         "name": "Choco cereal",
+     *         "apiId": "2a60-4973-aec0-685e",
+     *         "width": null,
+     *         "depth": 0.0,
+     *         "height": 20.5,
+     *         "weight": 580.5
+     *     },
+     *     {
+     *         "serialNumber": 10001,
+     *         "name": "Oatmeal cereal",
+     *         "apiId": "f15d-384d-0a4b-97ec",
+     *         "width": 10.2,
+     *         "depth": 4.0,
+     *         "height": 6.0,
+     *         "weight": 575.0
+     *     }
+     * ]
+     * }</pre>
+     *
+     * <p> To change the header names, place the names you want them changed to
+     * in the custom order like this.
+     *
+     * <pre>{@code
+     * headerNames(
+     *     ["width" "depth", "height", "weight", "serialNumber", "name", "apiId"],
+     *     ["WIDTH" "DEPTH", "HEIGHT", "WEIGHT", "SERIAL_NUMBER", "NAME", "API_ID"])
+     * }</pre>
+     *
+     * <p> Then the header names will be changed you want.
+     *
+     * <pre>{@code
+     * +-------+-------+--------+--------+---------------+----------------+---------------------+
+     * | WIDTH | DEPTH | HEIGHT | WEIGHT | SERIAL_NUMBER | NAME           | API_ID              |
+     * +-------+-------+--------+--------+---------------+----------------+---------------------+
+     * |       | 0.0   | 20.5   | 580.5  | 10000         | Choco cereal   | 2a60-4973-aec0-685e |
+     * +-------+-------+--------+--------+---------------+----------------+---------------------+
+     * | 10.2  | 4.0   | 6.0    | 575.0  | 10001         | Oatmeal cereal | f15d-384d-0a4b-97ec |
+     * +-------+-------+--------+--------+---------------+----------------+---------------------+
+     * }</pre>
+     *
      * @param headerNames header name
      * @return {@link AbstractExcelWriter}
      */
