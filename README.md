@@ -25,7 +25,7 @@
 
 
 
-Javaxcel core is interconverter for DTO list and excel file with simple usage based annotations.
+Javaxcel core is helpful for converting `java.util.List` Object to a excel file and vice versa.
 
 <br><br>
 
