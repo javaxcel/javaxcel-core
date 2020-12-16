@@ -82,7 +82,9 @@ public final class MapReader<W extends Workbook, T extends Map<String, ?>> exten
         if (this.headerNames.isEmpty()) {
             for (int i = 0; i < this.numOfColumns; i++) {
                 Cell cell = header.getCell(i, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                String headerName = StringUtils.ifNullOrEmpty(cell.getStringCellValue(), (String) null);
+
+                // If cell value in first row is empty, sets stringified column number.
+                String headerName = StringUtils.ifNullOrEmpty(cell.getStringCellValue(), String.valueOf(i));
                 this.headerNames.add(headerName);
             }
         }
