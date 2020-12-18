@@ -225,7 +225,6 @@ public class SpELTest {
     public void parseConstructor() {
         // given
         BigInteger bigInt = new BigInteger("123456789");
-
         String exp = "new java.math.BigInteger('123456789')";
 
         // when
