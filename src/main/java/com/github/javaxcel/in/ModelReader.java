@@ -19,10 +19,10 @@ package com.github.javaxcel.in;
 import com.github.javaxcel.annotation.ExcelReaderExpression;
 import com.github.javaxcel.converter.in.BasicReadingConverter;
 import com.github.javaxcel.converter.in.ExpressiveReadingConverter;
+import com.github.javaxcel.converter.in.ReadingConverter;
 import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
-import io.github.imsejin.expression.Expression;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -44,9 +44,9 @@ import static java.util.stream.Collectors.toList;
  */
 public final class ModelReader<W extends Workbook, T> extends AbstractExcelReader<W, T> {
 
-    private final BasicReadingConverter basicConverter = new BasicReadingConverter();
+    private final ReadingConverter basicConverter = new BasicReadingConverter();
 
-    private final ExpressiveReadingConverter expConverter = new ExpressiveReadingConverter();
+    private final ReadingConverter expConverter;
 
     private final Class<T> type;
 
@@ -56,8 +56,6 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
      * @see Class<T>
      */
     private final List<Field> fields;
-
-    private final Map<String, Expression> cache;
 
     private boolean parallel;
 
@@ -69,7 +67,7 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
 
         if (this.fields.isEmpty()) throw new NoTargetedFieldException(this.type);
 
-        this.cache = ExpressiveReadingConverter.createCache(this.fields);
+        this.expConverter = new ExpressiveReadingConverter(this.fields);
     }
 
     /**
@@ -183,8 +181,7 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
                 fieldValue = this.basicConverter.convert(sModel, field);
             } else {
                 // When the field is annotated with @ExcelReaderExpression.
-                Expression expression = this.cache.get(field.getName());
-                fieldValue = this.expConverter.convert(sModel, field, expression);
+                fieldValue = this.expConverter.convert(sModel, field);
             }
 
             FieldUtils.setFieldValue(model, field, fieldValue);

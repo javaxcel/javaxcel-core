@@ -22,6 +22,8 @@ import io.github.imsejin.expression.ExpressionParser;
 import io.github.imsejin.expression.spel.standard.SpelExpressionParser;
 import io.github.imsejin.expression.spel.support.StandardEvaluationContext;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
@@ -31,22 +33,36 @@ public class ExpressiveReadingConverter implements ReadingConverter {
 
     private static final ExpressionParser parser = new SpelExpressionParser();
 
+    @Nullable
+    private final Map<String, Expression> cache;
+
+    public ExpressiveReadingConverter() {
+        this.cache = null;
+    }
+
+    public ExpressiveReadingConverter(@Nonnull List<Field> fields) {
+        this(fields, true);
+    }
+
+    public ExpressiveReadingConverter(@Nonnull List<Field> fields, boolean enableCache) {
+        this.cache = enableCache ? createCache(fields) : null;
+    }
+
     /**
      * Creates cache of expression.
      *
      * @param fields fields of model
      * @return cache of expression
      */
-    public static Map<String, Expression> createCache(List<Field> fields) {
+    private static Map<String, Expression> createCache(List<Field> fields) {
         Map<String, Expression> cache = new HashMap<>();
 
         for (Field field : fields) {
             ExcelReaderExpression annotation = field.getAnnotation(ExcelReaderExpression.class);
             if (annotation == null) continue;
 
-            String fieldName = field.getName();
             Expression expression = parser.parseExpression(annotation.value());
-            cache.put(fieldName, expression);
+            cache.put(field.getName(), expression);
         }
 
         return cache;
@@ -55,28 +71,25 @@ public class ExpressiveReadingConverter implements ReadingConverter {
     /**
      * {@inheritDoc}
      *
-     * <p> Parses a expression to be assigned as field value.
+     * <p> If expressions are already parsed, uses it or parses a expression at that time.
+     * This assigns the parsed value to field.
+     *
+     * @see ExcelReaderExpression#value()
      */
     @Override
+    @Nullable
     public Object convert(Map<String, Object> variables, Field field) {
-        ExcelReaderExpression annotation = field.getAnnotation(ExcelReaderExpression.class);
-        Expression expression = parser.parseExpression(annotation.value());
+        Expression expression;
+        if (this.cache == null) {
+            // When this instantiated without cache.
+            ExcelReaderExpression annotation = field.getAnnotation(ExcelReaderExpression.class);
+            expression = parser.parseExpression(annotation.value());
 
-        StandardEvaluationContext context = new StandardEvaluationContext();
-        context.setVariables(variables);
+        } else {
+            // When this instantiated with cache.
+            expression = this.cache.get(field.getName());
+        }
 
-        return expression.getValue(context, field.getType());
-    }
-
-    /**
-     * Converts cached expression into field value.
-     *
-     * @param variables  {@link Map} in which key is the model's field name and value is the model's field value
-     * @param field      targeted field of model
-     * @param expression expression
-     * @return value converted to the type of field
-     */
-    public Object convert(Map<String, Object> variables, Field field, Expression expression) {
         StandardEvaluationContext context = new StandardEvaluationContext();
         context.setVariables(variables);
 
