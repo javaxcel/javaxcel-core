@@ -23,6 +23,8 @@ import io.github.imsejin.expression.ExpressionParser;
 import io.github.imsejin.expression.spel.standard.SpelExpressionParser;
 import io.github.imsejin.expression.spel.support.StandardEvaluationContext;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
@@ -34,9 +36,16 @@ public class ExpressiveWritingConverter<T> extends DefaultValueStore implements 
 
     private final StandardEvaluationContext context = new StandardEvaluationContext();
 
+    @Nullable
     private final List<Field> fields;
 
+    @Nullable
     private final Map<String, Expression> cache;
+
+    public ExpressiveWritingConverter() {
+        this.fields = null;
+        this.cache = null;
+    }
 
     /**
      * Brings default values for each field and caches them and
@@ -64,7 +73,18 @@ public class ExpressiveWritingConverter<T> extends DefaultValueStore implements 
      *
      * @param fields fields of model
      */
-    public ExpressiveWritingConverter(List<Field> fields) {
+    public ExpressiveWritingConverter(@Nonnull List<Field> fields) {
+        this.fields = fields;
+        this.cache = createCache(fields);
+    }
+
+    /**
+     * Creates cache of expression.
+     *
+     * @param fields fields of model
+     * @return cache of expression
+     */
+    private static Map<String, Expression> createCache(List<Field> fields) {
         Map<String, Expression> cache = new HashMap<>();
 
         for (Field field : fields) {
@@ -75,8 +95,7 @@ public class ExpressiveWritingConverter<T> extends DefaultValueStore implements 
             cache.put(field.getName(), expression);
         }
 
-        this.fields = fields;
-        this.cache = cache;
+        return cache;
     }
 
     /**
@@ -91,12 +110,25 @@ public class ExpressiveWritingConverter<T> extends DefaultValueStore implements 
      */
     @Override
     public String convert(T model, Field field) {
-        Map<String, Object> variables = FieldUtils.toMap(model, this.fields);
+        Map<String, Object> variables;
+        Expression expression;
+
+        if (this.fields == null || this.cache == null) {
+            // When this instantiated by constructor without argument.
+            List<Field> fields = FieldUtils.getTargetedFields(model.getClass());
+            ExcelWriterExpression annotation = field.getAnnotation(ExcelWriterExpression.class);
+            expression = parser.parseExpression(annotation.value());
+            variables = FieldUtils.toMap(model, fields);
+
+        } else {
+            // When this instantiated by constructor with fields.
+            expression = this.cache.get(field.getName());
+            variables = FieldUtils.toMap(model, this.fields);
+        }
 
         this.context.setRootObject(model);
         this.context.setVariables(variables);
 
-        Expression expression = this.cache.get(field.getName());
         String result = expression.getValue(this.context, String.class);
 
         return FieldUtils.convertIfFaulty(result, this.defaultValue, field);
