@@ -90,6 +90,7 @@ public class ExpressiveReadingConverter implements ReadingConverter {
             expression = this.cache.get(field.getName());
         }
 
+        // To read in parallel, instantiates on each call.
         StandardEvaluationContext context = new StandardEvaluationContext();
         context.setVariables(variables);
 
