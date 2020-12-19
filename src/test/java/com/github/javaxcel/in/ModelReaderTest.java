@@ -272,7 +272,7 @@ public class ModelReaderTest {
 
         // given
         stopWatch.start(String.format("create '%s' file", filename));
-        File file = new File(path.toFile(), "people.xlsx");
+        File file = new File(path.toFile(), filename);
         @Cleanup Workbook workbook = new SXSSFWorkbook();
         @Cleanup OutputStream out = new FileOutputStream(file);
         stopWatch.stop();

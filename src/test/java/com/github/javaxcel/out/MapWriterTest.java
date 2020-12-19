@@ -11,8 +11,11 @@ import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.io.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -25,7 +28,7 @@ import java.util.stream.IntStream;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class MapWriterTest {
 
@@ -91,7 +94,7 @@ public class MapWriterTest {
 
     private static <E> Map<E, Integer> toIndexedMap(Collection<E> collection) {
         return collection.stream().collect(HashMap<E, Integer>::new,
-                (map, streamValue) -> map.put(streamValue, map.size()),
+                (map, val) -> map.put(val, map.size()),
                 (map, map2) -> {
                 });
     }
