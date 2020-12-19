@@ -21,7 +21,7 @@ public abstract class Creature {
     private Kingdom kingdom;
 
     @ExcelColumn(name = "Sex", headerStyle = DefaultBodyStyleConfig.class, bodyStyle = DefaultHeaderStyleConfig.class)
-    @ExcelWriterExpression("#kingdom.toString() + sex.toString().replaceAll('(.+)', '/$1/')")
+    @ExcelWriterExpression("#kingdom.toString() + #sex.toString().replaceAll('(.+)', '/$1/')")
     @ExcelReaderExpression("T(com.github.javaxcel.model.creature.Sex).valueOf(#sex.replaceAll(#kingdom.toUpperCase() + '|/', ''))")
     private Sex sex;
 

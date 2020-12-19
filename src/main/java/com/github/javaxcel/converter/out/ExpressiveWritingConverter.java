@@ -126,7 +126,6 @@ public class ExpressiveWritingConverter<T> extends DefaultValueStore implements 
             variables = FieldUtils.toMap(model, this.fields);
         }
 
-        this.context.setRootObject(model);
         this.context.setVariables(variables);
 
         String result = expression.getValue(this.context, String.class);
