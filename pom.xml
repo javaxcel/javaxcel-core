@@ -11,7 +11,7 @@
 
     <name>Javaxcel Core</name>
     <description>Interconverter for DTO list and excel file with simple usage based annotations.</description>
-    <url>https://github.com/javaxcel/${artifactId}</url>
+    <url>https://github.com/javaxcel/${project.artifactId}</url>
 
     <licenses>
         <license>
@@ -30,25 +30,29 @@
     </developers>
 
     <scm>
-        <connection>scm:git:${scm.url}</connection>
-        <developerConnection>${scm.connection}</developerConnection>
-        <url>${url}.git</url>
-        <tag>${version}</tag>
+        <connection>scm:git:${project.scm.url}</connection>
+        <developerConnection>${project.scm.connection}</developerConnection>
+        <url>${project.url}.git</url>
+        <tag>${project.version}</tag>
     </scm>
 
     <distributionManagement>
         <repository>
-            <id>${artifactId}</id>
-            <url>https://api.bintray.com/maven/${bintray.repo}/${artifactId}/;publish=1</url>
+            <id>${project.artifactId}</id>
+            <url>https://api.bintray.com/maven/${bintray.repo}/${project.artifactId}/;publish=1</url>
         </repository>
     </distributionManagement>
 
     <properties>
-        <bintray.repo>imsejin/Javaxcel</bintray.repo>
-        <bintray.package>${artifactId}</bintray.package>
+        <!-- General properties -->
         <java.version>1.8</java.version>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- Deployment properties -->
+        <bintray.repo>imsejin/Javaxcel</bintray.repo>
+        <bintray.package>${project.artifactId}</bintray.package>
+
         <apache.poi.version>4.1.2</apache.poi.version>
         <javaxcel.styler.version>0.2.1</javaxcel.styler.version>
         <common.utils.version>0.3.3</common.utils.version>
@@ -146,7 +150,7 @@
     </dependencies>
 
     <build>
-        <finalName>${artifactId}-${version}</finalName>
+        <finalName>${project.artifactId}-${project.version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -170,6 +174,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.2</version>
                 <executions>
                     <execution>
                         <id>copy</id>
@@ -189,8 +194,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
             </plugin>
 
