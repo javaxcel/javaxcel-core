@@ -25,14 +25,14 @@
         <developer>
             <name>imsejin</name>
             <email>hackeres123@gmail.com</email>
-            <timezone>GMT+0900</timezone>
+            <timezone>Asia/Seoul</timezone>
         </developer>
     </developers>
 
     <scm>
+        <url>https://github.com/javaxcel/javaxcel-core.git</url>
         <connection>scm:git:${project.scm.url}</connection>
         <developerConnection>${project.scm.connection}</developerConnection>
-        <url>https://github.com/javaxcel/javaxcel-core.git</url>
         <tag>${project.version}</tag>
     </scm>
 
