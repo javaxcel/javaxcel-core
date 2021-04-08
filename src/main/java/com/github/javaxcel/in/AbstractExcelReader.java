@@ -161,6 +161,9 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
 
     protected abstract List<T> readSheet(Sheet sheet);
 
+    protected void beforeReadModels(Sheet sheet) {
+    }
+
     protected abstract int getNumOfColumns(Row row);
 
     protected abstract String getColumnName(Cell cell, int columnIndex);
