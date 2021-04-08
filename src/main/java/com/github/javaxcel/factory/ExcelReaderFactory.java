@@ -40,6 +40,8 @@ public abstract class ExcelReaderFactory {
      * Returns instance of {@link MapReader}.
      *
      * @param workbook excel workbook
+     * @param <W>      implementation of {@link Workbook}
+     * @param <V>      {@link Map}'s value
      * @return {@link MapReader}
      */
     public static <W extends Workbook, V> MapReader<W, Map<String, V>> create(W workbook) {
@@ -51,6 +53,8 @@ public abstract class ExcelReaderFactory {
      *
      * @param workbook excel workbook
      * @param type     type of model
+     * @param <W>      implementation of {@link Workbook}
+     * @param <T>      type of the element
      * @return {@link ModelReader}
      */
     public static <W extends Workbook, T> ModelReader<W, T> create(W workbook, Class<T> type) {

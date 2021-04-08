@@ -200,6 +200,7 @@ public final class FieldUtils {
      * <p> this can instantiate the type that has constructor without parameter.
      *
      * @param type class
+     * @param <T> type of instance
      * @return instance of type
      * @throws NoTargetedConstructorException if the type doesn't have default constructor
      */

@@ -40,6 +40,8 @@ public abstract class ExcelWriterFactory {
      * Returns instance of {@link MapWriter}.
      *
      * @param workbook excel workbook
+     * @param <W>      implementation of {@link Workbook}
+     * @param <V>      {@link Map}'s value
      * @return {@link MapWriter}
      */
     public static <W extends Workbook, V> MapWriter<W, Map<String, V>> create(W workbook) {
@@ -51,6 +53,8 @@ public abstract class ExcelWriterFactory {
      *
      * @param workbook excel workbook
      * @param type     type of model
+     * @param <W>      implementation of {@link Workbook}
+     * @param <T>      type of the element
      * @return {@link ModelWriter}
      */
     public static <W extends Workbook, T> ModelWriter<W, T> create(W workbook, Class<T> type) {
