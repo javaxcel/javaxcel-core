@@ -41,11 +41,7 @@ public class ExpressiveReadingConverter implements ReadingConverter {
     }
 
     public ExpressiveReadingConverter(@Nonnull List<Field> fields) {
-        this(fields, true);
-    }
-
-    public ExpressiveReadingConverter(@Nonnull List<Field> fields, boolean enableCache) {
-        this.cache = enableCache ? createCache(fields) : null;
+        this.cache = createCache(fields);
     }
 
     /**
