@@ -166,7 +166,7 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
      * @param row row in sheet
      * @return simulated model
      */
-    protected Map<String, Object> readRow(Row row) {
+    protected final Map<String, Object> readRow(Row row) {
         Map<String, Object> map = new HashMap<>();
 
         int numOfColumns = getNumOfColumns(row);
