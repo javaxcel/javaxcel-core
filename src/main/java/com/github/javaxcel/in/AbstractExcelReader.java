@@ -110,6 +110,39 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
         return list;
     }
 
+    protected final int getNumOfModels(Sheet sheet) {
+        int numOfModels = ExcelUtils.getNumOfModels(sheet);
+        if (this.limit >= 0) numOfModels = Math.min(this.limit, numOfModels);
+
+        return numOfModels;
+    }
+
+    /**
+     * Gets models read as map from a sheet.
+     *
+     * @param sheet excel sheet
+     * @return models read as map
+     */
+    protected final List<Map<String, Object>> readSheetAsMaps(Sheet sheet) {
+        beforeReadModels(sheet);
+
+        final int numOfModels = getNumOfModels(sheet);
+
+        // Reads rows.
+        List<Map<String, Object>> maps = new ArrayList<>();
+        for (int i = 0; i < numOfModels; i++) {
+            if (this.numOfRowsRead == this.limit) break;
+
+            // Skips the first row that is header.
+            Row row = sheet.getRow(i + 1);
+
+            // Adds a row data of the sheet.
+            maps.add(readRow(row));
+        }
+
+        return maps;
+    }
+
     /**
      * Converts a row to a simulated model.
      *

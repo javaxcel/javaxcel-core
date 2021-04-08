@@ -21,7 +21,6 @@ import com.github.javaxcel.converter.in.BasicReadingConverter;
 import com.github.javaxcel.converter.in.ExpressiveReadingConverter;
 import com.github.javaxcel.converter.in.ReadingConverter;
 import com.github.javaxcel.exception.NoTargetedFieldException;
-import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -29,7 +28,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -119,7 +117,7 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
      */
     @Override
     protected List<T> readSheet(Sheet sheet) {
-        List<Map<String, Object>> simulatedModels = getSimulatedModels(sheet);
+        List<Map<String, Object>> simulatedModels = readSheetAsMaps(sheet);
         Stream<Map<String, Object>> stream = this.parallel
                 ? simulatedModels.parallelStream() : simulatedModels.stream();
 
@@ -137,31 +135,6 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Gets simulated models from a sheet.
-     *
-     * @param sheet excel sheet
-     * @return simulated models
-     */
-    private List<Map<String, Object>> getSimulatedModels(Sheet sheet) {
-        int numOfRows = ExcelUtils.getNumOfModels(sheet);
-        if (this.limit >= 0) numOfRows = Math.min(this.limit, numOfRows);
-
-        // Reads rows.
-        List<Map<String, Object>> simulatedModels = new ArrayList<>();
-        for (int i = 0; i < numOfRows; i++) {
-            if (this.numOfRowsRead == this.limit) break;
-
-            // Skips the first row that is header.
-            Row row = sheet.getRow(i + 1);
-
-            // Adds a row data of the sheet.
-            simulatedModels.add(readRow(row));
-        }
-
-        return simulatedModels;
-    }
 
     /**
      * Converts a simulated model to the real model.
