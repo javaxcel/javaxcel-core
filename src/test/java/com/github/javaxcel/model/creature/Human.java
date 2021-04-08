@@ -127,7 +127,7 @@ public class Human extends Creature implements Mockables<Human> {
             int lifespan = RANDOM.nextInt(140) + 1;
             String name = RANDOM.nextDouble() <= 0.85 ? Mockables.generateRandomText(RANDOM.nextInt(24) + 1) : null;
             LocalDate birthday = LocalDate.now();
-            LocalTime birthTime = LocalTime.now();
+            LocalTime birthTime = LocalTime.now().withNano(123_000_000); // with 123 ms
             String placeOfBirth = name == null ? null : UUID.randomUUID().toString();
 
             sb.setLength(0);
