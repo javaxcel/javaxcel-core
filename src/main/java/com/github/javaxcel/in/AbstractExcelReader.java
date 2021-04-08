@@ -96,6 +96,9 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
 
         beforeRead(list);
 
+        // When this gets a cell and it is null, creates an empty cell.
+        this.workbook.setMissingCellPolicy(Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+
         List<Sheet> sheets = ExcelUtils.getSheets(this.workbook);
         for (Sheet sheet : sheets) {
             if (this.numOfRowsRead == this.limit) break;
@@ -135,8 +138,7 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
 
         int numOfColumns = getNumOfColumns(row);
         for (int i = 0; i < numOfColumns; i++) {
-            // If the cell is null, creates an empty cell.
-            Cell cell = row.getCell(i, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+            Cell cell = row.getCell(i);
 
             // Evaluates the formula and returns a stringifed value.
             String cellValue = dataFormatter.formatCellValue(cell, this.formulaEvaluator);
