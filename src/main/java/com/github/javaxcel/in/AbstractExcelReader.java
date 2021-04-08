@@ -63,11 +63,11 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
     protected int limit = -1;
 
     /**
-     * Total number of rows read by {@link AbstractExcelReader}.
+     * Total number of models read by {@link AbstractExcelReader}.
      *
      * @see #limit(int)
      */
-    protected int numOfRowsRead;
+    protected int numOfModelsRead;
 
     protected AbstractExcelReader(W workbook) {
         this.workbook = workbook;
@@ -101,7 +101,7 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
 
         List<Sheet> sheets = ExcelUtils.getSheets(this.workbook);
         for (Sheet sheet : sheets) {
-            if (this.numOfRowsRead == this.limit) break;
+            if (this.numOfModelsRead == this.limit) break;
             list.addAll(readSheet(sheet));
         }
 
@@ -131,7 +131,7 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
         // Reads rows.
         List<Map<String, Object>> maps = new ArrayList<>();
         for (int i = 0; i < numOfModels; i++) {
-            if (this.numOfRowsRead == this.limit) break;
+            if (this.numOfModelsRead == this.limit) break;
 
             // Skips the first row that is header.
             Row row = sheet.getRow(i + 1);
@@ -180,8 +180,8 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
             map.put(getColumnName(cell, i), StringUtils.ifNullOrEmpty(cellValue, (String) null));
         }
 
-        // Increase count of reading row.
-        numOfRowsRead++;
+        // Increases count of model read.
+        numOfModelsRead++;
 
         return map;
     }
