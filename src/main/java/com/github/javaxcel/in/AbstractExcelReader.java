@@ -89,6 +89,10 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
 
     /**
      * {@inheritDoc}
+     *
+     * <p> When an empty row is in the middle of body, computation of
+     * the number of models by {@link ExcelUtils#getNumOfModels(Sheet)} is missed.
+     * Models are missing as many empty rows.
      */
     @Override
     public final List<T> read() {
@@ -135,6 +139,7 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
 
             // Skips the first row that is header.
             Row row = sheet.getRow(i + 1);
+            if (row == null) continue;
 
             // Adds a row data of the sheet.
             maps.add(readRow(row));
