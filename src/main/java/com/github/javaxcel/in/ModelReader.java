@@ -80,7 +80,7 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
     }
 
     /**
-     * Makes the conversion from simulated model into real model parallel.
+     * Makes the conversion from imitated model into real model parallel.
      *
      * <p> We recommend processing in parallel only when
      * dealing with large data. The following table is a benchmark.
@@ -117,9 +117,9 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
      */
     @Override
     protected List<T> readSheet(Sheet sheet) {
-        List<Map<String, Object>> simulatedModels = readSheetAsMaps(sheet);
+        List<Map<String, Object>> imitations = readSheetAsMaps(sheet);
         Stream<Map<String, Object>> stream = this.parallel
-                ? simulatedModels.parallelStream() : simulatedModels.stream();
+                ? imitations.parallelStream() : imitations.stream();
 
         return stream.map(this::toRealModel).collect(toList());
     }
@@ -137,12 +137,12 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
     ///////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Converts a simulated model to the real model.
+     * Converts a imitated model to the real model.
      *
-     * @param sModel simulated model
+     * @param imitation imitated model
      * @return real model
      */
-    private T toRealModel(Map<String, Object> sModel) {
+    private T toRealModel(Map<String, Object> imitation) {
         T model = FieldUtils.instantiate(this.type);
 
         for (Field field : this.fields) {
@@ -151,10 +151,10 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
 
             if (annotation == null) {
                 // When the field is not annotated with @ExcelReaderExpression.
-                fieldValue = this.basicConverter.convert(sModel, field);
+                fieldValue = this.basicConverter.convert(imitation, field);
             } else {
                 // When the field is annotated with @ExcelReaderExpression.
-                fieldValue = this.expConverter.convert(sModel, field);
+                fieldValue = this.expConverter.convert(imitation, field);
             }
 
             FieldUtils.setFieldValue(model, field, fieldValue);

@@ -144,9 +144,9 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
     }
 
     /**
-     * Converts a row to a simulated model.
+     * Converts a row to a imitated model.
      *
-     * <p> Reads rows to get data. this creates {@link Map} as a simulated model
+     * <p> Reads rows to get data. this creates {@link Map} as a imitated model
      * and puts the key({@link Field#getName()}) and the value
      * ({@link DataFormatter#formatCellValue(Cell, FormulaEvaluator)})
      * to the model. The result is the same as the following code.
@@ -164,7 +164,7 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
      * }</pre>
      *
      * @param row row in sheet
-     * @return simulated model
+     * @return imitated model
      */
     protected final Map<String, Object> readRow(Row row) {
         Map<String, Object> map = new HashMap<>();
