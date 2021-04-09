@@ -190,6 +190,17 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
      * @return {@link ModelWriter}
      */
     @Override
+    public ModelWriter<W, T> headerStyle(ExcelStyleConfig config) {
+        super.headerStyle(config);
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link ModelWriter}
+     */
+    @Override
     public ModelWriter<W, T> headerStyles(ExcelStyleConfig... configs) {
         super.headerStyles(configs);
 
@@ -199,6 +210,17 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
                     this.headerStyles.length, this.fields.size(), this.type.getName()));
         }
 
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link ModelWriter}
+     */
+    @Override
+    public ModelWriter<W, T> bodyStyle(ExcelStyleConfig config) {
+        super.bodyStyle(config);
         return this;
     }
 

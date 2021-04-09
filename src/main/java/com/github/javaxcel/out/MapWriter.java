@@ -233,8 +233,30 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
      * @return {@link MapWriter}
      */
     @Override
+    public MapWriter<W, T> headerStyle(ExcelStyleConfig config) {
+        super.headerStyle(config);
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link MapWriter}
+     */
+    @Override
     public MapWriter<W, T> headerStyles(ExcelStyleConfig... configs) {
         super.headerStyles(configs);
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link MapWriter}
+     */
+    @Override
+    public MapWriter<W, T> bodyStyle(ExcelStyleConfig config) {
+        super.bodyStyle(config);
         return this;
     }
 

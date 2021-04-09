@@ -213,8 +213,18 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
 
     //////////////////////////////////////// Style ////////////////////////////////////////
 
+    public AbstractExcelWriter<W, T> headerStyle(ExcelStyleConfig config) {
+        this.headerStyles = ExcelUtils.toCellStyles(this.workbook, config);
+        return this;
+    }
+
     public AbstractExcelWriter<W, T> headerStyles(ExcelStyleConfig... configs) {
         this.headerStyles = ExcelUtils.toCellStyles(this.workbook, configs);
+        return this;
+    }
+
+    public AbstractExcelWriter<W, T> bodyStyle(ExcelStyleConfig config) {
+        this.bodyStyles = ExcelUtils.toCellStyles(this.workbook, config);
         return this;
     }
 
