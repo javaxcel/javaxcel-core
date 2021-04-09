@@ -1,16 +1,16 @@
 package com.github.javaxcel.in;
 
+import com.github.javaxcel.CommonTester;
 import com.github.javaxcel.factory.ExcelReaderFactory;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.model.Mockables;
 import com.github.javaxcel.util.ExcelUtils;
-import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.io.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -20,29 +20,16 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class MapReaderTest {
-
-    private Stopwatch stopWatch;
+public class MapReaderTest extends CommonTester {
 
     private static Map<String, Object> getRandomMap(@Nonnull List<String> keys) {
         return keys.stream().collect(toMap(it -> it, it -> Mockables.generateRandomText(it.length())));
-    }
-
-    @BeforeEach
-    public void beforeEach() {
-        this.stopWatch = new Stopwatch(TimeUnit.SECONDS);
-    }
-
-    @AfterEach
-    public void afterEach() {
-        System.out.println(this.stopWatch.getStatistics());
     }
 
     @Test

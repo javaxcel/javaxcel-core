@@ -1,5 +1,6 @@
 package com.github.javaxcel.out;
 
+import com.github.javaxcel.CommonTester;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.annotation.ExcelModel;
@@ -15,7 +16,6 @@ import com.github.javaxcel.style.DefaultBodyStyleConfig;
 import com.github.javaxcel.style.DefaultHeaderStyleConfig;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
-import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -23,8 +23,6 @@ import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -36,24 +34,11 @@ import java.io.FileOutputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class ModelWriterTest {
-
-    private Stopwatch stopWatch;
-
-    @BeforeEach
-    public void beforeEach() {
-        this.stopWatch = new Stopwatch(TimeUnit.SECONDS);
-    }
-
-    @AfterEach
-    public void afterEach() {
-        System.out.println(this.stopWatch.getStatistics());
-    }
+public class ModelWriterTest extends CommonTester {
 
     /**
      * When write 349,525 mocks,
