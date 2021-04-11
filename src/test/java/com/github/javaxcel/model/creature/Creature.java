@@ -15,7 +15,7 @@ import lombok.*;
 @AllArgsConstructor
 public abstract class Creature {
 
-    @ExcelColumn(name = "Kingdom")
+    @ExcelColumn(name = "Kingdom", enumDropdown = true, dropdownItems = {"archaea", "bacteria", "protista", "animalia", "fungi", "plantae"})
     @ExcelWriterExpression("#kingdom.toString().toLowerCase()")
     @ExcelReaderExpression("T(com.github.javaxcel.model.creature.Kingdom).valueOf(#kingdom.toUpperCase())")
     private Kingdom kingdom;

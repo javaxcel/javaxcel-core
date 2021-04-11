@@ -125,7 +125,7 @@ public class ModelWriterTest extends CommonTester {
      * @see ExcelDateTimeFormat#pattern()
      */
     @Test
-    @DisplayName("@ExcelModel(includeSuper = true) + @ExcelDateTimeFormat")
+    @DisplayName("@ExcelModel(includeSuper = true, enumDropdown = true) + @ExcelDateTimeFormat")
     @SneakyThrows
     public void writeWithEducationToys(@TempDir Path path) {
         String filename = "toys.xlsx";
@@ -189,7 +189,7 @@ public class ModelWriterTest extends CommonTester {
      * @see AbstractExcelWriter#disableRolling()
      */
     @Test
-    @DisplayName("@ExcelModel(includeSuper = true) + @ExcelWriterExpression + disableRolling()")
+    @DisplayName("@ExcelModel(includeSuper = true) + @ExcelWriterExpression + disableRolling() + enumDropdown()")
     @SneakyThrows
     public void writePeople(@TempDir Path path) {
         String filename = "people.xls";
@@ -209,7 +209,7 @@ public class ModelWriterTest extends CommonTester {
         // when
         stopWatch.start(String.format("write %,d models", numOfMocks));
         ExcelWriterFactory.create(workbook, Human.class)
-                .disableRolling().write(out, people);
+                .enumDropdown().disableRolling().write(out, people);
         stopWatch.stop();
 
         // then

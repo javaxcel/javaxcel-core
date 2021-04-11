@@ -18,7 +18,7 @@ import java.util.List;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true, exclude = "targetAges")
 @NoArgsConstructor
-@ExcelModel(includeSuper = true)
+@ExcelModel(includeSuper = true, enumDropdown = true)
 public class EducationToy extends Toy implements Mockables<EducationToy> {
 
     @ExcelColumn(defaultValue = "<null>")
