@@ -99,6 +99,7 @@ public final class ExcelUtils {
      */
     public static List<Sheet> getSheets(Workbook workbook) {
         return IntStream.range(0, workbook.getNumberOfSheets())
+                .filter(i -> !workbook.isSheetHidden(i))
                 .mapToObj(workbook::getSheetAt)
                 .collect(toList());
     }
@@ -135,7 +136,7 @@ public final class ExcelUtils {
      */
     public static long getNumOfRows(File file) {
         Workbook workbook = getWorkbook(file);
-        return ExcelUtils.getNumOfRows(workbook);
+        return getNumOfRows(workbook);
     }
 
     /**
@@ -179,7 +180,7 @@ public final class ExcelUtils {
      */
     public static long getNumOfModels(File file) {
         Workbook workbook = getWorkbook(file);
-        return ExcelUtils.getNumOfModels(workbook);
+        return getNumOfModels(workbook);
     }
 
     /**
@@ -449,7 +450,6 @@ public final class ExcelUtils {
             throw new IllegalArgumentException("endCell precedes startCell: " + endCellAddress + " > " + startCellAddress);
         }
 
-        // e.g. SHEET_NAME!$A$1:$C$3
         return sheet.getSheetName() + "!$" + startAlphabet + '$' + startRownum + ":$" + endAlphabet + '$' + endRownum;
     }
 
@@ -507,13 +507,13 @@ public final class ExcelUtils {
      * @throws IllegalArgumentException if column index is greater than max column index of the sheet
      */
     public static String toColumnRangeReference(Sheet sheet, int columnIndex) {
-        int maxColumnIndex = ExcelUtils.getMaxColumns(sheet) - 1;
+        int maxColumnIndex = getMaxColumns(sheet) - 1;
         if (columnIndex > maxColumnIndex) {
             throw new IllegalArgumentException("Column index exceeds max column index: " + columnIndex + " > " + maxColumnIndex);
         }
 
-        int maxRowIndex = ExcelUtils.getMaxRows(sheet) - 1;
-        return ExcelUtils.toRangeReference(sheet, columnIndex, 1, columnIndex, maxRowIndex);
+        int maxRowIndex = getMaxRows(sheet) - 1;
+        return toRangeReference(sheet, columnIndex, 1, columnIndex, maxRowIndex);
     }
 
     /**
