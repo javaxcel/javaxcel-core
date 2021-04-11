@@ -16,6 +16,7 @@
 
 package com.github.javaxcel.annotation;
 
+import com.github.javaxcel.out.ModelWriter;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.styler.NoStyleConfig;
 
@@ -32,6 +33,30 @@ public @interface ExcelColumn {
      * @return header name
      */
     String name() default "";
+
+    /**
+     * Policy that determines whether this will set constraint to {@link Enum} field or not.
+     *
+     * <p> If this is {@code true}, this will make the column of {@link Enum} field dropdown.
+     *
+     * @return whether this column will be dropdown or not.
+     * @see ModelWriter#enumDropdown()
+     * @see ExcelModel#enumDropdown()
+     * @see #dropdownItems()
+     */
+    boolean enumDropdown() default false;
+
+    /**
+     * Dropdown items for the constraint.
+     *
+     * <p> If this is empty, dropdown items are {@link Enum#name()}.
+     *
+     * @return dropdown items
+     * @see ModelWriter#enumDropdown()
+     * @see ExcelModel#enumDropdown()
+     * @see #enumDropdown()
+     */
+    String[] dropdownItems() default {};
 
     /**
      * Replacement of the value when the value is null or empty string.

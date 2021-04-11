@@ -29,8 +29,12 @@ import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.util.CollectionUtils;
 import org.apache.poi.ss.usermodel.*;
 
+import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 /**
@@ -51,6 +55,16 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
      * The type's fields that will be actually written in excel.
      */
     private final List<Field> fields;
+
+    /**
+     * @see #enumDropdown()
+     */
+    private boolean enableDropdown;
+
+    /**
+     * @see #beforeWrite(OutputStream, List)
+     */
+    private Map<Integer, String[]> enumDropdownItemsMap;
 
     private ModelWriter(W workbook, Class<T> type) {
         super(workbook);
@@ -182,6 +196,20 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
         return this;
     }
 
+    /**
+     * Enables to create dropdowns for columns of enum.
+     *
+     * <p> If this is invoked, excel file has only one sheet.
+     *
+     * @return {@link ModelWriter}
+     * @see ExcelModel#enumDropdown()
+     * @see ExcelColumn#enumDropdown()
+     */
+    public ModelWriter<W, T> enumDropdown() {
+        this.enableDropdown = true;
+        return this;
+    }
+
     //////////////////////////////////////// Style ////////////////////////////////////////
 
     /**
@@ -278,6 +306,45 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
     //////////////////////////////////////// Hooks ////////////////////////////////////////
 
     /**
+     * @see #createDropdowns(Sheet)
+     */
+    @Override
+    @SuppressWarnings("rawtypes,unchecked")
+    protected void beforeWrite(OutputStream out, List<T> list) {
+        Map<Integer, String[]> map = new HashMap<>();
+        ExcelModel excelModel = this.type.getAnnotation(ExcelModel.class);
+        boolean enableByModel = excelModel != null && excelModel.enumDropdown();
+
+        for (int i = 0; i < this.fields.size(); i++) {
+            Field field = this.fields.get(i);
+            if (field.getType().getSuperclass() != Enum.class) continue;
+
+            ExcelColumn excelColumn = field.getAnnotation(ExcelColumn.class);
+            boolean enableByColumn = excelColumn != null && excelColumn.enumDropdown();
+
+            if (this.enableDropdown || enableByModel || enableByColumn) {
+                String[] dropdownItems;
+
+                if (excelColumn != null && excelColumn.dropdownItems().length > 0) {
+                    // Sets custom dropdown items for enum.
+                    dropdownItems = excelColumn.dropdownItems();
+
+                } else {
+                    // Sets default dropdown items for enum.
+                    Class<? extends Enum> enumType = (Class<? extends Enum>) field.getType();
+                    dropdownItems = (String[]) EnumSet.allOf(enumType).stream()
+                            .map(e -> ((Enum) e).name()).toArray(String[]::new);
+                }
+
+                map.put(i, dropdownItems);
+            }
+        }
+
+        // Assigns null if map is empty.
+        if (!map.isEmpty()) this.enumDropdownItemsMap = map;
+    }
+
+    /**
      * {@inheritDoc}
      *
      * <p> If the header names are not set through {@link #headerNames(List)},
@@ -295,6 +362,9 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
      */
     @Override
     protected void writeToSheet(Sheet sheet, List<T> list) {
+        // Creates constraint for columns of enum.
+        if (this.enumDropdownItemsMap != null) createDropdowns(sheet);
+
         final int numOfModels = list.size();
         final int numOfFields = this.fields.size();
 
@@ -334,6 +404,25 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
     @Override
     protected int getNumOfColumns() {
         return this.fields.size();
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Creates dropdowns for columns of {@link Enum}.
+     *
+     * @see #beforeWrite(OutputStream, List)
+     */
+    private void createDropdowns(Sheet sheet) {
+        DataValidationHelper helper = sheet.getDataValidationHelper();
+
+        this.enumDropdownItemsMap.forEach((i, items) -> {
+            // Creates reference of the column range except first row.
+            String ref = ExcelUtils.toColumnRangeReference(sheet, i);
+
+            // Sets validation with the dropdown items at the reference.
+            ExcelUtils.setValidation(sheet, helper, ref, items);
+        });
     }
 
 }
