@@ -6,7 +6,7 @@
 
     <groupId>com.github.javaxcel</groupId>
     <artifactId>javaxcel-core</artifactId>
-    <version>0.5.3</version>
+    <version>0.6.0</version>
     <packaging>jar</packaging>
 
     <name>Javaxcel Core</name>
