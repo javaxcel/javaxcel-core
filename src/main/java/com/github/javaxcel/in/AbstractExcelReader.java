@@ -28,6 +28,16 @@ import java.util.Map;
 
 /**
  * Abstract excel reader
+ *
+ * <ol>
+ *     <li>{@link #read()}</li>
+ *     <li>{@link #beforeRead(List)}</li>
+ *     <li>{@link #readSheet(Sheet)}</li>
+ *     <li>{@link #readRow(Row)}</li>
+ *     <li>{@link #getNumOfColumns(Row)}</li>
+ *     <li>{@link #getColumnName(Cell, int)}</li>
+ *     <li>{@link #afterRead(List)}</li>
+ * </ol>
  */
 public abstract class AbstractExcelReader<W extends Workbook, T> implements ExcelReader<T> {
 

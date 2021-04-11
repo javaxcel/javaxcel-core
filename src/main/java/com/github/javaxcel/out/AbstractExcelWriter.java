@@ -31,6 +31,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Abstract excel writer
+ *
+ * <ol>
+ *     <li>{@link #write(OutputStream, List)}</li>
+ *     <li>{@link #beforeWrite(OutputStream, List)}</li>
+ *     <li>{@link #createHeader(Sheet)}</li>
+ *     <li>{@link #ifHeaderNamesAreEmpty(List)}</li>
+ *     <li>{@link #writeToSheet(Sheet, List)}</li>
+ *     <li>{@link #getNumOfColumns()}</li>
+ *     <li>{@link #save(OutputStream)}</li>
+ *     <li>{@link #afterWrite(OutputStream, List)}</li>
+ * </ol>
+ */
 public abstract class AbstractExcelWriter<W extends Workbook, T> implements ExcelWriter<T> {
 
     /**
@@ -173,7 +187,12 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      * in the order like this.
      *
      * <pre>{@code
-     * headerNames(["SERIAL_NUMBER", "NAME", "API_ID", "WIDTH" "DEPTH", "HEIGHT", "WEIGHT"])
+     *     List<String> names = Arrays.asList(
+     *             "SERIAL_NUMBER", "NAME", "API_ID", "WIDTH" "DEPTH", "HEIGHT", "WEIGHT");
+     *
+     *     ExcelWriterFactory.create(new SXSSFWorkbook(), Product.class)
+     *             .headerNames(names)
+     *             .write(new FileOutputStream(file), list);
      * }</pre>
      *
      * <p> Then the header names will be changed you want.
@@ -299,6 +318,9 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     protected void afterWrite(OutputStream out, List<T> list) {
     }
 
+    /**
+     * @see #headerNames(List)
+     */
     private void createHeader(Sheet sheet) {
         // Creates the first row that is header.
         Row row = sheet.createRow(0);
