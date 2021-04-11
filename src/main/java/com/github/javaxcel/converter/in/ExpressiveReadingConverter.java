@@ -25,6 +25,7 @@ import io.github.imsejin.expression.spel.support.StandardEvaluationContext;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,10 +46,10 @@ public class ExpressiveReadingConverter implements ReadingConverter {
     }
 
     /**
-     * Creates cache of expression.
+     * Creates unmodifiable cache of expressions.
      *
      * @param fields fields of model
-     * @return cache of expression
+     * @return unmodifiable cache of expressions
      */
     private static Map<String, Expression> createCache(List<Field> fields) {
         Map<String, Expression> cache = new HashMap<>();
@@ -61,7 +62,7 @@ public class ExpressiveReadingConverter implements ReadingConverter {
             cache.put(field.getName(), expression);
         }
 
-        return cache;
+        return Collections.unmodifiableMap(cache);
     }
 
     /**
@@ -87,6 +88,7 @@ public class ExpressiveReadingConverter implements ReadingConverter {
         }
 
         // To read in parallel, instantiates on each call.
+        // Enables to use value of the field as "#FIELD_NAME" in 'ExcelReaderExpression'.
         StandardEvaluationContext context = new StandardEvaluationContext();
         context.setVariables(variables);
 
