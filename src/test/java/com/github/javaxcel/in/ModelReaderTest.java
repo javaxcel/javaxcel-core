@@ -1,5 +1,6 @@
 package com.github.javaxcel.in;
 
+import com.github.javaxcel.CommonTester;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.exception.NoTargetedConstructorException;
@@ -10,7 +11,6 @@ import com.github.javaxcel.model.creature.Human;
 import com.github.javaxcel.model.etc.FinalFieldModel;
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
-import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -19,8 +19,10 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.io.*;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,23 +34,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class ModelReaderTest {
-
-    private Stopwatch stopWatch;
-
-    @BeforeEach
-    public void beforeEach() {
-        this.stopWatch = new Stopwatch(TimeUnit.SECONDS);
-    }
-
-    @AfterEach
-    public void afterEach() {
-        System.out.println(this.stopWatch.getStatistics());
-    }
+public class ModelReaderTest extends CommonTester {
 
     @Test
     @DisplayName("Find constructor with min params")
@@ -272,7 +261,7 @@ public class ModelReaderTest {
 
         // given
         stopWatch.start(String.format("create '%s' file", filename));
-        File file = new File(path.toFile(), "people.xlsx");
+        File file = new File(path.toFile(), filename);
         @Cleanup Workbook workbook = new SXSSFWorkbook();
         @Cleanup OutputStream out = new FileOutputStream(file);
         stopWatch.stop();

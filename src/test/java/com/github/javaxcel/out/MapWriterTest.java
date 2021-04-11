@@ -1,35 +1,33 @@
 package com.github.javaxcel.out;
 
+import com.github.javaxcel.CommonTester;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.model.Mockables;
 import com.github.javaxcel.style.DefaultBodyStyleConfig;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
-import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.io.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class MapWriterTest {
-
-    private Stopwatch stopWatch;
+public class MapWriterTest extends CommonTester {
 
     private static Map<String, Object> getRandomMap(@Nonnull List<String> keys) {
         return keys.stream().collect(toMap(it -> it, it -> Mockables.generateRandomText(it.length())));
@@ -91,19 +89,9 @@ public class MapWriterTest {
 
     private static <E> Map<E, Integer> toIndexedMap(Collection<E> collection) {
         return collection.stream().collect(HashMap<E, Integer>::new,
-                (map, streamValue) -> map.put(streamValue, map.size()),
+                (map, val) -> map.put(val, map.size()),
                 (map, map2) -> {
                 });
-    }
-
-    @BeforeEach
-    public void beforeEach() {
-        this.stopWatch = new Stopwatch(TimeUnit.SECONDS);
-    }
-
-    @AfterEach
-    public void afterEach() {
-        System.out.println(this.stopWatch.getStatistics());
     }
 
     @Test

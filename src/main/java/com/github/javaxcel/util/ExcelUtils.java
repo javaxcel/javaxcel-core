@@ -1,3 +1,19 @@
+/*
+ * Copyright 2020 Javaxcel
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.github.javaxcel.util;
 
 import com.github.javaxcel.exception.UnsupportedWorkbookException;
@@ -11,6 +27,9 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellRangeAddressList;
+import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -80,6 +99,7 @@ public final class ExcelUtils {
      */
     public static List<Sheet> getSheets(Workbook workbook) {
         return IntStream.range(0, workbook.getNumberOfSheets())
+                .filter(i -> !workbook.isSheetHidden(i))
                 .mapToObj(workbook::getSheetAt)
                 .collect(toList());
     }
@@ -116,7 +136,7 @@ public final class ExcelUtils {
      */
     public static long getNumOfRows(File file) {
         Workbook workbook = getWorkbook(file);
-        return ExcelUtils.getNumOfRows(workbook);
+        return getNumOfRows(workbook);
     }
 
     /**
@@ -160,7 +180,7 @@ public final class ExcelUtils {
      */
     public static long getNumOfModels(File file) {
         Workbook workbook = getWorkbook(file);
-        return ExcelUtils.getNumOfModels(workbook);
+        return getNumOfModels(workbook);
     }
 
     /**
@@ -376,6 +396,155 @@ public final class ExcelUtils {
         }
 
         return cellStyles;
+    }
+
+    /**
+     * Sets alias for range.
+     *
+     * <pre>{@code
+     *     Workbook workbook = new XSSFWorkbook();
+     *     Sheet sheet = workbook.createSheet("mySheet");
+     *     String ref = sheet.getSheetName() + "!$A$1:$A$2";
+     *
+     *     setRangeAlias(workbook, "MY_RANGE", ref);
+     * }</pre>
+     *
+     * @param workbook excel workbook
+     * @param alias    alias for cell range address
+     * @param ref      reference for cell range address
+     */
+    public static void setRangeAlias(Workbook workbook, String alias, String ref) {
+        Name name = workbook.createName();
+        name.setNameName(alias);
+        name.setRefersToFormula(ref);
+    }
+
+    /**
+     * Converts a reference for cell range address.
+     *
+     * <pre>{@code
+     *     Workbook workbook = new XSSFWorkbook();
+     *     Sheet sheet = workbook.createSheet("mySheet");
+     *     Cell startCell = sheet.createRow(0).createCell(0);
+     *     Cell endCell = sheet.createRow(1).createCell(0);
+     *
+     *     toRangeReference(sheet, startCell, endCell); // mySheet!$A$1:$A$2
+     * }</pre>
+     *
+     * @param sheet     excel sheet
+     * @param startCell first cell in cell range address
+     * @param endCell   last cell in cell range address
+     * @return reference for cell range address
+     * @throws IllegalArgumentException if end cell precedes start cell.
+     */
+    public static String toRangeReference(Sheet sheet, Cell startCell, Cell endCell) {
+        String startAlphabet = CellReference.convertNumToColString(startCell.getColumnIndex());
+        String endAlphabet = CellReference.convertNumToColString(endCell.getColumnIndex());
+
+        int startRownum = startCell.getRowIndex() + 1;
+        int endRownum = endCell.getRowIndex() + 1;
+
+        if (startAlphabet.compareTo(endAlphabet) > 0 || startRownum > endRownum) {
+            String startCellAddress = startCell.getAddress().formatAsString();
+            String endCellAddress = endCell.getAddress().formatAsString();
+            throw new IllegalArgumentException("endCell precedes startCell: " + endCellAddress + " > " + startCellAddress);
+        }
+
+        return sheet.getSheetName() + "!$" + startAlphabet + '$' + startRownum + ":$" + endAlphabet + '$' + endRownum;
+    }
+
+    /**
+     * Converts a reference for cell range address.
+     *
+     * <pre>{@code
+     *     Workbook workbook = new XSSFWorkbook();
+     *     Sheet sheet = workbook.createSheet("mySheet");
+     *
+     *     toRangeReference(sheet, 0, 0, 0, 1); // mySheet!$A$1:$A$2
+     *     toRangeReference(sheet, 2, 1, 5, 4); // mySheet!$C$2:$F$5
+     * }</pre>
+     *
+     * @param sheet            excel sheet
+     * @param startColumnIndex column index of first cell in cell range address
+     * @param startRowIndex    row index of first cell in cell range address
+     * @param endColumnIndex   column index of end cell in cell range address
+     * @param endRowIndex      row index of end cell in cell range address
+     * @return reference for cell range address
+     * @throws IllegalArgumentException if end cell's column/row index precedes start cell's
+     */
+    public static String toRangeReference(Sheet sheet, int startColumnIndex, int startRowIndex, int endColumnIndex, int endRowIndex) {
+        String startAlphabet = CellReference.convertNumToColString(startColumnIndex);
+        String endAlphabet = CellReference.convertNumToColString(endColumnIndex);
+
+        int startRownum = startRowIndex + 1;
+        int endRownum = endRowIndex + 1;
+
+        if (startColumnIndex > endColumnIndex || startRowIndex > endRowIndex) {
+            String startCellAddress = startAlphabet + startRownum;
+            String endCellAddress = endAlphabet + endRownum;
+            throw new IllegalArgumentException("Invalid column/row index for cell range reference: " + endCellAddress + " > " + startCellAddress);
+        }
+
+        return sheet.getSheetName() + "!$" + startAlphabet + '$' + startRownum + ":$" + endAlphabet + '$' + endRownum;
+    }
+
+    /**
+     * Converts a reference for column range address except first row.
+     *
+     * <pre>{@code
+     *     Workbook hssfWorkbook = new HSSFWorkbook();
+     *     Sheet hssfSheet = hssfWorkbook.createSheet("mySheet");
+     *     toRangeReference(hssfSheet, 0); // mySheet!$A$2:$A$65536
+     *
+     *     Workbook xssfWorkbook = new XSSFWorkbook();
+     *     Sheet xssfSheet = xssfWorkbook.createSheet("mySheet");
+     *     toRangeReference(xssfSheet, 2); // mySheet!$C$2:$A$1048576
+     * }</pre>
+     *
+     * @param sheet       excel sheet
+     * @param columnIndex column index for cell range address
+     * @return reference for column range address except first row
+     * @throws IllegalArgumentException if column index is greater than max column index of the sheet
+     */
+    public static String toColumnRangeReference(Sheet sheet, int columnIndex) {
+        int maxColumnIndex = getMaxColumns(sheet) - 1;
+        if (columnIndex > maxColumnIndex) {
+            throw new IllegalArgumentException("Column index exceeds max column index: " + columnIndex + " > " + maxColumnIndex);
+        }
+
+        int maxRowIndex = getMaxRows(sheet) - 1;
+        return toRangeReference(sheet, columnIndex, 1, columnIndex, maxRowIndex);
+    }
+
+    /**
+     * Sets a validation to the cells on the reference.
+     *
+     * <pre>{@code
+     *     Workbook workbook = new XSSFWorkbook();
+     *     Sheet sheet = workbook.createSheet("mySheet");
+     *     DataValidationHelper helper = sheet.getDataValidationHelper();
+     *     String ref = toRangeReference(sheet, 2);
+     *
+     *     setValidation(sheet, helper, ref, "RED", "GREEN", "BLUE");
+     * }</pre>
+     *
+     * @param sheet  excel sheet
+     * @param helper data validation helper
+     * @param ref    reference for cell range address
+     * @param values constraint values
+     * @see Sheet#getDataValidationHelper()
+     */
+    public static void setValidation(Sheet sheet, DataValidationHelper helper, String ref, String... values) {
+        // Creates a reference.
+        CellRangeAddressList ranges = new CellRangeAddressList();
+        CellRangeAddress range = CellRangeAddress.valueOf(ref);
+        ranges.addCellRangeAddress(range);
+
+        // Value of cell on the reference is restricted to the given values only.
+        DataValidationConstraint constraint = helper.createExplicitListConstraint(values);
+        DataValidation validation = helper.createValidation(constraint, ranges);
+        validation.setShowErrorBox(true);
+        sheet.addValidationData(validation);
     }
 
 }

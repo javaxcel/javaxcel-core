@@ -15,13 +15,13 @@ import lombok.*;
 @AllArgsConstructor
 public abstract class Creature {
 
-    @ExcelColumn(name = "Kingdom")
+    @ExcelColumn(name = "Kingdom", enumDropdown = true, dropdownItems = {"archaea", "bacteria", "protista", "animalia", "fungi", "plantae"})
     @ExcelWriterExpression("#kingdom.toString().toLowerCase()")
     @ExcelReaderExpression("T(com.github.javaxcel.model.creature.Kingdom).valueOf(#kingdom.toUpperCase())")
     private Kingdom kingdom;
 
     @ExcelColumn(name = "Sex", headerStyle = DefaultBodyStyleConfig.class, bodyStyle = DefaultHeaderStyleConfig.class)
-    @ExcelWriterExpression("#kingdom.toString() + sex.toString().replaceAll('(.+)', '/$1/')")
+    @ExcelWriterExpression("#kingdom.toString() + #sex.toString().replaceAll('(.+)', '/$1/')")
     @ExcelReaderExpression("T(com.github.javaxcel.model.creature.Sex).valueOf(#sex.replaceAll(#kingdom.toUpperCase() + '|/', ''))")
     private Sex sex;
 

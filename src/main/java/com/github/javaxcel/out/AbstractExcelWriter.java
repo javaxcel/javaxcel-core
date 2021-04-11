@@ -1,3 +1,19 @@
+/*
+ * Copyright 2020 Javaxcel
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.github.javaxcel.out;
 
 import com.github.javaxcel.annotation.ExcelColumn;
@@ -15,6 +31,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Abstract excel writer
+ *
+ * <ol>
+ *     <li>{@link #write(OutputStream, List)}</li>
+ *     <li>{@link #beforeWrite(OutputStream, List)}</li>
+ *     <li>{@link #createHeader(Sheet)}</li>
+ *     <li>{@link #ifHeaderNamesAreEmpty(List)}</li>
+ *     <li>{@link #writeToSheet(Sheet, List)}</li>
+ *     <li>{@link #getNumOfColumns()}</li>
+ *     <li>{@link #save(OutputStream)}</li>
+ *     <li>{@link #afterWrite(OutputStream, List)}</li>
+ * </ol>
+ */
 public abstract class AbstractExcelWriter<W extends Workbook, T> implements ExcelWriter<T> {
 
     /**
@@ -154,24 +184,27 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      * }</pre>
      *
      * <p> To change the header names, place the names you want them changed to
-     * in the custom order like this.
+     * in the order like this.
      *
      * <pre>{@code
-     * headerNames(
-     *     ["width" "depth", "height", "weight", "serialNumber", "name", "apiId"],
-     *     ["WIDTH" "DEPTH", "HEIGHT", "WEIGHT", "SERIAL_NUMBER", "NAME", "API_ID"])
+     *     List<String> names = Arrays.asList(
+     *             "SERIAL_NUMBER", "NAME", "API_ID", "WIDTH" "DEPTH", "HEIGHT", "WEIGHT");
+     *
+     *     ExcelWriterFactory.create(new SXSSFWorkbook(), Product.class)
+     *             .headerNames(names)
+     *             .write(new FileOutputStream(file), list);
      * }</pre>
      *
      * <p> Then the header names will be changed you want.
      *
      * <pre>{@code
-     * +-------+-------+--------+--------+---------------+----------------+---------------------+
-     * | WIDTH | DEPTH | HEIGHT | WEIGHT | SERIAL_NUMBER | NAME           | API_ID              |
-     * +-------+-------+--------+--------+---------------+----------------+---------------------+
-     * |       | 0.0   | 20.5   | 580.5  | 10000         | Choco cereal   | 2a60-4973-aec0-685e |
-     * +-------+-------+--------+--------+---------------+----------------+---------------------+
-     * | 10.2  | 4.0   | 6.0    | 575.0  | 10001         | Oatmeal cereal | f15d-384d-0a4b-97ec |
-     * +-------+-------+--------+--------+---------------+----------------+---------------------+
+     * +---------------+----------------+---------------------+-------+-------+--------+--------+
+     * | SERIAL_NUMBER | NAME           | API_ID              | WIDTH | DEPTH | HEIGHT | WEIGHT |
+     * +---------------+----------------+---------------------+-------+-------+--------+--------+
+     * | 10000         | Choco cereal   | 2a60-4973-aec0-685e |       | 0.0   | 20.5   | 580.5  |
+     * +---------------+----------------+---------------------+-------+-------+--------+--------+
+     * | 10001         | Oatmeal cereal | f15d-384d-0a4b-97ec | 10.2  | 4.0   | 6.0    | 575.0  |
+     * +---------------+----------------+---------------------+-------+-------+--------+--------+
      * }</pre>
      *
      * @param headerNames header name
@@ -199,8 +232,18 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
 
     //////////////////////////////////////// Style ////////////////////////////////////////
 
+    public AbstractExcelWriter<W, T> headerStyle(ExcelStyleConfig config) {
+        this.headerStyles = ExcelUtils.toCellStyles(this.workbook, config);
+        return this;
+    }
+
     public AbstractExcelWriter<W, T> headerStyles(ExcelStyleConfig... configs) {
         this.headerStyles = ExcelUtils.toCellStyles(this.workbook, configs);
+        return this;
+    }
+
+    public AbstractExcelWriter<W, T> bodyStyle(ExcelStyleConfig config) {
+        this.bodyStyles = ExcelUtils.toCellStyles(this.workbook, config);
         return this;
     }
 
@@ -275,6 +318,9 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     protected void afterWrite(OutputStream out, List<T> list) {
     }
 
+    /**
+     * @see #headerNames(List)
+     */
     private void createHeader(Sheet sheet) {
         // Creates the first row that is header.
         Row row = sheet.createRow(0);

@@ -25,7 +25,7 @@
 
 
 
-Javaxcel core is helpful for converting `java.util.List` Object to a excel file and vice versa.
+Javaxcel core is helpful for converting `java.util.List` object to a excel file and vice versa.
 
 <br><br>
 
@@ -196,7 +196,7 @@ the exception will occur becauseof setting `apiId` to `width` (NumberFormatExcep
 @ExcelColumn(name = "PRODUCT_NO")
 private long serialNumber;
 
-@ExcelColumn // Ineffective
+@ExcelColumn
 private String name;
 ```
 
@@ -207,8 +207,6 @@ private String name;
 | 10000      | Choco cereal | 2a60-4973-aec0-685e |       | 0.0   | 20.5   | 580.5  |
 
 If you want to name the header, annotate [ExcelColumn](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/annotation/ExcelColumn.java) and assign [#name()](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/annotation/ExcelColumn.java#L18) you want.
-
-If you don't assign, it's the same as not annotating it.
 
 <br>
 

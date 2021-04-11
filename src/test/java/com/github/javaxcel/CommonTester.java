@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Javaxcel
+ * Copyright 2021 Javaxcel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,26 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.converter.in;
+package com.github.javaxcel;
 
-import java.lang.reflect.Field;
-import java.util.Map;
+import io.github.imsejin.common.tool.Stopwatch;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
-public interface ReadingConverter {
+import java.util.concurrent.TimeUnit;
 
-    /**
-     * Converts a string in cell to the type of field.
-     *
-     * @param variables {@link Map} in which key is the model's field name and
-     *                  value is the model's field value
-     * @param field     targeted field of model
-     * @return value converted to the type of field
-     */
-    Object convert(Map<String, Object> variables, Field field);
+public abstract class CommonTester {
+
+    protected Stopwatch stopWatch;
+
+    @BeforeEach
+    protected void beforeEach() {
+        this.stopWatch = new Stopwatch(TimeUnit.SECONDS);
+    }
+
+    @AfterEach
+    protected void afterEach() {
+        System.out.println(this.stopWatch.getStatistics());
+    }
 
 }
