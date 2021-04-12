@@ -4,12 +4,12 @@ import com.github.javaxcel.CommonTester;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.model.Mockables;
 import com.github.javaxcel.style.DefaultBodyStyleConfig;
+import com.github.javaxcel.style.DefaultHeaderStyleConfig;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,60 +31,6 @@ class MapWriterTest extends CommonTester {
 
     private static Map<String, Object> getRandomMap(@Nonnull List<String> keys) {
         return keys.stream().collect(toMap(it -> it, it -> Mockables.generateRandomText(it.length())));
-    }
-
-    private static ExcelStyleConfig[] getRainbowHeader() {
-        ExcelStyleConfig r = it -> it.alignment()
-                .horizontal(HorizontalAlignment.CENTER).vertical(VerticalAlignment.CENTER)
-                .and()
-                .background(FillPatternType.SOLID_FOREGROUND, IndexedColors.RED)
-                .border().all(BorderStyle.THIN, IndexedColors.GREY_25_PERCENT)
-                .and()
-                .font().name("Arial").size(12).bold();
-        ExcelStyleConfig a = it -> it.alignment()
-                .horizontal(HorizontalAlignment.CENTER).vertical(VerticalAlignment.CENTER)
-                .and()
-                .background(FillPatternType.SOLID_FOREGROUND, IndexedColors.ORANGE)
-                .border().all(BorderStyle.THIN, IndexedColors.GREY_25_PERCENT)
-                .and()
-                .font().name("Arial").size(12).bold();
-        ExcelStyleConfig i = it -> it.alignment()
-                .horizontal(HorizontalAlignment.CENTER).vertical(VerticalAlignment.CENTER)
-                .and()
-                .background(FillPatternType.SOLID_FOREGROUND, IndexedColors.GOLD)
-                .border().all(BorderStyle.THIN, IndexedColors.GREY_25_PERCENT)
-                .and()
-                .font().name("Arial").size(12).bold();
-        ExcelStyleConfig n = it -> it.alignment()
-                .horizontal(HorizontalAlignment.CENTER).vertical(VerticalAlignment.CENTER)
-                .and()
-                .background(FillPatternType.SOLID_FOREGROUND, IndexedColors.GREEN)
-                .border().all(BorderStyle.THIN, IndexedColors.GREY_25_PERCENT)
-                .and()
-                .font().name("Arial").size(12).bold().color(IndexedColors.WHITE);
-        ExcelStyleConfig b = it -> it.alignment()
-                .horizontal(HorizontalAlignment.CENTER).vertical(VerticalAlignment.CENTER)
-                .and()
-                .background(FillPatternType.SOLID_FOREGROUND, IndexedColors.BLUE)
-                .border().all(BorderStyle.THIN, IndexedColors.GREY_25_PERCENT)
-                .and()
-                .font().name("Arial").size(12).bold().color(IndexedColors.WHITE);
-        ExcelStyleConfig o = it -> it.alignment()
-                .horizontal(HorizontalAlignment.CENTER).vertical(VerticalAlignment.CENTER)
-                .and()
-                .background(FillPatternType.SOLID_FOREGROUND, IndexedColors.INDIGO)
-                .border().all(BorderStyle.THIN, IndexedColors.GREY_25_PERCENT)
-                .and()
-                .font().name("Arial").size(12).bold().color(IndexedColors.WHITE);
-        ExcelStyleConfig w = it -> it.alignment()
-                .horizontal(HorizontalAlignment.CENTER).vertical(VerticalAlignment.CENTER)
-                .and()
-                .background(FillPatternType.SOLID_FOREGROUND, IndexedColors.VIOLET)
-                .border().all(BorderStyle.THIN, IndexedColors.GREY_25_PERCENT)
-                .and()
-                .font().name("Arial").size(12).bold().color(IndexedColors.WHITE);
-
-        return new ExcelStyleConfig[]{r, a, i, n, b, o, w};
     }
 
     private static <E> Map<E, Integer> toIndexedMap(Collection<E> collection) {
@@ -192,7 +138,7 @@ class MapWriterTest extends CommonTester {
                 .headerNames(keys, Arrays.asList("RACE", "NAME", "HEIGHT", "WEIGHT", "STRENGTH", "EYE_SIGHT", "FAVORITE_FOOD"))
                 .disableRolling()
                 .autoResizeCols().hideExtraCols()
-                .headerStyles(getRainbowHeader())
+                .headerStyles(DefaultHeaderStyleConfig.getRainbowHeader())
                 .bodyStyles(new DefaultBodyStyleConfig())
                 .write(out, maps);
         stopWatch.stop();
