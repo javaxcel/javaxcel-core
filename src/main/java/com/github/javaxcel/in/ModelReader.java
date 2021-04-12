@@ -57,6 +57,9 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
 
     private boolean parallel;
 
+    /**
+     * @see com.github.javaxcel.factory.ExcelReaderFactory#create(Workbook, Class)
+     */
     private ModelReader(W workbook, Class<T> type) {
         super(workbook);
 

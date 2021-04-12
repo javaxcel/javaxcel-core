@@ -39,6 +39,9 @@ public final class MapReader<W extends Workbook, T extends Map<String, ?>> exten
 
     private final List<String> headerNames = new ArrayList<>();
 
+    /**
+     * @see com.github.javaxcel.factory.ExcelReaderFactory#create(Workbook)
+     */
     private MapReader(W workbook) {
         super(workbook);
     }

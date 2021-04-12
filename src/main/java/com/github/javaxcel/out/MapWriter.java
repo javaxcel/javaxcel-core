@@ -50,6 +50,9 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
 
     private String defaultValue;
 
+    /**
+     * @see com.github.javaxcel.factory.ExcelWriterFactory#create(Workbook)
+     */
     private MapWriter(W workbook) {
         super(workbook);
     }
