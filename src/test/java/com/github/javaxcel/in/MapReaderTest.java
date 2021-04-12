@@ -26,7 +26,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MapReaderTest extends CommonTester {
+class MapReaderTest extends CommonTester {
 
     private static Map<String, Object> getRandomMap(@Nonnull List<String> keys) {
         return keys.stream().collect(toMap(it -> it, it -> Mockables.generateRandomText(it.length())));
@@ -35,7 +35,7 @@ public class MapReaderTest extends CommonTester {
     @Test
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public void read(@TempDir Path path) {
+    void read(@TempDir Path path) {
         String filename = "maps.xlsx";
         List<String> keys = Arrays.asList("race", "name", "height", "weight", "eyesight", "favoriteFood");
 

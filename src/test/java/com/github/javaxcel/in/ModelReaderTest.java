@@ -37,12 +37,12 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ModelReaderTest extends CommonTester {
+class ModelReaderTest extends CommonTester {
 
     @Test
     @DisplayName("Find constructor with min params")
     @SneakyThrows
-    public void getDeclaredConstructorWithMinimumParameters() {
+    void getDeclaredConstructorWithMinimumParameters() {
         // given
         stopWatch.start();
         Class<Product> clazz = Product.class;
@@ -73,7 +73,7 @@ public class ModelReaderTest extends CommonTester {
     @Test
     @DisplayName("@ExcelIgnore + @ExcelModel(includeSuper = false)")
     @SneakyThrows
-    public void readProducts(@TempDir Path path) {
+    void readProducts(@TempDir Path path) {
         String filename = "products.xls";
 
         // given
@@ -116,7 +116,7 @@ public class ModelReaderTest extends CommonTester {
     @Test
     @DisplayName("ExcelReader#limit(int)")
     @SneakyThrows
-    public void readComputers(@TempDir Path path) {
+    void readComputers(@TempDir Path path) {
         String filename = "computers.xlsx";
 
         // given
@@ -162,7 +162,7 @@ public class ModelReaderTest extends CommonTester {
     @Test
     @DisplayName("@ExcelModel(includeSuper = true) + @ExcelDateTimeFormat")
     @SneakyThrows
-    public void readEducationToys(@TempDir Path path) {
+    void readEducationToys(@TempDir Path path) {
         String filename = "toys.xlsx";
 
         // given
@@ -203,7 +203,7 @@ public class ModelReaderTest extends CommonTester {
     @Disabled
     @DisplayName("Model with final fields")
     @SneakyThrows
-    public void readFinalFields(@TempDir Path path) {
+    void readFinalFields(@TempDir Path path) {
         // given
         File file = new File(path.toFile(), "final-fields.xls");
         @Cleanup Workbook workbook = HSSFWorkbookFactory.create(file);
@@ -227,7 +227,7 @@ public class ModelReaderTest extends CommonTester {
     @Test
     @Disabled
     @SneakyThrows
-    public void readMultipleSheets(@TempDir Path path) {
+    void readMultipleSheets(@TempDir Path path) {
         // given
         List<Product> products = new Product().createDesignees();
         List<EducationToy> educationToys = new EducationToy().createDesignees();
@@ -256,7 +256,7 @@ public class ModelReaderTest extends CommonTester {
     @Test
     @DisplayName("@ExcelModel(includeSuper = true) + @ExcelReaderExpression")
     @SneakyThrows
-    public void readPeople(@TempDir Path path) {
+    void readPeople(@TempDir Path path) {
         String filename = "people.xlsx";
 
         // given

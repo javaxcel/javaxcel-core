@@ -27,7 +27,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MapWriterTest extends CommonTester {
+class MapWriterTest extends CommonTester {
 
     private static Map<String, Object> getRandomMap(@Nonnull List<String> keys) {
         return keys.stream().collect(toMap(it -> it, it -> Mockables.generateRandomText(it.length())));
@@ -96,7 +96,7 @@ public class MapWriterTest extends CommonTester {
 
     @Test
     @DisplayName("Rearrange keys")
-    public void rearrangeKeys() {
+    void rearrangeKeys() {
         // given
         stopWatch.start();
         List<String> keys = Arrays.asList("race", "name", "height", "weight", "eyesight", "favoriteFood");
@@ -122,7 +122,7 @@ public class MapWriterTest extends CommonTester {
     @Test
     @DisplayName("headerNames(List)")
     @SneakyThrows
-    public void write(@TempDir Path path) {
+    void write(@TempDir Path path) {
         String filename = "maps.xlsx";
         List<String> keys = Arrays.asList("race", "name", "height", "weight", "eyesight", "favoriteFood");
 
@@ -168,7 +168,7 @@ public class MapWriterTest extends CommonTester {
     @Test
     @DisplayName("Decorate + headerNames(List, List)")
     @SneakyThrows
-    public void writeAndDecorate() {
+    void writeAndDecorate() {
         String filename = "maps-styled.xls";
         List<String> keys = Arrays.asList("race", "name", "height", "weight", "strength", "eyesight", "favoriteFood");
 

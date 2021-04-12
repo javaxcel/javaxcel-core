@@ -38,7 +38,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class ModelWriterTest extends CommonTester {
+class ModelWriterTest extends CommonTester {
 
     /**
      * When write 349,525 mocks,
@@ -51,7 +51,7 @@ public class ModelWriterTest extends CommonTester {
     @Test
     @DisplayName("@ExcelIgnore + @ExcelColumn(defaultValue = \"-1\")")
     @SneakyThrows
-    public void writeWithProducts(@TempDir Path path) {
+    void writeWithProducts(@TempDir Path path) {
         String filename = "products.xlsx";
 
         // given
@@ -89,7 +89,7 @@ public class ModelWriterTest extends CommonTester {
     @Test
     @DisplayName("@ExcelModel(explicit = true) + autoResizeCols()")
     @SneakyThrows
-    public void writeWithComputers(@TempDir Path path) {
+    void writeWithComputers(@TempDir Path path) {
         String filename = "computers.xlsx";
 
         // given
@@ -127,7 +127,7 @@ public class ModelWriterTest extends CommonTester {
     @Test
     @DisplayName("@ExcelModel(includeSuper = true, enumDropdown = true) + @ExcelDateTimeFormat")
     @SneakyThrows
-    public void writeWithEducationToys(@TempDir Path path) {
+    void writeWithEducationToys(@TempDir Path path) {
         String filename = "toys.xlsx";
 
         // given
@@ -161,7 +161,7 @@ public class ModelWriterTest extends CommonTester {
     @ValueSource(classes = {NoFieldModel.class, AllIgnoredModel.class})
     @DisplayName("Model without targeted fields")
     @SneakyThrows
-    public void writeWithModelThatHasNoTargetFields(Class<?> type) {
+    void writeWithModelThatHasNoTargetFields(Class<?> type) {
         String filename = type.getSimpleName().toLowerCase() + ".xls";
 
         // given
@@ -191,7 +191,7 @@ public class ModelWriterTest extends CommonTester {
     @Test
     @DisplayName("@ExcelModel(includeSuper = true) + @ExcelWriterExpression + disableRolling() + enumDropdown()")
     @SneakyThrows
-    public void writePeople(@TempDir Path path) {
+    void writePeople(@TempDir Path path) {
         String filename = "people.xls";
 
         // given
@@ -233,7 +233,7 @@ public class ModelWriterTest extends CommonTester {
     @Test
     @DisplayName("Decorate")
     @SneakyThrows
-    public void writeAndDecorate() {
+    void writeAndDecorate() {
         String filename = "people-styled.xls";
 
         // given
