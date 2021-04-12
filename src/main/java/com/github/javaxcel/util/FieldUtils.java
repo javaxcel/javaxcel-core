@@ -219,7 +219,7 @@ public final class FieldUtils {
         try {
             model = constructor.newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(String.format("Failed to instantiate of the class(%s)", type.getName()));
+            throw new RuntimeException(String.format("Failed to instantiate of the class(%s)", type.getName()), e);
         }
 
         return model;

@@ -290,9 +290,13 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
         final int numOfSheets = lists.size();
         for (int i = 0; i < numOfSheets; i++) {
             // Names a sheet.
-            Sheet sheet = this.sheetName == null
-                    ? this.workbook.createSheet()
-                    : this.workbook.createSheet(this.rolling ? this.sheetName + i : this.sheetName);
+            Sheet sheet;
+            if (this.sheetName == null) {
+                sheet = this.workbook.createSheet();
+            } else {
+                String sheetName = this.rolling ? this.sheetName + i : this.sheetName;
+                sheet = this.workbook.createSheet(sheetName);
+            }
 
             // Writes header.
             createHeader(sheet);
