@@ -9,7 +9,7 @@ jdk:
 
 branches:
   only:
-    - master
+    - dev
 
 # Home directory in Travis CI server.
 cache:
