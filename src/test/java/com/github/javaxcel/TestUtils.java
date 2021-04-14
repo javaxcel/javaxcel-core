@@ -30,15 +30,16 @@ public class TestUtils {
     private static final EasyRandom generator;
 
     static {
-        EasyRandomParameters parameters = new EasyRandomParameters()
-                .charset(StandardCharsets.UTF_8)
-                .dateRange(LocalDate.of(1000, Month.JANUARY, 1), LocalDate.now())
-                .timeRange(LocalTime.MIN, LocalTime.MAX)
-                .stringLengthRange(0, 15)
-                .collectionSizeRange(0, 10)
-                .excludeField(field -> field.getAnnotation(ExcelIgnore.class) != null)
-                .overrideDefaultInitialization(false)
-                .scanClasspathForConcreteTypes(true);
+        EasyRandomParameters parameters =
+                new EasyRandomParameters()
+                        .charset(StandardCharsets.UTF_8)
+                        .dateRange(LocalDate.of(1000, Month.JANUARY, 1), LocalDate.now())
+                        .timeRange(LocalTime.MIN, LocalTime.MAX)
+                        .stringLengthRange(0, 15)
+                        .collectionSizeRange(0, 10)
+                        .excludeField(field -> field.getAnnotation(ExcelIgnore.class) != null)
+                        .overrideDefaultInitialization(false)
+                        .scanClasspathForConcreteTypes(true);
         generator = new EasyRandom(parameters);
     }
 
