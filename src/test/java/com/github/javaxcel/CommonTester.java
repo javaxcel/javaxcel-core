@@ -23,6 +23,9 @@ import org.junit.jupiter.api.BeforeEach;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
+
+import static java.util.stream.Collectors.toList;
 
 public abstract class CommonTester {
 
@@ -39,13 +42,10 @@ public abstract class CommonTester {
     }
 
     protected <T> List<T> getRandomModels(Class<T> type, int size) {
-        List<T> list = new ArrayList<>();
+        if (size < 0) throw new IllegalArgumentException("Size can be not negative");
 
-        for (int i = 0; i < size; i++) {
-            list.add(TestUtils.randomize(type));
-        }
-
-        return list;
+        return IntStream.range(0, size).parallel()
+                       .mapToObj(i -> TestUtils.randomize(type)).collect(toList());
     }
 
 }
