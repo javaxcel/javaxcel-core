@@ -1,3 +1,7 @@
+# To enable Travis CI,
+# 1. Confirm your email account.
+# 2. Give permission for access to your Github repository to Travis.
+
 language: java
 
 # Testing against multiple JDKs.
@@ -21,7 +25,7 @@ script: "./mvnw clean install"
 
 # Codecov
 after_success:
-  - bash < (curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash)
 
 # Notification when Travis CI is done.
 notifications:
