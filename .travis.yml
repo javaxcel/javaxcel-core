@@ -4,9 +4,9 @@
 
 language: java
 
+# The language 'java' is currently unsupported on the Windows Build Environment.
 os:
   - linux
-  - windows
   - osx
 
 # Testing against multiple JDKs.
