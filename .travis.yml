@@ -16,18 +16,19 @@ language: java
 matrix:
   include:
     - os: linux
-      jdk:
-        - openjdk8
-        - openjdk11
-        - openjdk15
-        - openjdk17
-        - oraclejdk11
+      jdk: openjdk8
+    - os: linux
+      jdk: openjdk11
+    - os: linux
+      jdk: openjdk15
+    - os: linux
+      jdk: oraclejdk11
     - os: osx
-      jdk:
-        - openjdk11
-        - openjdk15
-        - openjdk17
-        - oraclejdk11
+      jdk: openjdk11
+    - os: osx
+      jdk: openjdk15
+    - os: osx
+      jdk: oraclejdk11
 
 branches:
   only:
