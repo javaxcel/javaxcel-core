@@ -4,12 +4,9 @@ import com.github.javaxcel.CommonTester;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.annotation.ExcelModel;
-import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.model.computer.Computer;
 import com.github.javaxcel.model.creature.Human;
-import com.github.javaxcel.model.etc.AllIgnoredModel;
-import com.github.javaxcel.model.etc.NoFieldModel;
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
 import com.github.javaxcel.style.DefaultBodyStyleConfig;
@@ -26,17 +23,13 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ModelWriterTest extends CommonTester {
 
@@ -155,28 +148,6 @@ class ModelWriterTest extends CommonTester {
         assertThat(ExcelUtils.getNumOfModels(file))
                 .as("#2 The number of actually written model is %,d", toys.size())
                 .isEqualTo(toys.size());
-    }
-
-    @ParameterizedTest
-    @ValueSource(classes = {NoFieldModel.class, AllIgnoredModel.class})
-    @DisplayName("Model without targeted fields")
-    @SneakyThrows
-    void writeWithModelThatHasNoTargetFields(Class<?> type) {
-        String filename = type.getSimpleName().toLowerCase() + ".xls";
-
-        // given
-        stopWatch.start(String.format("create '%s' file", filename));
-        File file = new File("/data", filename);
-        @Cleanup FileOutputStream out = new FileOutputStream(file);
-        @Cleanup HSSFWorkbook workbook = new HSSFWorkbook();
-        stopWatch.stop();
-
-        // when & then
-        stopWatch.start(String.format("write '%s' file", filename));
-        assertThatThrownBy(() -> ExcelWriterFactory.create(workbook, type).write(out, new ArrayList<>()))
-                .as("When write with a model that has targeted fields")
-                .isInstanceOf(NoTargetedFieldException.class);
-        stopWatch.stop();
     }
 
     /**
