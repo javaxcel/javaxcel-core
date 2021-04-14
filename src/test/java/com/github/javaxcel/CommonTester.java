@@ -20,6 +20,8 @@ import io.github.imsejin.common.tool.Stopwatch;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public abstract class CommonTester {
@@ -34,6 +36,16 @@ public abstract class CommonTester {
     @AfterEach
     protected void afterEach() {
         System.out.println(this.stopWatch.getStatistics());
+    }
+
+    protected <T> List<T> getRandomModels(Class<T> type, int size) {
+        List<T> list = new ArrayList<>();
+
+        for (int i = 0; i < size; i++) {
+            list.add(TestUtils.randomize(type));
+        }
+
+        return list;
     }
 
 }
