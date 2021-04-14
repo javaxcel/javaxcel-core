@@ -15,16 +15,10 @@
     <a href="https://travis-ci.com/github/javaxcel/javaxcel-core">
         <img src="https://travis-ci.com/javaxcel/javaxcel-core.svg?branch=dev"/>
     </a>
-    <img alt="license" src="https://img.shields.io/github/license/javaxcel/javaxcel-core">
-    <img alt="jdk8" src="https://img.shields.io/badge/jdk-8-orange">
-</p>
-
-<p align="center">
     <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/javaxcel/javaxcel-core?label=github">
     <img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.github.javaxcel/javaxcel-core">
-    <img alt="downloads at github" src="https://img.shields.io/github/downloads/javaxcel/javaxcel-core/total?label=downloads%20at%20github">
+    <img alt="jdk8" src="https://img.shields.io/badge/jdk-8-orange">
 </p>
-
 
 
 
