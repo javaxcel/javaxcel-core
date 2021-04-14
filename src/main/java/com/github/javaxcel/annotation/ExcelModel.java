@@ -62,14 +62,18 @@ public @interface ExcelModel {
     /**
      * Replacement of the value when the value is null or empty string.
      *
+     * <p> This is ineffective to primitive type.
+     *
      * @return replacement of the value when the value is null or empty string
+     * @see com.github.javaxcel.out.AbstractExcelWriter#defaultValue(String)
+     * @see ExcelColumn#defaultValue()
      */
     String defaultValue() default "";
 
     /**
      * Configuration of common header style.
      *
-     * <p> this configuration is applied to all header cells.
+     * <p> This configuration is applied to all header cells.
      *
      * @return configuration of common header style
      * @see ExcelColumn#headerStyle()
@@ -79,7 +83,7 @@ public @interface ExcelModel {
     /**
      * Configuration of common body style.
      *
-     * <p> this configuration is applied to all body cells.
+     * <p> This configuration is applied to all body cells.
      *
      * @return configuration of common body style
      * @see ExcelColumn#bodyStyle()
