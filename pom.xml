@@ -113,6 +113,14 @@
             <version>${javaxcel.styler.version}</version>
         </dependency>
 
+        <!-- Easy generator of object with random value -->
+        <dependency>
+            <groupId>org.jeasy</groupId>
+            <artifactId>easy-random-core</artifactId>
+            <version>5.0.0</version>
+            <scope>test</scope>
+        </dependency>
+
         <!-- Junit 5 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
