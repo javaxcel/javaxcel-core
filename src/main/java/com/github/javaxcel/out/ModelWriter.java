@@ -312,7 +312,7 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
      * @see #createDropdowns(Sheet)
      */
     @Override
-    @SuppressWarnings("rawtypes,unchecked")
+    @SuppressWarnings({"rawtypes", "unchecked"})
     protected void beforeWrite(OutputStream out, List<T> list) {
         Map<Integer, String[]> map = new HashMap<>();
         ExcelModel excelModel = this.type.getAnnotation(ExcelModel.class);
