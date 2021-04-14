@@ -33,7 +33,7 @@ matrix:
 branches:
   only:
     - master
-    - dev
+    - release
 
 # Home directory in Travis CI server.
 cache:
