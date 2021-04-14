@@ -5,9 +5,12 @@
 language: java
 
 # The language 'java' is currently unsupported on the Windows Build Environment.
+# https://travis-ci.community/t/install-of-oracle-jdk8-is-failing/4365
+# ---
+# Unable to install JDK 8 on macOS.
+# https://travis-ci.community/t/unable-to-install-jdk-8-on-macos-11-2-with-dist-trusty/6104
 os:
   - linux
-  - osx
 
 # Testing against multiple JDKs.
 # "oraclejdk8" is not supported.
@@ -18,6 +21,7 @@ jdk:
 
 branches:
   only:
+    - master
     - dev
 
 # Home directory in Travis CI server.
@@ -29,7 +33,10 @@ cache:
 before_install:
   - "chmod +x ./mvnw"
 
-script: "./mvnw clean test -B"
+install:
+  - "./mvnw clean install -Dgpg.skip"
+
+script: "./mvnw test -B"
 
 # Codecov
 after_success:
