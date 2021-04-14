@@ -5,11 +5,11 @@
 language: java
 
 # Testing against multiple JDKs.
+# "oraclejdk8" is not supported.
 jdk:
-  - oraclejdk8
-  - oraclejdk11
   - openjdk8
   - openjdk11
+  - oraclejdk11
 
 branches:
   only:
@@ -21,7 +21,9 @@ cache:
     - "$HOME/.m2/repository" # Maven
     - "$HOME/.gradle" # Gradle
 
-script: "./mvnw clean install"
+script:
+  - "chmod +x ./mvnw"
+  - "./mvnw clean install"
 
 # Codecov
 after_success:
