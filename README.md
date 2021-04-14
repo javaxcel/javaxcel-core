@@ -4,22 +4,25 @@
 
 
 <p align="center">
-    <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/javaxcel/javaxcel-core">
+    <a href="https://codecov.io/gh/javaxcel/javaxcel-core">
+        <img src="https://codecov.io/gh/javaxcel/javaxcel-core/branch/dev/graph/badge.svg?token=X7ZO535W9K"/>
+    </a>
     <a href="https://lgtm.com/projects/g/javaxcel/javaxcel-core/context:java"><img alt="Language grade: Java" src="https://img.shields.io/lgtm/grade/java/g/javaxcel/javaxcel-core.svg?logo=lgtm&logoWidth=18"/></a>
     <a href="https://frontend.code-inspector.com/project/16361/dashboard"><img alt="Code Inspector" src="https://www.code-inspector.com/project/16361/score/svg"></a>
 </p>
 
 <p align="center">
-    <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/javaxcel/javaxcel-core?label=github">
-    <img alt="Bintray" src="https://img.shields.io/bintray/v/imsejin/Javaxcel/javaxcel-core">
-    <img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.github.javaxcel/javaxcel-core">
+    <a href="https://travis-ci.com/github/javaxcel/javaxcel-core">
+        <img src="https://travis-ci.com/javaxcel/javaxcel-core.svg?branch=dev"/>
+    </a>
+    <img alt="license" src="https://img.shields.io/github/license/javaxcel/javaxcel-core">
+    <img alt="jdk8" src="https://img.shields.io/badge/jdk-8-orange">
 </p>
 
 <p align="center">
-    <img alt="GitHub All Releases" src="https://img.shields.io/github/downloads/javaxcel/javaxcel-core/total?label=downloads%20at%20github">
-    <img alt="Bintray" src="https://img.shields.io/bintray/dt/imsejin/Javaxcel/javaxcel-core?label=downloads%20at%20bintray">
-    <img alt="GitHub" src="https://img.shields.io/github/license/javaxcel/javaxcel-core">
-    <img alt="jdk8" src="https://img.shields.io/badge/jdk-8-orange">
+    <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/javaxcel/javaxcel-core?label=github">
+    <img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.github.javaxcel/javaxcel-core">
+    <img alt="downloads at github" src="https://img.shields.io/github/downloads/javaxcel/javaxcel-core/total?label=downloads%20at%20github">
 </p>
 
 
