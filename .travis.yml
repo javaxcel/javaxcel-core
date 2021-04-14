@@ -21,9 +21,10 @@ cache:
     - "$HOME/.m2/repository" # Maven
     - "$HOME/.gradle" # Gradle
 
-script:
+before_install:
   - "chmod +x ./mvnw"
-  - "./mvnw clean install"
+
+script: "./mvnw clean install"
 
 # Codecov
 after_success:
