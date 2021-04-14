@@ -4,20 +4,30 @@
 
 language: java
 
+# Testing against multiple JDKs.
+# ---
 # The language 'java' is currently unsupported on the Windows Build Environment.
 # https://travis-ci.community/t/install-of-oracle-jdk8-is-failing/4365
 # ---
 # Unable to install JDK 8 on macOS.
 # https://travis-ci.community/t/unable-to-install-jdk-8-on-macos-11-2-with-dist-trusty/6104
-os:
-  - linux
-
-# Testing against multiple JDKs.
+# ---
 # "oraclejdk8" is not supported.
-jdk:
-  - openjdk8
-  - openjdk11
-  - oraclejdk11
+matrix:
+  include:
+    - os: linux
+      jdk:
+        - openjdk8
+        - openjdk11
+        - openjdk15
+        - openjdk17
+        - oraclejdk11
+    - os: osx
+      jdk:
+        - openjdk11
+        - openjdk15
+        - openjdk17
+        - oraclejdk11
 
 branches:
   only:
