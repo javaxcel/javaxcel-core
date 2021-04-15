@@ -18,9 +18,7 @@ package com.github.javaxcel.junit.extension;
 
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import io.github.imsejin.common.tool.Stopwatch;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.extension.*;
-import org.junit.jupiter.params.ParameterizedTest;
 
 /**
  * @see StopwatchProvider
@@ -31,8 +29,16 @@ public class StopwatchExtension implements BeforeTestExecutionCallback, AfterTes
 
     @Override
     public void beforeTestExecution(ExtensionContext extensionContext) throws Exception {
-        StopwatchProvider annotation = extensionContext.getRequiredTestMethod().getAnnotation(StopwatchProvider.class);
-        this.stopwatch.setTimeUnit(annotation.value());
+        extensionContext.getTestClass().ifPresent(clazz -> {
+            StopwatchProvider annotation = clazz.getAnnotation(StopwatchProvider.class);
+            if (annotation != null) this.stopwatch.setTimeUnit(annotation.value());
+        });
+
+        // Time unit on method takes precedence over on class.
+        extensionContext.getTestMethod().ifPresent(method -> {
+            StopwatchProvider annotation = method.getAnnotation(StopwatchProvider.class);
+            if (annotation != null) this.stopwatch.setTimeUnit(annotation.value());
+        });
     }
 
     @Override
@@ -44,11 +50,7 @@ public class StopwatchExtension implements BeforeTestExecutionCallback, AfterTes
         If test method is annotated with @ParameterizedTest or @RepeatedTest,
         this extension is reused. It seems that the test cases are in a group.
         */
-        extensionContext.getTestMethod().ifPresent(method -> {
-            ParameterizedTest parameterizedTest = method.getAnnotation(ParameterizedTest.class);
-            RepeatedTest repeatedTest = method.getAnnotation(RepeatedTest.class);
-            if (parameterizedTest != null || repeatedTest != null) this.stopwatch = new Stopwatch();
-        });
+        if (!this.stopwatch.hasNeverBeenStopped()) this.stopwatch = new Stopwatch();
     }
 
     @Override
