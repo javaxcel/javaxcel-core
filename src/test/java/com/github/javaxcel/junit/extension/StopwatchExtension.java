@@ -47,8 +47,10 @@ public class StopwatchExtension implements BeforeTestExecutionCallback, AfterTes
         System.out.println(this.stopwatch.getStatistics());
 
         /*
-        If test method is annotated with @ParameterizedTest or @RepeatedTest,
-        this extension is reused. It seems that the test cases are in a group.
+        If test method is annotated with @ParameterizedTest or @RepeatedTest
+        or test class is annotated with @StopwatchProvider,
+        a instance of this extension is reused.
+        It seems that the test cases are in a group.
         */
         if (!this.stopwatch.hasNeverBeenStopped()) this.stopwatch = new Stopwatch();
     }
