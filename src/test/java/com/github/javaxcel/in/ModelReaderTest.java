@@ -38,11 +38,11 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@StopwatchProvider
 class ModelReaderTest {
 
     @Test
     @DisplayName("Find constructor with min params")
-    @StopwatchProvider
     @SneakyThrows
     void getDeclaredConstructorWithMinimumParameters(Stopwatch stopwatch) {
         // given
@@ -74,7 +74,6 @@ class ModelReaderTest {
      */
     @Test
     @DisplayName("@ExcelIgnore + @ExcelModel(includeSuper = false)")
-    @StopwatchProvider
     @SneakyThrows
     void readProducts(@TempDir Path path, Stopwatch stopwatch) {
         String filename = "products.xls";
@@ -118,7 +117,6 @@ class ModelReaderTest {
      */
     @Test
     @DisplayName("ExcelReader#limit(int)")
-    @StopwatchProvider
     @SneakyThrows
     void readComputers(@TempDir Path path, Stopwatch stopwatch) {
         String filename = "computers.xlsx";
@@ -165,7 +163,6 @@ class ModelReaderTest {
      */
     @Test
     @DisplayName("@ExcelModel(includeSuper = true) + @ExcelDateTimeFormat")
-    @StopwatchProvider
     @SneakyThrows
     void readEducationToys(@TempDir Path path, Stopwatch stopwatch) {
         String filename = "toys.xlsx";
@@ -260,7 +257,6 @@ class ModelReaderTest {
      */
     @Test
     @DisplayName("@ExcelModel(includeSuper = true) + @ExcelReaderExpression")
-    @StopwatchProvider
     @SneakyThrows
     void readPeople(@TempDir Path path, Stopwatch stopwatch) {
         String filename = "people.xlsx";

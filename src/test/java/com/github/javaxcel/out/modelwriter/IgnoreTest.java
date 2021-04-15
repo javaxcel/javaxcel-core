@@ -45,9 +45,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@StopwatchProvider
 class IgnoreTest {
 
-    @StopwatchProvider
     @ParameterizedTest
     @ValueSource(classes = {IgnoredModel.class, ExplicitModel.class})
     @DisplayName("@ExcelIgnore")
@@ -89,6 +89,8 @@ class IgnoreTest {
                 .as("#3 The header size of excel file is %,d", numOfTargetedFields)
                 .isEqualTo(numOfTargetedFields);
     }
+
+    ///////////////////////////////////////////////////////////////////////////////////////
 
     @Getter
     @Setter

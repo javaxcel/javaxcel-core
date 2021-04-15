@@ -27,6 +27,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@StopwatchProvider
 class MapReaderTest {
 
     private static Map<String, Object> getRandomMap(@Nonnull List<String> keys) {
@@ -35,7 +36,6 @@ class MapReaderTest {
 
     @Test
     @SneakyThrows
-    @StopwatchProvider
     @SuppressWarnings("unchecked")
     void read(@TempDir Path path, Stopwatch stopwatch) {
         String filename = "maps.xlsx";

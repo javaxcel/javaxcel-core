@@ -28,6 +28,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@StopwatchProvider
 class MapWriterTest {
 
     private static Map<String, Object> getRandomMap(@Nonnull List<String> keys) {
@@ -42,7 +43,6 @@ class MapWriterTest {
     }
 
     @Test
-    @StopwatchProvider
     @DisplayName("Rearrange keys")
     void rearrangeKeys(Stopwatch stopwatch) {
         // given
@@ -69,7 +69,6 @@ class MapWriterTest {
      */
     @Test
     @DisplayName("headerNames(List)")
-    @StopwatchProvider
     @SneakyThrows
     void write(@TempDir Path path, Stopwatch stopwatch) {
         String filename = "maps.xlsx";
@@ -116,7 +115,6 @@ class MapWriterTest {
      */
     @Test
     @DisplayName("Decorate + headerNames(List, List)")
-    @StopwatchProvider
     @SneakyThrows
     void writeAndDecorate(Stopwatch stopwatch) {
         String filename = "maps-styled.xls";

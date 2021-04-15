@@ -35,9 +35,9 @@ import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@StopwatchProvider(TimeUnit.MILLISECONDS)
 class NoTargetedFieldTest {
 
-    @StopwatchProvider(TimeUnit.MILLISECONDS)
     @ParameterizedTest
     @ValueSource(classes = {NoFieldModel.class, AllIgnoredModel.class, ExplicitModel.class})
     @DisplayName("throws NoTargetedFieldException")
@@ -53,6 +53,8 @@ class NoTargetedFieldTest {
                 .as("When creates ModelWriter with model without targeted field")
                 .isExactlyInstanceOf(NoTargetedFieldException.class);
     }
+
+    ///////////////////////////////////////////////////////////////////////////////////////
 
     static class NoFieldModel {
     }

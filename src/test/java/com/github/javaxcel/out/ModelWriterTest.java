@@ -32,6 +32,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@StopwatchProvider
 class ModelWriterTest {
 
     /**
@@ -44,7 +45,6 @@ class ModelWriterTest {
      */
     @Test
     @DisplayName("@ExcelIgnore + @ExcelColumn(defaultValue = \"-1\")")
-    @StopwatchProvider
     @SneakyThrows
     void writeWithProducts(@TempDir Path path, Stopwatch stopwatch) {
         String filename = "products.xlsx";
@@ -83,7 +83,6 @@ class ModelWriterTest {
      */
     @Test
     @DisplayName("@ExcelModel(explicit = true) + autoResizeCols()")
-    @StopwatchProvider
     @SneakyThrows
     void writeWithComputers(@TempDir Path path, Stopwatch stopwatch) {
         String filename = "computers.xlsx";
@@ -122,7 +121,6 @@ class ModelWriterTest {
      */
     @Test
     @DisplayName("@ExcelModel(includeSuper = true, enumDropdown = true) + @ExcelDateTimeFormat")
-    @StopwatchProvider
     @SneakyThrows
     void writeWithEducationToys(@TempDir Path path, Stopwatch stopwatch) {
         String filename = "toys.xlsx";
@@ -165,7 +163,6 @@ class ModelWriterTest {
      */
     @Test
     @DisplayName("@ExcelModel(includeSuper = true) + @ExcelWriterExpression + disableRolling() + enumDropdown()")
-    @StopwatchProvider
     @SneakyThrows
     void writePeople(@TempDir Path path, Stopwatch stopwatch) {
         String filename = "people.xls";
@@ -208,7 +205,6 @@ class ModelWriterTest {
      */
     @Test
     @DisplayName("Decorate")
-    @StopwatchProvider
     @SneakyThrows
     void writeAndDecorate(Stopwatch stopwatch) {
         String filename = "people-styled.xls";
