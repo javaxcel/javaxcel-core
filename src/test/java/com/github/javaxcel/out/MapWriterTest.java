@@ -1,12 +1,13 @@
 package com.github.javaxcel.out;
 
-import com.github.javaxcel.CommonTester;
 import com.github.javaxcel.factory.ExcelWriterFactory;
+import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.model.Mockables;
 import com.github.javaxcel.style.DefaultBodyStyleConfig;
 import com.github.javaxcel.style.DefaultHeaderStyleConfig;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
+import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -27,7 +28,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class MapWriterTest extends CommonTester {
+class MapWriterTest {
 
     private static Map<String, Object> getRandomMap(@Nonnull List<String> keys) {
         return keys.stream().collect(toMap(it -> it, it -> Mockables.generateRandomText(it.length())));
@@ -41,10 +42,11 @@ class MapWriterTest extends CommonTester {
     }
 
     @Test
+    @StopwatchProvider
     @DisplayName("Rearrange keys")
-    void rearrangeKeys() {
+    void rearrangeKeys(Stopwatch stopwatch) {
         // given
-        stopWatch.start();
+        stopwatch.start();
         List<String> keys = Arrays.asList("race", "name", "height", "weight", "eyesight", "favoriteFood");
         System.out.printf("original keys: %s\n", keys);
 
@@ -53,7 +55,7 @@ class MapWriterTest extends CommonTester {
         System.out.printf("rearranged keys: %s\n", rearrangedKeys);
         Map<String, Integer> indexedMap = toIndexedMap(rearrangedKeys);
         keys.sort(comparing(indexedMap::get));
-        stopWatch.stop();
+        stopwatch.stop();
 
         // then
         assertThat(rearrangedKeys)
@@ -67,31 +69,32 @@ class MapWriterTest extends CommonTester {
      */
     @Test
     @DisplayName("headerNames(List)")
+    @StopwatchProvider
     @SneakyThrows
-    void write(@TempDir Path path) {
+    void write(@TempDir Path path, Stopwatch stopwatch) {
         String filename = "maps.xlsx";
         List<String> keys = Arrays.asList("race", "name", "height", "weight", "eyesight", "favoriteFood");
 
         // given
-        stopWatch.start(String.format("create '%s' file", filename));
+        stopwatch.start(String.format("create '%s' file", filename));
         File file = new File(path.toFile(), filename);
         @Cleanup FileOutputStream out = new FileOutputStream(file);
         @Cleanup SXSSFWorkbook workbook = new SXSSFWorkbook();
-        stopWatch.stop();
+        stopwatch.stop();
 
         final int numOfMocks = ExcelUtils.getMaxRows(workbook) / 10;
-        stopWatch.start(String.format("create %,d mocks", numOfMocks));
+        stopwatch.start(String.format("create %,d mocks", numOfMocks));
         List<Map<String, Object>> maps = IntStream.range(0, numOfMocks)
                 .mapToObj(i -> getRandomMap(keys)).collect(toList());
-        stopWatch.stop();
+        stopwatch.stop();
 
         // when
-        stopWatch.start(String.format("write %,d maps", numOfMocks));
+        stopwatch.start(String.format("write %,d maps", numOfMocks));
         ExcelWriterFactory.create(workbook)
                 .sheetName("Maps")
                 .headerNames(keys)
                 .write(out, maps);
-        stopWatch.stop();
+        stopwatch.stop();
 
         // then
         assertThat(file)
@@ -113,26 +116,27 @@ class MapWriterTest extends CommonTester {
      */
     @Test
     @DisplayName("Decorate + headerNames(List, List)")
+    @StopwatchProvider
     @SneakyThrows
-    void writeAndDecorate() {
+    void writeAndDecorate(Stopwatch stopwatch) {
         String filename = "maps-styled.xls";
         List<String> keys = Arrays.asList("race", "name", "height", "weight", "strength", "eyesight", "favoriteFood");
 
         // given
-        stopWatch.start(String.format("create '%s' file", filename));
+        stopwatch.start(String.format("create '%s' file", filename));
         File file = new File("/data", filename);
         @Cleanup FileOutputStream out = new FileOutputStream(file);
         @Cleanup HSSFWorkbook workbook = new HSSFWorkbook();
-        stopWatch.stop();
+        stopwatch.stop();
 
         final int numOfMocks = 1000;
-        stopWatch.start(String.format("create %,d mocks", numOfMocks));
+        stopwatch.start(String.format("create %,d mocks", numOfMocks));
         List<Map<String, Object>> maps = IntStream.range(0, numOfMocks)
                 .mapToObj(i -> getRandomMap(keys)).collect(toList());
-        stopWatch.stop();
+        stopwatch.stop();
 
         // when
-        stopWatch.start(String.format("write %,d maps", numOfMocks));
+        stopwatch.start(String.format("write %,d maps", numOfMocks));
         ExcelWriterFactory.create(workbook)
                 .sheetName("Maps")
                 .headerNames(keys, Arrays.asList("RACE", "NAME", "HEIGHT", "WEIGHT", "STRENGTH", "EYE_SIGHT", "FAVORITE_FOOD"))
@@ -141,7 +145,7 @@ class MapWriterTest extends CommonTester {
                 .headerStyles(DefaultHeaderStyleConfig.getRainbowHeader())
                 .bodyStyles(new DefaultBodyStyleConfig())
                 .write(out, maps);
-        stopWatch.stop();
+        stopwatch.stop();
 
         // then
         assertThat(file)

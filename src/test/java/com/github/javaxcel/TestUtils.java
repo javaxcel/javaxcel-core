@@ -24,6 +24,10 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Month;
+import java.util.List;
+import java.util.stream.IntStream;
+
+import static java.util.stream.Collectors.toList;
 
 public class TestUtils {
 
@@ -45,6 +49,13 @@ public class TestUtils {
 
     public static <T> T randomize(Class<T> type) {
         return generator.nextObject(type);
+    }
+
+    public static  <T> List<T> getMocks(Class<T> type, int size) {
+        if (size < 0) throw new IllegalArgumentException("Size cannot be negative");
+
+        return IntStream.range(0, size).parallel()
+                       .mapToObj(i -> randomize(type)).collect(toList());
     }
 
 }

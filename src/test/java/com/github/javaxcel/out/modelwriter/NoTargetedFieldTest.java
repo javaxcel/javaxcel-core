@@ -16,17 +16,17 @@
 
 package com.github.javaxcel.out.modelwriter;
 
-import com.github.javaxcel.CommonTester;
 import com.github.javaxcel.annotation.ExcelIgnore;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.factory.ExcelWriterFactory;
+import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.ModelWriter;
+import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -35,28 +35,23 @@ import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class NoTargetedFieldTest extends CommonTester {
+class NoTargetedFieldTest {
 
-    @BeforeEach
-    void init() {
-        stopWatch.setTimeUnit(TimeUnit.MILLISECONDS);
-    }
-
+    @StopwatchProvider(TimeUnit.MILLISECONDS)
     @ParameterizedTest
     @ValueSource(classes = {NoFieldModel.class, AllIgnoredModel.class, ExplicitModel.class})
     @DisplayName("throws NoTargetedFieldException")
-    void createModelWriterWithoutTargetField(Class<?> type) {
+    void createModelWriterWithoutTargetField(Class<?> type, Stopwatch stopwatch) {
         // given
-        stopWatch.start("create '%s' instance", HSSFWorkbook.class.getSimpleName());
+        stopwatch.start("create '%s' instance", HSSFWorkbook.class.getSimpleName());
         Workbook workbook = new HSSFWorkbook();
-        stopWatch.stop();
+        stopwatch.stop();
 
         // when & then
-        stopWatch.start("create '%s' instance with '%s'", ModelWriter.class.getSimpleName(), type.getSimpleName());
+        stopwatch.start("create '%s' instance with '%s'", ModelWriter.class.getSimpleName(), type.getSimpleName());
         assertThatThrownBy(() -> ExcelWriterFactory.create(workbook, type))
                 .as("When creates ModelWriter with model without targeted field")
                 .isExactlyInstanceOf(NoTargetedFieldException.class);
-        stopWatch.stop();
     }
 
     static class NoFieldModel {

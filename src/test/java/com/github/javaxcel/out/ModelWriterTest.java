@@ -1,10 +1,10 @@
 package com.github.javaxcel.out;
 
-import com.github.javaxcel.CommonTester;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.factory.ExcelWriterFactory;
+import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.model.computer.Computer;
 import com.github.javaxcel.model.creature.Human;
 import com.github.javaxcel.model.product.Product;
@@ -13,6 +13,7 @@ import com.github.javaxcel.style.DefaultBodyStyleConfig;
 import com.github.javaxcel.style.DefaultHeaderStyleConfig;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
+import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -31,7 +32,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ModelWriterTest extends CommonTester {
+class ModelWriterTest {
 
     /**
      * When write 349,525 mocks,
@@ -43,27 +44,28 @@ class ModelWriterTest extends CommonTester {
      */
     @Test
     @DisplayName("@ExcelIgnore + @ExcelColumn(defaultValue = \"-1\")")
+    @StopwatchProvider
     @SneakyThrows
-    void writeWithProducts(@TempDir Path path) {
+    void writeWithProducts(@TempDir Path path, Stopwatch stopwatch) {
         String filename = "products.xlsx";
 
         // given
-        stopWatch.start(String.format("create '%s' file", filename));
+        stopwatch.start(String.format("create '%s' file", filename));
         File file = new File(path.toFile(), filename);
         @Cleanup FileOutputStream out = new FileOutputStream(file);
         @Cleanup SXSSFWorkbook workbook = new SXSSFWorkbook();
-        stopWatch.stop();
+        stopwatch.stop();
 
         final int numOfMocks = ExcelUtils.getMaxRows(workbook) / 10;
-        stopWatch.start(String.format("create %,d mocks", numOfMocks));
-        List<Product> products = new Product().createRandoms(numOfMocks);
-        stopWatch.stop();
+        stopwatch.start(String.format("create %,d mocks", numOfMocks));
+        List<Product> products = Product.createRandoms(numOfMocks);
+        stopwatch.stop();
 
         // when
-        stopWatch.start(String.format("write %,d models", numOfMocks));
+        stopwatch.start(String.format("write %,d models", numOfMocks));
         ExcelWriterFactory.create(workbook, Product.class)
                 .sheetName("Products").write(out, products);
-        stopWatch.stop();
+        stopwatch.stop();
 
         // then
         assertThat(file)
@@ -81,27 +83,28 @@ class ModelWriterTest extends CommonTester {
      */
     @Test
     @DisplayName("@ExcelModel(explicit = true) + autoResizeCols()")
+    @StopwatchProvider
     @SneakyThrows
-    void writeWithComputers(@TempDir Path path) {
+    void writeWithComputers(@TempDir Path path, Stopwatch stopwatch) {
         String filename = "computers.xlsx";
 
         // given
-        stopWatch.start(String.format("create '%s' file", filename));
+        stopwatch.start(String.format("create '%s' file", filename));
         File file = new File(path.toFile(), filename);
         @Cleanup FileOutputStream out = new FileOutputStream(file);
         @Cleanup Workbook workbook = new SXSSFWorkbook();
-        stopWatch.stop();
+        stopwatch.stop();
 
         int numOfMocks = 10_000;
-        stopWatch.start(String.format("create %,d mocks", numOfMocks));
+        stopwatch.start(String.format("create %,d mocks", numOfMocks));
         List<Computer> computers = Computer.createRandoms(numOfMocks);
-        stopWatch.stop();
+        stopwatch.stop();
 
         // when
-        stopWatch.start(String.format("write %,d models", numOfMocks));
+        stopwatch.start(String.format("write %,d models", numOfMocks));
         ExcelWriterFactory.create(workbook, Computer.class)
                 .autoResizeCols().write(out, computers);
-        stopWatch.stop();
+        stopwatch.stop();
 
         // then
         assertThat(file)
@@ -119,26 +122,27 @@ class ModelWriterTest extends CommonTester {
      */
     @Test
     @DisplayName("@ExcelModel(includeSuper = true, enumDropdown = true) + @ExcelDateTimeFormat")
+    @StopwatchProvider
     @SneakyThrows
-    void writeWithEducationToys(@TempDir Path path) {
+    void writeWithEducationToys(@TempDir Path path, Stopwatch stopwatch) {
         String filename = "toys.xlsx";
 
         // given
-        stopWatch.start(String.format("create '%s' file", filename));
+        stopwatch.start(String.format("create '%s' file", filename));
         File file = new File(path.toFile(), filename);
         @Cleanup FileOutputStream out = new FileOutputStream(file);
         @Cleanup XSSFWorkbook workbook = new XSSFWorkbook();
-        stopWatch.stop();
+        stopwatch.stop();
 
         int numOfMocks = 10_000;
-        stopWatch.start(String.format("create %,d mocks", numOfMocks));
+        stopwatch.start(String.format("create %,d mocks", numOfMocks));
         List<EducationToy> toys = new EducationToy().createRandoms(numOfMocks);
-        stopWatch.stop();
+        stopwatch.stop();
 
         // when
-        stopWatch.start(String.format("write %,d models", numOfMocks));
+        stopwatch.start(String.format("write %,d models", numOfMocks));
         ExcelWriterFactory.create(workbook, EducationToy.class).write(out, toys);
-        stopWatch.stop();
+        stopwatch.stop();
 
         // then
         assertThat(file)
@@ -161,27 +165,28 @@ class ModelWriterTest extends CommonTester {
      */
     @Test
     @DisplayName("@ExcelModel(includeSuper = true) + @ExcelWriterExpression + disableRolling() + enumDropdown()")
+    @StopwatchProvider
     @SneakyThrows
-    void writePeople(@TempDir Path path) {
+    void writePeople(@TempDir Path path, Stopwatch stopwatch) {
         String filename = "people.xls";
 
         // given
-        stopWatch.start(String.format("create '%s' file", filename));
+        stopwatch.start(String.format("create '%s' file", filename));
         File file = new File(path.toFile(), filename);
         @Cleanup FileOutputStream out = new FileOutputStream(file);
         @Cleanup Workbook workbook = new HSSFWorkbook();
-        stopWatch.stop();
+        stopwatch.stop();
 
         int numOfMocks = SpreadsheetVersion.EXCEL97.getMaxRows() - 1;
-        stopWatch.start(String.format("create %,d mocks", numOfMocks));
+        stopwatch.start(String.format("create %,d mocks", numOfMocks));
         List<Human> people = new Human().createRandoms(numOfMocks);
-        stopWatch.stop();
+        stopwatch.stop();
 
         // when
-        stopWatch.start(String.format("write %,d models", numOfMocks));
+        stopwatch.start(String.format("write %,d models", numOfMocks));
         ExcelWriterFactory.create(workbook, Human.class)
                 .enumDropdown().disableRolling().write(out, people);
-        stopWatch.stop();
+        stopwatch.stop();
 
         // then
         assertThat(file)
@@ -203,31 +208,32 @@ class ModelWriterTest extends CommonTester {
      */
     @Test
     @DisplayName("Decorate")
+    @StopwatchProvider
     @SneakyThrows
-    void writeAndDecorate() {
+    void writeAndDecorate(Stopwatch stopwatch) {
         String filename = "people-styled.xls";
 
         // given
-        stopWatch.start(String.format("create '%s' file", filename));
+        stopwatch.start(String.format("create '%s' file", filename));
         File file = new File("/data", filename);
         @Cleanup FileOutputStream out = new FileOutputStream(file);
         @Cleanup HSSFWorkbook workbook = new HSSFWorkbook();
-        stopWatch.stop();
+        stopwatch.stop();
 
         // when
         int numOfMocks = 10_000;
-        stopWatch.start(String.format("create %,d mocks", numOfMocks));
+        stopwatch.start(String.format("create %,d mocks", numOfMocks));
         List<Human> people = new Human().createRandoms(numOfMocks);
-        stopWatch.stop();
+        stopwatch.stop();
 
-        stopWatch.start(String.format("write and decorate %,d models", numOfMocks));
+        stopwatch.start(String.format("write and decorate %,d models", numOfMocks));
         ExcelWriterFactory.create(workbook, Human.class)
                 .sheetName("People")
                 .autoResizeCols().hideExtraRows().hideExtraCols()
                 .headerStyles(new DefaultHeaderStyleConfig())
                 .bodyStyles(new DefaultBodyStyleConfig())
                 .disableRolling().write(out, people);
-        stopWatch.stop();
+        stopwatch.stop();
 
         // then
         assertThat(file)
