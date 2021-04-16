@@ -16,7 +16,7 @@
 
 package com.github.javaxcel.junit.annotation;
 
-import com.github.javaxcel.junit.extension.StopwatchExtension;
+import com.github.javaxcel.junit.extension.StopwatchProviderExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.lang.annotation.Retention;
@@ -29,11 +29,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * @see io.github.imsejin.common.tool.Stopwatch
- * @see StopwatchExtension
+ * @see StopwatchProviderExtension
  */
 @Target({TYPE, METHOD})
 @Retention(RUNTIME)
-@ExtendWith(StopwatchExtension.class)
+@ExtendWith(StopwatchProviderExtension.class)
 public @interface StopwatchProvider {
 
     TimeUnit value() default TimeUnit.SECONDS;

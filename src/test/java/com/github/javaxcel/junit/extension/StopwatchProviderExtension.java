@@ -23,9 +23,9 @@ import org.junit.jupiter.api.extension.*;
 /**
  * @see StopwatchProvider
  */
-public class StopwatchExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback, ParameterResolver {
+public class StopwatchProviderExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback, ParameterResolver {
 
-    private Stopwatch stopwatch = new Stopwatch();
+    protected Stopwatch stopwatch = new Stopwatch();
 
     @Override
     public void beforeTestExecution(ExtensionContext extensionContext) throws Exception {
