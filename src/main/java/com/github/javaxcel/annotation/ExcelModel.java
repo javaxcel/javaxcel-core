@@ -60,7 +60,7 @@ public @interface ExcelModel {
     boolean enumDropdown() default false;
 
     /**
-     * Replacement of the value when the value is null or empty string.
+     * Replacement of the value when only writes the value that is null or empty string.
      *
      * <p> This is ineffective to primitive type.
      *
