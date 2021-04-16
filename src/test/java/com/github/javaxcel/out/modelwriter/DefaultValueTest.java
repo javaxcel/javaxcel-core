@@ -44,6 +44,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @StopwatchProvider
@@ -76,9 +77,7 @@ class DefaultValueTest {
         stopwatch.stop();
 
         // then
-        assertThat(file)
-                .as("#1 Excel file must be created and have content")
-                .isNotNull().exists().canRead().isNotEmpty();
+        assertNotEmptyFile(file, "#1 Excel file must be created and have content");
         assertDefaultValue(type, file);
     }
 
@@ -89,17 +88,12 @@ class DefaultValueTest {
         for (Map<String, Object> model : models) {
             String title = (String) model.get("title");
 
-            if (type == WithModel.class) {
-                // WithModel
-                assertThat(title)
-                        .as("#2 Empty value must be converted '%s' as default value", MODEL_DEFAULT_VALUE)
-                        .isNotNull().isEqualTo(MODEL_DEFAULT_VALUE);
-            } else {
-                // WithColumn
-                assertThat(title)
-                        .as("#2 Empty value must be converted '%s' as default value", COLUMN_DEFAULT_VALUE)
-                        .isNotNull().isEqualTo(COLUMN_DEFAULT_VALUE);
-            }
+            String defaultValue = type == WithModel.class
+                                          ? MODEL_DEFAULT_VALUE
+                                          : COLUMN_DEFAULT_VALUE;
+            assertThat(title)
+                    .as("#2 Empty value must be converted '%s' as default value", defaultValue)
+                    .isNotNull().isEqualTo(defaultValue);
         }
     }
 

@@ -43,6 +43,7 @@ import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.List;
 
+import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @StopwatchProvider
@@ -73,21 +74,18 @@ class IgnoreTest {
         stopwatch.stop();
 
         // then
-        assertThat(file)
-                .as("#1 Excel file must be created and have content")
-                .isNotNull().exists().canRead().isNotEmpty();
+        assertNotEmptyFile(file, "#1 Excel file must be created and have content");
 
         @Cleanup Workbook wb = WorkbookFactory.create(file);
         assertThat(ExcelUtils.getNumOfModels(wb))
                 .as("#2 The number of actually written model is %,d", models.size())
                 .isEqualTo(models.size());
 
-        final int numOfTargetedFields = FieldUtils.getTargetedFields(type).size();
         assertThat(ExcelUtils.getSheets(wb).stream()
                            .mapToInt(sheet -> sheet.getRow(0).getPhysicalNumberOfCells())
                            .average().orElse(-1))
-                .as("#3 The header size of excel file is %,d", numOfTargetedFields)
-                .isEqualTo(numOfTargetedFields);
+                .as("#3 The header size is the number of targeted fields in '%s'", type.getSimpleName())
+                .isEqualTo(FieldUtils.getTargetedFields(type).size());
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////

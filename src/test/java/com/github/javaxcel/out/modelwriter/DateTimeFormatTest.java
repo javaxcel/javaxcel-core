@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @StopwatchProvider
@@ -70,9 +71,7 @@ class DateTimeFormatTest {
         stopwatch.stop();
 
         // then
-        assertThat(file)
-                .as("#1 Excel file must be created and have content")
-                .isNotNull().exists().canRead().isNotEmpty();
+        assertNotEmptyFile(file, "#1 Excel file must be created and have content");
         assertDateTimeFormat(file);
     }
 

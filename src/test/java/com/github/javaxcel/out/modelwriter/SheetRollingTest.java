@@ -39,6 +39,7 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @StopwatchProvider
@@ -71,9 +72,7 @@ class SheetRollingTest {
         stopwatch.stop();
 
         // then
-        assertThat(file)
-                .as("#1 Excel file must be created and have content")
-                .isNotNull().exists().canRead().isNotEmpty();
+        assertNotEmptyFile(file, "#1 Excel file must be created and have content");
 
         @Cleanup Workbook wb = WorkbookFactory.create(file);
         assertThat(ExcelUtils.getNumOfModels(wb))
