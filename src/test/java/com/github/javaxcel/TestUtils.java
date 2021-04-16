@@ -20,6 +20,7 @@ import com.github.javaxcel.annotation.ExcelIgnore;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 
+import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.nio.charset.StandardCharsets;
@@ -32,6 +33,7 @@ import java.util.stream.IntStream;
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TestUtils {
 
@@ -51,15 +53,29 @@ public class TestUtils {
         generator = new EasyRandom(parameters);
     }
 
-    public static <T> T randomize(Class<T> type) {
+    public static <T> T randomize(Class<? extends T> type) {
         return generator.nextObject(type);
     }
 
-    public static <T> List<T> getMocks(Class<T> type, int size) {
+    public static <T> List<T> getMocks(Class<? extends T> type, int size) {
         if (size < 0) throw new IllegalArgumentException("Size cannot be negative");
 
         return IntStream.range(0, size).parallel()
                        .mapToObj(i -> randomize(type)).collect(toList());
+    }
+
+    public static void assertNotEmptyFile(File file) {
+        assertNotEmptyFile(file, "File must be created and have content");
+    }
+
+    public static void assertNotEmptyFile(File file, String description) {
+        assertNotEmptyFile(file, description, (Object) null);
+    }
+
+    public static void assertNotEmptyFile(File file, String description, Object... args) {
+        assertThat(file)
+                .as(description, args)
+                .isNotNull().exists().canRead().isNotEmpty();
     }
 
     @Target(FIELD)
