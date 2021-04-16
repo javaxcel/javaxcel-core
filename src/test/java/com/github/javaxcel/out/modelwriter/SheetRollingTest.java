@@ -45,8 +45,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SheetRollingTest {
 
     @Test
-    @DisplayName("SheetRolling")
-    void writeModelsWithIgnoredFields(@TempDir Path path, Stopwatch stopwatch) throws IOException {
+    @DisplayName("When writes models using rolling sheets")
+    void test(@TempDir Path path, Stopwatch stopwatch) throws IOException {
         String filename = SimpleModel.class.getSimpleName().toLowerCase() + ".xls";
 
         // given

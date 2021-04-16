@@ -28,6 +28,7 @@ import lombok.Setter;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -40,8 +41,8 @@ class NoTargetedFieldTest {
 
     @ParameterizedTest
     @ValueSource(classes = {NoFieldModel.class, AllIgnoredModel.class, ExplicitModel.class})
-    @DisplayName("throws NoTargetedFieldException")
-    void createModelWriterWithoutTargetField(Class<?> type, Stopwatch stopwatch) {
+    @DisplayName("When creates ModelWriter with model type without targeted field")
+    void test(Class<?> type, Stopwatch stopwatch) {
         // given
         stopwatch.start("create '%s' instance", HSSFWorkbook.class.getSimpleName());
         Workbook workbook = new HSSFWorkbook();
@@ -50,7 +51,7 @@ class NoTargetedFieldTest {
         // when & then
         stopwatch.start("create '%s' instance with '%s'", ModelWriter.class.getSimpleName(), type.getSimpleName());
         assertThatThrownBy(() -> ExcelWriterFactory.create(workbook, type))
-                .as("When creates ModelWriter with model without targeted field")
+                .as("When creates ModelWriter with model type without targeted field")
                 .isExactlyInstanceOf(NoTargetedFieldException.class);
     }
 

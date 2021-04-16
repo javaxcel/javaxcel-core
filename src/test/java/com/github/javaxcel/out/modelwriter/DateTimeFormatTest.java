@@ -59,7 +59,7 @@ class DateTimeFormatTest {
         Workbook workbook = new SXSSFWorkbook();
         stopwatch.stop();
 
-        final int numOfMocks = 50000; // 8192;
+        final int numOfMocks = 8192;
         stopwatch.start("create %,d mocks", numOfMocks);
         List<ChronoModel> models = TestUtils.getMocks(ChronoModel.class, numOfMocks);
         stopwatch.stop();
@@ -98,8 +98,8 @@ class DateTimeFormatTest {
                         "[0-5]\\d\\." + // "ss."
                         "\\d{3}")); // "SSS"
 
-        List<Map<String, Object>> list = ExcelReaderFactory.create(workbook).read();
-        for (Map<String, Object> model : list) {
+        List<Map<String, Object>> models = ExcelReaderFactory.create(workbook).read();
+        for (Map<String, Object> model : models) {
             String date = (String) model.get("date");
             String time = (String) model.get("time");
             String dateTime = (String) model.get("dateTime");
