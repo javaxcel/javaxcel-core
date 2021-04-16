@@ -20,6 +20,8 @@ import com.github.javaxcel.annotation.ExcelIgnore;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -27,6 +29,8 @@ import java.time.Month;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.util.stream.Collectors.toList;
 
 public class TestUtils {
@@ -41,7 +45,7 @@ public class TestUtils {
                         .timeRange(LocalTime.MIN, LocalTime.MAX)
                         .stringLengthRange(0, 15)
                         .collectionSizeRange(0, 10)
-                        .excludeField(field -> field.getAnnotation(ExcelIgnore.class) != null)
+                        .excludeField(field -> field.getAnnotation(Unrandomized.class) != null || field.getAnnotation(ExcelIgnore.class) != null)
                         .overrideDefaultInitialization(false)
                         .scanClasspathForConcreteTypes(true);
         generator = new EasyRandom(parameters);
@@ -51,11 +55,16 @@ public class TestUtils {
         return generator.nextObject(type);
     }
 
-    public static  <T> List<T> getMocks(Class<T> type, int size) {
+    public static <T> List<T> getMocks(Class<T> type, int size) {
         if (size < 0) throw new IllegalArgumentException("Size cannot be negative");
 
         return IntStream.range(0, size).parallel()
                        .mapToObj(i -> randomize(type)).collect(toList());
+    }
+
+    @Target(FIELD)
+    @Retention(RUNTIME)
+    public @interface Unrandomized {
     }
 
 }
