@@ -71,8 +71,13 @@ public final class ExcelUtils {
         }
 
         Workbook workbook;
-        try (InputStream in = new FileInputStream(file)) {
-            workbook = extension.equals("xls") ? new HSSFWorkbook(in) : new XSSFWorkbook(file);
+        try {
+            if (extension.equals("xls")) {
+                InputStream in = new FileInputStream(file);
+                workbook = new HSSFWorkbook(in);
+            } else {
+                workbook = new XSSFWorkbook(file);
+            }
         } catch (IOException | InvalidFormatException e) {
             throw new RuntimeException(e);
         }
