@@ -16,8 +16,7 @@
 
 package com.github.javaxcel.out.modelwriter;
 
-import com.github.javaxcel.TestUtils;
-import com.github.javaxcel.factory.ExcelWriterFactory;
+import com.github.javaxcel.ExcelWriterTester;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
@@ -33,51 +32,47 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @StopwatchProvider
-class SheetRollingTest {
+class SheetRotationTest extends ExcelWriterTester {
 
     @Test
-    @DisplayName("When writes models using rolling sheets")
-    void test(@TempDir Path path, Stopwatch stopwatch) throws IOException {
+    @DisplayName("When writes models rotating sheet")
+    void test(@TempDir Path path, Stopwatch stopwatch) throws Exception {
         String filename = SimpleModel.class.getSimpleName().toLowerCase() + ".xls";
-
-        // given
-        stopwatch.start("create '%s' file", filename);
         File file = new File(path.toFile(), filename);
-        @Cleanup OutputStream out = new FileOutputStream(file);
+
+        run(file, SimpleModel.class, stopwatch);
+    }
+
+    @Override
+    protected WhenModel given(GivenModel givenModel) throws Exception {
+        OutputStream out = new FileOutputStream(givenModel.getFile());
         Workbook workbook = new HSSFWorkbook();
-        stopwatch.stop();
 
         /*
         To create multiple sheets, generates models as many
         as the amount exceeds the maximum number of rows per sheet.
         */
         final int numOfMocks = (int) (ExcelUtils.getMaxRows(workbook) * 1.1);
-        stopwatch.start("create %,d mocks", numOfMocks);
-        List<SimpleModel> models = TestUtils.getMocks(SimpleModel.class, numOfMocks);
-        stopwatch.stop();
 
-        // when
-        stopwatch.start("write %,d models", numOfMocks);
-        ExcelWriterFactory.create(workbook, SimpleModel.class).write(out, models);
-        stopwatch.stop();
+        return new WhenModel(out, workbook, numOfMocks);
+    }
 
-        // then
-        assertNotEmptyFile(file, "#1 Excel file must be created and have content");
+    @Override
+    protected void then(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) throws Exception {
+        assertNotEmptyFile(givenModel.getFile(), "#1 Excel file must be created and have content");
 
-        @Cleanup Workbook wb = WorkbookFactory.create(file);
+        @Cleanup Workbook wb = WorkbookFactory.create(givenModel.getFile());
         assertThat(ExcelUtils.getNumOfModels(wb))
-                .as("#2 The number of actually written model is %,d", models.size())
-                .isEqualTo(models.size());
+                .as("#2 The number of actually written model is %,d", thenModel.getModels().size())
+                .isEqualTo(thenModel.getModels().size());
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////

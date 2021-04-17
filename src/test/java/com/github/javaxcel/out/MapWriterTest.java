@@ -138,7 +138,7 @@ class MapWriterTest {
         ExcelWriterFactory.create(workbook)
                 .sheetName("Maps")
                 .headerNames(keys, Arrays.asList("RACE", "NAME", "HEIGHT", "WEIGHT", "STRENGTH", "EYE_SIGHT", "FAVORITE_FOOD"))
-                .disableRolling()
+                .unrotate()
                 .autoResizeCols().hideExtraCols()
                 .headerStyles(DefaultHeaderStyleConfig.getRainbowHeader())
                 .bodyStyles(new DefaultBodyStyleConfig())

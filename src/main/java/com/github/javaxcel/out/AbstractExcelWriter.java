@@ -77,9 +77,9 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      *
      * <p> Default is {@code true}.
      *
-     * @see #disableRolling()
+     * @see #unrotate()
      */
-    protected boolean rolling = true;
+    protected boolean rotated = true;
 
     //////////////////////////////////////// Style ////////////////////////////////////////
 
@@ -139,12 +139,12 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      * <p> Prefix for each sheet name. For example, if you set 'SHEET' to this,
      * the names you can see are <span>SHEET0, SHEET1, SHEET2, ...</span>
      *
-     * <p> If you invoke {@link #disableRolling()}, the sheet name has no suffix.
+     * <p> If you invoke {@link #unrotate()}, the sheet name has no suffix.
      * You can see the sheet name like this <span>SHEET</span>
      *
      * @param sheetName sheet name
      * @return {@link AbstractExcelWriter}
-     * @see #disableRolling()
+     * @see #unrotate()
      */
     public AbstractExcelWriter<W, T> sheetName(String sheetName) {
         if (StringUtils.isNullOrEmpty(sheetName)) {
@@ -219,14 +219,14 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     }
 
     /**
-     * Disables rolling excess rows.
+     * Disables to rotate sheet.
      *
      * <p> If this is invoked, excel file has only one sheet.
      *
      * @return {@link AbstractExcelWriter}
      */
-    public AbstractExcelWriter<W, T> disableRolling() {
-        this.rolling = false;
+    public AbstractExcelWriter<W, T> unrotate() {
+        this.rotated = false;
         return this;
     }
 
@@ -282,7 +282,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
         beforeWrite(out, list);
 
         final int maxModels = ExcelUtils.getMaxRows(this.workbook) - 1;
-        List<List<T>> lists = this.rolling
+        List<List<T>> lists = this.rotated
                 ? CollectionUtils.partitionBySize(list, maxModels)
                 : Collections.singletonList(list.subList(0, Math.min(list.size(), maxModels)));
 
@@ -294,7 +294,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
             if (this.sheetName == null) {
                 sheet = this.workbook.createSheet();
             } else {
-                String sheetName = this.rolling ? this.sheetName + i : this.sheetName;
+                String sheetName = this.rotated ? this.sheetName + i : this.sheetName;
                 sheet = this.workbook.createSheet(sheetName);
             }
 

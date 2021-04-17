@@ -159,10 +159,10 @@ class ModelWriterTest {
      * @see ExcelColumn#headerStyle()
      * @see ExcelColumn#bodyStyle()
      * @see com.github.javaxcel.annotation.ExcelWriterExpression
-     * @see AbstractExcelWriter#disableRolling()
+     * @see AbstractExcelWriter#unrotate()
      */
     @Test
-    @DisplayName("@ExcelModel(includeSuper = true) + @ExcelWriterExpression + disableRolling() + enumDropdown()")
+    @DisplayName("@ExcelModel(includeSuper = true) + @ExcelWriterExpression + unrotate() + enumDropdown()")
     @SneakyThrows
     void writePeople(@TempDir Path path, Stopwatch stopwatch) {
         String filename = "people.xls";
@@ -182,7 +182,7 @@ class ModelWriterTest {
         // when
         stopwatch.start(String.format("write %,d models", numOfMocks));
         ExcelWriterFactory.create(workbook, Human.class)
-                .enumDropdown().disableRolling().write(out, people);
+                .enumDropdown().unrotate().write(out, people);
         stopwatch.stop();
 
         // then
@@ -201,7 +201,7 @@ class ModelWriterTest {
      * @see AbstractExcelWriter#hideExtraCols()
      * @see AbstractExcelWriter#headerStyles(ExcelStyleConfig...)
      * @see AbstractExcelWriter#bodyStyles(ExcelStyleConfig...)
-     * @see AbstractExcelWriter#disableRolling()
+     * @see AbstractExcelWriter#unrotate()
      */
     @Test
     @DisplayName("Decorate")
@@ -228,7 +228,7 @@ class ModelWriterTest {
                 .autoResizeCols().hideExtraRows().hideExtraCols()
                 .headerStyles(new DefaultHeaderStyleConfig())
                 .bodyStyles(new DefaultBodyStyleConfig())
-                .disableRolling().write(out, people);
+                .unrotate().write(out, people);
         stopwatch.stop();
 
         // then

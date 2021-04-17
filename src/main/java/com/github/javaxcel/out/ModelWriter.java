@@ -194,8 +194,8 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
      * @return {@link ModelWriter}
      */
     @Override
-    public ModelWriter<W, T> disableRolling() {
-        super.disableRolling();
+    public ModelWriter<W, T> unrotate() {
+        super.unrotate();
         return this;
     }
 

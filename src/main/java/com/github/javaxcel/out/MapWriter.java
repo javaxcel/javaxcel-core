@@ -86,8 +86,8 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
      * @return {@link MapWriter}
      */
     @Override
-    public MapWriter<W, T> disableRolling() {
-        super.disableRolling();
+    public MapWriter<W, T> unrotate() {
+        super.unrotate();
         return this;
     }
 
