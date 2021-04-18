@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.out.support;
+package com.github.javaxcel.converter.out.support;
 
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ModelWriterSupport<T> {
+public class WritingConverterSupport<T> implements WritingConverter<T> {
 
     private final Map<Field, Column> columnMap;
 
@@ -37,7 +37,7 @@ public class ModelWriterSupport<T> {
 
     private final WritingConverter<T> expressiveConverter;
 
-    public ModelWriterSupport(List<Field> fields) {
+    public WritingConverterSupport(List<Field> fields) {
         Map<Field, Column> map = new HashMap<>();
 
         for (Field field : fields) {
@@ -68,7 +68,7 @@ public class ModelWriterSupport<T> {
      * @param field field of model
      * @return origin value or default value
      */
-    public String compute(T model, Field field) {
+    public String convert(T model, Field field) {
         Column column = this.columnMap.get(field);
 
         String cellValue;
