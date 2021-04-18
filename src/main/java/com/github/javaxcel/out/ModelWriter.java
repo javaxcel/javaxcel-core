@@ -18,10 +18,8 @@ package com.github.javaxcel.out;
 
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
-import com.github.javaxcel.annotation.ExcelWriterExpression;
-import com.github.javaxcel.converter.out.BasicWritingConverter;
-import com.github.javaxcel.converter.out.ExpressiveWritingConverter;
 import com.github.javaxcel.exception.NoTargetedFieldException;
+import com.github.javaxcel.out.support.ModelWriterSupport;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.styler.NoStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
@@ -45,9 +43,7 @@ import java.util.stream.IntStream;
  */
 public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T> {
 
-    private final BasicWritingConverter<T> basicConverter = new BasicWritingConverter<>();
-
-    private final ExpressiveWritingConverter<T> expConverter;
+    private final ModelWriterSupport<T> supporter;
 
     private final Class<T> type;
 
@@ -79,17 +75,10 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
         this.fields = FieldUtils.getTargetedFields(type);
         if (this.fields.isEmpty()) throw new NoTargetedFieldException(type);
 
-        // Caches expressions for each field to improve performance.
-        this.expConverter = new ExpressiveWritingConverter<>(this.fields);
+        this.supporter = new ModelWriterSupport<>(fields);
 
         ExcelModel excelModel = type.getAnnotation(ExcelModel.class);
         if (excelModel != null) {
-            // If default value for all fields is not empty string, sets it into converters.
-            if (!excelModel.defaultValue().equals("")) {
-                this.basicConverter.setDefaultValue(excelModel.defaultValue());
-                this.expConverter.setDefaultValue(excelModel.defaultValue());
-            }
-
             // Sets configurations for header and body style by 'ExcelModel'.
             setStylesByModel(excelModel);
         }
@@ -172,8 +161,7 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
     @Override
     public ModelWriter<W, T> defaultValue(String defaultValue) {
         super.defaultValue(defaultValue);
-        this.basicConverter.setDefaultValue(defaultValue);
-        this.expConverter.setDefaultValue(defaultValue);
+        this.supporter.setDefaultValue(defaultValue);
         return this;
     }
 
@@ -382,11 +370,7 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
                 Cell cell = row.createCell(j);
 
                 // Converts field value to the string.
-                ExcelWriterExpression annotation = field.getAnnotation(ExcelWriterExpression.class);
-                String value = annotation == null
-                        ? this.basicConverter.convert(model, field)
-                        : this.expConverter.convert(model, field);
-
+                String value = this.supporter.compute(model, field);
                 if (value != null) cell.setCellValue(value);
 
                 if (this.bodyStyles == null) continue;
