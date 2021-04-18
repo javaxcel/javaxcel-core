@@ -21,7 +21,9 @@ import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.factory.ExcelReaderFactory;
+import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
+import com.github.javaxcel.out.AbstractExcelWriter;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
@@ -49,15 +51,34 @@ class DefaultValueTest extends ExcelWriterTester {
 
     private static final String MODEL_DEFAULT_VALUE = "(empty)";
     private static final String COLUMN_DEFAULT_VALUE = "<null>";
+    private static final String DIRECT_DEFAULT_VALUE = "[none]";
 
+    /**
+     * @see ExcelModel#defaultValue()
+     * @see ExcelColumn#defaultValue()
+     * @see com.github.javaxcel.out.AbstractExcelWriter#defaultValue(String)
+     */
     @ParameterizedTest
-    @ValueSource(classes = {WithModel.class, WithColumn.class})
+    @ValueSource(classes = {
+            WithModel.class, WithColumn.class, WithModelAndColumn.class,
+            WithModelAndDirect.class, WithColumnAndDirect.class, WithModelAndColumnAndDirect.class,
+    })
     @DisplayName("When sets default value")
     void test(Class<?> type, @TempDir Path path, Stopwatch stopwatch) throws Exception {
         String filename = type.getSimpleName().toLowerCase() + ".xlsx";
         File file = new File(path.toFile(), filename);
 
         run(file, type, stopwatch);
+    }
+
+    @Override
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    protected void whenWriteWorkbook(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) {
+        Class<?> type = givenModel.getType();
+
+        AbstractExcelWriter<Workbook, ?> writer = ExcelWriterFactory.create(whenModel.getWorkbook(), type);
+        if (getDefaultValueFromType(type).equals(DIRECT_DEFAULT_VALUE)) writer.defaultValue(DIRECT_DEFAULT_VALUE);
+        writer.write(whenModel.getOutputStream(), (List) thenModel.getModels());
     }
 
     @Override
@@ -76,13 +97,17 @@ class DefaultValueTest extends ExcelWriterTester {
         for (Map<String, Object> model : models) {
             String title = (String) model.get("title");
 
-            String defaultValue = type == WithModel.class
-                    ? MODEL_DEFAULT_VALUE
-                    : COLUMN_DEFAULT_VALUE;
+            String defaultValue = getDefaultValueFromType(type);
             assertThat(title)
                     .as("#2 Empty value must be converted '%s' as default value", defaultValue)
                     .isNotNull().isEqualTo(defaultValue);
         }
+    }
+
+    private static String getDefaultValueFromType(Class<?> type) {
+        if (type == WithModel.class) return MODEL_DEFAULT_VALUE;
+        else if (type == WithColumn.class || type == WithModelAndColumn.class) return COLUMN_DEFAULT_VALUE;
+        else return DIRECT_DEFAULT_VALUE;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -102,6 +127,52 @@ class DefaultValueTest extends ExcelWriterTester {
     @Setter
     @ToString
     static class WithColumn {
+        private Long id;
+        @TestUtils.Unrandomized
+        @ExcelColumn(defaultValue = COLUMN_DEFAULT_VALUE)
+        private String title;
+        private LocalDateTime createdAt;
+    }
+
+    @Getter
+    @Setter
+    @ToString
+    @ExcelModel(defaultValue = MODEL_DEFAULT_VALUE)
+    static class WithModelAndColumn {
+        private Long id;
+        @TestUtils.Unrandomized
+        @ExcelColumn(defaultValue = COLUMN_DEFAULT_VALUE)
+        private String title;
+        private LocalDateTime createdAt;
+    }
+
+    @Getter
+    @Setter
+    @ToString
+    @ExcelModel(defaultValue = MODEL_DEFAULT_VALUE)
+    static class WithModelAndDirect {
+        private Long id;
+        @TestUtils.Unrandomized
+        private String title;
+        private LocalDateTime createdAt;
+    }
+
+    @Getter
+    @Setter
+    @ToString
+    static class WithColumnAndDirect {
+        private Long id;
+        @TestUtils.Unrandomized
+        @ExcelColumn(defaultValue = COLUMN_DEFAULT_VALUE)
+        private String title;
+        private LocalDateTime createdAt;
+    }
+
+    @Getter
+    @Setter
+    @ToString
+    @ExcelModel(defaultValue = MODEL_DEFAULT_VALUE)
+    static class WithModelAndColumnAndDirect {
         private Long id;
         @TestUtils.Unrandomized
         @ExcelColumn(defaultValue = COLUMN_DEFAULT_VALUE)
