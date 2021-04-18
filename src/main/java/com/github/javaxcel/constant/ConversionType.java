@@ -20,7 +20,7 @@ import com.github.javaxcel.annotation.ExcelWriterExpression;
 
 import java.lang.reflect.Field;
 
-public enum ConvertType {
+public enum ConversionType {
 
     /**
      * @see com.github.javaxcel.converter.out.BasicWritingConverter
@@ -34,7 +34,7 @@ public enum ConvertType {
      */
     EXPRESSIVE;
 
-    public static ConvertType of(Field field) {
+    public static ConversionType of(Field field) {
         ExcelWriterExpression annotation = field.getAnnotation(ExcelWriterExpression.class);
         return annotation == null ? BASIC : EXPRESSIVE;
     }

@@ -18,7 +18,7 @@ package com.github.javaxcel.converter.out.support;
 
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
-import com.github.javaxcel.constant.ConvertType;
+import com.github.javaxcel.constant.ConversionType;
 import com.github.javaxcel.converter.out.BasicWritingConverter;
 import com.github.javaxcel.converter.out.ExpressiveWritingConverter;
 import com.github.javaxcel.converter.out.WritingConverter;
@@ -72,7 +72,7 @@ public class WritingConverterSupport<T> implements WritingConverter<T> {
         Column column = this.columnMap.get(field);
 
         String cellValue;
-        if (column.convertType == ConvertType.BASIC) {
+        if (column.conversionType == ConversionType.BASIC) {
             cellValue = this.basicConverter.convert(model, field);
         } else {
             cellValue = this.expressiveConverter.convert(model, field);
@@ -82,7 +82,7 @@ public class WritingConverterSupport<T> implements WritingConverter<T> {
     }
 
     private static class Column {
-        private ConvertType convertType;
+        private ConversionType conversionType;
         private String defaultValue;
 
         private Column() {
@@ -92,7 +92,7 @@ public class WritingConverterSupport<T> implements WritingConverter<T> {
             Column column = new Column();
 
             // Checks if a field value requires ExpressiveWritingConverter when it is written.
-            column.convertType = ConvertType.of(field);
+            column.conversionType = ConversionType.of(field);
 
             // Decides the proper default value for a field value.
             // @ExcelColumn's default value takes precedence over @ExcelModel's default value.
