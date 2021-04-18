@@ -16,11 +16,10 @@
 
 package com.github.javaxcel.out.modelwriter;
 
-import com.github.javaxcel.TestUtils;
+import com.github.javaxcel.ExcelWriterTester;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelIgnore;
 import com.github.javaxcel.annotation.ExcelModel;
-import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
@@ -30,16 +29,12 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -47,33 +42,33 @@ import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @StopwatchProvider
-class IgnoreTest {
+class IgnoreTest extends ExcelWriterTester {
 
     @ParameterizedTest
     @ValueSource(classes = {IgnoredModel.class, ExplicitModel.class})
     @DisplayName("@ExcelIgnore")
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    void writeModelsWithIgnoredFields(Class<?> type, @TempDir Path path, Stopwatch stopwatch) throws IOException {
+    void test(Class<?> type, @TempDir Path path, Stopwatch stopwatch) throws Exception {
         String filename = type.getSimpleName().toLowerCase() + ".xlsx";
-
-        // given
-        stopwatch.start("create '%s' file", filename);
         File file = new File(path.toFile(), filename);
-        @Cleanup OutputStream out = new FileOutputStream(file);
-        Workbook workbook = new SXSSFWorkbook();
-        stopwatch.stop();
 
-        final int numOfMocks = ExcelUtils.getMaxRows(workbook) / 50;
-        stopwatch.start("create %,d mocks", numOfMocks);
-        List models = TestUtils.getMocks(type, numOfMocks);
-        stopwatch.stop();
+        run(file, type, stopwatch);
+    }
 
-        // when
-        stopwatch.start("write %,d models", numOfMocks);
-        ExcelWriterFactory.create(workbook, type).write(out, models);
-        stopwatch.stop();
+    @Override
+    protected WhenModel given(GivenModel givenModel) throws Exception {
+        WhenModel whenModel = super.given(givenModel);
+        final int numOfMocks = ExcelUtils.getMaxRows(whenModel.getWorkbook()) / 50;
+        whenModel.setNumOfMocks(numOfMocks);
 
-        // then
+        return whenModel;
+    }
+
+    @Override
+    protected void then(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) throws Exception {
+        File file = givenModel.getFile();
+        Class<?> type = givenModel.getType();
+        List<?> models = thenModel.getModels();
+
         assertNotEmptyFile(file, "#1 Excel file must be created and have content");
 
         @Cleanup Workbook wb = WorkbookFactory.create(file);

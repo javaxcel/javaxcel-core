@@ -48,7 +48,7 @@ import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @StopwatchProvider
-class DefaultValueTest {
+class DefaultValueTest extends ExcelWriterTester {
 
     private static final String MODEL_DEFAULT_VALUE = "(empty)";
     private static final String COLUMN_DEFAULT_VALUE = "<null>";
@@ -56,27 +56,18 @@ class DefaultValueTest {
     @ParameterizedTest
     @ValueSource(classes = {WithModel.class, WithColumn.class})
     @DisplayName("When sets default value")
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    void test(Class<?> type, @TempDir Path path, Stopwatch stopwatch) throws IOException {
-        // given
+    void test(Class<?> type, @TempDir Path path, Stopwatch stopwatch) throws Exception {
         String filename = type.getSimpleName().toLowerCase() + ".xlsx";
-        stopwatch.start("create '%s' file", filename);
         File file = new File(path.toFile(), filename);
-        @Cleanup OutputStream out = new FileOutputStream(file);
-        Workbook workbook = new SXSSFWorkbook();
-        stopwatch.stop();
 
-        final int numOfMocks = 8196;
-        stopwatch.start("create %,d mocks", numOfMocks);
-        List models = TestUtils.getMocks(type, numOfMocks);
-        stopwatch.stop();
+        run(file, type, stopwatch);
+    }
 
-        // when
-        stopwatch.start("write %,d models", numOfMocks);
-        ExcelWriterFactory.create(workbook, type).write(out, models);
-        stopwatch.stop();
+    @Override
+    protected void then(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) throws Exception {
+        File file = givenModel.getFile();
+        Class<?> type = givenModel.getType();
 
-        // then
         assertNotEmptyFile(file, "#1 Excel file must be created and have content");
         assertDefaultValue(type, file);
     }
