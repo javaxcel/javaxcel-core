@@ -16,7 +16,7 @@
 
 package com.github.javaxcel.annotation;
 
-import com.github.javaxcel.converter.out.ExpressiveWritingConverter;
+import com.github.javaxcel.converter.out.ExpressionOutputConverter;
 
 import java.lang.annotation.*;
 
@@ -36,7 +36,7 @@ public @interface ExcelWriterExpression {
      * Expression to be written as cell value.
      *
      * @return expression to be parsed
-     * @see ExpressiveWritingConverter
+     * @see ExpressionOutputConverter
      * @see io.github.imsejin.expression.Expression
      */
     String value();

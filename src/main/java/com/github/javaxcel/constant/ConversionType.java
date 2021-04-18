@@ -17,26 +17,30 @@
 package com.github.javaxcel.constant;
 
 import com.github.javaxcel.annotation.ExcelWriterExpression;
+import com.github.javaxcel.converter.in.DefaultInputConverter;
+import com.github.javaxcel.converter.in.ExpressionInputConverter;
+import com.github.javaxcel.converter.out.DefaultOutputConverter;
+import com.github.javaxcel.converter.out.ExpressionOutputConverter;
 
 import java.lang.reflect.Field;
 
 public enum ConversionType {
 
     /**
-     * @see com.github.javaxcel.converter.out.BasicWritingConverter
-     * @see com.github.javaxcel.converter.in.BasicReadingConverter
+     * @see DefaultOutputConverter
+     * @see DefaultInputConverter
      */
-    BASIC,
+    DEFAULT,
 
     /**
-     * @see com.github.javaxcel.converter.out.ExpressiveWritingConverter
-     * @see com.github.javaxcel.converter.in.ExpressiveReadingConverter
+     * @see ExpressionOutputConverter
+     * @see ExpressionInputConverter
      */
-    EXPRESSIVE;
+    EXPRESSION;
 
     public static ConversionType of(Field field) {
         ExcelWriterExpression annotation = field.getAnnotation(ExcelWriterExpression.class);
-        return annotation == null ? BASIC : EXPRESSIVE;
+        return annotation == null ? DEFAULT : EXPRESSION;
     }
 
 }

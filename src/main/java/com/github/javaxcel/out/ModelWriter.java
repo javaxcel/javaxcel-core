@@ -19,7 +19,7 @@ package com.github.javaxcel.out;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.exception.NoTargetedFieldException;
-import com.github.javaxcel.converter.out.support.WritingConverterSupport;
+import com.github.javaxcel.converter.out.support.OutputConverterSupport;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.styler.NoStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
@@ -43,7 +43,7 @@ import java.util.stream.IntStream;
  */
 public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T> {
 
-    private final WritingConverterSupport<T> converter;
+    private final OutputConverterSupport<T> converter;
 
     private final Class<T> type;
 
@@ -75,7 +75,7 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
         this.fields = FieldUtils.getTargetedFields(type);
         if (this.fields.isEmpty()) throw new NoTargetedFieldException(type);
 
-        this.converter = new WritingConverterSupport<>(fields);
+        this.converter = new OutputConverterSupport<>(fields);
 
         ExcelModel excelModel = type.getAnnotation(ExcelModel.class);
         if (excelModel != null) {

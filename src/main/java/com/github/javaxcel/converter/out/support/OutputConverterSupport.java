@@ -19,9 +19,9 @@ package com.github.javaxcel.converter.out.support;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.constant.ConversionType;
-import com.github.javaxcel.converter.out.BasicWritingConverter;
-import com.github.javaxcel.converter.out.ExpressiveWritingConverter;
-import com.github.javaxcel.converter.out.WritingConverter;
+import com.github.javaxcel.converter.out.DefaultOutputConverter;
+import com.github.javaxcel.converter.out.ExpressionOutputConverter;
+import com.github.javaxcel.converter.out.OutputConverter;
 import io.github.imsejin.common.util.StringUtils;
 
 import java.lang.reflect.Field;
@@ -29,15 +29,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WritingConverterSupport<T> implements WritingConverter<T> {
+public class OutputConverterSupport<T> implements OutputConverter<T> {
 
     private final Map<Field, Column> columnMap;
 
-    private final WritingConverter<T> basicConverter;
+    private final OutputConverter<T> defaultConverter;
 
-    private final WritingConverter<T> expressiveConverter;
+    private final OutputConverter<T> expressionConverter;
 
-    public WritingConverterSupport(List<Field> fields) {
+    public OutputConverterSupport(List<Field> fields) {
         Map<Field, Column> map = new HashMap<>();
 
         for (Field field : fields) {
@@ -45,9 +45,9 @@ public class WritingConverterSupport<T> implements WritingConverter<T> {
         }
 
         this.columnMap = map;
-        this.basicConverter = new BasicWritingConverter<>();
+        this.defaultConverter = new DefaultOutputConverter<>();
         // Caches expressions for each field to improve performance.
-        this.expressiveConverter = new ExpressiveWritingConverter<>(fields);
+        this.expressionConverter = new ExpressionOutputConverter<>(fields);
     }
 
     public void setDefaultValue(String defaultValue) {
@@ -72,10 +72,10 @@ public class WritingConverterSupport<T> implements WritingConverter<T> {
         Column column = this.columnMap.get(field);
 
         String cellValue;
-        if (column.conversionType == ConversionType.BASIC) {
-            cellValue = this.basicConverter.convert(model, field);
+        if (column.conversionType == ConversionType.DEFAULT) {
+            cellValue = this.defaultConverter.convert(model, field);
         } else {
-            cellValue = this.expressiveConverter.convert(model, field);
+            cellValue = this.expressionConverter.convert(model, field);
         }
 
         return StringUtils.ifNullOrEmpty(cellValue, column.defaultValue);
@@ -91,7 +91,7 @@ public class WritingConverterSupport<T> implements WritingConverter<T> {
         private static Column from(Field field) {
             Column column = new Column();
 
-            // Checks if a field value requires ExpressiveWritingConverter when it is written.
+            // Checks which conversion type of a field value when it is written.
             column.conversionType = ConversionType.of(field);
 
             // Decides the proper default value for a field value.

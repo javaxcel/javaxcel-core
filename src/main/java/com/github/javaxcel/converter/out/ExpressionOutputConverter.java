@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ExpressiveWritingConverter<T> implements WritingConverter<T> {
+public class ExpressionOutputConverter<T> implements OutputConverter<T> {
 
     private static final ExpressionParser parser = new SpelExpressionParser();
 
@@ -43,7 +43,7 @@ public class ExpressiveWritingConverter<T> implements WritingConverter<T> {
     @Nullable
     private final Map<Field, Expression> cache;
 
-    public ExpressiveWritingConverter() {
+    public ExpressionOutputConverter() {
         this.fields = null;
         this.cache = null;
     }
@@ -74,7 +74,7 @@ public class ExpressiveWritingConverter<T> implements WritingConverter<T> {
      *
      * @param fields fields of model
      */
-    public ExpressiveWritingConverter(@Nonnull List<Field> fields) {
+    public ExpressionOutputConverter(@Nonnull List<Field> fields) {
         this.fields = fields;
         this.cache = createCache(fields);
     }

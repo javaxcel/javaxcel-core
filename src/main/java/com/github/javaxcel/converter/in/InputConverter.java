@@ -19,7 +19,7 @@ package com.github.javaxcel.converter.in;
 import java.lang.reflect.Field;
 import java.util.Map;
 
-public interface ReadingConverter {
+public interface InputConverter {
 
     /**
      * Converts a string in cell to the type of field.

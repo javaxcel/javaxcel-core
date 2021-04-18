@@ -26,7 +26,7 @@ import java.lang.reflect.Field;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 
-public class BasicWritingConverter<T> implements WritingConverter<T> {
+public class DefaultOutputConverter<T> implements OutputConverter<T> {
 
     /**
      * {@inheritDoc}

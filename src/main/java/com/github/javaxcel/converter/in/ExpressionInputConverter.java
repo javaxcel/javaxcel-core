@@ -30,18 +30,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ExpressiveReadingConverter implements ReadingConverter {
+public class ExpressionInputConverter implements InputConverter {
 
     private static final ExpressionParser parser = new SpelExpressionParser();
 
     @Nullable
     private final Map<String, Expression> cache;
 
-    public ExpressiveReadingConverter() {
+    public ExpressionInputConverter() {
         this.cache = null;
     }
 
-    public ExpressiveReadingConverter(@Nonnull List<Field> fields) {
+    public ExpressionInputConverter(@Nonnull List<Field> fields) {
         this.cache = createCache(fields);
     }
 

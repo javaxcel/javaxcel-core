@@ -19,7 +19,7 @@ package com.github.javaxcel.converter.out;
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 
-public interface WritingConverter<T> {
+public interface OutputConverter<T> {
 
     /**
      * Converts a field's value to the string.
