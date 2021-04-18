@@ -46,6 +46,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @StopwatchProvider
 class DateTimeFormatTest extends ExcelWriterTester {
 
+    /**
+     * @see ExcelDateTimeFormat#pattern()
+     */
     @Test
     void test(@TempDir Path path, Stopwatch stopwatch) throws Exception {
         Class<ChronoModel> type = ChronoModel.class;
