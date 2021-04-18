@@ -175,31 +175,6 @@ public final class FieldUtils {
     }
 
     /**
-     * If the value is null or empty string, converts a value to default value.
-     *
-     * @param maybeFaulty  value that may be null or empty
-     * @param defaultValue 1. {@link com.github.javaxcel.out.AbstractExcelWriter#defaultValue(String)}
-     *                     2. {@link ExcelColumn#defaultValue()}
-     *                     3. {@link ExcelModel#defaultValue()}
-     * @param field        field of model
-     * @return origin value or default value
-     */
-    @Nullable
-    public static String convertIfFaulty(String maybeFaulty, String defaultValue, Field field) {
-        if (!StringUtils.isNullOrEmpty(maybeFaulty)) return maybeFaulty;
-
-        // Default value assigned by ExcelWriter takes precedence over ExcelColumn's default value.
-        if (!StringUtils.isNullOrEmpty(defaultValue)) return defaultValue;
-
-        ExcelColumn excelColumn = field.getAnnotation(ExcelColumn.class);
-        if (excelColumn != null && !excelColumn.defaultValue().equals("")) {
-            return excelColumn.defaultValue();
-        }
-
-        return null;
-    }
-
-    /**
      * Returns instance of type.
      *
      * <p> This can instantiate the type that has constructor without parameter.
