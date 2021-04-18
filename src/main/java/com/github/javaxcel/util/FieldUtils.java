@@ -28,8 +28,8 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -68,10 +68,15 @@ public final class FieldUtils {
                 : getInheritedFields(type).stream();
 
         // Excludes the fields to be ignored.
-        final Predicate<Field> predicate = excelModel == null || !excelModel.explicit()
-                ? field -> field.getAnnotation(ExcelIgnore.class) == null
-                : field -> field.getAnnotation(ExcelIgnore.class) == null && field.getAnnotation(ExcelColumn.class) != null;
-        return stream.filter(predicate).collect(toList());
+        stream = stream.filter(field -> field.getAnnotation(ExcelIgnore.class) == null);
+        // Excludes the static fields.
+        stream = stream.filter(field -> !Modifier.isStatic(field.getModifiers()));
+        // Excludes the implicit fields.
+        if (excelModel != null && excelModel.explicit()) {
+            stream = stream.filter(field -> field.getAnnotation(ExcelColumn.class) != null);
+        }
+
+        return stream.collect(toList());
     }
 
     /**
