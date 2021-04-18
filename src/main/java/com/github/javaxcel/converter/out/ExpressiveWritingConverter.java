@@ -109,6 +109,7 @@ public class ExpressiveWritingConverter<T> extends DefaultValueStore implements 
      * @return computed string
      * @see ExcelWriterExpression#value()
      */
+    @Nullable
     @Override
     public String convert(T model, Field field) {
         Map<String, Object> variables;
@@ -130,9 +131,7 @@ public class ExpressiveWritingConverter<T> extends DefaultValueStore implements 
         // Enables to use value of the field as "#FIELD_NAME" in 'ExcelWriterExpression'.
         this.context.setVariables(variables);
 
-        String result = expression.getValue(this.context, String.class);
-
-        return FieldUtils.convertIfFaulty(result, this.defaultValue, field);
+        return expression.getValue(this.context, String.class);
     }
 
 }
