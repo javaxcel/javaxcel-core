@@ -76,11 +76,11 @@ class IgnoreTest extends ExcelWriterTester {
                 .as("#2 The number of actually written model is %,d", models.size())
                 .isEqualTo(models.size());
 
-        assertThat(ExcelUtils.getSheets(wb).stream()
-                           .mapToInt(sheet -> sheet.getRow(0).getPhysicalNumberOfCells())
-                           .average().orElse(-1))
+        assertThat((double) FieldUtils.getTargetedFields(type).size())
                 .as("#3 The header size is the number of targeted fields in '%s'", type.getSimpleName())
-                .isEqualTo(FieldUtils.getTargetedFields(type).size());
+                .isEqualTo(ExcelUtils.getSheets(wb).stream()
+                        .mapToInt(sheet -> sheet.getRow(0).getPhysicalNumberOfCells())
+                        .average().orElse(-1));
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
