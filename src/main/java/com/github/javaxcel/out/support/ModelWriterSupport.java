@@ -21,6 +21,7 @@ import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.constant.ConvertType;
 import com.github.javaxcel.converter.out.BasicWritingConverter;
 import com.github.javaxcel.converter.out.ExpressiveWritingConverter;
+import com.github.javaxcel.converter.out.WritingConverter;
 import io.github.imsejin.common.util.StringUtils;
 
 import java.lang.reflect.Field;
@@ -32,9 +33,9 @@ public class ModelWriterSupport<T> {
 
     private final Map<Field, Column> columnMap;
 
-    private final BasicWritingConverter<T> basicConverter;
+    private final WritingConverter<T> basicConverter;
 
-    private final ExpressiveWritingConverter<T> expConverter;
+    private final WritingConverter<T> expressiveConverter;
 
     public ModelWriterSupport(List<Field> fields) {
         Map<Field, Column> map = new HashMap<>();
@@ -46,7 +47,7 @@ public class ModelWriterSupport<T> {
         this.columnMap = map;
         this.basicConverter = new BasicWritingConverter<>();
         // Caches expressions for each field to improve performance.
-        this.expConverter = new ExpressiveWritingConverter<>(fields);
+        this.expressiveConverter = new ExpressiveWritingConverter<>(fields);
     }
 
     public void setDefaultValue(String defaultValue) {
@@ -74,7 +75,7 @@ public class ModelWriterSupport<T> {
         if (column.convertType == ConvertType.BASIC) {
             cellValue = this.basicConverter.convert(model, field);
         } else {
-            cellValue = this.expConverter.convert(model, field);
+            cellValue = this.expressiveConverter.convert(model, field);
         }
 
         return StringUtils.ifNullOrEmpty(cellValue, column.defaultValue);
