@@ -41,7 +41,7 @@ public class ExpressiveWritingConverter<T> implements WritingConverter<T> {
     private final List<Field> fields;
 
     @Nullable
-    private final Map<String, Expression> cache;
+    private final Map<Field, Expression> cache;
 
     public ExpressiveWritingConverter() {
         this.fields = null;
@@ -85,15 +85,15 @@ public class ExpressiveWritingConverter<T> implements WritingConverter<T> {
      * @param fields fields of model
      * @return unmodifiable cache of expression
      */
-    private static Map<String, Expression> createCache(List<Field> fields) {
-        Map<String, Expression> cache = new HashMap<>();
+    private static Map<Field, Expression> createCache(List<Field> fields) {
+        Map<Field, Expression> cache = new HashMap<>();
 
         for (Field field : fields) {
             ExcelWriterExpression annotation = field.getAnnotation(ExcelWriterExpression.class);
             if (annotation == null) continue;
 
             Expression expression = parser.parseExpression(annotation.value());
-            cache.put(field.getName(), expression);
+            cache.put(field, expression);
         }
 
         return Collections.unmodifiableMap(cache);
@@ -124,7 +124,7 @@ public class ExpressiveWritingConverter<T> implements WritingConverter<T> {
 
         } else {
             // When this instantiated by constructor with fields.
-            expression = this.cache.get(field.getName());
+            expression = this.cache.get(field);
             variables = FieldUtils.toMap(model, this.fields);
         }
 
