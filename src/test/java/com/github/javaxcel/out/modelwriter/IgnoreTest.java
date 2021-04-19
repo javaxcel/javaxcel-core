@@ -22,7 +22,6 @@ import com.github.javaxcel.annotation.ExcelIgnore;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.util.ExcelUtils;
-import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
 import lombok.Getter;
@@ -38,8 +37,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 
-import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.github.javaxcel.TestUtils.*;
 
 @StopwatchProvider
 class IgnoreTest extends ExcelWriterTester {
@@ -71,16 +69,9 @@ class IgnoreTest extends ExcelWriterTester {
 
         assertNotEmptyFile(file, "#1 Excel file must be created and have content");
 
-        @Cleanup Workbook wb = WorkbookFactory.create(file);
-        assertThat(ExcelUtils.getNumOfModels(wb))
-                .as("#2 The number of actually written model is %,d", models.size())
-                .isEqualTo(models.size());
-
-        assertThat((double) FieldUtils.getTargetedFields(type).size())
-                .as("#3 The header size is the number of targeted fields in '%s'", type.getSimpleName())
-                .isEqualTo(ExcelUtils.getSheets(wb).stream()
-                        .mapToInt(sheet -> sheet.getRow(0).getPhysicalNumberOfCells())
-                        .average().orElse(-1));
+        @Cleanup Workbook workbook = WorkbookFactory.create(file);
+        assertEqualsNumOfModels(workbook, models, "#2 The number of actually written rows is %,d", models.size());
+        assertEqualsHeaderSize(workbook, type, "#3 Header size is equal to the number of targeted fields in '%s'", type.getSimpleName());
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////

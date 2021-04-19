@@ -35,9 +35,10 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.util.List;
 
+import static com.github.javaxcel.TestUtils.assertEqualsNumOfModels;
 import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @StopwatchProvider
 class SheetRotationTest extends ExcelWriterTester {
@@ -67,12 +68,12 @@ class SheetRotationTest extends ExcelWriterTester {
 
     @Override
     protected void then(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) throws Exception {
+        List<?> models = thenModel.getModels();
+
         assertNotEmptyFile(givenModel.getFile(), "#1 Excel file must be created and have content");
 
-        @Cleanup Workbook wb = WorkbookFactory.create(givenModel.getFile());
-        assertThat(ExcelUtils.getNumOfModels(wb))
-                .as("#2 The number of actually written model is %,d", thenModel.getModels().size())
-                .isEqualTo(thenModel.getModels().size());
+        @Cleanup Workbook workbook = WorkbookFactory.create(givenModel.getFile());
+        assertEqualsNumOfModels(workbook, models, "#2 The number of actually written rows is %,d", models.size());
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
