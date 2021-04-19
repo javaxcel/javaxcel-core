@@ -24,7 +24,6 @@ import lombok.Cleanup;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.annotation.AnnotationDescription;
 import net.bytebuddy.description.modifier.Visibility;
-import net.bytebuddy.implementation.EqualsMethod;
 import net.bytebuddy.implementation.ToStringMethod;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -64,7 +63,7 @@ class DynamicTypeTest extends ExcelWriterTester {
     }
 
     private Class<?> createDynamicType() {
-        AnnotationDescription description = AnnotationDescription.Builder
+        AnnotationDescription unrandomized = AnnotationDescription.Builder
                 .ofType(TestUtils.Unrandomized.class).build();
 
         return new ByteBuddy()
@@ -73,11 +72,9 @@ class DynamicTypeTest extends ExcelWriterTester {
                 .defineField("id", Long.class, Visibility.PRIVATE)
                 .defineField("name", String.class, Visibility.PRIVATE)
                 .defineField("uuid", UUID.class, Visibility.PRIVATE)
-                .annotateField(description)
+                .annotateField(unrandomized)
                 .defineMethod("toString", String.class, Visibility.PUBLIC)
                 .intercept(ToStringMethod.prefixedBySimpleClassName())
-                .defineMethod("equals", boolean.class, Visibility.PUBLIC)
-                .intercept(EqualsMethod.isolated())
                 .make().load(getClass().getClassLoader()).getLoaded();
     }
 

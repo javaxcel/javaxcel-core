@@ -17,6 +17,7 @@
 package com.github.javaxcel.out.modelwriter;
 
 import com.github.javaxcel.ExcelWriterTester;
+import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
@@ -24,6 +25,7 @@ import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.junit.jupiter.api.DisplayName;
@@ -36,20 +38,29 @@ import java.io.OutputStream;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static com.github.javaxcel.TestUtils.assertEqualsNumOfModels;
 import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
+import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @StopwatchProvider
 class SheetRotationTest extends ExcelWriterTester {
 
+    private static final String SHEET_NAME = SheetRotationTest.class.getSimpleName() + "Sheet";
+
+    /**
+     * @see com.github.javaxcel.out.AbstractExcelWriter#sheetName(String)
+     */
     @Test
     @DisplayName("When writes models rotating sheet")
     void test(@TempDir Path path, Stopwatch stopwatch) throws Exception {
-        String filename = SimpleModel.class.getSimpleName().toLowerCase() + ".xls";
+        Class<SimpleModel> type = SimpleModel.class;
+        String filename = type.getSimpleName().toLowerCase() + ".xls";
         File file = new File(path.toFile(), filename);
 
-        run(file, SimpleModel.class, stopwatch);
+        run(file, type, stopwatch);
     }
 
     @Override
@@ -66,6 +77,14 @@ class SheetRotationTest extends ExcelWriterTester {
         return new WhenModel(out, workbook, numOfMocks);
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
+    protected void whenWriteWorkbook(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) {
+        ExcelWriterFactory.create(whenModel.getWorkbook(), givenModel.getType())
+                .sheetName(SHEET_NAME)
+                .write(whenModel.getOutputStream(), (List) thenModel.getModels());
+    }
+
     @Override
     protected void then(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) throws Exception {
         List<?> models = thenModel.getModels();
@@ -74,6 +93,12 @@ class SheetRotationTest extends ExcelWriterTester {
 
         @Cleanup Workbook workbook = WorkbookFactory.create(givenModel.getFile());
         assertEqualsNumOfModels(workbook, models, "#2 The number of actually written rows is %,d", models.size());
+
+        Pattern pattern = Pattern.compile("^" + SHEET_NAME + "\\d+$");
+        assertThat(ExcelUtils.getSheets(workbook).stream()
+                .map(Sheet::getSheetName).collect(toList()))
+                .as("#3 Each sheet name matches the pattern")
+                .allMatch(name -> pattern.matcher(name).matches());
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
