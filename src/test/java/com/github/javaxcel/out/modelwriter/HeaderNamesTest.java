@@ -21,6 +21,7 @@ import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.AbstractExcelWriter;
+import com.github.javaxcel.out.ModelWriter;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.tool.Stopwatch;
@@ -32,28 +33,57 @@ import lombok.ToString;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.*;
 
 import java.io.File;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @StopwatchProvider
 class HeaderNamesTest extends ExcelWriterTester {
 
     @ParameterizedTest
+    @NullSource
+    @MethodSource("invalidHeaderNames")
+    @DisplayName("When sets invalid header names")
+    void fail(List<String> headerNames, Stopwatch stopwatch) {
+        // given
+        stopwatch.start("create '%s' instance", XSSFWorkbook.class.getSimpleName());
+        Workbook workbook = new XSSFWorkbook();
+        stopwatch.stop();
+
+        // when & then
+        stopwatch.start("create '%s' instance with invalid header names(%s)",
+                ModelWriter.class.getSimpleName(), headerNames);
+        assertThatThrownBy(() -> ExcelWriterFactory.create(workbook, KebabCaseComputer.class)
+                .headerNames(headerNames))
+                .as("Throws IllegalArgumentException")
+                .isExactlyInstanceOf(IllegalArgumentException.class);
+    }
+
+    @ParameterizedTest
     @ValueSource(classes = {UpperSnakeCaseComputer.class, KebabCaseComputer.class})
-    void test(Class<?> type, @TempDir Path path, Stopwatch stopwatch) throws Exception {
+    @DisplayName("When sets valid header names")
+    void succeed(Class<?> type, @TempDir Path path, Stopwatch stopwatch) throws Exception {
         String filename = type.getSimpleName().toLowerCase() + ".xlsx";
         File file = new File(path.toFile(), filename);
 
@@ -100,6 +130,16 @@ class HeaderNamesTest extends ExcelWriterTester {
     private static Function<String, String> getFunctionByType(Class<?> type) {
         if (type == UpperSnakeCaseComputer.class) return HeaderNamesTest::camelToUpperSnake;
         else return HeaderNamesTest::camelToKebab;
+    }
+
+    private static Stream<Arguments> invalidHeaderNames() {
+        int numOfFields = FieldUtils.getTargetedFields(KebabCaseComputer.class).size();
+
+        return Stream.of(
+                Arguments.of(Collections.emptyList()),
+                Arguments.of(IntStream.range(0, numOfFields - 1).mapToObj(n -> "Field_" + n).collect(toList())),
+                Arguments.of(IntStream.range(0, numOfFields + 1).mapToObj(n -> "Field_" + n).collect(toList()))
+        );
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
