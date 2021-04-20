@@ -71,7 +71,7 @@ class IncludeSuperClassesTest extends ExcelWriterTester {
         assertIncludeSuperClasses(file, givenModel.getType(), thenModel.getModels());
     }
 
-    private void assertIncludeSuperClasses(File file, Class<?> type, List<?> list) throws IOException {
+    private static void assertIncludeSuperClasses(File file, Class<?> type, List<?> list) throws IOException {
         @Cleanup Workbook workbook = WorkbookFactory.create(file);
         List<Map<String, Object>> models = ExcelReaderFactory.create(workbook).read();
 

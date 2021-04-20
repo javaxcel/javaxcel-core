@@ -66,7 +66,7 @@ class DateTimeFormatTest extends ExcelWriterTester {
         assertDateTimeFormat(file);
     }
 
-    private void assertDateTimeFormat(File file) throws IOException {
+    private static void assertDateTimeFormat(File file) throws IOException {
         @Cleanup Workbook workbook = WorkbookFactory.create(file);
 
         Map<String, Pattern> patternMap = new HashMap<>();
