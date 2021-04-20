@@ -39,6 +39,10 @@ import java.util.List;
 
 import static com.github.javaxcel.TestUtils.*;
 
+/**
+ * @see ExcelIgnore
+ * @see ExcelModel#explicit()
+ */
 @StopwatchProvider
 class IgnoreTest extends ExcelWriterTester {
 

@@ -46,6 +46,11 @@ import java.util.Map;
 import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * @see ExcelModel#defaultValue()
+ * @see ExcelColumn#defaultValue()
+ * @see com.github.javaxcel.out.AbstractExcelWriter#defaultValue(String)
+ */
 @StopwatchProvider
 class DefaultValueTest extends ExcelWriterTester {
 
@@ -53,11 +58,6 @@ class DefaultValueTest extends ExcelWriterTester {
     private static final String COLUMN_DEFAULT_VALUE = "<null>";
     private static final String DIRECT_DEFAULT_VALUE = "[none]";
 
-    /**
-     * @see ExcelModel#defaultValue()
-     * @see ExcelColumn#defaultValue()
-     * @see com.github.javaxcel.out.AbstractExcelWriter#defaultValue(String)
-     */
     @ParameterizedTest
     @ValueSource(classes = {
             WithModel.class, WithColumn.class, WithModelAndColumn.class,

@@ -50,9 +50,6 @@ class SheetRotationTest extends ExcelWriterTester {
 
     private static final String SHEET_NAME = SheetRotationTest.class.getSimpleName() + "Sheet";
 
-    /**
-     * @see com.github.javaxcel.out.AbstractExcelWriter#sheetName(String)
-     */
     @Test
     @DisplayName("When writes models rotating sheet")
     void test(@TempDir Path path, Stopwatch stopwatch) throws Exception {

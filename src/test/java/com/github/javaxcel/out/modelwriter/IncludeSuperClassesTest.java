@@ -44,6 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Static field "$jacocoData" will be inserted into the class
  * when command "mvn surefire:test" is executed with Jacoco.
  *
+ * @see ExcelModel#includeSuper()
  * @see <a href="https://github.com/jacoco/jacoco/issues/168">
  * The unexpected field "$jacocoData" makes tests fail</a>
  * @see <a href="https://www.eclemma.org/jacoco/trunk/doc/faq.html">
@@ -52,9 +53,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @StopwatchProvider
 class IncludeSuperClassesTest extends ExcelWriterTester {
 
-    /**
-     * @see ExcelModel#includeSuper()
-     */
     @Test
     void test(@TempDir Path path, Stopwatch stopwatch) throws Exception {
         String filename = "toys.xlsx";

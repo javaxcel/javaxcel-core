@@ -42,6 +42,9 @@ import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+/**
+ * @see com.github.javaxcel.out.AbstractExcelWriter#sheetName(String)
+ */
 @StopwatchProvider
 class SheetNameTest extends ExcelWriterTester {
 

@@ -43,12 +43,12 @@ import java.util.regex.Pattern;
 import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * @see ExcelDateTimeFormat#pattern()
+ */
 @StopwatchProvider
 class DateTimeFormatTest extends ExcelWriterTester {
 
-    /**
-     * @see ExcelDateTimeFormat#pattern()
-     */
     @Test
     void test(@TempDir Path path, Stopwatch stopwatch) throws Exception {
         Class<ChronoModel> type = ChronoModel.class;
