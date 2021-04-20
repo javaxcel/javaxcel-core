@@ -24,6 +24,7 @@ import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.util.CollectionUtils;
 import io.github.imsejin.common.util.StringUtils;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.WorkbookUtil;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -144,13 +145,12 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      *
      * @param sheetName sheet name
      * @return {@link AbstractExcelWriter}
+     * @throws IllegalArgumentException if sheet name is invalid
      * @see #unrotate()
+     * @see org.apache.poi.ss.util.WorkbookUtil#validateSheetName(String)
      */
     public AbstractExcelWriter<W, T> sheetName(String sheetName) {
-        if (StringUtils.isNullOrEmpty(sheetName)) {
-            throw new IllegalArgumentException("Sheet name cannot be null or empty");
-        }
-
+        WorkbookUtil.validateSheetName(sheetName);
         this.sheetName = sheetName;
         return this;
     }
