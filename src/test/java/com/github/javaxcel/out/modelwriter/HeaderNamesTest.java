@@ -18,10 +18,13 @@ package com.github.javaxcel.out.modelwriter;
 
 import com.github.javaxcel.ExcelWriterTester;
 import com.github.javaxcel.annotation.ExcelColumn;
+import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
+import com.github.javaxcel.out.AbstractExcelWriter;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.tool.Stopwatch;
+import io.github.imsejin.common.util.StreamUtils;
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,14 +32,17 @@ import lombok.ToString;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
+import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 import static java.util.stream.Collectors.toList;
@@ -45,9 +51,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @StopwatchProvider
 class HeaderNamesTest extends ExcelWriterTester {
 
-    @Test
-    void test(@TempDir Path path, Stopwatch stopwatch) throws Exception {
-        Class<Computer> type = Computer.class;
+    @ParameterizedTest
+    @ValueSource(classes = {UpperSnakeCaseComputer.class, KebabCaseComputer.class})
+    void test(Class<?> type, @TempDir Path path, Stopwatch stopwatch) throws Exception {
         String filename = type.getSimpleName().toLowerCase() + ".xlsx";
         File file = new File(path.toFile(), filename);
 
@@ -55,22 +61,45 @@ class HeaderNamesTest extends ExcelWriterTester {
     }
 
     @Override
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    protected void whenWriteWorkbook(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) {
+        Class<?> type = givenModel.getType();
+        OutputStream outputStream = whenModel.getOutputStream();
+        Workbook workbook = whenModel.getWorkbook();
+        List<?> models = thenModel.getModels();
+
+        AbstractExcelWriter<Workbook, ?> writer = ExcelWriterFactory.create(workbook, type);
+        if (type == KebabCaseComputer.class) {
+            List<String> headerNames = FieldUtils.getTargetedFields(type)
+                    .stream().map(Field::getName).map(getFunctionByType(type)).collect(toList());
+            writer.headerNames(headerNames);
+        }
+        writer.write(outputStream, (List) models);
+    }
+
+    @Override
     protected void then(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) throws Exception {
         File file = givenModel.getFile();
-        @Cleanup Workbook workbook = ExcelUtils.getWorkbook(file);
+        Class<?> type = givenModel.getType();
 
         assertNotEmptyFile(file);
 
-        List<String> headerNames = FieldUtils.getTargetedFields(givenModel.getType())
-                .stream().map(f -> camelToSnake(f.getName()).toUpperCase()).collect(toList());
+        @Cleanup Workbook workbook = ExcelUtils.getWorkbook(file);
+        assertEqualsHeaderNames(workbook, type);
+    }
+
+    private static void assertEqualsHeaderNames(Workbook workbook, Class<?> type) {
+        List<String> headerNames = FieldUtils.getTargetedFields(type)
+                .stream().map(Field::getName).map(getFunctionByType(type)).collect(toList());
+
         Row header = workbook.getSheetAt(0).getRow(0);
+        assertThat(StreamUtils.toStream(header.cellIterator()).map(Cell::getStringCellValue).collect(toList()))
+                .containsExactlyElementsOf(headerNames);
+    }
 
-        List<String> list = new ArrayList<>();
-        for (Cell cell : header) {
-            list.add(cell.getStringCellValue());
-        }
-
-        assertThat(list).containsExactlyElementsOf(headerNames);
+    private static Function<String, String> getFunctionByType(Class<?> type) {
+        if (type == UpperSnakeCaseComputer.class) return HeaderNamesTest::camelToUpperSnake;
+        else return HeaderNamesTest::camelToKebab;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -78,21 +107,33 @@ class HeaderNamesTest extends ExcelWriterTester {
     @Getter
     @Setter
     @ToString
-    static class Computer {
-        @ExcelColumn(name = "CPU")
-        private BigInteger cpu;
-        @ExcelColumn(name = "RAM")
-        private Double ram;
+    static class UpperSnakeCaseComputer {
+        @ExcelColumn(name = "CPU_CLOCK_RATE")
+        private BigInteger cpuClockRate;
+        @ExcelColumn(name = "RANDOM_ACCESS_MEMORY")
+        private Double randomAccessMemory;
         @ExcelColumn(name = "DISK")
         private Long disk;
-        @ExcelColumn(name = "INPUT_DEVICE")
-        private String inputDevice;
-        @ExcelColumn(name = "OUTPUT_DEVICE")
-        private String outputDevice;
-        @ExcelColumn(name = "MANUFACTURER")
-        private String manufacturer;
-        @ExcelColumn(name = "PRICE")
-        private int price;
+        @ExcelColumn(name = "IO_DEVICE")
+        private String ioDevice;
+    }
+
+    @Getter
+    @Setter
+    @ToString
+    static class KebabCaseComputer {
+        private BigInteger cpuClockRate;
+        private Double randomAccessMemory;
+        private Long disk;
+        private String ioDevice;
+    }
+
+    private static String camelToUpperSnake(String str) {
+        return camelToSnake(str).toUpperCase();
+    }
+
+    private static String camelToKebab(String str) {
+        return camelToSnake(str).replace('_', '-');
     }
 
     private static String camelToSnake(String str) {
@@ -107,15 +148,13 @@ class HeaderNamesTest extends ExcelWriterTester {
         // Tarverse the string from
         // ist index to last index
         for (int i = 1; i < str.length(); i++) {
-
             char ch = str.charAt(i);
 
             if (Character.isUpperCase(ch)) {
                 // Check if the character is upper case
                 // then append '_' and such character
                 // (in lower case) to result string
-                result.append('_');
-                result.append(Character.toLowerCase(ch));
+                result.append('_').append(Character.toLowerCase(ch));
             } else {
                 // If the character is lower case then
                 // add such character into result string
