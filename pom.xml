@@ -113,11 +113,16 @@
             <version>${javaxcel.styler.version}</version>
         </dependency>
 
-        <!-- Easy generator of object with random value -->
+        <!--
+            Easy generator of object with random value
+
+            DO NOT UPGRADE THIS LIBRARY.
+            EASY-RANDOM IS BASED ON JDK 11 SINCE 5.0.0.
+        -->
         <dependency>
             <groupId>org.jeasy</groupId>
             <artifactId>easy-random-core</artifactId>
-            <version>5.0.0</version>
+            <version>4.3.0</version>
             <scope>test</scope>
         </dependency>
 
