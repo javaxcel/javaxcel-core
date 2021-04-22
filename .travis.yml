@@ -2,7 +2,7 @@
 # 1. Confirm your email account.
 # 2. Give permission for access to your Github repository to Travis.
 
-language:java
+language: java
 
 # Testing against multiple JDKs.
 # ---
@@ -53,18 +53,18 @@ after_success:
   # Codecov
   # https://github.com/codecov/example-java
   # https://github.com/codecov/example-java-maven
-  bash <(curl -s https://codecov.io/bash)
+  - "bash <(curl -s https://codecov.io/bash)"
   # Codacy
   # https://github.com/codacy/codacy-coverage-reporter
   # https://docs.codacy.com/coverage-reporter/#uploading-coverage
-  bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+  - "bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
     --project-token $CODACY_PROJECT_TOKEN \
     --api-token $CODACY_API_TOKEN \
     --username imsejin \
     --project-name javaxcel-core \
     --language Java \
+    $(find **/jacoco*.xml -printf '--coverage-reports %p ')"
     # --coverage-reports ./target/site/jacoco/jacoco.xml \
-    $(find **/jacoco*.xml -printf '--coverage-reports %p ')
 
 # Notification when Travis CI is done.
 notifications:
