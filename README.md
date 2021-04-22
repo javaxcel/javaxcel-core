@@ -13,7 +13,7 @@
 
 <p align="center">
     <a href="https://travis-ci.com/github/javaxcel/javaxcel-core">
-        <img src="https://travis-ci.com/javaxcel/javaxcel-core.svg?branch=dev"/>
+        <img src="https://travis-ci.com/javaxcel/javaxcel-core.svg?branch=release"/>
     </a>
     <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/javaxcel/javaxcel-core?label=github">
     <img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.github.javaxcel/javaxcel-core">
