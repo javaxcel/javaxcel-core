@@ -73,6 +73,7 @@ public final class MapReader<W extends Workbook, T extends Map<String, ?>> exten
     //////////////////////////////////////// Hooks ////////////////////////////////////////
 
     @Override
+    @SuppressWarnings("unchecked")
     protected List<T> readSheet(Sheet sheet) {
         return (List<T>) readSheetAsMaps(sheet);
     }
