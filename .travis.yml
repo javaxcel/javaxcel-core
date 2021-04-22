@@ -2,7 +2,7 @@
 # 1. Confirm your email account.
 # 2. Give permission for access to your Github repository to Travis.
 
-language: java
+language:java
 
 # Testing against multiple JDKs.
 # ---
