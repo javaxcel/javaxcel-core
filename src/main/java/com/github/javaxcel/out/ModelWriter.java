@@ -18,8 +18,8 @@ package com.github.javaxcel.out;
 
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
-import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.converter.out.support.OutputConverterSupport;
+import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.styler.NoStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
@@ -223,10 +223,12 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
     public ModelWriter<W, T> headerStyles(ExcelStyleConfig... configs) {
         super.headerStyles(configs);
 
-        if (this.headerStyles.length != 1 && this.headerStyles.length != this.fields.size()) {
-            throw new IllegalArgumentException(String.format(
+        if (this.headerStyles != null && this.headerStyles.length != 1 &&
+                this.headerStyles.length != this.fields.size()) {
+            String message = String.format(
                     "Number of header styles(%d) must be 1 or equal to number of targeted fields(%d) in the class '%s'",
-                    this.headerStyles.length, this.fields.size(), this.type.getName()));
+                    this.headerStyles.length, this.fields.size(), this.type.getName());
+            throw new IllegalArgumentException(message);
         }
 
         return this;
@@ -252,10 +254,12 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
     public ModelWriter<W, T> bodyStyles(ExcelStyleConfig... configs) {
         super.bodyStyles(configs);
 
-        if (this.bodyStyles.length != 1 && this.bodyStyles.length != this.fields.size()) {
-            throw new IllegalArgumentException(String.format(
+        if (this.bodyStyles != null && this.bodyStyles.length != 1 &&
+                this.bodyStyles.length != this.fields.size()) {
+            String message = String.format(
                     "Number of body styles(%d) must be 1 or equal to number of targeted fields(%d) in the class '%s'",
-                    this.bodyStyles.length, this.fields.size(), this.type.getName()));
+                    this.bodyStyles.length, this.fields.size(), this.type.getName());
+            throw new IllegalArgumentException(message);
         }
 
         return this;
@@ -379,7 +383,7 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
                 CellStyle bodyStyle = this.bodyStyles.length == 1
                         ? this.bodyStyles[0] : this.bodyStyles[j];
 
-                // When configure styles with annotations, there is possibility that 'bodyStyles' has null elements.
+                //  There is possibility that 'bodyStyles' has null elements, if you set 'NoStyleConfig'.
                 if (bodyStyle != null) cell.setCellStyle(bodyStyle);
             }
         }

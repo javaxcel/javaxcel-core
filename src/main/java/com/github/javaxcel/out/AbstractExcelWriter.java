@@ -346,7 +346,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
             CellStyle headerStyle = this.headerStyles.length == 1
                     ? this.headerStyles[0] : this.headerStyles[i];
 
-            // When configure styles with annotations, there is possibility that 'headerStyles' has null elements.
+            //  There is possibility that 'headerStyles' has null elements, if you set 'NoStyleConfig'.
             if (headerStyle != null) cell.setCellStyle(headerStyle);
         }
     }

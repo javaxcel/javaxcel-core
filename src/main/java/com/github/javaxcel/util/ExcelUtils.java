@@ -18,6 +18,7 @@ package com.github.javaxcel.util;
 
 import com.github.javaxcel.exception.UnsupportedWorkbookException;
 import com.github.javaxcel.styler.ExcelStyleConfig;
+import com.github.javaxcel.styler.NoStyleConfig;
 import com.github.javaxcel.styler.config.Configurer;
 import io.github.imsejin.common.util.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -34,10 +35,12 @@ import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -372,9 +375,12 @@ public final class ExcelUtils {
      *
      * @param workbook excel workbook
      * @param config   configuration of cell style
-     * @return cell style
+     * @return cell style | null if instance type of config is {@link NoStyleConfig}
      */
+    @Nullable
     public static CellStyle toCellStyle(Workbook workbook, ExcelStyleConfig config) {
+        if (config.getClass() == NoStyleConfig.class) return null;
+
         CellStyle cellStyle = workbook.createCellStyle();
         Configurer configurer = new Configurer(cellStyle, workbook.createFont());
         config.configure(configurer);
@@ -387,11 +393,21 @@ public final class ExcelUtils {
      *
      * @param workbook excel workbook
      * @param configs  configurations of cell style
-     * @return cell styles
+     * @return cell styles | null if all instance types of configs are {@link NoStyleConfig}
+     * @throws IllegalArgumentException if configs is null or its length is zero.
      */
+    @Nullable
     public static CellStyle[] toCellStyles(Workbook workbook, ExcelStyleConfig... configs) {
         if (configs == null || configs.length == 0) {
             throw new IllegalArgumentException("Configurations for style cannot be null or empty");
+        }
+
+        /*
+            Prevents cell style from being instantiated to save memory
+            and not to increase the number of cell styles in a workbook.
+         */
+        if (Arrays.stream(configs).map(Object::getClass).allMatch(NoStyleConfig.class::equals)) {
+            return null;
         }
 
         CellStyle[] cellStyles = new CellStyle[configs.length];

@@ -404,7 +404,9 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
                 // Sets styles to body's cell.
                 CellStyle bodyStyle = this.bodyStyles.length == 1
                         ? this.bodyStyles[0] : this.bodyStyles[j];
-                cell.setCellStyle(bodyStyle);
+
+                //  There is possibility that 'bodyStyles' has null elements, if you set 'NoStyleConfig'.
+                if (bodyStyle != null) cell.setCellStyle(bodyStyle);
             }
         }
     }
