@@ -116,7 +116,7 @@ There is a list that contains a `Product`.
 ```java
 File dest = new File("/data", "products.xlsx")
 OutputStream out = new FileOutputStream(dest);
-Workbook workbook = new XSSFWorkbook();
+Workbook workbook = new SXSSFWorkbook();
 
 ExcelWriterFactory.create(workbook, Product.class).write(out, products);
 ```
