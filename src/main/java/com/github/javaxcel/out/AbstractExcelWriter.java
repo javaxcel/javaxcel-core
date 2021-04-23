@@ -99,7 +99,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     protected CellStyle[] bodyStyles;
 
     /**
-     * @see #autoResizeCols()
+     * @see #autoResizeColumns()
      */
     protected boolean willAutoResize;
 
@@ -109,9 +109,9 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     protected boolean willHideRows;
 
     /**
-     * @see #hideExtraCols()
+     * @see #hideExtraColumns()
      */
-    protected boolean willHideCols;
+    protected boolean willHideColumns;
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -253,7 +253,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
         return this;
     }
 
-    public AbstractExcelWriter<W, T> autoResizeCols() {
+    public AbstractExcelWriter<W, T> autoResizeColumns() {
         this.willAutoResize = true;
         return this;
     }
@@ -263,8 +263,8 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
         return this;
     }
 
-    public AbstractExcelWriter<W, T> hideExtraCols() {
-        this.willHideCols = true;
+    public AbstractExcelWriter<W, T> hideExtraColumns() {
+        this.willHideColumns = true;
         return this;
     }
 
@@ -308,7 +308,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
             // Adjusts rows and columns.
             if (this.willAutoResize) ExcelUtils.autoResizeColumns(sheet, getNumOfColumns());
             if (this.willHideRows) ExcelUtils.hideExtraRows(sheet, those.size() + 1);
-            if (this.willHideCols) ExcelUtils.hideExtraColumns(sheet, getNumOfColumns());
+            if (this.willHideColumns) ExcelUtils.hideExtraColumns(sheet, getNumOfColumns());
         }
 
         // Saves the data.

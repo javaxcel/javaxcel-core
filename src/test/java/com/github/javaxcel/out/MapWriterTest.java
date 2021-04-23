@@ -107,9 +107,9 @@ class MapWriterTest {
 
     /**
      * @see MapWriter#headerNames(List, List)
-     * @see AbstractExcelWriter#autoResizeCols()
+     * @see AbstractExcelWriter#autoResizeColumns()
      * @see AbstractExcelWriter#hideExtraRows()
-     * @see AbstractExcelWriter#hideExtraCols()
+     * @see AbstractExcelWriter#hideExtraColumns()
      * @see AbstractExcelWriter#headerStyles(ExcelStyleConfig...)
      * @see AbstractExcelWriter#bodyStyles(ExcelStyleConfig...)
      */
@@ -139,7 +139,7 @@ class MapWriterTest {
                 .sheetName("Maps")
                 .headerNames(keys, Arrays.asList("RACE", "NAME", "HEIGHT", "WEIGHT", "STRENGTH", "EYE_SIGHT", "FAVORITE_FOOD"))
                 .unrotate()
-                .autoResizeCols().hideExtraCols()
+                .autoResizeColumns().hideExtraColumns()
                 .headerStyles(DefaultHeaderStyleConfig.getRainbowHeader())
                 .bodyStyles(new DefaultBodyStyleConfig())
                 .write(out, maps);

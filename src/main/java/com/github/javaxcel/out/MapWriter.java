@@ -290,8 +290,8 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
      * @return {@link MapWriter}
      */
     @Override
-    public MapWriter<W, T> autoResizeCols() {
-        super.autoResizeCols();
+    public MapWriter<W, T> autoResizeColumns() {
+        super.autoResizeColumns();
         return this;
     }
 
@@ -312,8 +312,8 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
      * @return {@link MapWriter}
      */
     @Override
-    public MapWriter<W, T> hideExtraCols() {
-        super.hideExtraCols();
+    public MapWriter<W, T> hideExtraColumns() {
+        super.hideExtraColumns();
         return this;
     }
 

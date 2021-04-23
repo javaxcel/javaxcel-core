@@ -23,9 +23,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ModelWriterTest {
 
     /**
-     * @see AbstractExcelWriter#autoResizeCols()
+     * @see AbstractExcelWriter#autoResizeColumns()
      * @see AbstractExcelWriter#hideExtraRows()
-     * @see AbstractExcelWriter#hideExtraCols()
+     * @see AbstractExcelWriter#hideExtraColumns()
      * @see AbstractExcelWriter#headerStyles(ExcelStyleConfig...)
      * @see AbstractExcelWriter#bodyStyles(ExcelStyleConfig...)
      * @see AbstractExcelWriter#unrotate()
@@ -52,7 +52,7 @@ class ModelWriterTest {
         stopwatch.start(String.format("write and decorate %,d models", numOfMocks));
         ExcelWriterFactory.create(workbook, Human.class)
                 .sheetName("People")
-                .autoResizeCols().hideExtraRows().hideExtraCols()
+                .autoResizeColumns().hideExtraRows().hideExtraColumns()
                 .headerStyles(new DefaultHeaderStyleConfig())
                 .bodyStyles(new DefaultBodyStyleConfig())
                 .unrotate().write(out, people);

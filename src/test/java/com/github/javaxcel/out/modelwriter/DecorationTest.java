@@ -53,9 +53,6 @@ import static com.github.javaxcel.util.ExcelUtils.equalsCellStyleAndFont;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * @see ModelWriter#autoResizeCols()
- * @see ModelWriter#hideExtraRows()
- * @see ModelWriter#hideExtraCols()
  * @see ModelWriter#headerStyle(ExcelStyleConfig)
  * @see ModelWriter#headerStyles(ExcelStyleConfig...)
  * @see ModelWriter#bodyStyle(ExcelStyleConfig)

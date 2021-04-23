@@ -271,8 +271,8 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
      * @return {@link ModelWriter}
      */
     @Override
-    public ModelWriter<W, T> autoResizeCols() {
-        super.autoResizeCols();
+    public ModelWriter<W, T> autoResizeColumns() {
+        super.autoResizeColumns();
         return this;
     }
 
@@ -293,8 +293,8 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
      * @return {@link ModelWriter}
      */
     @Override
-    public ModelWriter<W, T> hideExtraCols() {
-        super.hideExtraCols();
+    public ModelWriter<W, T> hideExtraColumns() {
+        super.hideExtraColumns();
         return this;
     }
 
