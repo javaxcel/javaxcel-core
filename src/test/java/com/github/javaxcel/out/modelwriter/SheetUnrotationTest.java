@@ -19,11 +19,10 @@ package com.github.javaxcel.out.modelwriter;
 import com.github.javaxcel.ExcelWriterTester;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
+import com.github.javaxcel.out.ModelWriter;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -38,13 +37,14 @@ import java.io.OutputStream;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.regex.Pattern;
 
-import static com.github.javaxcel.TestUtils.assertEqualsNumOfModels;
 import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * @see ModelWriter#unrotate()
+ */
 @StopwatchProvider
 class SheetUnrotationTest extends ExcelWriterTester {
 
@@ -54,7 +54,7 @@ class SheetUnrotationTest extends ExcelWriterTester {
     @DisplayName("When writes models unrotating sheet")
     void test(@TempDir Path path, Stopwatch stopwatch) throws Exception {
         Class<SimpleModel> type = SimpleModel.class;
-        String filename = type.getSimpleName().toLowerCase() + ".xls";
+        String filename = type.getSimpleName().toLowerCase() + '.' + ExcelUtils.EXCEL_97_EXTENSION;
         File file = new File(path.toFile(), filename);
 
         run(file, type, stopwatch);
@@ -66,16 +66,16 @@ class SheetUnrotationTest extends ExcelWriterTester {
         Workbook workbook = new HSSFWorkbook();
 
         /*
-        To create multiple sheets, generates models as many
-        as the amount exceeds the maximum number of rows per sheet.
-        */
+         To create multiple sheets, generates models as many
+         as the amount exceeds the maximum number of rows per sheet.
+         */
         final int numOfMocks = (int) (ExcelUtils.getMaxRows(workbook) * 1.1);
 
         return new WhenModel(out, workbook, numOfMocks);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected void whenWriteWorkbook(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) {
         ExcelWriterFactory.create(whenModel.getWorkbook(), givenModel.getType())
                 .sheetName(SHEET_NAME).unrotate()
@@ -87,23 +87,23 @@ class SheetUnrotationTest extends ExcelWriterTester {
         assertNotEmptyFile(givenModel.getFile(), "#1 Excel file must be created and have content");
 
         @Cleanup Workbook workbook = WorkbookFactory.create(givenModel.getFile());
-        assertThat(ExcelUtils.getNumOfModels(workbook))
-                .as("#2 The number of actually written rows is the maximum number of rows - 1")
-                .isEqualTo(ExcelUtils.getMaxRows(workbook) - 1);
-
         List<Sheet> sheets = ExcelUtils.getSheets(workbook);
-        assertThat(sheets.size()).isEqualTo(1);
+
+        assertThat(sheets)
+                .isNotNull().hasSize(1);
         assertThat(sheets.stream()
                 .map(Sheet::getSheetName).collect(toList()))
-                .as("#3 sheet name is equal to '%s'", SHEET_NAME)
+                .as("#2 Sheet name is equal to '%s'", SHEET_NAME)
                 .allMatch(SHEET_NAME::equals);
+
+        assertThat(ExcelUtils.getNumOfModels(workbook))
+                .as("#3 The number of actually written all models is equal to the number of models in first sheet")
+                .isEqualTo(ExcelUtils.getNumOfModels(sheets.get(0)));
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    @Getter
-    @Setter
-    static class SimpleModel {
+    private static class SimpleModel {
         private Long id;
         private String name;
         private LocalDateTime createdAt;

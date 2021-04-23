@@ -19,6 +19,7 @@ package com.github.javaxcel.out.modelwriter;
 import com.github.javaxcel.ExcelWriterTester;
 import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
+import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
 import net.bytebuddy.ByteBuddy;
@@ -43,7 +44,7 @@ class DynamicTypeTest extends ExcelWriterTester {
     @Test
     void test(@TempDir Path path, Stopwatch stopwatch) throws Exception {
         Class<?> dynamicType = createDynamicType();
-        String filename = dynamicType.getSimpleName().toLowerCase() + ".xlsx";
+        String filename = dynamicType.getSimpleName().toLowerCase() + '.' + ExcelUtils.EXCEL_2007_EXTENSION;
         File file = new File(path.toFile(), filename);
 
         run(file, dynamicType, stopwatch);
@@ -77,7 +78,5 @@ class DynamicTypeTest extends ExcelWriterTester {
                 .intercept(ToStringMethod.prefixedBySimpleClassName())
                 .make().load(getClass().getClassLoader()).getLoaded();
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////
 
 }

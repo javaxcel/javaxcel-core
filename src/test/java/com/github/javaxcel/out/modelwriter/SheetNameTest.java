@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * @see com.github.javaxcel.out.AbstractExcelWriter#sheetName(String)
+ * @see ModelWriter#sheetName(String)
  */
 @StopwatchProvider
 class SheetNameTest extends ExcelWriterTester {
@@ -78,7 +78,7 @@ class SheetNameTest extends ExcelWriterTester {
     @DisplayName("When sets valid sheet name")
     void succeed(@TempDir Path path, Stopwatch stopwatch) throws Exception {
         Class<SuccessModel> type = SuccessModel.class;
-        String filename = type.getSimpleName().toLowerCase() + ".xlsx";
+        String filename = type.getSimpleName().toLowerCase() + '.' + ExcelUtils.EXCEL_2007_EXTENSION;
         File file = new File(path.toFile(), filename);
 
         run(file, type, stopwatch);
@@ -105,12 +105,12 @@ class SheetNameTest extends ExcelWriterTester {
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    static class SuccessModel {
+    private static class SuccessModel {
         private int integer;
         private String string;
     }
 
-    static class FailureModel {
+    private static class FailureModel {
         private int integer;
         private String string;
     }

@@ -56,22 +56,18 @@ class NoTargetedFieldTest {
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    static class NoFieldModel {
+    private static class NoFieldModel {
     }
 
-    @Getter
-    @Setter
-    static class AllIgnoredModel {
+    private static class AllIgnoredModel {
         @ExcelIgnore
         private int number;
         @ExcelIgnore
         private Character character;
     }
 
-    @Getter
-    @Setter
     @ExcelModel(explicit = true)
-    static class ExplicitModel {
+    private static class ExplicitModel {
         private Long id;
         private String name;
     }

@@ -59,7 +59,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * @see com.github.javaxcel.out.AbstractExcelWriter#headerNames(List)
+ * @see ModelWriter#headerNames(List)
  */
 @StopwatchProvider
 class HeaderNamesTest extends ExcelWriterTester {
@@ -90,7 +90,7 @@ class HeaderNamesTest extends ExcelWriterTester {
     @ValueSource(classes = {UpperSnakeCaseComputer.class, KebabCaseComputer.class})
     @DisplayName("When sets valid header names")
     void succeed(Class<?> type, @TempDir Path path, Stopwatch stopwatch) throws Exception {
-        String filename = type.getSimpleName().toLowerCase() + ".xlsx";
+        String filename = type.getSimpleName().toLowerCase() + '.' + ExcelUtils.EXCEL_2007_EXTENSION;
         File file = new File(path.toFile(), filename);
 
         run(file, type, stopwatch);
@@ -150,10 +150,8 @@ class HeaderNamesTest extends ExcelWriterTester {
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    @Getter
-    @Setter
     @ToString
-    static class UpperSnakeCaseComputer {
+    private static class UpperSnakeCaseComputer {
         @ExcelColumn(name = "CPU_CLOCK_RATE")
         private BigInteger cpuClockRate;
         @ExcelColumn(name = "RANDOM_ACCESS_MEMORY")
@@ -164,10 +162,8 @@ class HeaderNamesTest extends ExcelWriterTester {
         private String ioDevice;
     }
 
-    @Getter
-    @Setter
     @ToString
-    static class KebabCaseComputer {
+    private static class KebabCaseComputer {
         private BigInteger cpuClockRate;
         private Double randomAccessMemory;
         private Long disk;

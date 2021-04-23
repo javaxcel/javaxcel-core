@@ -24,11 +24,10 @@ import com.github.javaxcel.factory.ExcelReaderFactory;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.AbstractExcelWriter;
+import com.github.javaxcel.out.ModelWriter;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.jupiter.api.DisplayName;
@@ -49,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @see ExcelModel#defaultValue()
  * @see ExcelColumn#defaultValue()
- * @see com.github.javaxcel.out.AbstractExcelWriter#defaultValue(String)
+ * @see ModelWriter#defaultValue(String)
  */
 @StopwatchProvider
 class DefaultValueTest extends ExcelWriterTester {
@@ -65,7 +64,7 @@ class DefaultValueTest extends ExcelWriterTester {
     })
     @DisplayName("When sets default value")
     void test(Class<?> type, @TempDir Path path, Stopwatch stopwatch) throws Exception {
-        String filename = type.getSimpleName().toLowerCase() + ".xlsx";
+        String filename = type.getSimpleName().toLowerCase() + '.' + ExcelUtils.EXCEL_2007_EXTENSION;
         File file = new File(path.toFile(), filename);
 
         run(file, type, stopwatch);
@@ -112,21 +111,17 @@ class DefaultValueTest extends ExcelWriterTester {
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    @Getter
-    @Setter
     @ToString
     @ExcelModel(defaultValue = MODEL_DEFAULT_VALUE)
-    static class WithModel {
+    private static class WithModel {
         private Long id;
         @TestUtils.Unrandomized
         private String title;
         private LocalDateTime createdAt;
     }
 
-    @Getter
-    @Setter
     @ToString
-    static class WithColumn {
+    private static class WithColumn {
         private Long id;
         @TestUtils.Unrandomized
         @ExcelColumn(defaultValue = COLUMN_DEFAULT_VALUE)
@@ -134,11 +129,9 @@ class DefaultValueTest extends ExcelWriterTester {
         private LocalDateTime createdAt;
     }
 
-    @Getter
-    @Setter
     @ToString
     @ExcelModel(defaultValue = MODEL_DEFAULT_VALUE)
-    static class WithModelAndColumn {
+    private static class WithModelAndColumn {
         private Long id;
         @TestUtils.Unrandomized
         @ExcelColumn(defaultValue = COLUMN_DEFAULT_VALUE)
@@ -146,21 +139,17 @@ class DefaultValueTest extends ExcelWriterTester {
         private LocalDateTime createdAt;
     }
 
-    @Getter
-    @Setter
     @ToString
     @ExcelModel(defaultValue = MODEL_DEFAULT_VALUE)
-    static class WithModelAndDirect {
+    private static class WithModelAndDirect {
         private Long id;
         @TestUtils.Unrandomized
         private String title;
         private LocalDateTime createdAt;
     }
 
-    @Getter
-    @Setter
     @ToString
-    static class WithColumnAndDirect {
+    private static class WithColumnAndDirect {
         private Long id;
         @TestUtils.Unrandomized
         @ExcelColumn(defaultValue = COLUMN_DEFAULT_VALUE)
@@ -168,11 +157,9 @@ class DefaultValueTest extends ExcelWriterTester {
         private LocalDateTime createdAt;
     }
 
-    @Getter
-    @Setter
     @ToString
     @ExcelModel(defaultValue = MODEL_DEFAULT_VALUE)
-    static class WithModelAndColumnAndDirect {
+    private static class WithModelAndColumnAndDirect {
         private Long id;
         @TestUtils.Unrandomized
         @ExcelColumn(defaultValue = COLUMN_DEFAULT_VALUE)

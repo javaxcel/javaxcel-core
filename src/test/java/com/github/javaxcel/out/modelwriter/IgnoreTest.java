@@ -24,8 +24,6 @@ import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.junit.jupiter.api.DisplayName;
@@ -50,7 +48,7 @@ class IgnoreTest extends ExcelWriterTester {
     @ValueSource(classes = {IgnoredModel.class, ExplicitModel.class})
     @DisplayName("@ExcelIgnore")
     void test(Class<?> type, @TempDir Path path, Stopwatch stopwatch) throws Exception {
-        String filename = type.getSimpleName().toLowerCase() + ".xlsx";
+        String filename = type.getSimpleName().toLowerCase() + '.' + ExcelUtils.EXCEL_2007_EXTENSION;
         File file = new File(path.toFile(), filename);
 
         run(file, type, stopwatch);
@@ -80,9 +78,7 @@ class IgnoreTest extends ExcelWriterTester {
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    @Getter
-    @Setter
-    static class IgnoredModel {
+    private static class IgnoredModel {
         private long id;
 
         @ExcelIgnore
@@ -94,10 +90,8 @@ class IgnoreTest extends ExcelWriterTester {
         private Double weight;
     }
 
-    @Getter
-    @Setter
     @ExcelModel(explicit = true)
-    static class ExplicitModel {
+    private static class ExplicitModel {
         @ExcelColumn
         private Long id;
 

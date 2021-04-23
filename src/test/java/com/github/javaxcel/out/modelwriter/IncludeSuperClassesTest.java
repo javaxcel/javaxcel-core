@@ -22,7 +22,9 @@ import com.github.javaxcel.factory.ExcelReaderFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.tool.Stopwatch;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Cleanup;
+import lombok.ToString;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.junit.jupiter.api.Test;
@@ -83,11 +85,9 @@ class IncludeSuperClassesTest extends ExcelWriterTester {
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    @Getter
-    @Setter
     @ToString
     @AllArgsConstructor
-    static class Toy {
+    private static class Toy {
         enum ToyType {
             CHILD, ADULT
         }
@@ -97,11 +97,9 @@ class IncludeSuperClassesTest extends ExcelWriterTester {
         private Double weight;
     }
 
-    @Getter
-    @Setter
     @ToString(callSuper = true)
     @ExcelModel(includeSuper = true)
-    static class EducationToy extends Toy {
+    private static class EducationToy extends Toy {
         private int[] targetAges;
         private String goals;
         private LocalDate date;

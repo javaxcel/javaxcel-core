@@ -18,7 +18,6 @@ package com.github.javaxcel.out.modelwriter;
 
 import com.github.javaxcel.Converter;
 import com.github.javaxcel.ExcelWriterTester;
-import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.annotation.ExcelWriterExpression;
 import com.github.javaxcel.factory.ExcelReaderFactory;
@@ -49,10 +48,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @see ExcelModel#includeSuper()
- * @see ExcelModel#headerStyle()
- * @see ExcelModel#bodyStyle()
- * @see ExcelColumn#headerStyle()
- * @see ExcelColumn#bodyStyle()
  * @see ExcelWriterExpression#value()
  */
 @StopwatchProvider

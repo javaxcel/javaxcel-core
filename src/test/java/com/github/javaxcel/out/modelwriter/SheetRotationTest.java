@@ -22,8 +22,6 @@ import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -54,7 +52,7 @@ class SheetRotationTest extends ExcelWriterTester {
     @DisplayName("When writes models rotating sheet")
     void test(@TempDir Path path, Stopwatch stopwatch) throws Exception {
         Class<SimpleModel> type = SimpleModel.class;
-        String filename = type.getSimpleName().toLowerCase() + ".xls";
+        String filename = type.getSimpleName().toLowerCase() + '.' + ExcelUtils.EXCEL_97_EXTENSION;
         File file = new File(path.toFile(), filename);
 
         run(file, type, stopwatch);
@@ -100,9 +98,7 @@ class SheetRotationTest extends ExcelWriterTester {
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    @Getter
-    @Setter
-    static class SimpleModel {
+    private static class SimpleModel {
         private Long id;
         private String name;
         private LocalDateTime createdAt;

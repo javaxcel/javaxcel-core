@@ -20,10 +20,9 @@ import com.github.javaxcel.ExcelWriterTester;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.factory.ExcelReaderFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
+import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.junit.jupiter.api.Test;
@@ -52,7 +51,7 @@ class DateTimeFormatTest extends ExcelWriterTester {
     @Test
     void test(@TempDir Path path, Stopwatch stopwatch) throws Exception {
         Class<ChronoModel> type = ChronoModel.class;
-        String filename = type.getSimpleName().toLowerCase() + ".xlsx";
+        String filename = type.getSimpleName().toLowerCase() + '.' + ExcelUtils.EXCEL_2007_EXTENSION;
         File file = new File(path.toFile(), filename);
 
         run(file, type, stopwatch);
@@ -114,9 +113,7 @@ class DateTimeFormatTest extends ExcelWriterTester {
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    @Getter
-    @Setter
-    static class ChronoModel {
+    private static class ChronoModel {
         static final String DATE_PATTERN = "yyyyMMdd";
         static final String TIME_PATTERN = "HH/mm/ss/SSS";
         static final String DATE_TIME_PATTERN = "yyyy/MM/dd | HH:mm:ss.SSS";

@@ -25,9 +25,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.TimeUnit;
+
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@StopwatchProvider
+@StopwatchProvider(TimeUnit.MILLISECONDS)
 class IllegalTypeTest {
 
     @Test
