@@ -569,48 +569,47 @@ Not affected.
 ### write:
 
 ```java
-/*
-Product
- */
-@ExcelWriterExpression("T(io.github.imsejin.common.util.StringUtils).formatComma(#serialNumber)")
-private long serialNumber;
+class Product {
+    @ExcelWriterExpression("T(io.github.imsejin.common.util.StringUtils).formatComma(#serialNumber)")
+    private long serialNumber;
 
-@ExcelWriterExpression("#name.toUpperCase()")
-private String name;
+    @ExcelWriterExpression("#name.toUpperCase()")
+    private String name;
 
-@ExcelWriterExpression("#accessId.replaceAll('\\d+', '')")
-private String accessId;
+    @ExcelWriterExpression("#accessId.replaceAll('\\d+', '')")
+    private String accessId;
 
-@ExcelWriterExpression("T(String).valueOf(#width).replaceAll('\\.0+$', '')")
-private Double width;
+    @ExcelWriterExpression("T(String).valueOf(#width).replaceAll('\\.0+$', '')")
+    private Double width;
 
-@ExcelWriterExpression("#depth + 'cm'")
-private double depth;
+    @ExcelWriterExpression("#depth + 'cm'")
+    private double depth;
 
-private double height;
+    private double height;
 
-@ExcelWriterExpression("T(Math).ceil(#weight)")
-private Double weight;
+    @ExcelWriterExpression("T(Math).ceil(#weight)")
+    private Double weight;
+}
 
-/*
-EducationalProduct
- */
-@ExcelWriterExpression("T(java.util.Arrays).stream(#targetAges)" +
-        ".boxed()" +
-        ".collect(T(java.util.stream.Collectors).toList())" +
-        ".toString()" +
-        ".replaceAll('[\\[\\]]', '')")
-private int[] targetAges;
+@ExcelModel(includeSuper = true)
+class EducationalProduct extends Product {
+	@ExcelWriterExpression("T(java.util.Arrays).stream(#targetAges)" +
+            ".boxed()" +
+            ".collect(T(java.util.stream.Collectors).toList())" +
+            ".toString()" +
+            ".replaceAll('[\\[\\]]', '')")
+    private int[] targetAges;
 
-@ExcelWriterExpression("'none'") // Static value
-private String goals;
+    @ExcelWriterExpression("'none'") // Static value
+    private String goals;
 
-@ExcelWriterExpression("T(java.time.LocalDateTime).of(#date, #time)") // Refers other field
-private LocalDate date;
+    @ExcelWriterExpression("T(java.time.LocalDateTime).of(#date, #time)") // Refers other field
+    private LocalDate date;
 
-private LocalTime time;
+    private LocalTime time;
 
-private LocalDateTime dateTime;
+    private LocalDateTime dateTime;    
+}
 ```
 
 | serialNumber | name                             | accessId | width | depth | height | weight | targetAges       | goals | date                    | time         | dateTime                |
@@ -642,43 +641,42 @@ If type of expression result is not `String`, the converter will invoke `Object#
 ### read:
 
 ```java
-/*
-Product
- */
-@ExcelReaderExpression("T(Long).parseLong(#serialNumber.replace(',', ''))")
-private long serialNumber;
+class Product {
+    @ExcelReaderExpression("T(Long).parseLong(#serialNumber.replace(',', ''))")
+    private long serialNumber;
 
-@ExcelReaderExpression("#name.charAt(0) + #name.substring(1).toLowerCase()")
-private String name;
+    @ExcelReaderExpression("#name.charAt(0) + #name.substring(1).toLowerCase()")
+    private String name;
 
-@ExcelReaderExpression("#accessId.replaceAll('-', '0')")
-private String accessId;
+    @ExcelReaderExpression("#accessId.replaceAll('-', '0')")
+    private String accessId;
 
-private Double width;
+    private Double width;
 
-@ExcelReaderExpression("#depth.replace('cm', '')") // This string will be parsed as double.
-private double depth;
+    @ExcelReaderExpression("#depth.replace('cm', '')") // This string will be parsed as double.
+    private double depth;
 
-private double height;
+    private double height;
 
-@ExcelReaderExpression("T(Double).parseDouble(#weight) - 0.93")
-private Double weight;
+    @ExcelReaderExpression("T(Double).parseDouble(#weight) - 0.93")
+    private Double weight;
+}
 
-/*
-EducationalProduct
- */
-@ExcelReaderExpression("T(com.github.javaxcel.Converter).toIntArray(#targetAges.split(', ')") // Custom converter method
-private int[] targetAges;
+@ExcelModel(includeSuper = true)
+class EducationalProduct extends Product {
+    @ExcelReaderExpression("T(com.github.javaxcel.Converter).toIntArray(#targetAges.split(', ')") // Custom converter method
+    private int[] targetAges;
 
-@ExcelReaderExpression("'Develop intelligence'") // Static value
-private String goals;
+    @ExcelReaderExpression("'Develop intelligence'") // Static value
+    private String goals;
 
-@ExcelReaderExpression("T(java.time.LocalDate).parse(#date)")
-private LocalDate date;
+    @ExcelReaderExpression("T(java.time.LocalDate).parse(#date)")
+    private LocalDate date;
 
-private LocalTime time;
+    private LocalTime time;
 
-private LocalDateTime dateTime;
+    private LocalDateTime dateTime;
+}
 
 // com.github.javaxcel.Converter
 public class Converter {
