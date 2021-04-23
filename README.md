@@ -68,17 +68,17 @@ Code with simple usage.
 
 # Examples
 
-1. [No option][#no-option]
-2. [Exclude field][#exclude-field]
-3. [Name the header][#name-the-header]
-4. [Set the default value][#set-the-default-value]
-5. [Model without the targeted fields][#model-without-the-targeted-fields]
-6. [Model that extends class][#model-that-extends-class]
-7. [Format date/time][#format-datetime]
-8. [Name a Sheet][#name-a-sheet]
-9. [Decoration][#decoration]
-10. [Expression][#expression]
-11. [Value constraint][#value-constraint]
+1. [No option](#no-option)
+2. [Exclude field](#exclude-field)
+3. [Name the header](#name-the-header)
+4. [Set the default value](#set-the-default-value)
+5. [Model without the targeted fields](#model-without-the-targeted-fields)
+6. [Model that extends class](#model-that-extends-class)
+7. [Format date/time](#format-datetime)
+8. [Name a Sheet](#name-a-sheet)
+9. [Decoration](#decoration)
+10. [Expression](#expression)
+11. [Value constraint](#value-constraint)
 
 <br>
 
