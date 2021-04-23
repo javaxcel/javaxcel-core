@@ -90,14 +90,14 @@ class DecorationTest extends ExcelWriterTester {
         ModelWriter<Workbook, ?> writer = ExcelWriterFactory.create(workbook, type);
 
         if (isTypeDefinedStyleDirectly(type)) {
-            NoStyleConfig style = new NoStyleConfig();
+            NoStyleConfig config = new NoStyleConfig();
             int numOfFields = FieldUtils.getTargetedFields(type).size();
             NoStyleConfig[] configs = IntStream.range(0, numOfFields)
-                    .mapToObj(i -> style).toArray(NoStyleConfig[]::new);
+                    .mapToObj(i -> config).toArray(NoStyleConfig[]::new);
 
-            writer.headerStyles(style);
+            writer.headerStyle(config);
             writer.headerStyles(configs);
-            writer.bodyStyle(style);
+            writer.bodyStyle(config);
             writer.bodyStyles(configs);
         }
 
