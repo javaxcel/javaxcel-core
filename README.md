@@ -135,6 +135,9 @@ If nothing is specified for the column, header name is the field name.
 ### read:
 
 ```java
+File src = new File("/data", "products.xlsx");
+Workbook workbook = new XSSFWorkbook(src);
+
 List<Product> products = ExcelReaderFactory.create(workbook, Product.class).read();
 ```
 
