@@ -21,10 +21,7 @@ import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.styler.NoStyleConfig;
 import com.github.javaxcel.styler.config.Configurer;
 import io.github.imsejin.common.util.FilenameUtils;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.*;
@@ -33,6 +30,7 @@ import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import javax.annotation.Nullable;
@@ -42,6 +40,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
@@ -54,8 +53,12 @@ import static java.util.stream.Collectors.toList;
  * @see Row
  * @see Cell
  * @see CellStyle
+ * @see Font
  */
 public final class ExcelUtils {
+
+    public static final String EXCEL_97_EXTENSION = "xls";
+    public static final String EXCEL_2007_EXTENSION = "xlsx";
 
     private ExcelUtils() {
     }
@@ -69,13 +72,13 @@ public final class ExcelUtils {
      */
     public static Workbook getWorkbook(File file) {
         final String extension = FilenameUtils.extension(file);
-        if (!extension.equals("xls") && !extension.equals("xlsx")) {
+        if (!extension.equals(EXCEL_97_EXTENSION) && !extension.equals(EXCEL_2007_EXTENSION)) {
             throw new IllegalArgumentException("Extension of excel file must be 'xls' or 'xlsx'");
         }
 
         Workbook workbook;
         try {
-            if (extension.equals("xls")) {
+            if (extension.equals(EXCEL_97_EXTENSION)) {
                 InputStream in = new FileInputStream(file);
                 workbook = new HSSFWorkbook(in);
             } else {
@@ -566,6 +569,125 @@ public final class ExcelUtils {
         DataValidation validation = helper.createValidation(constraint, ranges);
         validation.setShowErrorBox(true);
         sheet.addValidationData(validation);
+    }
+
+    /**
+     * Returns the number of declared cell styles.
+     *
+     * @param workbook excel workbook
+     * @return number of declared cell styles
+     */
+    public static int getNumOfDeclaredCellStyles(Workbook workbook) {
+        int numCellStyles = workbook.getNumCellStyles();
+        return numCellStyles - getNumOfInitialCellStyles(workbook);
+    }
+
+    /**
+     * Returns the number of initial cell styles.
+     *
+     * @param workbook excel workbook
+     * @return the number of initial cell styles
+     */
+    public static int getNumOfInitialCellStyles(Workbook workbook) {
+        return isExcel97(workbook) ? 21 : 1;
+    }
+
+    /**
+     * Returns the declared cell styles.
+     *
+     * @param workbook excel workbook
+     * @return the declared cell styles
+     */
+    public static List<CellStyle> getDeclaredCellStyles(Workbook workbook) {
+        int initial = getNumOfInitialCellStyles(workbook);
+        int declared = getNumOfDeclaredCellStyles(workbook);
+
+        return IntStream.range(initial, initial + declared)
+                .mapToObj(workbook::getCellStyleAt).collect(toList());
+    }
+
+    /**
+     * Returns a font on cell style in workbook.
+     *
+     * @param workbook excel workbook
+     * @param style    cell style
+     * @return font on cell style
+     */
+    public static Font getFontFromCellStyle(Workbook workbook, CellStyle style) {
+        if (isExcel97(workbook)) {
+            return ((HSSFCellStyle) style).getFont(workbook);
+        } else {
+            return ((XSSFCellStyle) style).getFont();
+        }
+    }
+
+    /**
+     * Returns whether one cell style/font is equal to the other.
+     *
+     * @param workbook      excel workbook
+     * @param style         cell style
+     * @param otherWorkbook other excel workbook
+     * @param otherStyle    other cell style
+     * @return whether one cell style/font is equal to the other
+     */
+    public static boolean equalsCellStyleAndFont(Workbook workbook, CellStyle style,
+                                                 Workbook otherWorkbook, CellStyle otherStyle) {
+        Font font = getFontFromCellStyle(workbook, style);
+        Font otherFont = getFontFromCellStyle(otherWorkbook, otherStyle);
+        return equalsCellStyle(style, otherStyle) && equalsFont(font, otherFont);
+    }
+
+    /**
+     * Returns whether one cell style is equal to the other.
+     *
+     * @param style cell style
+     * @param other other cell style
+     * @return whether one cell style is equal to the other
+     */
+    public static boolean equalsCellStyle(CellStyle style, CellStyle other) {
+        if (style == null || other == null) return false;
+        if (style == other) return true;
+
+        boolean alignment = style.getAlignment() == other.getAlignment();
+        boolean background = style.getFillForegroundColor() == other.getFillForegroundColor();
+        boolean pattern = style.getFillPattern() == other.getFillPattern();
+
+        boolean borderTop = style.getBorderTop() == other.getBorderTop();
+        boolean borderRight = style.getBorderRight() == other.getBorderRight();
+        boolean borderBottom = style.getBorderBottom() == other.getBorderBottom();
+        boolean borderLeft = style.getBorderLeft() == other.getBorderLeft();
+        boolean borderStyle = borderTop && borderRight && borderBottom && borderLeft;
+
+        boolean topBorderColor = style.getTopBorderColor() == other.getTopBorderColor();
+        boolean rightBorderColor = style.getRightBorderColor() == other.getRightBorderColor();
+        boolean bottomBorderColor = style.getBottomBorderColor() == other.getBottomBorderColor();
+        boolean leftBorderColor = style.getLeftBorderColor() == other.getLeftBorderColor();
+        boolean borderColor = topBorderColor && rightBorderColor && bottomBorderColor && leftBorderColor;
+
+        return alignment && background && pattern && borderStyle && borderColor;
+    }
+
+    /**
+     * Returns whether one font is equal to the other.
+     *
+     * @param font  font
+     * @param other other font
+     * @return whether one font is equal to the other
+     */
+    public static boolean equalsFont(Font font, Font other) {
+        if (font == null || other == null) return false;
+        if (font == other) return true;
+
+        boolean name = Objects.equals(font.getFontName(), other.getFontName());
+        boolean size = font.getFontHeightInPoints() == other.getFontHeightInPoints();
+        boolean color = font.getColor() == other.getColor();
+        boolean bold = font.getBold() == other.getBold();
+        boolean italic = font.getItalic() == other.getItalic();
+        boolean strikeout = font.getStrikeout() == other.getStrikeout();
+        boolean underline = font.getUnderline() == other.getUnderline();
+        boolean offset = font.getTypeOffset() == other.getTypeOffset();
+
+        return name && size && color && bold && italic && strikeout && underline && offset;
     }
 
 }
