@@ -383,7 +383,7 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
                 CellStyle bodyStyle = this.bodyStyles.length == 1
                         ? this.bodyStyles[0] : this.bodyStyles[j];
 
-                //  There is possibility that 'bodyStyles' has null elements, if you set 'NoStyleConfig'.
+                // There is possibility that 'bodyStyles' has null elements, if you set 'NoStyleConfig'.
                 if (bodyStyle != null) cell.setCellStyle(bodyStyle);
             }
         }
