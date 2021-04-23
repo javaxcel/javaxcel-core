@@ -51,7 +51,7 @@ File dest = new File("/data", "new-products.xlsx");
 try (InputStream in = new FileInputStream(src);
         OutputStream out = new FileOutputStream(dest);
         Workbook oldWorkbook = new HSSFWorkbook(in);
-        Workbook newWorkbook = new XSSFWorkbook()) {
+        Workbook newWorkbook = new SXSSFWorkbook()) {
     // Reads all the sheet and returns data as a list.
     List<Product> products = ExcelReaderFactory.create(oldWorkbook, Product.class).read();
     
@@ -115,8 +115,8 @@ There is a list that contains a `Product`.
 
 ```java
 File dest = new File("/data", "products.xlsx")
-FileOutputStream out = new FileOutputStream(dest);
-XSSFWorkbook workbook = new XSSFWorkbook();
+OutputStream out = new FileOutputStream(dest);
+Workbook workbook = new XSSFWorkbook();
 
 ExcelWriterFactory.create(workbook, Product.class).write(out, products);
 ```
