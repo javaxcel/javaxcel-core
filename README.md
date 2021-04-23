@@ -593,7 +593,7 @@ class Product {
 
 @ExcelModel(includeSuper = true)
 class EducationalProduct extends Product {
-	@ExcelWriterExpression("T(java.util.Arrays).stream(#targetAges)" +
+    @ExcelWriterExpression("T(java.util.Arrays).stream(#targetAges)" +
             ".boxed()" +
             ".collect(T(java.util.stream.Collectors).toList())" +
             ".toString()" +
