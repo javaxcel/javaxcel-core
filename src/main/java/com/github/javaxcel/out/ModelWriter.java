@@ -210,8 +210,7 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
      */
     @Override
     public ModelWriter<W, T> headerStyle(ExcelStyleConfig config) {
-        super.headerStyle(config);
-        return this;
+        return headerStyles(config);
     }
 
     /**
@@ -241,8 +240,7 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
      */
     @Override
     public ModelWriter<W, T> bodyStyle(ExcelStyleConfig config) {
-        super.bodyStyle(config);
-        return this;
+        return bodyStyles(config);
     }
 
     /**
