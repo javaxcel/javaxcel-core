@@ -191,7 +191,7 @@ class ExcelUtilsTest {
 
         Workbook workbook = new XSSFWorkbook();
         stopwatch.start("instantiate");
-        ExcelWriter<Product> instance = (ExcelWriter<Product>) constructor.newInstance(workbook, Product.class);
+        ExcelWriter<Workbook, Product> instance = (ExcelWriter<Workbook, Product>) constructor.newInstance(workbook, Product.class);
         stopwatch.stop();
 
         // then

@@ -46,7 +46,7 @@ import java.util.List;
  *     <li>{@link #afterWrite(OutputStream, List)}</li>
  * </ol>
  */
-public abstract class AbstractExcelWriter<W extends Workbook, T> implements ExcelWriter<T> {
+public abstract class AbstractExcelWriter<W extends Workbook, T> implements ExcelWriter<W, T> {
 
     /**
      * Apache POI workbook.
@@ -121,11 +121,11 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     }
 
     /**
-     * Sets default value when value to be written is null or empty.
+     * {@inheritDoc}
      *
-     * @param defaultValue replacement of the value when it is null or empty string.
      * @return {@link AbstractExcelWriter}
      */
+    @Override
     public AbstractExcelWriter<W, T> defaultValue(String defaultValue) {
         if (StringUtils.isNullOrEmpty(defaultValue)) {
             throw new IllegalArgumentException("Default value cannot be null or empty");
@@ -135,7 +135,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     }
 
     /**
-     * Sets sheet name.
+     * {@inheritDoc}
      *
      * <p> Prefix for each sheet name. For example, if you set 'SHEET' to this,
      * the names you can see are <span>SHEET0, SHEET1, SHEET2, ...</span>
@@ -143,12 +143,12 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      * <p> If you invoke {@link #unrotate()}, the sheet name has no suffix.
      * You can see the sheet name like this <span>SHEET</span>
      *
-     * @param sheetName sheet name
      * @return {@link AbstractExcelWriter}
      * @throws IllegalArgumentException if sheet name is invalid
      * @see #unrotate()
      * @see org.apache.poi.ss.util.WorkbookUtil#validateSheetName(String)
      */
+    @Override
     public AbstractExcelWriter<W, T> sheetName(String sheetName) {
         WorkbookUtil.validateSheetName(sheetName);
         this.sheetName = sheetName;
@@ -156,7 +156,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     }
 
     /**
-     * Sets header names.
+     * {@inheritDoc}
      *
      * <p> For example, the following list will be exported.
      *
@@ -207,10 +207,10 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      * +---------------+----------------+---------------------+-------+-------+--------+--------+
      * }</pre>
      *
-     * @param headerNames header name
      * @return {@link AbstractExcelWriter}
      * @see #createHeader(Sheet)
      */
+    @Override
     public AbstractExcelWriter<W, T> headerNames(List<String> headerNames) {
         // Replaces current header names with the new things.
         if (!this.headerNames.isEmpty()) this.headerNames.clear();
@@ -220,9 +220,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     }
 
     /**
-     * Disables to rotate sheet.
-     *
-     * <p> If this is invoked, excel file has only one sheet.
+     * {@inheritDoc}
      *
      * @return {@link AbstractExcelWriter}
      */
@@ -231,36 +229,78 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
         return this;
     }
 
-    //////////////////////////////////////// Style ////////////////////////////////////////
+    ///////////////////////////////////// Decoration //////////////////////////////////////
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link AbstractExcelWriter}
+     */
+    @Override
     public AbstractExcelWriter<W, T> headerStyle(ExcelStyleConfig config) {
         return headerStyles(config);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link AbstractExcelWriter}
+     */
+    @Override
     public AbstractExcelWriter<W, T> headerStyles(ExcelStyleConfig... configs) {
         this.headerStyles = ExcelUtils.toCellStyles(this.workbook, configs);
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link AbstractExcelWriter}
+     */
+    @Override
     public AbstractExcelWriter<W, T> bodyStyle(ExcelStyleConfig config) {
         return bodyStyles(config);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link AbstractExcelWriter}
+     */
+    @Override
     public AbstractExcelWriter<W, T> bodyStyles(ExcelStyleConfig... configs) {
         this.bodyStyles = ExcelUtils.toCellStyles(this.workbook, configs);
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link AbstractExcelWriter}
+     */
+    @Override
     public AbstractExcelWriter<W, T> autoResizeColumns() {
         this.willAutoResize = true;
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link AbstractExcelWriter}
+     */
+    @Override
     public AbstractExcelWriter<W, T> hideExtraRows() {
         this.willHideRows = true;
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link AbstractExcelWriter}
+     */
+    @Override
     public AbstractExcelWriter<W, T> hideExtraColumns() {
         this.willHideColumns = true;
         return this;
