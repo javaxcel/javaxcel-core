@@ -22,6 +22,7 @@ import lombok.*;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -65,9 +66,8 @@ public abstract class ExcelWriterTester {
         return new WhenModel(out, workbook, 8192);
     }
 
-    @SuppressWarnings("rawtypes")
     protected ThenModel whenCreateModels(GivenModel givenModel, WhenModel whenModel) {
-        List models = TestUtils.getMocks(givenModel.type, whenModel.numOfMocks);
+        List<?> models = TestUtils.getMocks(givenModel.type, whenModel.numOfMocks);
         return new ThenModel(models);
     }
 
@@ -84,7 +84,7 @@ public abstract class ExcelWriterTester {
     public static class GivenModel {
         @NonNull
         private final File file;
-        @NonNull
+        @Nullable
         private final Class<?> type;
     }
 
