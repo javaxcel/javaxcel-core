@@ -41,7 +41,7 @@ import java.util.stream.IntStream;
  * @param <W> excel workbook
  * @param <T> type of model
  */
-public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T> {
+public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T> {
 
     private final OutputConverterSupport<T> converter;
 
@@ -65,7 +65,7 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
     /**
      * @see com.github.javaxcel.factory.ExcelWriterFactory#create(Workbook, Class)
      */
-    private ModelWriter(W workbook, Class<T> type) {
+    public ModelWriter(W workbook, Class<T> type) {
         super(workbook);
 
         if (type == null) throw new IllegalArgumentException("Type cannot be null");

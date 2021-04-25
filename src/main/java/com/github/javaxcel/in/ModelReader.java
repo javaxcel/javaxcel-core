@@ -40,7 +40,7 @@ import static java.util.stream.Collectors.toList;
  * @param <W> excel workbook
  * @param <T> type of model
  */
-public final class ModelReader<W extends Workbook, T> extends AbstractExcelReader<W, T> {
+public class ModelReader<W extends Workbook, T> extends AbstractExcelReader<W, T> {
 
     private final InputConverter defaultConverter = new DefaultInputConverter();
 
@@ -60,7 +60,7 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
     /**
      * @see com.github.javaxcel.factory.ExcelReaderFactory#create(Workbook, Class)
      */
-    private ModelReader(W workbook, Class<T> type) {
+    public ModelReader(W workbook, Class<T> type) {
         super(workbook);
 
         this.type = type;

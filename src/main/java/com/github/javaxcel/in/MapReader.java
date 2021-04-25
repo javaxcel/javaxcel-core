@@ -33,7 +33,7 @@ import java.util.Map;
  * @param <W> excel workbook
  * @param <T> {@link Map}
  */
-public final class MapReader<W extends Workbook, T extends Map<String, ?>> extends AbstractExcelReader<W, T> {
+public class MapReader<W extends Workbook, T extends Map<String, ?>> extends AbstractExcelReader<W, T> {
 
     private int numOfColumns;
 
@@ -42,7 +42,7 @@ public final class MapReader<W extends Workbook, T extends Map<String, ?>> exten
     /**
      * @see com.github.javaxcel.factory.ExcelReaderFactory#create(Workbook)
      */
-    private MapReader(W workbook) {
+    public MapReader(W workbook) {
         super(workbook);
     }
 

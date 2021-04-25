@@ -35,7 +35,7 @@ import static java.util.stream.Collectors.toList;
  * @param <W> excel workbook
  * @param <T> {@link Map}
  */
-public final class MapWriter<W extends Workbook, T extends Map<String, ?>> extends AbstractExcelWriter<W, T> {
+public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends AbstractExcelWriter<W, T> {
 
     private final List<String> keys = new ArrayList<>();
 
@@ -52,7 +52,7 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
     /**
      * @see com.github.javaxcel.factory.ExcelWriterFactory#create(Workbook)
      */
-    private MapWriter(W workbook) {
+    public MapWriter(W workbook) {
         super(workbook);
     }
 
