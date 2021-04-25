@@ -36,10 +36,8 @@ class MapWriterTest {
     }
 
     private static <E> Map<E, Integer> toIndexedMap(Collection<E> collection) {
-        return collection.stream().collect(HashMap<E, Integer>::new,
-                (map, val) -> map.put(val, map.size()),
-                (map, map2) -> {
-                });
+        return collection.stream().collect(HashMap::new,
+                (map, val) -> map.put(val, map.size()), Map::putAll);
     }
 
     @Test
