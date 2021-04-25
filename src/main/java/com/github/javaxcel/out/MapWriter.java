@@ -18,7 +18,6 @@ package com.github.javaxcel.out;
 
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import io.github.imsejin.common.util.CollectionUtils;
-import io.github.imsejin.common.util.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 
 import javax.annotation.Nullable;
@@ -391,8 +390,8 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
                 Cell cell = row.createCell(j);
 
                 // Not allows empty string to be written.
-                if (value != null) {
-                    cell.setCellValue(StringUtils.ifNullOrEmpty(value.toString(), (String) null));
+                if (value != null && !"".equals(value)) {
+                    cell.setCellValue(value.toString());
                 } else if (this.defaultValue != null) {
                     cell.setCellValue(this.defaultValue);
                 }
