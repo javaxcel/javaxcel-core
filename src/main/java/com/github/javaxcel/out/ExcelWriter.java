@@ -67,10 +67,28 @@ public interface ExcelWriter<W extends Workbook, T> {
      */
     ExcelWriter<W, T> headerStyle(ExcelStyleConfig config);
 
+    /**
+     * Sets styles to header.
+     *
+     * @param configs style configs
+     * @return {@link ExcelWriter}
+     */
     ExcelWriter<W, T> headerStyles(ExcelStyleConfig... configs);
 
+    /**
+     * Sets style to body.
+     *
+     * @param config style config
+     * @return {@link ExcelWriter}
+     */
     ExcelWriter<W, T> bodyStyle(ExcelStyleConfig config);
 
+    /**
+     * Sets styles to body.
+     *
+     * @param configs style configs
+     * @return {@link ExcelWriter}
+     */
     ExcelWriter<W, T> bodyStyles(ExcelStyleConfig... configs);
 
     ExcelWriter<W, T> autoResizeColumns();

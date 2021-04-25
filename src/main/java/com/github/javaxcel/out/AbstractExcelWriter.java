@@ -277,6 +277,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      * {@inheritDoc}
      *
      * @return {@link AbstractExcelWriter}
+     * @see #write(OutputStream, List)
      */
     @Override
     public AbstractExcelWriter<W, T> autoResizeColumns() {
@@ -288,6 +289,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      * {@inheritDoc}
      *
      * @return {@link AbstractExcelWriter}
+     * @see #write(OutputStream, List)
      */
     @Override
     public AbstractExcelWriter<W, T> hideExtraRows() {
@@ -299,6 +301,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      * {@inheritDoc}
      *
      * @return {@link AbstractExcelWriter}
+     * @see #write(OutputStream, List)
      */
     @Override
     public AbstractExcelWriter<W, T> hideExtraColumns() {
