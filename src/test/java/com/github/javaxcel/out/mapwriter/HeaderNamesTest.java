@@ -36,6 +36,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.*;
@@ -64,7 +65,7 @@ class HeaderNamesTest extends MapWriterTester {
 
     @Test
     @StopwatchProvider(TimeUnit.MILLISECONDS)
-    void fail(Stopwatch stopwatch) {
+    void fail(Stopwatch stopwatch) throws IOException {
         // given
         stopwatch.start("create '%s' instance", SXSSFWorkbook.class.getSimpleName());
         Workbook workbook = new SXSSFWorkbook();
@@ -76,6 +77,14 @@ class HeaderNamesTest extends MapWriterTester {
                 .headerNames(Collections.emptyList()))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Ordered keys cannot be null or empty");
+        stopwatch.stop();
+
+        stopwatch.start("sort with unmatched list");
+        assertThatThrownBy(() -> ExcelWriterFactory.create(workbook)
+                .headerNames(headerNames)
+                .write(null, TestUtils.getRandomMaps(10, 10)))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Ordered keys are not exactly matched to maps' keys");
         stopwatch.stop();
 
         stopwatch.start("convert header names with unmatched list");

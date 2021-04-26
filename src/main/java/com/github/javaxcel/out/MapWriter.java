@@ -333,14 +333,14 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
 
         // Rearranges the keys as you want: it changes order of columns.
         if (this.indexedMap != null) stream = stream.sorted(comparing(this.indexedMap::get));
-        this.keys.addAll(stream.collect(toList()));
-
-        // Validates the number of header names.
-        final int numOfKeys = this.keys.size();
-        if (!this.headerNames.isEmpty() && this.headerNames.size() != numOfKeys) {
-            throw new IllegalArgumentException("The number of header names is not equal to the number of maps' keys");
+        try {
+            this.keys.addAll(stream.collect(toList()));
+        } catch (NullPointerException e) {
+            // Validates the number of header names.
+            throw new IllegalArgumentException("Ordered keys are not exactly matched to maps' keys", e);
         }
 
+        final int numOfKeys = this.keys.size();
         Predicate<CellStyle[]> validator = them -> them == null || them.length == 1 || them.length == numOfKeys;
 
         // Validates the number of header styles.
