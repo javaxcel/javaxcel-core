@@ -43,6 +43,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
+import static com.github.javaxcel.TestUtils.MAP_KEY_PREFIX;
 import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,10 +59,10 @@ class HeaderNamesTest extends MapWriterTester {
     private static final int NUM_OF_COLUMNS = 10;
 
     private static final List<String> orderedKeys = IntStream.range(0, NUM_OF_COLUMNS)
-            .mapToObj(n -> "FIELD_" + (n + 1)).collect(toList());
+            .mapToObj(n -> MAP_KEY_PREFIX + (n + 1)).collect(toList());
 
     private static final List<String> headerNames = orderedKeys.stream()
-            .map(name -> name.replace("FIELD_", "column-")).collect(toList());
+            .map(name -> name.replace(MAP_KEY_PREFIX, "column-")).collect(toList());
 
     @Test
     @StopwatchProvider(TimeUnit.MILLISECONDS)

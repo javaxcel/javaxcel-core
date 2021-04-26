@@ -20,7 +20,6 @@ import com.github.javaxcel.annotation.ExcelIgnore;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
 import com.github.javaxcel.util.TypeClassifier;
-import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
@@ -45,6 +44,8 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class TestUtils {
+
+    public static final String MAP_KEY_PREFIX = "FIELD_";
 
     private static final EasyRandom generator;
 
@@ -94,7 +95,7 @@ public class TestUtils {
                 randomized = null;
             }
 
-            String key = "FIELD_" + (i + 1);
+            String key = MAP_KEY_PREFIX + (i + 1);
             map.put(key, randomized);
         }
 
