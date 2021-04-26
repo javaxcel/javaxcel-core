@@ -16,11 +16,11 @@
 
 package com.github.javaxcel.out.mapwriter;
 
-import com.github.javaxcel.ExcelWriterTester;
 import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.factory.ExcelReaderFactory;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
+import com.github.javaxcel.out.MapWriterTester;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import io.github.imsejin.common.util.StringUtils;
@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @see com.github.javaxcel.out.MapWriter#defaultValue(String)
  */
 @StopwatchProvider
-class DefaultValueTest extends ExcelWriterTester {
+class DefaultValueTest extends MapWriterTester {
 
     private static final String DEFAULT_VALUE = "(default)";
 
@@ -51,31 +51,28 @@ class DefaultValueTest extends ExcelWriterTester {
     void test(@TempDir Path path, Stopwatch stopwatch) throws Exception {
         File file = new File(path.toFile(), "sample.xlsx");
 
-        run(file, null, stopwatch);
+        run(file, stopwatch);
     }
 
     @Override
     protected ThenModel whenCreateModels(GivenModel givenModel, WhenModel whenModel) {
         List<Map<String, Object>> models = TestUtils.getRandomMaps(whenModel.getNumOfMocks(), 10);
-
         return new ThenModel(models);
     }
 
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
     protected void whenWriteWorkbook(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) {
         ExcelWriterFactory.create(whenModel.getWorkbook())
                 .defaultValue(DEFAULT_VALUE)
-                .write(whenModel.getOutputStream(), (List) thenModel.getModels());
+                .write(whenModel.getOutputStream(), thenModel.getModels());
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void then(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) throws Exception {
         File file = givenModel.getFile();
 
         assertNotEmptyFile(file, "#1 Excel file must be created and have content");
-        assertDefaultValue(file, (List<Map<String, Object>>) thenModel.getModels());
+        assertDefaultValue(file, thenModel.getModels());
     }
 
     private void assertDefaultValue(File file, List<Map<String, Object>> models) throws IOException {
