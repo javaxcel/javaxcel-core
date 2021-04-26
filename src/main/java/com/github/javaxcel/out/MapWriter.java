@@ -24,7 +24,6 @@ import javax.annotation.Nullable;
 import java.io.OutputStream;
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
@@ -37,6 +36,9 @@ import static java.util.stream.Collectors.toList;
  */
 public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends AbstractExcelWriter<W, T> {
 
+    /**
+     * @see #beforeWrite(OutputStream, List)
+     */
     private final List<String> keys = new ArrayList<>();
 
     /**
@@ -329,15 +331,20 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
         if (list.isEmpty()) throw new IllegalArgumentException("List of maps cannot be empty");
 
         // Gets all the maps' keys.
-        Stream<String> stream = list.stream().flatMap(it -> it.keySet().stream()).distinct();
+        this.keys.addAll(list.stream().flatMap(it -> it.keySet().stream()).distinct().collect(toList()));
 
-        // Rearranges the keys as you want: it changes order of columns.
-        if (this.indexedMap != null) stream = stream.sorted(comparing(this.indexedMap::get));
-        try {
-            this.keys.addAll(stream.collect(toList()));
-        } catch (NullPointerException e) {
-            // Validates the number of header names.
-            throw new IllegalArgumentException("Ordered keys are not exactly matched to maps' keys", e);
+        if (this.indexedMap != null) {
+            // Invalidates the number of ordered keys and their each element.
+            Set<String> orderedKeys = this.indexedMap.keySet();
+            if (this.keys.size() != orderedKeys.size() || !this.keys.containsAll(orderedKeys)) {
+                String message = String.format(
+                        "Ordered keys are at variance with maps' keys%nmaps' keys: %s%nordered keys: %s",
+                        this.keys, orderedKeys);
+                throw new IllegalArgumentException(message);
+            }
+
+            // Rearranges the keys as you want: it changes order of columns.
+            this.keys.sort(comparing(this.indexedMap::get));
         }
 
         final int numOfKeys = this.keys.size();

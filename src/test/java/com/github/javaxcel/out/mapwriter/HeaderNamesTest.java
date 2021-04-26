@@ -84,7 +84,7 @@ class HeaderNamesTest extends MapWriterTester {
                 .headerNames(headerNames)
                 .write(null, TestUtils.getRandomMaps(10, 10)))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Ordered keys are not exactly matched to maps' keys");
+                .hasMessageStartingWith("Ordered keys are at variance with maps' keys");
         stopwatch.stop();
 
         stopwatch.start("convert header names with unmatched list");
