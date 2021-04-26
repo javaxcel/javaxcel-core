@@ -46,11 +46,11 @@ class MapWriterTest {
         // given
         stopwatch.start();
         List<String> keys = Arrays.asList("race", "name", "height", "weight", "eyesight", "favoriteFood");
-        System.out.printf("original keys: %s\n", keys);
+        System.out.printf("original keys: %s%n", keys);
 
         // when
         List<String> rearrangedKeys = keys.stream().sorted().collect(toList());
-        System.out.printf("rearranged keys: %s\n", rearrangedKeys);
+        System.out.printf("rearranged keys: %s%n", rearrangedKeys);
         Map<String, Integer> indexedMap = toIndexedMap(rearrangedKeys);
         keys.sort(comparing(indexedMap::get));
         stopwatch.stop();
@@ -59,7 +59,7 @@ class MapWriterTest {
         assertThat(rearrangedKeys)
                 .as("Original keys must be equal to rearranged keys")
                 .containsExactlyElementsOf(keys);
-        System.out.printf("original keys: %s\n", keys);
+        System.out.printf("original keys: %s%n", keys);
     }
 
     /**

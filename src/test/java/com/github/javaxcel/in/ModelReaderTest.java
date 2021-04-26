@@ -66,7 +66,7 @@ class ModelReaderTest {
                 .as("Instantiates class without params")
                 .isInstanceOf(clazz);
         Arrays.stream(constructor.getParameterTypes()).forEach(System.out::println);
-        System.out.printf("Constructor with minimum parameters: %s\n", constructor);
+        System.out.printf("Constructor with minimum parameters: %s%n", constructor);
     }
 
     /**
