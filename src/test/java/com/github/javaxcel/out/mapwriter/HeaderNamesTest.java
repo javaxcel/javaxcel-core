@@ -28,6 +28,8 @@ import lombok.Cleanup;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -36,15 +38,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * @see com.github.javaxcel.out.MapWriter#headerNames(List)
@@ -60,6 +61,29 @@ class HeaderNamesTest extends MapWriterTester {
 
     private static final List<String> headerNames = orderedKeys.stream()
             .map(name -> name.replace("FIELD_", "column-")).collect(toList());
+
+    @Test
+    @StopwatchProvider(TimeUnit.MILLISECONDS)
+    void fail(Stopwatch stopwatch) {
+        // given
+        stopwatch.start("create '%s' instance", SXSSFWorkbook.class.getSimpleName());
+        Workbook workbook = new SXSSFWorkbook();
+        stopwatch.stop();
+
+        // when & then
+        stopwatch.start("sort with empty list");
+        assertThatThrownBy(() -> ExcelWriterFactory.create(workbook)
+                .headerNames(Collections.emptyList()))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Ordered keys cannot be null or empty");
+        stopwatch.stop();
+
+        stopwatch.start("convert header names with unmatched list");
+        assertThatThrownBy(() -> ExcelWriterFactory.create(workbook)
+                .headerNames(Arrays.asList("FIELD_1", "FIELD_2", "FIELD_3"), Arrays.asList("FIELD_1", "FIELD_2")))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessage("The number of ordered keys is not equal to the number of header names");
+    }
 
     @ParameterizedTest
     @EnumSource(TestCase.class)
