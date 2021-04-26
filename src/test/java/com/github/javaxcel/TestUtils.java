@@ -19,6 +19,8 @@ package com.github.javaxcel;
 import com.github.javaxcel.annotation.ExcelIgnore;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
+import com.github.javaxcel.util.TypeClassifier;
+import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
@@ -30,8 +32,12 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Month;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -41,6 +47,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class TestUtils {
 
     private static final EasyRandom generator;
+
+    private static final Class<?>[] classes = Stream.of(
+            TypeClassifier.Types.PRIMITIVE.getClasses(),
+            TypeClassifier.Types.WRAPPER.getClasses(),
+            TypeClassifier.Types.DATETIME.getClasses(),
+            new Class[]{String.class})
+            .flatMap(Arrays::stream).toArray(Class[]::new);
 
     static {
         EasyRandomParameters parameters =
@@ -65,6 +78,35 @@ public class TestUtils {
 
         return IntStream.range(0, size).parallel()
                 .mapToObj(i -> randomize(type)).collect(toList());
+    }
+
+    public static Map<String, Object> randomMap(int numOfEntries) {
+        if (numOfEntries < 0) throw new IllegalArgumentException("Number of entries cannot be negative");
+
+        Map<String, Object> map = new HashMap<>();
+
+        for (int i = 0; i < numOfEntries; i++) {
+            int index = generator.nextInt(classes.length);
+            Object randomized = randomize(classes[index]);
+
+            // For abundant test cases, some empty strings will be converted to null.
+            if ((i & 1) == 1 && "".equals(randomized)) {
+                randomized = null;
+            }
+
+            String key = "FIELD_" + (i + 1);
+            map.put(key, randomized);
+        }
+
+        return map;
+    }
+
+    public static List<Map<String, Object>> getRandomMaps(int size, int numOfEntries) {
+        if (size < 0) throw new IllegalArgumentException("Size cannot be negative");
+        if (numOfEntries < 0) throw new IllegalArgumentException("Number of entries cannot be negative");
+
+        return IntStream.range(0, size).parallel()
+                .mapToObj(i -> randomMap(numOfEntries)).collect(toList());
     }
 
     @Target(FIELD)

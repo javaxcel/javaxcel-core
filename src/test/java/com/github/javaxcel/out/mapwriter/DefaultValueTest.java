@@ -32,8 +32,9 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
-import java.util.stream.IntStream;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,18 +56,7 @@ class DefaultValueTest extends ExcelWriterTester {
 
     @Override
     protected ThenModel whenCreateModels(GivenModel givenModel, WhenModel whenModel) {
-        List<Map<String, Object>> models = new ArrayList<>();
-        for (int i = 0; i < whenModel.getNumOfMocks(); i++) {
-            Map<String, Object> model = IntStream.range(0, 10).collect(HashMap::new, (map, n) -> {
-                        String key = "FIELD_" + (n + 1);
-                        String randomText = TestUtils.randomize(String.class);
-                        // If n is odd, empty string or else null.
-                        String defaultValue = (n & 1) == 1 ? "" : null;
-                        map.put(key, StringUtils.ifNullOrEmpty(randomText, defaultValue));
-                    },
-                    HashMap::putAll);
-            models.add(model);
-        }
+        List<Map<String, Object>> models = TestUtils.getRandomMaps(whenModel.getNumOfMocks(), 10);
 
         return new ThenModel(models);
     }
@@ -90,17 +80,17 @@ class DefaultValueTest extends ExcelWriterTester {
 
     private void assertDefaultValue(File file, List<Map<String, Object>> models) throws IOException {
         @Cleanup Workbook workbook = ExcelUtils.getWorkbook(file);
-        List<Map<String, Object>> list = ExcelReaderFactory.create(workbook).read();
+        List<Map<String, Object>> written = ExcelReaderFactory.create(workbook).read();
 
-        assertThat(list.stream().map(Map::values).flatMap(Collection::stream)
+        assertThat(written.stream().map(Map::values).flatMap(Collection::stream)
                 .map(Object::toString).noneMatch(StringUtils::isNullOrEmpty))
                 .as("#2 There is no empty value")
                 .isTrue();
 
         assertThat(models.stream().map(Map::values).flatMap(Collection::stream)
-                .filter(s -> s == null || ((String) s).isEmpty()).count())
+                .filter(s -> s == null || (s instanceof String && ((String) s).isEmpty())).count())
                 .as("#3 Empty value must be converted '%s' as default value", DEFAULT_VALUE)
-                .isEqualTo(list.stream().map(Map::values).flatMap(Collection::stream)
+                .isEqualTo(written.stream().map(Map::values).flatMap(Collection::stream)
                         .filter(DEFAULT_VALUE::equals).count());
     }
 
