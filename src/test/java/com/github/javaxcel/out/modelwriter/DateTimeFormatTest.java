@@ -16,7 +16,7 @@
 
 package com.github.javaxcel.out.modelwriter;
 
-import com.github.javaxcel.ExcelWriterTester;
+import com.github.javaxcel.out.ModelWriterTester;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.factory.ExcelReaderFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
@@ -46,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @see ExcelDateTimeFormat#pattern()
  */
 @StopwatchProvider
-class DateTimeFormatTest extends ExcelWriterTester {
+class DateTimeFormatTest extends ModelWriterTester {
 
     @Test
     void test(@TempDir Path path, Stopwatch stopwatch) throws Exception {

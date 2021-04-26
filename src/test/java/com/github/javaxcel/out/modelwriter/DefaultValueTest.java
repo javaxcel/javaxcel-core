@@ -16,7 +16,7 @@
 
 package com.github.javaxcel.out.modelwriter;
 
-import com.github.javaxcel.ExcelWriterTester;
+import com.github.javaxcel.out.ModelWriterTester;
 import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
@@ -51,7 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @see ModelWriter#defaultValue(String)
  */
 @StopwatchProvider
-class DefaultValueTest extends ExcelWriterTester {
+class DefaultValueTest extends ModelWriterTester {
 
     private static final String MODEL_DEFAULT_VALUE = "(empty)";
     private static final String COLUMN_DEFAULT_VALUE = "<null>";

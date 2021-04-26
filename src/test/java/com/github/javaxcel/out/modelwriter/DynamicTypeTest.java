@@ -16,7 +16,7 @@
 
 package com.github.javaxcel.out.modelwriter;
 
-import com.github.javaxcel.ExcelWriterTester;
+import com.github.javaxcel.out.ModelWriterTester;
 import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.util.ExcelUtils;
@@ -39,7 +39,7 @@ import java.util.UUID;
 import static com.github.javaxcel.TestUtils.*;
 
 @StopwatchProvider
-class DynamicTypeTest extends ExcelWriterTester {
+class DynamicTypeTest extends ModelWriterTester {
 
     @Test
     void test(@TempDir Path path, Stopwatch stopwatch) throws Exception {

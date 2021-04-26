@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel;
+package com.github.javaxcel.out;
 
+import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.*;
@@ -28,7 +29,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.List;
 
-public abstract class ExcelWriterTester {
+public abstract class ModelWriterTester {
 
     /*
      Template method.
@@ -81,7 +82,7 @@ public abstract class ExcelWriterTester {
 
     @Getter
     @RequiredArgsConstructor
-    public static class GivenModel {
+    protected static class GivenModel {
         @NonNull
         private final File file;
         @Nullable
@@ -91,7 +92,7 @@ public abstract class ExcelWriterTester {
     @Getter
     @Setter
     @AllArgsConstructor
-    public static class WhenModel {
+    protected static class WhenModel {
         @NonNull
         private final OutputStream outputStream;
         @NonNull
@@ -101,7 +102,7 @@ public abstract class ExcelWriterTester {
 
     @Getter
     @RequiredArgsConstructor
-    public static class ThenModel {
+    protected static class ThenModel {
         @NonNull
         private final List<?> models;
     }

@@ -16,7 +16,7 @@
 
 package com.github.javaxcel.out.modelwriter;
 
-import com.github.javaxcel.ExcelWriterTester;
+import com.github.javaxcel.out.ModelWriterTester;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.ModelWriter;
@@ -46,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * @see ModelWriter#sheetName(String)
  */
 @StopwatchProvider
-class SheetNameTest extends ExcelWriterTester {
+class SheetNameTest extends ModelWriterTester {
 
     // Maximum sheet name length is 31.
     private static final String SHEET_NAME = UUID.randomUUID().toString().substring(0, 31);

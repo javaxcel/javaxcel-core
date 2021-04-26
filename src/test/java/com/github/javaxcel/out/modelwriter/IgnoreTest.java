@@ -16,7 +16,7 @@
 
 package com.github.javaxcel.out.modelwriter;
 
-import com.github.javaxcel.ExcelWriterTester;
+import com.github.javaxcel.out.ModelWriterTester;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelIgnore;
 import com.github.javaxcel.annotation.ExcelModel;
@@ -42,7 +42,7 @@ import static com.github.javaxcel.TestUtils.*;
  * @see ExcelModel#explicit()
  */
 @StopwatchProvider
-class IgnoreTest extends ExcelWriterTester {
+class IgnoreTest extends ModelWriterTester {
 
     @ParameterizedTest
     @ValueSource(classes = {IgnoredModel.class, ExplicitModel.class})

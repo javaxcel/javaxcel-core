@@ -16,7 +16,7 @@
 
 package com.github.javaxcel.out.modelwriter;
 
-import com.github.javaxcel.ExcelWriterTester;
+import com.github.javaxcel.out.ModelWriterTester;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.util.ExcelUtils;
@@ -44,7 +44,7 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @StopwatchProvider
-class SheetRotationTest extends ExcelWriterTester {
+class SheetRotationTest extends ModelWriterTester {
 
     private static final String SHEET_NAME = SheetRotationTest.class.getSimpleName() + "Sheet";
 

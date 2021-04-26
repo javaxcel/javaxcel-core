@@ -17,7 +17,7 @@
 package com.github.javaxcel.out.modelwriter;
 
 import com.github.javaxcel.Converter;
-import com.github.javaxcel.ExcelWriterTester;
+import com.github.javaxcel.out.ModelWriterTester;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.annotation.ExcelWriterExpression;
 import com.github.javaxcel.factory.ExcelReaderFactory;
@@ -51,7 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @see ExcelWriterExpression#value()
  */
 @StopwatchProvider
-class ExpressionTest extends ExcelWriterTester {
+class ExpressionTest extends ModelWriterTester {
 
     @Test
     void test(@TempDir Path path, Stopwatch stopwatch) throws Exception {

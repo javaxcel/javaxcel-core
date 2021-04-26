@@ -16,7 +16,7 @@
 
 package com.github.javaxcel.out.modelwriter;
 
-import com.github.javaxcel.ExcelWriterTester;
+import com.github.javaxcel.out.ModelWriterTester;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
@@ -27,8 +27,6 @@ import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import io.github.imsejin.common.util.StreamUtils;
 import lombok.Cleanup;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -62,7 +60,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * @see ModelWriter#headerNames(List)
  */
 @StopwatchProvider
-class HeaderNamesTest extends ExcelWriterTester {
+class HeaderNamesTest extends ModelWriterTester {
 
     /**
      * @see #invalidHeaderNames()

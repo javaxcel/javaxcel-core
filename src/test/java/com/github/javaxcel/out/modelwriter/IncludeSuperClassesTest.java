@@ -16,7 +16,7 @@
 
 package com.github.javaxcel.out.modelwriter;
 
-import com.github.javaxcel.ExcelWriterTester;
+import com.github.javaxcel.out.ModelWriterTester;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.factory.ExcelReaderFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
@@ -53,7 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * My code uses reflection. Why does it fail when I execute it with JaCoCo?</a>
  */
 @StopwatchProvider
-class IncludeSuperClassesTest extends ExcelWriterTester {
+class IncludeSuperClassesTest extends ModelWriterTester {
 
     @Test
     void test(@TempDir Path path, Stopwatch stopwatch) throws Exception {

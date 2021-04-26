@@ -16,7 +16,7 @@
 
 package com.github.javaxcel.out.modelwriter;
 
-import com.github.javaxcel.ExcelWriterTester;
+import com.github.javaxcel.out.ModelWriterTester;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.factory.ExcelWriterFactory;
@@ -59,7 +59,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @see ModelWriter#bodyStyles(ExcelStyleConfig...)
  */
 @StopwatchProvider
-class DecorationTest extends ExcelWriterTester {
+class DecorationTest extends ModelWriterTester {
 
     @ParameterizedTest
     @ValueSource(classes = {
