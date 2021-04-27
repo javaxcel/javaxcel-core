@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.out.mapwriter;
+package com.github.javaxcel.out.modelwriter;
 
-import com.github.javaxcel.TestUtils;
+import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
-import com.github.javaxcel.out.MapWriter;
-import com.github.javaxcel.out.MapWriterTester;
+import com.github.javaxcel.out.ModelWriter;
+import com.github.javaxcel.out.ModelWriterTester;
 import com.github.javaxcel.style.DefaultBodyStyleConfig;
 import com.github.javaxcel.style.DefaultHeaderStyleConfig;
-import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
+import lombok.ToString;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -37,57 +36,26 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * @see MapWriter#autoResizeColumns()
- * @see MapWriter#hideExtraRows()
- * @see MapWriter#hideExtraColumns()
- * @see MapWriter#headerStyle(ExcelStyleConfig)
- * @see MapWriter#headerStyles(ExcelStyleConfig...)
- * @see MapWriter#bodyStyle(ExcelStyleConfig)
- * @see MapWriter#bodyStyles(ExcelStyleConfig...)
+ * @see ModelWriter#autoResizeColumns()
+ * @see ModelWriter#hideExtraRows()
+ * @see ModelWriter#hideExtraColumns()
  */
 @StopwatchProvider
-class DecorationTest extends MapWriterTester {
-
-    @Test
-    @StopwatchProvider(TimeUnit.MILLISECONDS)
-    void fail(Stopwatch stopwatch) {
-        // given
-        stopwatch.start("create '%s' instance", SXSSFWorkbook.class.getSimpleName());
-        Workbook workbook = new SXSSFWorkbook();
-        stopwatch.stop();
-
-        // when & then
-        stopwatch.start("set unmatched header style");
-        assertThatThrownBy(() -> ExcelWriterFactory.create(workbook)
-                .headerStyles(DefaultHeaderStyleConfig.getRainbowHeader())
-                .write(null, TestUtils.getRandomMaps(10, 10)))
-                .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessageStartingWith("Number of header styles");
-        stopwatch.stop();
-
-        stopwatch.start("set unmatched body style");
-        assertThatThrownBy(() -> ExcelWriterFactory.create(workbook)
-                .bodyStyles(DefaultHeaderStyleConfig.getRainbowHeader())
-                .write(null, TestUtils.getRandomMaps(10, 10)))
-                .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessageStartingWith("Number of body styles");
-    }
+class SheetManipulationTest extends ModelWriterTester {
 
     @Test
     void succeed(@TempDir Path path, Stopwatch stopwatch) throws Exception {
         String filename = getClass().getSimpleName().toLowerCase() + '.' + ExcelUtils.EXCEL_97_EXTENSION;
         File file = new File(path.toFile(), filename);
 
-        run(file, stopwatch);
+        run(file, Book.class, stopwatch);
     }
 
     @Override
@@ -99,22 +67,13 @@ class DecorationTest extends MapWriterTester {
     }
 
     @Override
-    protected ThenModel whenCreateModels(GivenModel givenModel, WhenModel whenModel) {
-        List<Map<String, Object>> models = TestUtils.getRandomMaps(whenModel.getNumOfMocks(), 7);
-        return new ThenModel(models);
-    }
-
-    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected void whenWriteWorkbook(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) {
-        ExcelWriterFactory.create(whenModel.getWorkbook())
+        ExcelWriterFactory.create(whenModel.getWorkbook(), givenModel.getType())
                 .sheetName("Rainbow")
                 .unrotate()
                 .autoResizeColumns().hideExtraRows().hideExtraColumns()
-                .headerStyle(new DefaultHeaderStyleConfig())
-                .headerStyles(DefaultHeaderStyleConfig.getRainbowHeader())
-                .bodyStyle(new DefaultBodyStyleConfig())
-                .bodyStyles(new DefaultBodyStyleConfig())
-                .write(whenModel.getOutputStream(), thenModel.getModels());
+                .write(whenModel.getOutputStream(), (List) thenModel.getModels());
     }
 
     @Override
@@ -128,6 +87,20 @@ class DecorationTest extends MapWriterTester {
         assertThat(ExcelUtils.getNumOfModels(file))
                 .as("#2 The number of actually written maps is %,d", maxModels)
                 .isEqualTo(maxModels);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////
+
+    @ToString
+    @ExcelModel(headerStyle = DefaultHeaderStyleConfig.class, bodyStyle = DefaultBodyStyleConfig.class)
+    private static class Book {
+        private Long id;
+        private String title;
+        private List<String> authors;
+        private List<String> publishers;
+        private LocalDateTime createdAt;
+        private LocalDateTime publishedAt;
+        private short price;
     }
 
 }

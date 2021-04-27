@@ -16,6 +16,7 @@
 
 package com.github.javaxcel.out.modelwriter;
 
+import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.out.ModelWriterTester;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
@@ -34,7 +35,9 @@ import lombok.Cleanup;
 import lombok.ToString;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -45,12 +48,14 @@ import java.io.OutputStream;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
 import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 import static com.github.javaxcel.util.ExcelUtils.equalsCellStyleAndFont;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * @see ModelWriter#headerStyle(ExcelStyleConfig)
@@ -61,12 +66,37 @@ import static org.assertj.core.api.Assertions.assertThat;
 @StopwatchProvider
 class DecorationTest extends ModelWriterTester {
 
+    @Test
+    @StopwatchProvider(TimeUnit.MILLISECONDS)
+    void fail(Stopwatch stopwatch) {
+        // given
+        stopwatch.start("create '%s' instance", SXSSFWorkbook.class.getSimpleName());
+        Workbook workbook = new SXSSFWorkbook();
+        stopwatch.stop();
+
+        // when & then
+        stopwatch.start("set unmatched header style");
+        assertThatThrownBy(() -> ExcelWriterFactory.create(workbook, WithModel.class)
+                .headerStyles(DefaultHeaderStyleConfig.getRainbowHeader())
+                .write(null, TestUtils.getMocks(WithModel.class, 10)))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessageStartingWith("Number of header styles");
+        stopwatch.stop();
+
+        stopwatch.start("set unmatched body style");
+        assertThatThrownBy(() -> ExcelWriterFactory.create(workbook, WithColumn.class)
+                .bodyStyles(DefaultHeaderStyleConfig.getRainbowHeader())
+                .write(null, TestUtils.getMocks(WithColumn.class, 10)))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessageStartingWith("Number of body styles");
+    }
+
     @ParameterizedTest
     @ValueSource(classes = {
             WithModel.class, WithColumn.class, WithModelAndColumn.class,
             WithModelAndDirect.class, WithColumnAndDirect.class, WithModelAndColumnAndDirect.class,
     })
-    void test(Class<?> type, @TempDir Path path, Stopwatch stopwatch) throws Exception {
+    void succeed(Class<?> type, @TempDir Path path, Stopwatch stopwatch) throws Exception {
         String filename = type.getSimpleName().toLowerCase() + '.' + getExtensionByType(type);
         File file = new File(path.toFile(), filename);
 
@@ -355,15 +385,6 @@ class DecorationTest extends ModelWriterTester {
         private LocalDateTime createdAt;
         @ExcelColumn(headerStyle = DefaultBodyStyleConfig.class, bodyStyle = DefaultHeaderStyleConfig.class)
         private LocalDateTime modifiedAt;
-    }
-
-    static class Book {
-        private String title;
-        private List<String> authors;
-        private List<String> publishers;
-        private LocalDateTime createdAt;
-        private LocalDateTime publishedAt;
-        private short price;
     }
 
 }
