@@ -71,7 +71,6 @@ class SheetManipulationTest extends ModelWriterTester {
     protected void whenWriteWorkbook(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) {
         ExcelWriterFactory.create(whenModel.getWorkbook(), givenModel.getType())
                 .sheetName("Rainbow")
-                .unrotate()
                 .autoResizeColumns().hideExtraRows().hideExtraColumns()
                 .write(whenModel.getOutputStream(), (List) thenModel.getModels());
     }
