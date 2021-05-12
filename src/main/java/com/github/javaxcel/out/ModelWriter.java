@@ -188,6 +188,17 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
     }
 
     /**
+     * {@inheritDoc}
+     *
+     * @return {@link ModelWriter}
+     */
+    @Override
+    public ModelWriter<W, T> filter() {
+        super.filter();
+        return this;
+    }
+
+    /**
      * Enables to create dropdowns for columns of enum.
      *
      * <p> If this is invoked, excel file has only one sheet.

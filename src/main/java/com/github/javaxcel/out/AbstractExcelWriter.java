@@ -24,6 +24,7 @@ import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.util.CollectionUtils;
 import io.github.imsejin.common.util.StringUtils;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.WorkbookUtil;
 
 import java.io.IOException;
@@ -81,6 +82,11 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      * @see #unrotate()
      */
     protected boolean rotated = true;
+
+    /**
+     * @see #filter()
+     */
+    protected boolean filtered = true;
 
     //////////////////////////////////////// Style ////////////////////////////////////////
 
@@ -230,6 +236,17 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link AbstractExcelWriter}
+     */
+    @Override
+    public AbstractExcelWriter<W, T> filter() {
+        this.filtered = false;
+        return this;
+    }
+
     ///////////////////////////////////// Decoration //////////////////////////////////////
 
     /**
@@ -345,10 +362,16 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
                 sheet = this.workbook.createSheet(sheetName);
             }
 
+            List<T> those = lists.get(i);
+
+            if (this.filtered) {
+                String ref = ExcelUtils.toRangeReference(sheet, 0, 0, getNumOfColumns() - 1, those.size() - 1);
+                sheet.setAutoFilter(CellRangeAddress.valueOf(ref));
+            }
+
             // Writes header.
             createHeader(sheet);
 
-            List<T> those = lists.get(i);
             writeToSheet(sheet, those);
 
             // Adjusts rows and columns.

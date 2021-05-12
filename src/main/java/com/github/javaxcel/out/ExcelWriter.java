@@ -57,6 +57,13 @@ public interface ExcelWriter<W extends Workbook, T> {
      */
     ExcelWriter<W, T> unrotate();
 
+    /**
+     * Filters all columns.
+     *
+     * @return {@link ExcelWriter}
+     */
+    ExcelWriter<W, T> filter();
+
     ///////////////////////////////////// Decoration //////////////////////////////////////
 
     /**

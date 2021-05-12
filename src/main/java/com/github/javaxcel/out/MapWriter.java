@@ -239,6 +239,17 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link MapWriter}
+     */
+    @Override
+    public MapWriter<W, T> filter() {
+        super.filter();
+        return this;
+    }
+
     ///////////////////////////////////// Decoration //////////////////////////////////////
 
     /**
