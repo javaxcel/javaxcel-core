@@ -224,6 +224,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      *
      * @return {@link AbstractExcelWriter}
      */
+    @Override
     public AbstractExcelWriter<W, T> unrotate() {
         this.rotated = false;
         return this;

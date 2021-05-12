@@ -138,27 +138,6 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
      * @return {@link ModelWriter}
      */
     @Override
-    public ModelWriter<W, T> headerNames(List<String> headerNames) {
-        if (CollectionUtils.isNullOrEmpty(headerNames)) {
-            throw new IllegalArgumentException("Header names cannot be null or empty");
-        }
-
-        if (headerNames.size() != this.fields.size()) {
-            throw new IllegalArgumentException(String.format(
-                    "The number of header names is not equal to the number of targeted fields in the class '%s'", this.type.getName()));
-        }
-
-        super.headerNames(headerNames);
-
-        return this;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@link ModelWriter}
-     */
-    @Override
     public ModelWriter<W, T> defaultValue(String defaultValue) {
         super.defaultValue(defaultValue);
         this.converter.setDefaultValue(defaultValue);
@@ -173,6 +152,27 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
     @Override
     public ModelWriter<W, T> sheetName(String sheetName) {
         super.sheetName(sheetName);
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link ModelWriter}
+     */
+    @Override
+    public ModelWriter<W, T> headerNames(List<String> headerNames) {
+        if (CollectionUtils.isNullOrEmpty(headerNames)) {
+            throw new IllegalArgumentException("Header names cannot be null or empty");
+        }
+
+        if (headerNames.size() != this.fields.size()) {
+            throw new IllegalArgumentException(String.format(
+                    "The number of header names is not equal to the number of targeted fields in the class '%s'", this.type.getName()));
+        }
+
+        super.headerNames(headerNames);
+
         return this;
     }
 
@@ -201,7 +201,7 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
         return this;
     }
 
-    //////////////////////////////////////// Style ////////////////////////////////////////
+    ///////////////////////////////////// Decoration //////////////////////////////////////
 
     /**
      * {@inheritDoc}

@@ -82,17 +82,6 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * @return {@link MapWriter}
-     */
-    @Override
-    public MapWriter<W, T> unrotate() {
-        super.unrotate();
-        return this;
-    }
-
-    /**
      * Rearranges the keys of {@link Map} with custom order.
      *
      * <p> If you export list of {@link Map} as a excel file,
@@ -239,7 +228,18 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
         return this;
     }
 
-    //////////////////////////////////////// Style ////////////////////////////////////////
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link MapWriter}
+     */
+    @Override
+    public MapWriter<W, T> unrotate() {
+        super.unrotate();
+        return this;
+    }
+
+    ///////////////////////////////////// Decoration //////////////////////////////////////
 
     /**
      * {@inheritDoc}
