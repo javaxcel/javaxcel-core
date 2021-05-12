@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Javaxcel
+ * Copyright 2021 Javaxcel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,31 +14,21 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.converter.out;
+package com.github.javaxcel.constant;
 
-abstract class DefaultValueStore {
-
-    /**
-     * Replacement for field value when it is null or empty.
-     */
-    String defaultValue;
+/**
+ * Type of converter
+ */
+public enum ConverterType {
 
     /**
-     * Returns the default value.
-     *
-     * @return default value
+     * @see com.github.javaxcel.converter.in.InputConverter
      */
-    public String getDefaultValue() {
-        return this.defaultValue;
-    }
+    IN,
 
     /**
-     * Sets up the default value.
-     *
-     * @param defaultValue default value
+     * @see com.github.javaxcel.converter.out.OutputConverter
      */
-    public void setDefaultValue(String defaultValue) {
-        this.defaultValue = defaultValue;
-    }
+    OUT;
 
 }

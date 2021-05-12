@@ -9,11 +9,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.lang.reflect.Field;
 import java.util.List;
 
-public class FieldUtilsTest {
+class FieldUtilsTest {
 
     @ParameterizedTest
     @ValueSource(classes = {Product.class, Toy.class, EducationToy.class})
-    public void getTargetedFields(Class<?> type) {
+    void getTargetedFields(Class<?> type) {
         // when
         List<Field> targetedFields = FieldUtils.getTargetedFields(type);
 
@@ -23,7 +23,7 @@ public class FieldUtilsTest {
 
     @ParameterizedTest
     @ValueSource(classes = {Product.class, Toy.class, EducationToy.class})
-    public void getInheritedFields(Class<?> type) {
+    void getInheritedFields(Class<?> type) {
         // when
         List<Field> inheritedFields = FieldUtils.getInheritedFields(type);
 
@@ -33,7 +33,7 @@ public class FieldUtilsTest {
 
     @ParameterizedTest
     @ValueSource(classes = {Product.class, Toy.class, EducationToy.class})
-    public void toHeaderNames(Class<?> type) {
+    void toHeaderNames(Class<?> type) {
         // given
         List<Field> targetedFields = FieldUtils.getTargetedFields(type);
 

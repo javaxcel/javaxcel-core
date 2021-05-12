@@ -22,7 +22,7 @@ public class SettingFieldValueException extends RuntimeException {
 
     private final Class<?> type;
 
-    private final Field field;
+    private final transient Field field;
 
     public SettingFieldValueException(Class<?> type, Field field) {
         super(String.format("Failed to set value into the field(%s) of the class(%s)", field.getName(), type.getName()));

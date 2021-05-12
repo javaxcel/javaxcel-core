@@ -9,15 +9,16 @@ import io.github.imsejin.expression.ParserContext;
 import io.github.imsejin.expression.spel.standard.SpelExpressionParser;
 import io.github.imsejin.expression.spel.support.StandardEvaluationContext;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.IntStream;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class SpELTest {
+class SpELTest {
 
     private static final ExpressionParser parser = new SpelExpressionParser();
 
@@ -29,7 +30,7 @@ public class SpELTest {
 
     @Test
     @DisplayName("SpEL: List -> String")
-    public void stringifiedList() {
+    void stringifiedList() {
         // given
         String exp = "T(java.util.Arrays).asList('Hello', \"world!\").toString()";
 
@@ -44,7 +45,7 @@ public class SpELTest {
 
     @Test
     @DisplayName("SpEL: Product#apiId = Product#name")
-    public void setApiIdWithName() {
+    void setApiIdWithName() {
         // given
         String name = "Mint Chocolate";
         Product product = new Product();
@@ -65,7 +66,7 @@ public class SpELTest {
 
     @Test
     @DisplayName("SpEL: Product#apiId = UUID#randomUUID()#toString()")
-    public void setValueIntoProperty() {
+    void setValueIntoProperty() {
         // given
         String initialUuid = UUID.randomUUID().toString();
         Product product = new Product();
@@ -86,7 +87,7 @@ public class SpELTest {
 
     @Test
     @DisplayName("SpEL: Product#name = #variable")
-    public void expressionThatHasVariable() {
+    void expressionThatHasVariable() {
         // given
         String initialName = "Caramel macchiato";
         Product product = new Product();
@@ -113,7 +114,7 @@ public class SpELTest {
 
     @Test
     @DisplayName("SpEL: template expression #{fieldName}")
-    public void inputValueToTemplateAndParseExpression() {
+    void inputValueToTemplateAndParseExpression() {
         // given
         Product product = new Product();
         product.setName("Milk Tea");
@@ -136,7 +137,7 @@ public class SpELTest {
 
     @Test
     @DisplayName("SpEL: only variable without root object")
-    public void parseVariable() {
+    void parseVariable() {
         // given
         EducationToy toy = new EducationToy();
         toy.setTargetAges(new int[]{2, 3, 4, 5, 6});
@@ -161,7 +162,7 @@ public class SpELTest {
     @Test
     @DisplayName("SpEL: only variables without root object")
     @SuppressWarnings("unchecked")
-    public void parseVariables() {
+    void parseVariables() {
         // given
         List<Integer> primes = Arrays.asList(2, 3, 5, 7, 11, 13, 17);
         Map<String, Object> map = new HashMap<String, Object>() {{
@@ -182,7 +183,7 @@ public class SpELTest {
 
     @Test
     @SneakyThrows
-    public void parseVariableWithMethod() {
+    void parseVariableWithMethod() {
         // given
         EducationToy toy = new EducationToy();
         toy.setTargetAges(new int[]{2, 3, 4, 5, 6});
@@ -202,7 +203,7 @@ public class SpELTest {
     }
 
     @Test
-    public void parseToRealModel() {
+    void parseToRealModel() {
         // given
         Map<String, Object> map = new HashMap<>();
         String key = "agesFromBirthToPuberty";
@@ -222,7 +223,7 @@ public class SpELTest {
 
     @Test
     @DisplayName("SpEL: write a constructor in expression")
-    public void parseConstructor() {
+    void parseConstructor() {
         // given
         BigInteger bigInt = new BigInteger("123456789");
         String exp = "new java.math.BigInteger('123456789')";

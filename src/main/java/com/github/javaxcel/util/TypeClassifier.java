@@ -17,6 +17,8 @@
 package com.github.javaxcel.util;
 
 import java.time.*;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 public final class TypeClassifier {
 
@@ -111,52 +113,40 @@ public final class TypeClassifier {
         /**
          * Primitive types.
          */
-        PRIMITIVE(new Class[]{
-                byte.class, short.class, int.class, long.class,
-                float.class, double.class, char.class, boolean.class
-        }),
+        PRIMITIVE(byte.class, short.class, int.class, long.class,
+                float.class, double.class, char.class, boolean.class),
 
         /**
          * Wrapper types.
          */
-        WRAPPER(new Class[]{
-                Byte.class, Short.class, Integer.class, Long.class,
-                Float.class, Double.class, Character.class, Boolean.class
-        }),
-
-        /**
-         * Numeric types.
-         */
-        NUMBER(new Class[]{
-                byte.class, short.class, int.class, long.class, float.class, double.class,
-                Byte.class, Short.class, Integer.class, Long.class, Float.class, Double.class
-        }),
+        WRAPPER(Byte.class, Short.class, Integer.class, Long.class,
+                Float.class, Double.class, Character.class, Boolean.class),
 
         /**
          * Numeric primitive types.
          */
-        PRIMITIVE_NUMBER(new Class[]{
-                byte.class, short.class, int.class, long.class, float.class, double.class
-        }),
+        PRIMITIVE_NUMBER(byte.class, short.class, int.class, long.class, float.class, double.class),
 
         /**
          * Numeric wrapper types.
          */
-        WRAPPER_NUMBER(new Class[]{
-                Byte.class, Short.class, Integer.class, Long.class, Float.class, Double.class
-        }),
+        WRAPPER_NUMBER(Byte.class, Short.class, Integer.class, Long.class, Float.class, Double.class),
+
+        /**
+         * Numeric types.
+         */
+        NUMBER(Stream.of(PRIMITIVE_NUMBER.classes, WRAPPER_NUMBER.classes)
+                .flatMap(Arrays::stream).toArray(Class[]::new)),
 
         /**
          * Datetime types.
          */
-        DATETIME(new Class[]{
-                LocalTime.class, LocalDate.class, LocalDateTime.class,
-                ZonedDateTime.class, OffsetDateTime.class, OffsetTime.class
-        });
+        DATETIME(LocalTime.class, LocalDate.class, LocalDateTime.class,
+                ZonedDateTime.class, OffsetDateTime.class, OffsetTime.class);
 
         private final Class<?>[] classes;
 
-        Types(Class<?>[] classes) {
+        Types(Class<?>... classes) {
             this.classes = classes;
         }
 

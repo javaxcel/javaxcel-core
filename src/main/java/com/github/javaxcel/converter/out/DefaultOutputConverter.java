@@ -16,7 +16,6 @@
 
 package com.github.javaxcel.converter.out;
 
-import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.util.FieldUtils;
 import com.github.javaxcel.util.TypeClassifier;
@@ -27,30 +26,17 @@ import java.lang.reflect.Field;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 
-public class BasicWritingConverter<T> extends DefaultValueStore implements WritingConverter<T> {
+public class DefaultOutputConverter<T> implements OutputConverter<T> {
 
     /**
      * {@inheritDoc}
      *
      * @see FieldUtils#getFieldValue(Object, Field)
-     * @see ExcelColumn#defaultValue()
-     */
-    @Override
-    public String convert(T model, Field field) {
-        String value = stringify(model, field);
-        return FieldUtils.convertIfFaulty(value, this.defaultValue, field);
-    }
-
-    /**
-     * Stringifies a value of the field.
-     *
-     * @param model element in list
-     * @param field field of model
-     * @return value of the field in value object
      * @see ExcelDateTimeFormat#pattern()
      */
     @Nullable
-    private String stringify(T model, Field field) {
+    @Override
+    public String convert(T model, Field field) {
         Object value = FieldUtils.getFieldValue(model, field);
         if (value == null) return null;
 

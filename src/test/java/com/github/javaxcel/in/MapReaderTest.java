@@ -1,10 +1,11 @@
 package com.github.javaxcel.in;
 
-import com.github.javaxcel.CommonTester;
 import com.github.javaxcel.factory.ExcelReaderFactory;
 import com.github.javaxcel.factory.ExcelWriterFactory;
+import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.model.Mockables;
 import com.github.javaxcel.util.ExcelUtils;
+import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -26,7 +27,8 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MapReaderTest extends CommonTester {
+@StopwatchProvider
+class MapReaderTest {
 
     private static Map<String, Object> getRandomMap(@Nonnull List<String> keys) {
         return keys.stream().collect(toMap(it -> it, it -> Mockables.generateRandomText(it.length())));
@@ -35,33 +37,33 @@ public class MapReaderTest extends CommonTester {
     @Test
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public void read(@TempDir Path path) {
+    void read(@TempDir Path path, Stopwatch stopwatch) {
         String filename = "maps.xlsx";
         List<String> keys = Arrays.asList("race", "name", "height", "weight", "eyesight", "favoriteFood");
 
         // given
-        stopWatch.start(String.format("create '%s' file", filename));
+        stopwatch.start(String.format("create '%s' file", filename));
         File file = new File(path.toFile(), filename);
         @Cleanup FileOutputStream out = new FileOutputStream(file);
         @Cleanup Workbook workbook = new HSSFWorkbook();
-        stopWatch.stop();
+        stopwatch.stop();
 
         int numOfMocks = ExcelUtils.getMaxRows(workbook) + 10_000;
-        stopWatch.start(String.format("create %,d mocks", numOfMocks));
+        stopwatch.start(String.format("create %,d mocks", numOfMocks));
         List<Map<String, Object>> maps = IntStream.range(0, numOfMocks)
-                .mapToObj(i -> getRandomMap(keys)).collect(toList());
-        stopWatch.stop();
+                                                 .mapToObj(i -> getRandomMap(keys)).collect(toList());
+        stopwatch.stop();
 
-        stopWatch.start(String.format("write %,d maps", numOfMocks));
+        stopwatch.start(String.format("write %,d maps", numOfMocks));
         ExcelWriterFactory.create(workbook).sheetName("Maps")
                 .headerNames(keys).write(out, maps);
-        stopWatch.stop();
+        stopwatch.stop();
 
         // when
-        stopWatch.start(String.format("read %,d maps", numOfMocks));
+        stopwatch.start(String.format("read %,d maps", numOfMocks));
         @Cleanup Workbook wb = new HSSFWorkbook(new FileInputStream(file));
         List<Map<String, Object>> actual = ExcelReaderFactory.create(wb).read();
-        stopWatch.stop();
+        stopwatch.stop();
 
         // then
         assertThat(actual.size())

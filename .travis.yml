@@ -1,0 +1,73 @@
+# To enable Travis CI,
+# 1. Confirm your email account.
+# 2. Give permission for access to your Github repository to Travis.
+
+language: java
+
+# Testing against multiple JDKs.
+# ---
+# The language 'java' is currently unsupported on the Windows Build Environment.
+# https://travis-ci.community/t/install-of-oracle-jdk8-is-failing/4365
+# ---
+# Unable to install JDK 8 on macOS.
+# https://travis-ci.community/t/unable-to-install-jdk-8-on-macos-11-2-with-dist-trusty/6104
+# ---
+# "oraclejdk8" is not supported.
+matrix:
+  include:
+    - os: linux
+      jdk: openjdk8
+    - os: linux
+      jdk: openjdk11
+    - os: linux
+      jdk: openjdk15
+    - os: linux
+      jdk: oraclejdk11
+    - os: osx
+      jdk: openjdk11
+    - os: osx
+      jdk: openjdk15
+    - os: osx
+      jdk: oraclejdk11
+
+branches:
+  only:
+    - master
+    - release
+
+# Home directory in Travis CI server.
+cache:
+  directories:
+    - "$HOME/.m2/repository" # Maven
+    - "$HOME/.gradle" # Gradle
+
+before_install:
+  - "chmod +x ./mvnw"
+
+install:
+  - "./mvnw clean install -Dgpg.skip"
+
+script: "./mvnw test -B"
+
+after_success:
+  # Codecov
+  # https://github.com/codecov/example-java
+  # https://github.com/codecov/example-java-maven
+  - "bash <(curl -s https://codecov.io/bash)"
+  # Codacy
+  # https://github.com/codacy/codacy-coverage-reporter
+  # https://docs.codacy.com/coverage-reporter/#uploading-coverage
+  - "bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+    --project-token $CODACY_PROJECT_TOKEN \
+    --api-token $CODACY_API_TOKEN \
+    --username imsejin \
+    --project-name javaxcel-core \
+    --language Java \
+    $(find **/jacoco*.xml -printf '--coverage-reports %p ')"
+    # --coverage-reports ./target/site/jacoco/jacoco.xml \
+
+# Notification when Travis CI is done.
+notifications:
+  email:
+    recipients:
+      - hackeres123@gmail.com

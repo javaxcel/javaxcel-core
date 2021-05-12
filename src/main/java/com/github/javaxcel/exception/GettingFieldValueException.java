@@ -22,7 +22,7 @@ public class GettingFieldValueException extends RuntimeException {
 
     private final Class<?> type;
 
-    private final Field field;
+    private final transient Field field;
 
     public GettingFieldValueException(Class<?> type, Field field) {
         super(String.format("Failed to get value in the field(%s) of the class(%s)", field.getName(), type.getName()));

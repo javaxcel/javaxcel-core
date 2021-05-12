@@ -29,7 +29,7 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-public class BasicReadingConverter implements ReadingConverter {
+public class DefaultInputConverter implements InputConverter {
 
     /**
      * Gets initial value of the type.
@@ -93,8 +93,8 @@ public class BasicReadingConverter implements ReadingConverter {
     /**
      * {@inheritDoc}
      */
-    @Override
     @Nullable
+    @Override
     public Object convert(Map<String, Object> variables, Field field) {
         String value = (String) variables.get(field.getName());
 

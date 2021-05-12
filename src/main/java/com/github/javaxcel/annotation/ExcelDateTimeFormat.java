@@ -36,6 +36,7 @@ public @interface ExcelDateTimeFormat {
      * Timezone for formatting datetime.
      *
      * @return timezone for formatting datetime
+     * @deprecated Not supported yet
      */
     @Deprecated
     String timezone() default "";

@@ -4,24 +4,21 @@
 
 
 <p align="center">
-    <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/javaxcel/javaxcel-core">
+    <a href="https://codecov.io/gh/javaxcel/javaxcel-core">
+        <img src="https://codecov.io/gh/javaxcel/javaxcel-core/branch/dev/graph/badge.svg?token=X7ZO535W9K"/>
+    </a>
     <a href="https://lgtm.com/projects/g/javaxcel/javaxcel-core/context:java"><img alt="Language grade: Java" src="https://img.shields.io/lgtm/grade/java/g/javaxcel/javaxcel-core.svg?logo=lgtm&logoWidth=18"/></a>
     <a href="https://frontend.code-inspector.com/project/16361/dashboard"><img alt="Code Inspector" src="https://www.code-inspector.com/project/16361/score/svg"></a>
 </p>
 
 <p align="center">
+    <a href="https://travis-ci.com/github/javaxcel/javaxcel-core">
+        <img src="https://travis-ci.com/javaxcel/javaxcel-core.svg?branch=release"/>
+    </a>
     <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/javaxcel/javaxcel-core?label=github">
-    <img alt="Bintray" src="https://img.shields.io/bintray/v/imsejin/Javaxcel/javaxcel-core">
     <img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.github.javaxcel/javaxcel-core">
-</p>
-
-<p align="center">
-    <img alt="GitHub All Releases" src="https://img.shields.io/github/downloads/javaxcel/javaxcel-core/total?label=downloads%20at%20github">
-    <img alt="Bintray" src="https://img.shields.io/bintray/dt/imsejin/Javaxcel/javaxcel-core?label=downloads%20at%20bintray">
-    <img alt="GitHub" src="https://img.shields.io/github/license/javaxcel/javaxcel-core">
     <img alt="jdk8" src="https://img.shields.io/badge/jdk-8-orange">
 </p>
-
 
 
 
@@ -42,7 +39,7 @@ Javaxcel core is helpful for converting `java.util.List` object to a excel file 
 
 ```groovy
 // Gradle
-implementation 'com.github.javaxcel:javaxcel-core:$javaxcel_core_version'
+implementation group: "com.github.javaxcel", name: "javaxcel-core", version: "$javaxcelCoreVersion"
 ```
 
 <br>
@@ -51,10 +48,10 @@ implementation 'com.github.javaxcel:javaxcel-core:$javaxcel_core_version'
 File src = new File("/data", "old-products.xls");
 File dest = new File("/data", "new-products.xlsx");
 
-try (FileInputStream in = new FileInputStream(src);
-        FileOutputStream out = new FileOutputStream(dest);
-        HSSFWorkbook oldWorkbook = new HSSFWorkbook(in);
-        XSSFWorkbook newWorkbook = new XSSFWorkbook()) {
+try (InputStream in = new FileInputStream(src);
+        OutputStream out = new FileOutputStream(dest);
+        Workbook oldWorkbook = new HSSFWorkbook(in);
+        Workbook newWorkbook = new SXSSFWorkbook()) {
     // Reads all the sheet and returns data as a list.
     List<Product> products = ExcelReaderFactory.create(oldWorkbook, Product.class).read();
     
@@ -70,6 +67,20 @@ Code with simple usage.
 <br><br>
 
 # Examples
+
+1. [No option](#no-option)
+2. [Exclude field](#exclude-field)
+3. [Name the header](#name-the-header)
+4. [Set the default value](#set-the-default-value)
+5. [Model without the targeted fields](#model-without-the-targeted-fields)
+6. [Model that extends class](#model-that-extends-class)
+7. [Format date/time](#format-datetime)
+8. [Name a Sheet](#name-a-sheet)
+9. [Decoration](#decoration)
+10. [Expression](#expression)
+11. [Value constraint](#value-constraint)
+
+<br>
 
 ```java
 class Product {
@@ -100,12 +111,12 @@ There is a list that contains a `Product`.
 
 ## No option
 
-### write:
+### writer:
 
 ```java
 File dest = new File("/data", "products.xlsx")
-FileOutputStream out = new FileOutputStream(dest);
-XSSFWorkbook workbook = new XSSFWorkbook();
+OutputStream out = new FileOutputStream(dest);
+Workbook workbook = new SXSSFWorkbook();
 
 ExcelWriterFactory.create(workbook, Product.class).write(out, products);
 ```
@@ -121,9 +132,12 @@ If nothing is specified for the column, header name is the field name.
 
 <br>
 
-### read:
+### reader:
 
 ```java
+File src = new File("/data", "products.xlsx");
+Workbook workbook = new XSSFWorkbook(src);
+
 List<Product> products = ExcelReaderFactory.create(workbook, Product.class).read();
 ```
 
@@ -145,7 +159,7 @@ The result is
 
 The column order, also when read, is the same as the declared field order.
 
-Model must has a constructor without parameters, so that [ExcelReader](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/in/ExcelReader.java) can instantiate.
+Model must has a constructor without parameters, so that `ExcelReader` can instantiate.
 
 <br><br>
 
@@ -156,17 +170,17 @@ Model must has a constructor without parameters, so that [ExcelReader](https://g
 private String accessId;
 ```
 
-### write:
+### writer:
 
 | serialNumber | name         | width | depth | height | weight |
 | ------------ | ------------ | ----- | ----- | ------ | ------ |
 | 10000        | Choco cereal |       | 0.0   | 20.5   | 580.5  |
 
-If you want to exclude several fields, annotate [ExcelIgnore](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/annotation/ExcelIgnore.java) to them.
+If you want to exclude several fields, annotate `@ExcelIgnore` to them.
 
 <br>
 
-### read:
+### reader:
 
 ```json
 [
@@ -182,9 +196,9 @@ If you want to exclude several fields, annotate [ExcelIgnore](https://github.com
 ]
 ```
 
-[ExcelReader](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/in/ExcelReader.java) will pass the fields that annotated [ExcelIgnore](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/annotation/ExcelIgnore.java) by.
+`ExcelReader` will pass the fields that annotated `@ExcelIgnore` by.
 
-If column `apiId` exists and `Product#apiId` is still annotated [ExcelIgnore](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/annotation/ExcelIgnore.java),
+If column `apiId` exists and `Product#apiId` is still annotated `@ExcelIgnore`,
 
 the exception will occur becauseof setting `apiId` to `width` (NumberFormatException).
 
@@ -200,17 +214,17 @@ private long serialNumber;
 private String name;
 ```
 
-### write:
+### writer:
 
 | PRODUCT_NO | name         | accessId            | width | depth | height | weight |
 | ---------- | ------------ | ------------------- | ----- | ----- | ------ | ------ |
 | 10000      | Choco cereal | 2a60-4973-aec0-685e |       | 0.0   | 20.5   | 580.5  |
 
-If you want to name the header, annotate [ExcelColumn](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/annotation/ExcelColumn.java) and assign [#name()](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/annotation/ExcelColumn.java#L18) you want.
+If you want to name the header, annotate `@ExcelColumn` and assign `name()` you want.
 
 <br>
 
-If you want to use header names only once or override [ExcelColumn#name()](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/annotation/ExcelColumn.java#L18), invoke [ExcelWriter#headerNames(List)](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/out/ExcelWriter.java#L32).
+If you want to use header names only once or override `ExcelColumn#name()`, invoke `AbstractExcelWriter#headerNames(List)`.
 
 ```java
 ExcelWriterFactory.create(workbook, Product.class)
@@ -225,11 +239,11 @@ The result is
 | ------ | ------------ | ------------------- | ---- | ---- | ---- | ----- |
 | 10000  | Choco cereal | 2a60-4973-aec0-685e |      | 0.0  | 20.5 | 580.5 |
 
-If the number of arguments is not equal to the number of targeted fields, [ExcelWriter](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/out/ExcelWriter.java) throws exception.
+If the number of arguments is not equal to the number of targeted fields, `ExcelWriter` throws exception.
 
 <br>
 
-### read:
+### reader:
 
 Not affected.
 
@@ -248,7 +262,7 @@ private double depth;
 private double height;
 ```
 
-### write:
+### writer:
 
 | serialNumber | name         | accessId            | WIDTH | Depth | height | weight |
 | ------------ | ------------ | ------------------- | ----- | ----- | ------ | ------ |
@@ -258,7 +272,7 @@ It's ineffective to assign default value to primitive type, because the field of
 
 <br>
 
-If you want to use default value only once or override [ExcelColumn#defaultValue()](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/annotation/ExcelColumn.java#L25), invoke [ExcelWriter#defaultValue(String)](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/out/ExcelWriter.java#L16).
+If you want to use default value only once or override `ExcelColumn#defaultValue()`, invoke `AbstractExcelWriter#defaultValue(String)`.
 
 ```java
 Product product = Product.builder().build(); // Not assigns to all fields.
@@ -275,15 +289,15 @@ The result is
 | ------------ | ------- | -------- | ------- | ----- | ------ | ------- |
 | 0            | (empty) | (empty)  | (empty) | 0.0   | 0.0    | (empty) |
 
-[ExcelWriter#defaultValue(String)](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/out/ExcelWriter.java#L16) will be applied to all fields.
+`AbstractExcelWriter#defaultValue(String)` will be applied to all fields.
 
 <br>
 
-### read:
+### reader:
 
 Not affected,
 
-but if you set [ExcelColumn#defaultValue()](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/annotation/ExcelColumn.java#L25) that doesn't match type of its field, the exception for type casting may occurred.
+but if you set `ExcelColumn#defaultValue()` that doesn't match type of its field, the exception for type casting may occurred.
 
 <br><br>
 
@@ -301,25 +315,25 @@ class AllIgnoredModel {
 }
 ```
 
-### write:
+### writer:
 
 ```java
-ExcelWriterFactory.create(workbook, NoFieldModel.class).write(out, list); // Occurs exception.
-ExcelWriterFactory.create(workbook, AllIgnoredModel.class).write(out, list); // Occurs exception.
+ExcelWriterFactory.create(workbook, NoFieldModel.class); // Occurs exception.
+ExcelWriterFactory.create(workbook, AllIgnoredModel.class); // Occurs exception.
 ```
 
-If you try to write with the class that has no targeted fields, [ExcelWriter](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/out/ExcelWriter.java) will throw exception.
+If you try to write with the class that has no targeted fields, `ExcelWriter` will throw exception.
 
 <br>
 
-### read:
+### reader:
 
 ```java
-List<NoFieldModel> noFieldModels = ExcelReaderFactory.create(workbook, NoFieldModel.class).read(); // Occurs exception.
-List<AllIgnoredModel> allIgnoredModels = ExcelReaderFactory.create(workbook, AllIgnoredModel.class).read(); // Occurs exception.
+List<NoFieldModel> noFieldModels = ExcelReaderFactory.create(workbook, NoFieldModel.class); // Occurs exception.
+List<AllIgnoredModel> allIgnoredModels = ExcelReaderFactory.create(workbook, AllIgnoredModel.class); // Occurs exception.
 ```
 
-If you try to write with the class that has no targeted fields, [ExcelReader](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/in/ExcelReader.java) will throw exception.
+If you try to write with the class that has no targeted fields, `ExcelReader` will throw exception.
 
 <br><br>
 
@@ -357,7 +371,7 @@ There is a list that contains a `EducationalProduct`.
 
 <br>
 
-### write:
+### writer:
 
 ```java
 ExcelWriterFactory.create(workbook, EducationalProduct.class).write(out, list);
@@ -378,7 +392,7 @@ It's default.
 class EducationalProduct extends Product { /* ... */ }
 ```
 
-But if you annotate [ExcelModel](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/annotation/ExcelModel.java) and assign true into [#includeSuper()](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/annotation/ExcelModel.java#L21), it writes including the inherited fields.
+But if you annotate `@ExcelModel` and assign true into `includeSuper()`, it writes including the inherited fields.
 
 The result is
 
@@ -388,7 +402,7 @@ The result is
 
 <br>
 
-### read:
+### reader:
 
 ```java
 List<EducationalProduct> eduProducts = ExcelReaderFactory.create(workbook, EducationalProduct.class).read();
@@ -439,17 +453,17 @@ private LocalTime time = LocalTime.now();
 private LocalDateTime dateTime = LocalDateTime.now();
 ```
 
-### write:
+### writer:
 
 | date     | time     | dateTime                |
 | -------- | -------- | ----------------------- |
 | 20200913 | 11/54/26 | 2020-09-13 11:54:26.176 |
 
-If you want to write formatted `LocalDate`, `LocalTime` or `LocalDateTime`, annotate [ExcelDateTimeFormat](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/annotation/ExcelDateTimeFormat.java) and assign [#pattern()](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/annotation/ExcelDateTimeFormat.java#L19) you want.
+If you want to write formatted `LocalDate`, `LocalTime` or `LocalDateTime`, annotate `@ExcelDateTimeFormat` and assign `pattern()` you want.
 
 <br>
 
-### read:
+### reader:
 
 ```json
 {
@@ -459,13 +473,13 @@ If you want to write formatted `LocalDate`, `LocalTime` or `LocalDateTime`, anno
 }
 ```
 
-[ExcelReader](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/in/ExcelReader.java) parses `LocalDate`, `LocalTime` and `LocalDateTime` with [ExcelDateTimeFormat#pattern()](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/annotation/ExcelDateTimeFormat.java#L19).
+`ExcelReader` parses `LocalDate`, `LocalTime` and `LocalDateTime` with `ExcelDateTimeFormat#pattern()`.
 
 <br><br>
 
 ## Name a Sheet
 
-### write:
+### writer:
 
 ```java
 ExcelWriterFactory.create(workbook, Product.class)
@@ -473,45 +487,45 @@ ExcelWriterFactory.create(workbook, Product.class)
     .write(out, products);
 ```
 
-If you want to name a sheet, invoke [ExcelWriter#sheetName(String)](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/out/ExcelWriter.java#L24).
+If you want to name a sheet, invoke `AbstractExcelWriter#sheetName(String)`.
 
 If you don't, the name is `Sheet`.
 
 <br>
 
-### read:
+### reader:
 
 Not affected.
 
 <br><br>
 
-## Decorate
+## Decoration
 
-### write:
+### writer:
 
 ```java
 ExcelWriterFactory.create(workbook, Product.class)
-    .autoResizeCols() // Makes all columns fit content.
+    .autoResizeColumns() // Makes all columns fit content.
     .hideExtraRows() // Hides extra rows.
-    .hideExtraCols() // Hides extra columns.
-    .headerStyles(new DefaultHeaderStyleConfig())
-    .bodyStyles(new DefaultBodyStyleConfig())
+    .hideExtraColumns() // Hides extra columns.
+    .headerStyle(new DefaultHeaderStyleConfig())
+    .bodyStyle(new DefaultBodyStyleConfig())
     .write(out, products);
 ```
 
-You can adjust all sheets with [AbstractExcelWriter#autoResizeCols()](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/out/AbstractExcelWriter.java#L130), [AbstractExcelWriter#hideExtraRows()](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/out/AbstractExcelWriter.java#L135) and [AbstractExcelWriter#hideExtraCols()](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/out/AbstractExcelWriter.java#L140).
+You can adjust all sheets with `AbstractExcelWriter#autoResizeColumns()`, `AbstractExcelWriter#hideExtraRows()` and `AbstractExcelWriter#hideExtraColumns()`.
 
 <br>
 
-You can decorate the header with [AbstractExcelWriter#headerStyles(ExcelStyleConfig...)](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/out/AbstractExcelWriter.java#L120) 
+You can decorate the header with `AbstractExcelWriter#headerStyle(ExcelStyleConfig)`
 
-and also decorate the body with [AbstractExcelWriter#bodyStyles(ExcelStyleConfig...)](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/out/AbstractExcelWriter.java#L125).
+and also decorate the body with `AbstractExcelWriter#bodyStyles(ExcelStyleConfig)`.
 
 <br>
 
-If the number of arguments is not equal to 1 or the number of targeted fields, [ExcelWriter](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/out/ExcelWriter.java) throws exception.
+If the number of arguments is not equal to 1 or the number of targeted fields, `ExcelWriter` throws exception.
 
-When you input single argument, [ExcelWriter](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/out/ExcelWriter.java) applies it to all columns.
+When you input single argument, `ExcelWriter` applies it to all columns.
 
 <br>
 
@@ -535,9 +549,9 @@ Look [here](https://github.com/javaxcel/javaxcel-styler) for how to configure st
 
 <br>
 
-[ExcelColumn#headerStyle()](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/annotation/ExcelColumn.java#L27) takes precedence over [ExcelModel#headerStyle()](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/annotation/ExcelModel.java#L40).
+`ExcelColumn#headerStyle()` takes precedence over `ExcelModel#headerStyle()`.
 
-[ExcelColumn#bodyStyle()](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/annotation/ExcelColumn.java#L29) takes precedence over [ExcelModel#bodyStyle()](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/annotation/ExcelModel.java#L42).
+`ExcelColumn#bodyStyle()` takes precedence over `ExcelModel#bodyStyle()`.
 
 <br>
 
@@ -547,7 +561,7 @@ Look [here](https://github.com/javaxcel/javaxcel-styler) for how to configure st
 
 <br>
 
-### read:
+### reader:
 
 Not affected.
 
@@ -555,58 +569,57 @@ Not affected.
 
 ## Expression
 
-### write:
+### writer:
 
 ```java
-/*
-Product
- */
-@ExcelWriterExpression("T(io.github.imsejin.common.util.StringUtils).formatComma(#serialNumber)")
-private long serialNumber;
+class Product {
+    @ExcelWriterExpression("T(io.github.imsejin.common.util.StringUtils).formatComma(#serialNumber)")
+    private long serialNumber;
 
-@ExcelWriterExpression("#name.toUpperCase()")
-private String name;
+    @ExcelWriterExpression("#name.toUpperCase()")
+    private String name;
 
-@ExcelWriterExpression("#accessId.replaceAll('\\d+', '')")
-private String accessId;
+    @ExcelWriterExpression("#accessId.replaceAll('\\d+', '')")
+    private String accessId;
 
-@ExcelWriterExpression("T(String).valueOf(#width).replaceAll('\\.0+$', '')")
-private Double width;
+    @ExcelWriterExpression("T(String).valueOf(#width).replaceAll('\\.0+$', '')")
+    private Double width;
 
-@ExcelWriterExpression("#depth + 'cm'")
-private double depth;
+    @ExcelWriterExpression("#depth + 'cm'")
+    private double depth;
 
-private double height;
+    private double height;
 
-@ExcelWriterExpression("T(Math).ceil(#weight)")
-private Double weight;
+    @ExcelWriterExpression("T(Math).ceil(#weight)")
+    private Double weight;
+}
 
-/*
-EducationalProduct
- */
-@ExcelWriterExpression("T(java.util.Arrays).stream(#targetAges)" +
-        ".boxed()" +
-        ".collect(T(java.util.stream.Collectors).toList())" +
-        ".toString()" +
-        ".replaceAll('[\\[\\]]', '')")
-private int[] targetAges;
+@ExcelModel(includeSuper = true)
+class EducationalProduct extends Product {
+    @ExcelWriterExpression("T(java.util.Arrays).stream(#targetAges)" +
+            ".boxed()" +
+            ".collect(T(java.util.stream.Collectors).toList())" +
+            ".toString()" +
+            ".replaceAll('[\\[\\]]', '')")
+    private int[] targetAges;
 
-@ExcelWriterExpression("'none'") // Static value
-private String goals;
+    @ExcelWriterExpression("'none'") // Static value
+    private String goals;
 
-@ExcelWriterExpression("T(java.time.LocalDateTime).of(#date, #time)") // Refers other field
-private LocalDate date;
+    @ExcelWriterExpression("T(java.time.LocalDateTime).of(#date, #time)") // Refers other field
+    private LocalDate date;
 
-private LocalTime time;
+    private LocalTime time;
 
-private LocalDateTime dateTime;
+    private LocalDateTime dateTime;    
+}
 ```
 
 | serialNumber | name                             | accessId | width | depth | height | weight | targetAges       | goals | date                    | time         | dateTime                |
 | ------------ | -------------------------------- | -------- | ----- | ----- | ------ | ------ | ---------------- | ----- | ----------------------- | ------------ | ----------------------- |
 | 10,001       | MATHEMATICS PUZZLE TOYS FOR KIDS | a--ab-e  | 18    | 6.0cm | 20.0   | 341.0  | 4, 5, 6, 7, 8, 9 | none  | 2020-09-13T11:54:26.176 | 11:54:26.176 | 2020-09-13T11:54:26.176 |
 
-You can pre-process field value with [ExcelWriterExpression](https://github.com/javaxcel/javaxcel-core/blob/435b9208b10a06cb2056b9690bd04f6dd416e573/src/main/java/com/github/javaxcel/annotation/ExcelWriterExpression.java#L15) before set value into a cell.
+You can pre-process field value with `@ExcelWriterExpression` before set value into a cell.
 
 The expression language is `SpEL(Spring Expression Language)`.
 
@@ -622,52 +635,51 @@ Also you can refer other field. We call this as `variable`.
 
 Field you can refer is only targeted field.
 
-It means you cannot refer the field that is annotated with [ExcelIgnore](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/annotation/ExcelIgnore.java).
+It means you cannot refer the field that is annotated with `@ExcelIgnore`.
 
 If type of expression result is not `String`, the converter will invoke `Object#toString()`.
 
 <br>
 
-### read:
+### reader:
 
 ```java
-/*
-Product
- */
-@ExcelReaderExpression("T(Long).parseLong(#serialNumber.replace(',', ''))")
-private long serialNumber;
+class Product {
+    @ExcelReaderExpression("T(Long).parseLong(#serialNumber.replace(',', ''))")
+    private long serialNumber;
 
-@ExcelReaderExpression("#name.charAt(0) + #name.substring(1).toLowerCase()")
-private String name;
+    @ExcelReaderExpression("#name.charAt(0) + #name.substring(1).toLowerCase()")
+    private String name;
 
-@ExcelReaderExpression("#accessId.replaceAll('-', '0')")
-private String accessId;
+    @ExcelReaderExpression("#accessId.replaceAll('-', '0')")
+    private String accessId;
 
-private Double width;
+    private Double width;
 
-@ExcelReaderExpression("#depth.replace('cm', '')") // This string will be parsed as double.
-private double depth;
+    @ExcelReaderExpression("#depth.replace('cm', '')") // This string will be parsed as double.
+    private double depth;
 
-private double height;
+    private double height;
 
-@ExcelReaderExpression("T(Double).parseDouble(#weight) - 0.93")
-private Double weight;
+    @ExcelReaderExpression("T(Double).parseDouble(#weight) - 0.93")
+    private Double weight;
+}
 
-/*
-EducationalProduct
- */
-@ExcelReaderExpression("T(com.github.javaxcel.Converter).toIntArray(#targetAges.split(', ')") // Custom converter method
-private int[] targetAges;
+@ExcelModel(includeSuper = true)
+class EducationalProduct extends Product {
+    @ExcelReaderExpression("T(com.github.javaxcel.Converter).toIntArray(#targetAges.split(', ')") // Custom converter method
+    private int[] targetAges;
 
-@ExcelReaderExpression("'Develop intelligence'") // Static value
-private String goals;
+    @ExcelReaderExpression("'Develop intelligence'") // Static value
+    private String goals;
 
-@ExcelReaderExpression("T(java.time.LocalDate).parse(#date)")
-private LocalDate date;
+    @ExcelReaderExpression("T(java.time.LocalDate).parse(#date)")
+    private LocalDate date;
 
-private LocalTime time;
+    private LocalTime time;
 
-private LocalDateTime dateTime;
+    private LocalDateTime dateTime;
+}
 
 // com.github.javaxcel.Converter
 public class Converter {
@@ -698,7 +710,7 @@ public class Converter {
 ]
 ```
 
-You can support not basic supported type with [ExcelReaderExpression](https://github.com/javaxcel/javaxcel-core/blob/dev/src/main/java/com/github/javaxcel/annotation/ExcelReaderExpression.java).
+You can support not basic supported type with `@ExcelReaderExpression`.
 
 The type of `variable` is `String`. It is value in cell.
 

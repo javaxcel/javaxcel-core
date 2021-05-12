@@ -18,9 +18,7 @@ package com.github.javaxcel.out;
 
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
-import com.github.javaxcel.annotation.ExcelWriterExpression;
-import com.github.javaxcel.converter.out.BasicWritingConverter;
-import com.github.javaxcel.converter.out.ExpressiveWritingConverter;
+import com.github.javaxcel.converter.out.support.OutputConverterSupport;
 import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.styler.NoStyleConfig;
@@ -43,11 +41,9 @@ import java.util.stream.IntStream;
  * @param <W> excel workbook
  * @param <T> type of model
  */
-public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T> {
+public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T> {
 
-    private final BasicWritingConverter<T> basicConverter = new BasicWritingConverter<>();
-
-    private final ExpressiveWritingConverter<T> expConverter;
+    private final OutputConverterSupport<T> converter;
 
     private final Class<T> type;
 
@@ -66,7 +62,10 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
      */
     private Map<Integer, String[]> enumDropdownItemsMap;
 
-    private ModelWriter(W workbook, Class<T> type) {
+    /**
+     * @see com.github.javaxcel.factory.ExcelWriterFactory#create(Workbook, Class)
+     */
+    public ModelWriter(W workbook, Class<T> type) {
         super(workbook);
 
         if (type == null) throw new IllegalArgumentException("Type cannot be null");
@@ -76,17 +75,10 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
         this.fields = FieldUtils.getTargetedFields(type);
         if (this.fields.isEmpty()) throw new NoTargetedFieldException(type);
 
-        // Caches expressions for each field to improve performance.
-        this.expConverter = new ExpressiveWritingConverter<>(this.fields);
+        this.converter = new OutputConverterSupport<>(fields);
 
         ExcelModel excelModel = type.getAnnotation(ExcelModel.class);
         if (excelModel != null) {
-            // If default value for all fields is not empty string, sets it into converters.
-            if (!excelModel.defaultValue().equals("")) {
-                this.basicConverter.setDefaultValue(excelModel.defaultValue());
-                this.expConverter.setDefaultValue(excelModel.defaultValue());
-            }
-
             // Sets configurations for header and body style by 'ExcelModel'.
             setStylesByModel(excelModel);
         }
@@ -146,6 +138,29 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
      * @return {@link ModelWriter}
      */
     @Override
+    public ModelWriter<W, T> defaultValue(String defaultValue) {
+        super.defaultValue(defaultValue);
+        this.converter.setDefaultValue(defaultValue);
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link ModelWriter}
+     */
+    @Override
+    public ModelWriter<W, T> sheetName(String sheetName) {
+        super.sheetName(sheetName);
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link ModelWriter}
+     */
+    @Override
     public ModelWriter<W, T> headerNames(List<String> headerNames) {
         if (CollectionUtils.isNullOrEmpty(headerNames)) {
             throw new IllegalArgumentException("Header names cannot be null or empty");
@@ -167,10 +182,8 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
      * @return {@link ModelWriter}
      */
     @Override
-    public ModelWriter<W, T> defaultValue(String defaultValue) {
-        super.defaultValue(defaultValue);
-        this.basicConverter.setDefaultValue(defaultValue);
-        this.expConverter.setDefaultValue(defaultValue);
+    public ModelWriter<W, T> unrotate() {
+        super.unrotate();
         return this;
     }
 
@@ -180,19 +193,8 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
      * @return {@link ModelWriter}
      */
     @Override
-    public ModelWriter<W, T> sheetName(String sheetName) {
-        super.sheetName(sheetName);
-        return this;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@link ModelWriter}
-     */
-    @Override
-    public ModelWriter<W, T> disableRolling() {
-        super.disableRolling();
+    public ModelWriter<W, T> filter() {
+        super.filter();
         return this;
     }
 
@@ -210,7 +212,7 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
         return this;
     }
 
-    //////////////////////////////////////// Style ////////////////////////////////////////
+    ///////////////////////////////////// Decoration //////////////////////////////////////
 
     /**
      * {@inheritDoc}
@@ -219,8 +221,7 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
      */
     @Override
     public ModelWriter<W, T> headerStyle(ExcelStyleConfig config) {
-        super.headerStyle(config);
-        return this;
+        return headerStyles(config);
     }
 
     /**
@@ -232,10 +233,12 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
     public ModelWriter<W, T> headerStyles(ExcelStyleConfig... configs) {
         super.headerStyles(configs);
 
-        if (this.headerStyles.length != 1 && this.headerStyles.length != this.fields.size()) {
-            throw new IllegalArgumentException(String.format(
+        if (this.headerStyles != null && this.headerStyles.length != 1 &&
+                this.headerStyles.length != this.fields.size()) {
+            String message = String.format(
                     "Number of header styles(%d) must be 1 or equal to number of targeted fields(%d) in the class '%s'",
-                    this.headerStyles.length, this.fields.size(), this.type.getName()));
+                    this.headerStyles.length, this.fields.size(), this.type.getName());
+            throw new IllegalArgumentException(message);
         }
 
         return this;
@@ -248,8 +251,7 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
      */
     @Override
     public ModelWriter<W, T> bodyStyle(ExcelStyleConfig config) {
-        super.bodyStyle(config);
-        return this;
+        return bodyStyles(config);
     }
 
     /**
@@ -261,10 +263,12 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
     public ModelWriter<W, T> bodyStyles(ExcelStyleConfig... configs) {
         super.bodyStyles(configs);
 
-        if (this.bodyStyles.length != 1 && this.bodyStyles.length != this.fields.size()) {
-            throw new IllegalArgumentException(String.format(
+        if (this.bodyStyles != null && this.bodyStyles.length != 1 &&
+                this.bodyStyles.length != this.fields.size()) {
+            String message = String.format(
                     "Number of body styles(%d) must be 1 or equal to number of targeted fields(%d) in the class '%s'",
-                    this.bodyStyles.length, this.fields.size(), this.type.getName()));
+                    this.bodyStyles.length, this.fields.size(), this.type.getName());
+            throw new IllegalArgumentException(message);
         }
 
         return this;
@@ -276,8 +280,8 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
      * @return {@link ModelWriter}
      */
     @Override
-    public ModelWriter<W, T> autoResizeCols() {
-        super.autoResizeCols();
+    public ModelWriter<W, T> autoResizeColumns() {
+        super.autoResizeColumns();
         return this;
     }
 
@@ -298,8 +302,8 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
      * @return {@link ModelWriter}
      */
     @Override
-    public ModelWriter<W, T> hideExtraCols() {
-        super.hideExtraCols();
+    public ModelWriter<W, T> hideExtraColumns() {
+        super.hideExtraColumns();
         return this;
     }
 
@@ -309,7 +313,7 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
      * @see #createDropdowns(Sheet)
      */
     @Override
-    @SuppressWarnings("rawtypes,unchecked")
+    @SuppressWarnings({"rawtypes", "unchecked"})
     protected void beforeWrite(OutputStream out, List<T> list) {
         Map<Integer, String[]> map = new HashMap<>();
         ExcelModel excelModel = this.type.getAnnotation(ExcelModel.class);
@@ -379,11 +383,7 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
                 Cell cell = row.createCell(j);
 
                 // Converts field value to the string.
-                ExcelWriterExpression annotation = field.getAnnotation(ExcelWriterExpression.class);
-                String value = annotation == null
-                        ? this.basicConverter.convert(model, field)
-                        : this.expConverter.convert(model, field);
-
+                String value = this.converter.convert(model, field);
                 if (value != null) cell.setCellValue(value);
 
                 if (this.bodyStyles == null) continue;
@@ -392,7 +392,7 @@ public final class ModelWriter<W extends Workbook, T> extends AbstractExcelWrite
                 CellStyle bodyStyle = this.bodyStyles.length == 1
                         ? this.bodyStyles[0] : this.bodyStyles[j];
 
-                // When configure styles with annotations, there is possibility that 'bodyStyles' has null elements.
+                // There is possibility that 'bodyStyles' has null elements, if you set 'NoStyleConfig'.
                 if (bodyStyle != null) cell.setCellStyle(bodyStyle);
             }
         }

@@ -39,7 +39,7 @@ import java.util.Map;
  *     <li>{@link #afterRead(List)}</li>
  * </ol>
  */
-public abstract class AbstractExcelReader<W extends Workbook, T> implements ExcelReader<T> {
+public abstract class AbstractExcelReader<W extends Workbook, T> implements ExcelReader<W, T> {
 
     /**
      * Formatter that stringifies the value in a cell with {@link FormulaEvaluator}.
@@ -85,11 +85,11 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
     }
 
     /**
-     * Limits the number of models.
+     * {@inheritDoc}
      *
-     * @param limit limit for the number of models
      * @return {@link AbstractExcelReader}
      */
+    @Override
     public AbstractExcelReader<W, T> limit(int limit) {
         if (limit < 0) throw new IllegalArgumentException("Limit cannot be negative");
 

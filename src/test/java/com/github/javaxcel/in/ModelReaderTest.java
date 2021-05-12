@@ -1,16 +1,17 @@
 package com.github.javaxcel.in;
 
-import com.github.javaxcel.CommonTester;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.exception.NoTargetedConstructorException;
 import com.github.javaxcel.factory.ExcelReaderFactory;
 import com.github.javaxcel.factory.ExcelWriterFactory;
+import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.model.computer.Computer;
 import com.github.javaxcel.model.creature.Human;
 import com.github.javaxcel.model.etc.FinalFieldModel;
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
+import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -37,14 +38,15 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ModelReaderTest extends CommonTester {
+@StopwatchProvider
+class ModelReaderTest {
 
     @Test
     @DisplayName("Find constructor with min params")
     @SneakyThrows
-    public void getDeclaredConstructorWithMinimumParameters() {
+    void getDeclaredConstructorWithMinimumParameters(Stopwatch stopwatch) {
         // given
-        stopWatch.start();
+        stopwatch.start();
         Class<Product> clazz = Product.class;
 
         // when
@@ -58,13 +60,13 @@ public class ModelReaderTest extends CommonTester {
                 .min(Comparator.comparingInt(Constructor::getParameterCount))
                 .orElseThrow(() -> new NoTargetedConstructorException(clazz));
         constructor.setAccessible(true);
-        stopWatch.stop();
+        stopwatch.stop();
 
         assertThat(constructor.newInstance())
                 .as("Instantiates class without params")
                 .isInstanceOf(clazz);
         Arrays.stream(constructor.getParameterTypes()).forEach(System.out::println);
-        System.out.printf("Constructor with minimum parameters: %s\n", constructor);
+        System.out.printf("Constructor with minimum parameters: %s%n", constructor);
     }
 
     /**
@@ -73,33 +75,33 @@ public class ModelReaderTest extends CommonTester {
     @Test
     @DisplayName("@ExcelIgnore + @ExcelModel(includeSuper = false)")
     @SneakyThrows
-    public void readProducts(@TempDir Path path) {
+    void readProducts(@TempDir Path path, Stopwatch stopwatch) {
         String filename = "products.xls";
 
         // given
-        stopWatch.start(String.format("create '%s' file", filename));
+        stopwatch.start(String.format("create '%s' file", filename));
         File file = new File(path.toFile(), filename);
         @Cleanup HSSFWorkbook workbook = new HSSFWorkbook();
         @Cleanup OutputStream out = new FileOutputStream(file);
-        stopWatch.stop();
+        stopwatch.stop();
 
         int numOfMocks = 10_000;
-        stopWatch.start(String.format("create %,d mocks", numOfMocks));
-        List<Product> mocks = new Product().createRandoms(numOfMocks);
-        stopWatch.stop();
+        stopwatch.start(String.format("create %,d mocks", numOfMocks));
+        List<Product> mocks = Product.createRandoms(numOfMocks);
+        stopwatch.stop();
 
-        stopWatch.start(String.format("write %,d models", numOfMocks));
+        stopwatch.start(String.format("write %,d models", numOfMocks));
         ExcelWriterFactory.create(workbook, Product.class).write(out, mocks);
-        stopWatch.stop();
+        stopwatch.stop();
 
-        stopWatch.start(String.format("load '%s' file", filename));
+        stopwatch.start(String.format("load '%s' file", filename));
         @Cleanup HSSFWorkbook wb = new HSSFWorkbook(new FileInputStream(file));
-        stopWatch.stop();
+        stopwatch.stop();
 
         // when
-        stopWatch.start(String.format("read %,d models", numOfMocks));
+        stopwatch.start(String.format("read %,d models", numOfMocks));
         List<Product> products = ExcelReaderFactory.create(wb, Product.class).read();
-        stopWatch.stop();
+        stopwatch.stop();
 
         // then
         assertThat(products.size())
@@ -116,35 +118,35 @@ public class ModelReaderTest extends CommonTester {
     @Test
     @DisplayName("ExcelReader#limit(int)")
     @SneakyThrows
-    public void readComputers(@TempDir Path path) {
+    void readComputers(@TempDir Path path, Stopwatch stopwatch) {
         String filename = "computers.xlsx";
 
         // given
-        stopWatch.start(String.format("create '%s' file", filename));
+        stopwatch.start(String.format("create '%s' file", filename));
         File file = new File(path.toFile(), filename);
         @Cleanup Workbook workbook = new SXSSFWorkbook();
         @Cleanup OutputStream out = new FileOutputStream(file);
-        stopWatch.stop();
+        stopwatch.stop();
 
         int limit = 10;
         int numOfMocks = 1000;
-        stopWatch.start(String.format("create %,d mocks", numOfMocks));
+        stopwatch.start(String.format("create %,d mocks", numOfMocks));
         List<Computer> mocks = Computer.createRandoms(numOfMocks);
-        stopWatch.stop();
+        stopwatch.stop();
 
-        stopWatch.start(String.format("write %,d models", numOfMocks));
+        stopwatch.start(String.format("write %,d models", numOfMocks));
         ExcelWriterFactory.create(workbook, Computer.class).write(out, mocks);
-        stopWatch.stop();
+        stopwatch.stop();
 
-        stopWatch.start(String.format("load '%s' file", filename));
+        stopwatch.start(String.format("load '%s' file", filename));
         @Cleanup Workbook wb = new XSSFWorkbook(file);
-        stopWatch.stop();
+        stopwatch.stop();
 
         // when
-        stopWatch.start(String.format("read %,d models", Math.min(limit, numOfMocks)));
+        stopwatch.start(String.format("read %,d models", Math.min(limit, numOfMocks)));
         List<Computer> computers = ExcelReaderFactory.create(wb, Computer.class)
                 .limit(limit).read();
-        stopWatch.stop();
+        stopwatch.stop();
 
         // then
         assertThat(computers.size())
@@ -162,33 +164,33 @@ public class ModelReaderTest extends CommonTester {
     @Test
     @DisplayName("@ExcelModel(includeSuper = true) + @ExcelDateTimeFormat")
     @SneakyThrows
-    public void readEducationToys(@TempDir Path path) {
+    void readEducationToys(@TempDir Path path, Stopwatch stopwatch) {
         String filename = "toys.xlsx";
 
         // given
-        stopWatch.start(String.format("create '%s' file", filename));
+        stopwatch.start(String.format("create '%s' file", filename));
         File file = new File(path.toFile(), filename);
         @Cleanup Workbook workbook = new SXSSFWorkbook();
         @Cleanup OutputStream out = new FileOutputStream(file);
-        stopWatch.stop();
+        stopwatch.stop();
 
         int numOfMocks = 10_000;
-        stopWatch.start(String.format("create %,d mocks", numOfMocks));
+        stopwatch.start(String.format("create %,d mocks", numOfMocks));
         List<EducationToy> mocks = new EducationToy().createRandoms(numOfMocks);
-        stopWatch.stop();
+        stopwatch.stop();
 
-        stopWatch.start(String.format("write %,d models", numOfMocks));
+        stopwatch.start(String.format("write %,d models", numOfMocks));
         ExcelWriterFactory.create(workbook, EducationToy.class).write(out, mocks);
-        stopWatch.stop();
+        stopwatch.stop();
 
-        stopWatch.start(String.format("load '%s' file", filename));
+        stopwatch.start(String.format("load '%s' file", filename));
         @Cleanup Workbook wb = new XSSFWorkbook(file);
-        stopWatch.stop();
+        stopwatch.stop();
 
         // when
-        stopWatch.start(String.format("read %,d models", numOfMocks));
+        stopwatch.start(String.format("read %,d models", numOfMocks));
         List<EducationToy> educationToys = ExcelReaderFactory.create(wb, EducationToy.class).read();
-        stopWatch.stop();
+        stopwatch.stop();
 
         // then
         assertThat(educationToys.size())
@@ -203,7 +205,7 @@ public class ModelReaderTest extends CommonTester {
     @Disabled
     @DisplayName("Model with final fields")
     @SneakyThrows
-    public void readFinalFields(@TempDir Path path) {
+    void readFinalFields(@TempDir Path path) {
         // given
         File file = new File(path.toFile(), "final-fields.xls");
         @Cleanup Workbook workbook = HSSFWorkbookFactory.create(file);
@@ -227,9 +229,9 @@ public class ModelReaderTest extends CommonTester {
     @Test
     @Disabled
     @SneakyThrows
-    public void readMultipleSheets(@TempDir Path path) {
+    void readMultipleSheets(@TempDir Path path) {
         // given
-        List<Product> products = new Product().createDesignees();
+        List<Product> products = Product.createDesignees();
         List<EducationToy> educationToys = new EducationToy().createDesignees();
         File file = new File(path.toFile(), "merged.xlsx");
         @Cleanup Workbook workbook = WorkbookFactory.create(file);
@@ -256,33 +258,33 @@ public class ModelReaderTest extends CommonTester {
     @Test
     @DisplayName("@ExcelModel(includeSuper = true) + @ExcelReaderExpression")
     @SneakyThrows
-    public void readPeople(@TempDir Path path) {
+    void readPeople(@TempDir Path path, Stopwatch stopwatch) {
         String filename = "people.xlsx";
 
         // given
-        stopWatch.start(String.format("create '%s' file", filename));
+        stopwatch.start(String.format("create '%s' file", filename));
         File file = new File(path.toFile(), filename);
         @Cleanup Workbook workbook = new SXSSFWorkbook();
         @Cleanup OutputStream out = new FileOutputStream(file);
-        stopWatch.stop();
+        stopwatch.stop();
 
         int numOfMocks = 10_000;
-        stopWatch.start(String.format("create %,d mocks", numOfMocks));
+        stopwatch.start(String.format("create %,d mocks", numOfMocks));
         List<Human> mocks = new Human().createRandoms(numOfMocks);
-        stopWatch.stop();
+        stopwatch.stop();
 
-        stopWatch.start(String.format("write %,d models", numOfMocks));
+        stopwatch.start(String.format("write %,d models", numOfMocks));
         ExcelWriterFactory.create(workbook, Human.class).write(out, mocks);
-        stopWatch.stop();
+        stopwatch.stop();
 
-        stopWatch.start(String.format("load '%s' file", filename));
+        stopwatch.start(String.format("load '%s' file", filename));
         @Cleanup Workbook wb = new XSSFWorkbook(file);
-        stopWatch.stop();
+        stopwatch.stop();
 
         // when
-        stopWatch.start(String.format("read %,d models", numOfMocks));
+        stopwatch.start(String.format("read %,d models", numOfMocks));
         List<Human> people = ExcelReaderFactory.create(wb, Human.class).parallel().read();
-        stopWatch.stop();
+        stopwatch.stop();
 
         // then
         assertThat(people.size())

@@ -1,7 +1,7 @@
 package com.github.javaxcel.util;
 
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
-import com.github.javaxcel.converter.out.BasicWritingConverter;
+import com.github.javaxcel.converter.out.DefaultOutputConverter;
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
 import com.github.javaxcel.out.ExcelWriter;
@@ -38,7 +38,7 @@ import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ExcelUtilsTest {
+class ExcelUtilsTest {
 
     private static Object convert(String value, Field field) {
         Class<?> type = field.getType();
@@ -83,7 +83,7 @@ public class ExcelUtilsTest {
     })
     @Disabled
     @SneakyThrows
-    public void getSheetRange(String pathname) {
+    void getSheetRange(String pathname) {
         // given
         File file = new File(pathname);
         @Cleanup Workbook workbook = new XSSFWorkbook(file);
@@ -98,9 +98,9 @@ public class ExcelUtilsTest {
     @ParameterizedTest
     @ValueSource(strings = {"targetAges", "goals", "date", "time", "dateTime"})
     @SneakyThrows
-    public void stringifyValue(String fieldName) {
+    void stringifyValue(String fieldName) {
         // given
-        BasicWritingConverter<EducationToy> converter = new BasicWritingConverter<>();
+        DefaultOutputConverter<EducationToy> converter = new DefaultOutputConverter<>();
 
         for (EducationToy toy : new EducationToy().createRandoms(10)) {
             // when
@@ -113,7 +113,7 @@ public class ExcelUtilsTest {
 
     @Test
     @Disabled
-    public void convert() {
+    void convert() {
         // given
         List<String> values = Arrays.asList("Toy.name", "ADULT", "645.70", "[1,2,3,4]", "educationToys.goals", "2020-08-31", "01/23/45/678", "2020-08-31T01:23:45");
         List<Field> targetedFields = FieldUtils.getTargetedFields(EducationToy.class);
@@ -134,7 +134,7 @@ public class ExcelUtilsTest {
 
     @Test
     @Disabled
-    public void formatDateTime() {
+    void formatDateTime() {
         // given
         LocalDate date = LocalDate.now();
         LocalTime time = LocalTime.now();
@@ -153,7 +153,7 @@ public class ExcelUtilsTest {
 
     @Test
     @Disabled
-    public void stringifyBigNumbers() {
+    void stringifyBigNumbers() {
         // given
         String strBigInt = Long.valueOf(Long.MAX_VALUE).toString();
         String strBigDec = "123456789123456789123456789123456789123456.07890";
@@ -170,7 +170,7 @@ public class ExcelUtilsTest {
     @Test
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public void instantiateByClassName() {
+    void instantiateByClassName() {
         Stopwatch stopwatch = new Stopwatch(TimeUnit.MILLISECONDS);
 
         // given
@@ -191,7 +191,7 @@ public class ExcelUtilsTest {
 
         Workbook workbook = new XSSFWorkbook();
         stopwatch.start("instantiate");
-        ExcelWriter<Product> instance = (ExcelWriter<Product>) constructor.newInstance(workbook, Product.class);
+        ExcelWriter<Workbook, Product> instance = (ExcelWriter<Workbook, Product>) constructor.newInstance(workbook, Product.class);
         stopwatch.stop();
 
         // then
@@ -204,7 +204,7 @@ public class ExcelUtilsTest {
     @Test
     @Disabled
     @SneakyThrows
-    public void test() {
+    void test() {
         // given
         File file = new File("/data/hssf-rgb.xls");
         HSSFWorkbook workbook = HSSFWorkbookFactory.createWorkbook();
@@ -238,7 +238,7 @@ public class ExcelUtilsTest {
     @Test
     @Disabled
     @SneakyThrows
-    public void func() {
+    void func() {
         // given
         File file = new File("/data/hssf-rgb.xls");
         @Cleanup Workbook workbook = new HSSFWorkbook(new FileInputStream(file));

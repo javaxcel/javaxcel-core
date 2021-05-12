@@ -18,14 +18,12 @@ package com.github.javaxcel.out;
 
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import io.github.imsejin.common.util.CollectionUtils;
-import io.github.imsejin.common.util.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 
 import javax.annotation.Nullable;
 import java.io.OutputStream;
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
@@ -36,8 +34,11 @@ import static java.util.stream.Collectors.toList;
  * @param <W> excel workbook
  * @param <T> {@link Map}
  */
-public final class MapWriter<W extends Workbook, T extends Map<String, ?>> extends AbstractExcelWriter<W, T> {
+public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends AbstractExcelWriter<W, T> {
 
+    /**
+     * @see #beforeWrite(OutputStream, List)
+     */
     private final List<String> keys = new ArrayList<>();
 
     /**
@@ -50,7 +51,10 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
 
     private String defaultValue;
 
-    private MapWriter(W workbook) {
+    /**
+     * @see com.github.javaxcel.factory.ExcelWriterFactory#create(Workbook)
+     */
+    public MapWriter(W workbook) {
         super(workbook);
     }
 
@@ -74,17 +78,6 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
     @Override
     public MapWriter<W, T> sheetName(String sheetName) {
         super.sheetName(sheetName);
-        return this;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@link MapWriter}
-     */
-    @Override
-    public MapWriter<W, T> disableRolling() {
-        super.disableRolling();
         return this;
     }
 
@@ -235,7 +228,29 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
         return this;
     }
 
-    //////////////////////////////////////// Style ////////////////////////////////////////
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link MapWriter}
+     */
+    @Override
+    public MapWriter<W, T> unrotate() {
+        super.unrotate();
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link MapWriter}
+     */
+    @Override
+    public MapWriter<W, T> filter() {
+        super.filter();
+        return this;
+    }
+
+    ///////////////////////////////////// Decoration //////////////////////////////////////
 
     /**
      * {@inheritDoc}
@@ -244,8 +259,7 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
      */
     @Override
     public MapWriter<W, T> headerStyle(ExcelStyleConfig config) {
-        super.headerStyle(config);
-        return this;
+        return headerStyles(config);
     }
 
     /**
@@ -266,8 +280,7 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
      */
     @Override
     public MapWriter<W, T> bodyStyle(ExcelStyleConfig config) {
-        super.bodyStyle(config);
-        return this;
+        return bodyStyles(config);
     }
 
     /**
@@ -287,8 +300,8 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
      * @return {@link MapWriter}
      */
     @Override
-    public MapWriter<W, T> autoResizeCols() {
-        super.autoResizeCols();
+    public MapWriter<W, T> autoResizeColumns() {
+        super.autoResizeColumns();
         return this;
     }
 
@@ -309,8 +322,8 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
      * @return {@link MapWriter}
      */
     @Override
-    public MapWriter<W, T> hideExtraCols() {
-        super.hideExtraCols();
+    public MapWriter<W, T> hideExtraColumns() {
+        super.hideExtraColumns();
         return this;
     }
 
@@ -329,18 +342,23 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
         if (list.isEmpty()) throw new IllegalArgumentException("List of maps cannot be empty");
 
         // Gets all the maps' keys.
-        Stream<String> stream = list.stream().flatMap(it -> it.keySet().stream()).distinct();
+        this.keys.addAll(list.stream().flatMap(it -> it.keySet().stream()).distinct().collect(toList()));
 
-        // Rearranges the keys as you want: it changes order of columns.
-        if (this.indexedMap != null) stream = stream.sorted(comparing(this.indexedMap::get));
-        this.keys.addAll(stream.collect(toList()));
+        if (this.indexedMap != null) {
+            // Invalidates the number of ordered keys and their each element.
+            Set<String> orderedKeys = this.indexedMap.keySet();
+            if (this.keys.size() != orderedKeys.size() || !this.keys.containsAll(orderedKeys)) {
+                String message = String.format(
+                        "Ordered keys are at variance with maps' keys%nmaps' keys: %s%nordered keys: %s",
+                        this.keys, orderedKeys);
+                throw new IllegalArgumentException(message);
+            }
 
-        // Validates the number of header names.
-        final int numOfKeys = this.keys.size();
-        if (!this.headerNames.isEmpty() && this.headerNames.size() != numOfKeys) {
-            throw new IllegalArgumentException("The number of header names is not equal to the number of maps' keys");
+            // Rearranges the keys as you want: it changes order of columns.
+            this.keys.sort(comparing(this.indexedMap::get));
         }
 
+        final int numOfKeys = this.keys.size();
         Predicate<CellStyle[]> validator = them -> them == null || them.length == 1 || them.length == numOfKeys;
 
         // Validates the number of header styles.
@@ -390,8 +408,8 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
                 Cell cell = row.createCell(j);
 
                 // Not allows empty string to be written.
-                if (value != null) {
-                    cell.setCellValue(StringUtils.ifNullOrEmpty(value.toString(), (String) null));
+                if (value != null && !"".equals(value)) {
+                    cell.setCellValue(value.toString());
                 } else if (this.defaultValue != null) {
                     cell.setCellValue(this.defaultValue);
                 }
@@ -401,7 +419,9 @@ public final class MapWriter<W extends Workbook, T extends Map<String, ?>> exten
                 // Sets styles to body's cell.
                 CellStyle bodyStyle = this.bodyStyles.length == 1
                         ? this.bodyStyles[0] : this.bodyStyles[j];
-                cell.setCellStyle(bodyStyle);
+
+                // There is possibility that 'bodyStyles' has null elements, if you set 'NoStyleConfig'.
+                if (bodyStyle != null) cell.setCellStyle(bodyStyle);
             }
         }
     }

@@ -17,9 +17,9 @@
 package com.github.javaxcel.in;
 
 import com.github.javaxcel.annotation.ExcelReaderExpression;
-import com.github.javaxcel.converter.in.BasicReadingConverter;
-import com.github.javaxcel.converter.in.ExpressiveReadingConverter;
-import com.github.javaxcel.converter.in.ReadingConverter;
+import com.github.javaxcel.converter.in.DefaultInputConverter;
+import com.github.javaxcel.converter.in.ExpressionInputConverter;
+import com.github.javaxcel.converter.in.InputConverter;
 import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.util.FieldUtils;
 import org.apache.poi.ss.usermodel.Cell;
@@ -40,11 +40,11 @@ import static java.util.stream.Collectors.toList;
  * @param <W> excel workbook
  * @param <T> type of model
  */
-public final class ModelReader<W extends Workbook, T> extends AbstractExcelReader<W, T> {
+public class ModelReader<W extends Workbook, T> extends AbstractExcelReader<W, T> {
 
-    private final ReadingConverter basicConverter = new BasicReadingConverter();
+    private final InputConverter defaultConverter = new DefaultInputConverter();
 
-    private final ReadingConverter expConverter;
+    private final InputConverter expressionConverter;
 
     private final Class<T> type;
 
@@ -57,7 +57,10 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
 
     private boolean parallel;
 
-    private ModelReader(W workbook, Class<T> type) {
+    /**
+     * @see com.github.javaxcel.factory.ExcelReaderFactory#create(Workbook, Class)
+     */
+    public ModelReader(W workbook, Class<T> type) {
         super(workbook);
 
         this.type = type;
@@ -65,7 +68,7 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
 
         if (this.fields.isEmpty()) throw new NoTargetedFieldException(this.type);
 
-        this.expConverter = new ExpressiveReadingConverter(this.fields);
+        this.expressionConverter = new ExpressionInputConverter(this.fields);
     }
 
     /**
@@ -151,10 +154,10 @@ public final class ModelReader<W extends Workbook, T> extends AbstractExcelReade
 
             if (annotation == null) {
                 // When the field is not annotated with @ExcelReaderExpression.
-                fieldValue = this.basicConverter.convert(imitation, field);
+                fieldValue = this.defaultConverter.convert(imitation, field);
             } else {
                 // When the field is annotated with @ExcelReaderExpression.
-                fieldValue = this.expConverter.convert(imitation, field);
+                fieldValue = this.expressionConverter.convert(imitation, field);
             }
 
             FieldUtils.setFieldValue(model, field, fieldValue);

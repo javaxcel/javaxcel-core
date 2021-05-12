@@ -33,13 +33,16 @@ import java.util.Map;
  * @param <W> excel workbook
  * @param <T> {@link Map}
  */
-public final class MapReader<W extends Workbook, T extends Map<String, ?>> extends AbstractExcelReader<W, T> {
+public class MapReader<W extends Workbook, T extends Map<String, ?>> extends AbstractExcelReader<W, T> {
 
     private int numOfColumns;
 
     private final List<String> headerNames = new ArrayList<>();
 
-    private MapReader(W workbook) {
+    /**
+     * @see com.github.javaxcel.factory.ExcelReaderFactory#create(Workbook)
+     */
+    public MapReader(W workbook) {
         super(workbook);
     }
 
@@ -70,6 +73,7 @@ public final class MapReader<W extends Workbook, T extends Map<String, ?>> exten
     //////////////////////////////////////// Hooks ////////////////////////////////////////
 
     @Override
+    @SuppressWarnings("unchecked")
     protected List<T> readSheet(Sheet sheet) {
         return (List<T>) readSheetAsMaps(sheet);
     }

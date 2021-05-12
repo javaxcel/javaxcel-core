@@ -24,6 +24,8 @@ import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.util.CollectionUtils;
 import io.github.imsejin.common.util.StringUtils;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.WorkbookUtil;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -45,7 +47,7 @@ import java.util.List;
  *     <li>{@link #afterWrite(OutputStream, List)}</li>
  * </ol>
  */
-public abstract class AbstractExcelWriter<W extends Workbook, T> implements ExcelWriter<T> {
+public abstract class AbstractExcelWriter<W extends Workbook, T> implements ExcelWriter<W, T> {
 
     /**
      * Apache POI workbook.
@@ -77,9 +79,14 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      *
      * <p> Default is {@code true}.
      *
-     * @see #disableRolling()
+     * @see #unrotate()
      */
-    protected boolean rolling = true;
+    protected boolean rotated = true;
+
+    /**
+     * @see #filter()
+     */
+    protected boolean filtered = false;
 
     //////////////////////////////////////// Style ////////////////////////////////////////
 
@@ -98,7 +105,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     protected CellStyle[] bodyStyles;
 
     /**
-     * @see #autoResizeCols()
+     * @see #autoResizeColumns()
      */
     protected boolean willAutoResize;
 
@@ -108,9 +115,9 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     protected boolean willHideRows;
 
     /**
-     * @see #hideExtraCols()
+     * @see #hideExtraColumns()
      */
-    protected boolean willHideCols;
+    protected boolean willHideColumns;
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -120,11 +127,11 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     }
 
     /**
-     * Sets default value when value to be written is null or empty.
+     * {@inheritDoc}
      *
-     * @param defaultValue replacement of the value when it is null or empty string.
      * @return {@link AbstractExcelWriter}
      */
+    @Override
     public AbstractExcelWriter<W, T> defaultValue(String defaultValue) {
         if (StringUtils.isNullOrEmpty(defaultValue)) {
             throw new IllegalArgumentException("Default value cannot be null or empty");
@@ -134,29 +141,28 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     }
 
     /**
-     * Sets sheet name.
+     * {@inheritDoc}
      *
      * <p> Prefix for each sheet name. For example, if you set 'SHEET' to this,
      * the names you can see are <span>SHEET0, SHEET1, SHEET2, ...</span>
      *
-     * <p> If you invoke {@link #disableRolling()}, the sheet name has no suffix.
+     * <p> If you invoke {@link #unrotate()}, the sheet name has no suffix.
      * You can see the sheet name like this <span>SHEET</span>
      *
-     * @param sheetName sheet name
      * @return {@link AbstractExcelWriter}
-     * @see #disableRolling()
+     * @throws IllegalArgumentException if sheet name is invalid
+     * @see #unrotate()
+     * @see org.apache.poi.ss.util.WorkbookUtil#validateSheetName(String)
      */
+    @Override
     public AbstractExcelWriter<W, T> sheetName(String sheetName) {
-        if (StringUtils.isNullOrEmpty(sheetName)) {
-            throw new IllegalArgumentException("Sheet name cannot be null or empty");
-        }
-
+        WorkbookUtil.validateSheetName(sheetName);
         this.sheetName = sheetName;
         return this;
     }
 
     /**
-     * Sets header names.
+     * {@inheritDoc}
      *
      * <p> For example, the following list will be exported.
      *
@@ -207,9 +213,10 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      * +---------------+----------------+---------------------+-------+-------+--------+--------+
      * }</pre>
      *
-     * @param headerNames header name
      * @return {@link AbstractExcelWriter}
+     * @see #createHeader(Sheet)
      */
+    @Override
     public AbstractExcelWriter<W, T> headerNames(List<String> headerNames) {
         // Replaces current header names with the new things.
         if (!this.headerNames.isEmpty()) this.headerNames.clear();
@@ -219,51 +226,108 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     }
 
     /**
-     * Disables rolling excess rows.
-     *
-     * <p> If this is invoked, excel file has only one sheet.
+     * {@inheritDoc}
      *
      * @return {@link AbstractExcelWriter}
      */
-    public AbstractExcelWriter<W, T> disableRolling() {
-        this.rolling = false;
+    @Override
+    public AbstractExcelWriter<W, T> unrotate() {
+        this.rotated = false;
         return this;
     }
 
-    //////////////////////////////////////// Style ////////////////////////////////////////
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link AbstractExcelWriter}
+     */
+    @Override
+    public AbstractExcelWriter<W, T> filter() {
+        this.filtered = true;
+        return this;
+    }
 
+    ///////////////////////////////////// Decoration //////////////////////////////////////
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link AbstractExcelWriter}
+     */
+    @Override
     public AbstractExcelWriter<W, T> headerStyle(ExcelStyleConfig config) {
-        this.headerStyles = ExcelUtils.toCellStyles(this.workbook, config);
-        return this;
+        return headerStyles(config);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link AbstractExcelWriter}
+     */
+    @Override
     public AbstractExcelWriter<W, T> headerStyles(ExcelStyleConfig... configs) {
         this.headerStyles = ExcelUtils.toCellStyles(this.workbook, configs);
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link AbstractExcelWriter}
+     */
+    @Override
     public AbstractExcelWriter<W, T> bodyStyle(ExcelStyleConfig config) {
-        this.bodyStyles = ExcelUtils.toCellStyles(this.workbook, config);
-        return this;
+        return bodyStyles(config);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link AbstractExcelWriter}
+     */
+    @Override
     public AbstractExcelWriter<W, T> bodyStyles(ExcelStyleConfig... configs) {
         this.bodyStyles = ExcelUtils.toCellStyles(this.workbook, configs);
         return this;
     }
 
-    public AbstractExcelWriter<W, T> autoResizeCols() {
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link AbstractExcelWriter}
+     * @see #write(OutputStream, List)
+     */
+    @Override
+    public AbstractExcelWriter<W, T> autoResizeColumns() {
         this.willAutoResize = true;
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p> This will automatically create rows up to the maximum number of rows
+     * and hide them. This action takes more time and makes file size bigger
+     * than it doesn't.
+     *
+     * @return {@link AbstractExcelWriter}
+     * @see #write(OutputStream, List)
+     */
+    @Override
     public AbstractExcelWriter<W, T> hideExtraRows() {
         this.willHideRows = true;
         return this;
     }
 
-    public AbstractExcelWriter<W, T> hideExtraCols() {
-        this.willHideCols = true;
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link AbstractExcelWriter}
+     * @see #write(OutputStream, List)
+     */
+    @Override
+    public AbstractExcelWriter<W, T> hideExtraColumns() {
+        this.willHideColumns = true;
         return this;
     }
 
@@ -282,7 +346,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
         beforeWrite(out, list);
 
         final int maxModels = ExcelUtils.getMaxRows(this.workbook) - 1;
-        List<List<T>> lists = this.rolling
+        List<List<T>> lists = this.rotated
                 ? CollectionUtils.partitionBySize(list, maxModels)
                 : Collections.singletonList(list.subList(0, Math.min(list.size(), maxModels)));
 
@@ -290,20 +354,30 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
         final int numOfSheets = lists.size();
         for (int i = 0; i < numOfSheets; i++) {
             // Names a sheet.
-            Sheet sheet = this.sheetName == null
-                    ? this.workbook.createSheet()
-                    : this.workbook.createSheet(this.rolling ? this.sheetName + i : this.sheetName);
+            Sheet sheet;
+            if (this.sheetName == null) {
+                sheet = this.workbook.createSheet();
+            } else {
+                String sheetName = this.rotated ? this.sheetName + i : this.sheetName;
+                sheet = this.workbook.createSheet(sheetName);
+            }
+
+            List<T> those = lists.get(i);
+
+            if (this.filtered) {
+                String ref = ExcelUtils.toRangeReference(sheet, 0, 0, getNumOfColumns() - 1, those.size() - 1);
+                sheet.setAutoFilter(CellRangeAddress.valueOf(ref));
+            }
 
             // Writes header.
             createHeader(sheet);
 
-            List<T> those = lists.get(i);
             writeToSheet(sheet, those);
 
             // Adjusts rows and columns.
             if (this.willAutoResize) ExcelUtils.autoResizeColumns(sheet, getNumOfColumns());
             if (this.willHideRows) ExcelUtils.hideExtraRows(sheet, those.size() + 1);
-            if (this.willHideCols) ExcelUtils.hideExtraColumns(sheet, getNumOfColumns());
+            if (this.willHideColumns) ExcelUtils.hideExtraColumns(sheet, getNumOfColumns());
         }
 
         // Saves the data.
@@ -341,7 +415,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
             CellStyle headerStyle = this.headerStyles.length == 1
                     ? this.headerStyles[0] : this.headerStyles[i];
 
-            // When configure styles with annotations, there is possibility that 'headerStyles' has null elements.
+            // There is possibility that 'headerStyles' has null elements, if you set 'NoStyleConfig'.
             if (headerStyle != null) cell.setCellStyle(headerStyle);
         }
     }

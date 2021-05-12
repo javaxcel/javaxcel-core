@@ -5,10 +5,7 @@ import com.github.javaxcel.annotation.ExcelIgnore;
 import com.github.javaxcel.model.Mockables;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 @Setter
@@ -16,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(exclude = {"width", "weight"})
-public class Product implements Mockables<Product> {
+public class Product {
 
     @ExcelColumn(name = "상품번호")
     private long serialNumber;
@@ -38,8 +35,7 @@ public class Product implements Mockables<Product> {
     @ExcelColumn(name = "WEIGHT", defaultValue = "-1") // Default value is effective except primitive type.
     private Double weight;
 
-    @Override
-    public List<Product> createDesignees() {
+    public static List<Product> createDesignees() {
         return Arrays.asList(
                 new Product(100000, "알티지 클린 Omega 3", "9b9e7d29-2a60-4973-aec0-685e672eb07a", 3.0, 3.765, 20.5, 580.5),
                 new Product(100001, "레이델 면역쾌청", "a7f3be7b-b235-45b8-9fc5-28f2578ee8e0", 14.0, 140, 15, 570.50),
@@ -48,24 +44,29 @@ public class Product implements Mockables<Product> {
         );
     }
 
-    @Override
-    public List<Product> createRandoms(int size) {
+    public static Product createRandom() {
+        long serialNumber = random.nextInt(1000000) + 1000000;
+        String name = random.nextDouble() <= 0.75 ? Mockables.generateRandomText(random.nextInt(16) + 1) : null;
+        String apiId = UUID.randomUUID().toString();
+        Double width = random.nextDouble() >= 0.5 ? random.nextDouble() * 100 : null;
+        double depth = random.nextDouble() * 100;
+        double height = random.nextDouble() * 100;
+        Double weight = random.nextDouble() >= 0.5 ? random.nextDouble() * 1000 : null;
+
+        return new Product(serialNumber, name, apiId, width, depth, height, weight);
+    }
+
+    public static List<Product> createRandoms(int size) {
         List<Product> products = new ArrayList<>();
 
         for (int i = 0; i < size; i++) {
-            long serialNumber = RANDOM.nextInt(1000000) + 1000000;
-            String name = RANDOM.nextDouble() <= 0.75 ? Mockables.generateRandomText(RANDOM.nextInt(16) + 1) : null;
-            String apiId = UUID.randomUUID().toString();
-            Double width = RANDOM.nextDouble() >= 0.5 ? RANDOM.nextDouble() * 100 : null;
-            double depth = RANDOM.nextDouble() * 100;
-            double height = RANDOM.nextDouble() * 100;
-            Double weight = RANDOM.nextDouble() >= 0.5 ? RANDOM.nextDouble() * 1000 : null;
-
-            Product product = new Product(serialNumber, name, apiId, width, depth, height, weight);
+            Product product = createRandom();
             products.add(product);
         }
 
         return products;
     }
+
+    private static Random random = new Random();
 
 }

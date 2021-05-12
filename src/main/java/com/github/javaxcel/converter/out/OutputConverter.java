@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Javaxcel
+ * Copyright 2020 Javaxcel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,26 +14,24 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel;
+package com.github.javaxcel.converter.out;
 
-import io.github.imsejin.common.tool.Stopwatch;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import javax.annotation.Nullable;
+import java.lang.reflect.Field;
 
-import java.util.concurrent.TimeUnit;
+public interface OutputConverter<T> {
 
-public abstract class CommonTester {
-
-    protected Stopwatch stopWatch;
-
-    @BeforeEach
-    protected void beforeEach() {
-        this.stopWatch = new Stopwatch(TimeUnit.SECONDS);
-    }
-
-    @AfterEach
-    protected void afterEach() {
-        System.out.println(this.stopWatch.getStatistics());
-    }
+    /**
+     * Converts a field's value to the string.
+     *
+     * <p> To write a value in the cell, this converts a field's value
+     * to the string. The converted string will be written in cell.
+     *
+     * @param model element in list
+     * @param field field of model
+     * @return stringified field's value
+     */
+    @Nullable
+    String convert(T model, Field field);
 
 }

@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ExpressiveWritingConverter<T> extends DefaultValueStore implements WritingConverter<T> {
+public class ExpressionOutputConverter<T> implements OutputConverter<T> {
 
     private static final ExpressionParser parser = new SpelExpressionParser();
 
@@ -41,9 +41,9 @@ public class ExpressiveWritingConverter<T> extends DefaultValueStore implements 
     private final List<Field> fields;
 
     @Nullable
-    private final Map<String, Expression> cache;
+    private final Map<Field, Expression> cache;
 
-    public ExpressiveWritingConverter() {
+    public ExpressionOutputConverter() {
         this.fields = null;
         this.cache = null;
     }
@@ -74,7 +74,7 @@ public class ExpressiveWritingConverter<T> extends DefaultValueStore implements 
      *
      * @param fields fields of model
      */
-    public ExpressiveWritingConverter(@Nonnull List<Field> fields) {
+    public ExpressionOutputConverter(@Nonnull List<Field> fields) {
         this.fields = fields;
         this.cache = createCache(fields);
     }
@@ -85,15 +85,15 @@ public class ExpressiveWritingConverter<T> extends DefaultValueStore implements 
      * @param fields fields of model
      * @return unmodifiable cache of expression
      */
-    private static Map<String, Expression> createCache(List<Field> fields) {
-        Map<String, Expression> cache = new HashMap<>();
+    private static Map<Field, Expression> createCache(List<Field> fields) {
+        Map<Field, Expression> cache = new HashMap<>();
 
         for (Field field : fields) {
             ExcelWriterExpression annotation = field.getAnnotation(ExcelWriterExpression.class);
             if (annotation == null) continue;
 
             Expression expression = parser.parseExpression(annotation.value());
-            cache.put(field.getName(), expression);
+            cache.put(field, expression);
         }
 
         return Collections.unmodifiableMap(cache);
@@ -109,6 +109,7 @@ public class ExpressiveWritingConverter<T> extends DefaultValueStore implements 
      * @return computed string
      * @see ExcelWriterExpression#value()
      */
+    @Nullable
     @Override
     public String convert(T model, Field field) {
         Map<String, Object> variables;
@@ -123,16 +124,14 @@ public class ExpressiveWritingConverter<T> extends DefaultValueStore implements 
 
         } else {
             // When this instantiated by constructor with fields.
-            expression = this.cache.get(field.getName());
+            expression = this.cache.get(field);
             variables = FieldUtils.toMap(model, this.fields);
         }
 
         // Enables to use value of the field as "#FIELD_NAME" in 'ExcelWriterExpression'.
         this.context.setVariables(variables);
 
-        String result = expression.getValue(this.context, String.class);
-
-        return FieldUtils.convertIfFaulty(result, this.defaultValue, field);
+        return expression.getValue(this.context, String.class);
     }
 
 }

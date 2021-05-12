@@ -28,8 +28,8 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -68,10 +68,15 @@ public final class FieldUtils {
                 : getInheritedFields(type).stream();
 
         // Excludes the fields to be ignored.
-        final Predicate<Field> predicate = excelModel == null || !excelModel.explicit()
-                ? field -> field.getAnnotation(ExcelIgnore.class) == null
-                : field -> field.getAnnotation(ExcelIgnore.class) == null && field.getAnnotation(ExcelColumn.class) != null;
-        return stream.filter(predicate).collect(toList());
+        stream = stream.filter(field -> field.getAnnotation(ExcelIgnore.class) == null);
+        // Excludes the static fields.
+        stream = stream.filter(field -> !Modifier.isStatic(field.getModifiers()));
+        // Excludes the implicit fields.
+        if (excelModel != null && excelModel.explicit()) {
+            stream = stream.filter(field -> field.getAnnotation(ExcelColumn.class) != null);
+        }
+
+        return stream.collect(toList());
     }
 
     /**
@@ -170,37 +175,12 @@ public final class FieldUtils {
     }
 
     /**
-     * If the value is null or empty string, converts a value to default value.
-     *
-     * @param maybeFaulty  value that may be null or empty
-     * @param defaultValue 1. {@link com.github.javaxcel.out.AbstractExcelWriter#defaultValue(String)}
-     *                     2. {@link ExcelColumn#defaultValue()}
-     *                     3. {@link ExcelModel#defaultValue()}
-     * @param field        field of model
-     * @return origin value or default value
-     */
-    @Nullable
-    public static String convertIfFaulty(String maybeFaulty, String defaultValue, Field field) {
-        if (!StringUtils.isNullOrEmpty(maybeFaulty)) return maybeFaulty;
-
-        // Default value assigned by ExcelWriter takes precedence over ExcelColumn's default value.
-        if (!StringUtils.isNullOrEmpty(defaultValue)) return defaultValue;
-
-        ExcelColumn excelColumn = field.getAnnotation(ExcelColumn.class);
-        if (excelColumn != null && !excelColumn.defaultValue().equals("")) {
-            return excelColumn.defaultValue();
-        }
-
-        return null;
-    }
-
-    /**
      * Returns instance of type.
      *
-     * <p> this can instantiate the type that has constructor without parameter.
+     * <p> This can instantiate the type that has constructor without parameter.
      *
      * @param type class
-     * @param <T> type of instance
+     * @param <T>  type of instance
      * @return instance of type
      * @throws NoTargetedConstructorException if the type doesn't have default constructor
      */
@@ -219,7 +199,7 @@ public final class FieldUtils {
         try {
             model = constructor.newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(String.format("Failed to instantiate of the class(%s)", type.getName()));
+            throw new RuntimeException(String.format("Failed to instantiate of the class(%s)", type.getName()), e);
         }
 
         return model;
