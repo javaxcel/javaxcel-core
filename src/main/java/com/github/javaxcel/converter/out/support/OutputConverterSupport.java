@@ -26,9 +26,12 @@ import com.github.javaxcel.converter.out.OutputConverter;
 import io.github.imsejin.common.util.StringUtils;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toMap;
 
 public class OutputConverterSupport<T> implements OutputConverter<T> {
 
@@ -39,13 +42,9 @@ public class OutputConverterSupport<T> implements OutputConverter<T> {
     private final OutputConverter<T> expressionConverter;
 
     public OutputConverterSupport(List<Field> fields) {
-        Map<Field, Column> map = new HashMap<>();
+        this.columnMap = fields.stream().collect(collectingAndThen(toMap(it -> it, Column::from),
+                Collections::unmodifiableMap));
 
-        for (Field field : fields) {
-            map.put(field, Column.from(field));
-        }
-
-        this.columnMap = map;
         this.defaultConverter = new DefaultOutputConverter<>();
         // Caches expressions for each field to improve performance.
         this.expressionConverter = new ExpressionOutputConverter<>(fields);
