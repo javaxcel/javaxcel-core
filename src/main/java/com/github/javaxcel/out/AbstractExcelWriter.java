@@ -166,7 +166,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      *
      * <p> For example, the following list will be exported.
      *
-     * <pre>{@code
+     * <pre><code>
      * [
      *     {
      *         "serialNumber": 10000,
@@ -187,23 +187,23 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      *         "weight": 575.0
      *     }
      * ]
-     * }</pre>
+     * </code></pre>
      *
      * <p> To change the header names, place the names you want them changed to
      * in the order like this.
      *
-     * <pre>{@code
+     * <pre><code>
      *     List<String> names = Arrays.asList(
      *             "SERIAL_NUMBER", "NAME", "API_ID", "WIDTH" "DEPTH", "HEIGHT", "WEIGHT");
      *
      *     ExcelWriterFactory.create(new SXSSFWorkbook(), Product.class)
      *             .headerNames(names)
      *             .write(new FileOutputStream(file), list);
-     * }</pre>
+     * </code></pre>
      *
      * <p> Then the header names will be changed you want.
      *
-     * <pre>{@code
+     * <pre><code>
      * +---------------+----------------+---------------------+-------+-------+--------+--------+
      * | SERIAL_NUMBER | NAME           | API_ID              | WIDTH | DEPTH | HEIGHT | WEIGHT |
      * +---------------+----------------+---------------------+-------+-------+--------+--------+
@@ -211,7 +211,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      * +---------------+----------------+---------------------+-------+-------+--------+--------+
      * | 10001         | Oatmeal cereal | f15d-384d-0a4b-97ec | 10.2  | 4.0   | 6.0    | 575.0  |
      * +---------------+----------------+---------------------+-------+-------+--------+--------+
-     * }</pre>
+     * </code></pre>
      *
      * @return {@link AbstractExcelWriter}
      * @see #createHeader(Sheet)

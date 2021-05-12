@@ -54,7 +54,7 @@ public class ExpressionOutputConverter<T> implements OutputConverter<T> {
      *
      * <p> The following table is a benchmark.
      *
-     * <pre>{@code
+     * <pre><code>
      *     +--------------+--------+--------+
      *     | row \ cached | true   | false  |
      *     +--------------+--------+--------+
@@ -70,7 +70,7 @@ public class ExpressionOutputConverter<T> implements OutputConverter<T> {
      *     +--------------+--------+--------+
      *     | 1,048,574    | 1m 28s | 6m 35s |
      *     +--------------+--------+--------+
-     * }</pre>
+     * </code></pre>
      *
      * @param fields fields of model
      */

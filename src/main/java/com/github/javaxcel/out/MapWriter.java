@@ -88,7 +88,7 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      * column order is not guaranteed, unless the type of its instance is {@link LinkedHashMap}.
      * For example, the following list will be exported.
      *
-     * <pre>{@code
+     * <pre><code>
      * [
      *     {
      *         "serialNumber": 10000,
@@ -109,22 +109,22 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      *         "weight": 575.0
      *     }
      * ]
-     * }</pre>
+     * </code></pre>
      *
      * <p> To rearrange the column order, place the keys in the order you want like this.
      *
-     * <pre>{@code
+     * <pre><code>
      *     List<String> orderedKeys = Arrays.asList(
      *             "width" "depth", "height", "weight", "serialNumber", "name", "apiId");
      *
      *     ExcelWriterFactory.create(new SXSSFWorkbook())
      *             .headerNames(orderedKeys)
      *             .write(new FileOutputStream(file), list);
-     * }</pre>
+     * </code></pre>
      *
      * <p> Then the columns will be arranged in the order you want.
      *
-     * <pre>{@code
+     * <pre><code>
      * +-------+-------+--------+--------+--------------+----------------+---------------------+
      * | width | depth | height | weight | serialNumber | name           | apiId               |
      * +-------+-------+--------+--------+--------------+----------------+---------------------+
@@ -132,7 +132,7 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      * +-------+-------+--------+--------+--------------+----------------+---------------------+
      * | 10.2  | 4.0   | 6.0    | 575.0  | 10001        | Oatmeal cereal | f15d-384d-0a4b-97ec |
      * +-------+-------+--------+--------+--------------+----------------+---------------------+
-     * }</pre>
+     * </code></pre>
      *
      * @param orderedKeys keys ordered as you want
      * @return {@link MapWriter}
@@ -150,7 +150,7 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      * column order is not guaranteed, unless the type of its instance is {@link LinkedHashMap}.
      * For example, the following list will be exported.
      *
-     * <pre>{@code
+     * <pre><code>
      * [
      *     {
      *         "serialNumber": 10000,
@@ -171,13 +171,13 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      *         "weight": 575.0
      *     }
      * ]
-     * }</pre>
+     * </code></pre>
      *
      * <p> To rearrange the column order, place the keys in the order you want
      * to the first argument. To change the header names, place the names
      * you want them changed to in the custom order to the second argument like this.
      *
-     * <pre>{@code
+     * <pre><code>
      *     List<String> orderedKeys = Arrays.asList(
      *             "width" "depth", "height", "weight", "serialNumber", "name", "apiId");
      *     List<String> name = Arrays.asList(
@@ -186,11 +186,11 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      *     ExcelWriterFactory.create(new SXSSFWorkbook())
      *             .headerNames(orderedKeys, name)
      *             .write(new FileOutputStream(file), list);
-     * }</pre>
+     * </code></pre>
      *
      * <p> Then the column order and the names will be changed you want.
      *
-     * <pre>{@code
+     * <pre><code>
      * +-------+-------+--------+--------+---------------+----------------+---------------------+
      * | WIDTH | DEPTH | HEIGHT | WEIGHT | SERIAL_NUMBER | NAME           | API_ID              |
      * +-------+-------+--------+--------+---------------+----------------+---------------------+
@@ -198,7 +198,7 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      * +-------+-------+--------+--------+---------------+----------------+---------------------+
      * | 10.2  | 4.0   | 6.0    | 575.0  | 10001         | Oatmeal cereal | f15d-384d-0a4b-97ec |
      * +-------+-------+--------+--------+---------------+----------------+---------------------+
-     * }</pre>
+     * </code></pre>
      *
      * @param orderedKeys keys ordered as you want
      * @param headerNames header names in key order

@@ -353,13 +353,13 @@ public final class ExcelUtils {
      * If try it, this is about 46% slower when handled in parallel
      * than when handled in sequential.
      *
-     * <pre>{@code
+     * <pre><code>
      *     +------------+----------+
      *     | sequential | parallel |
      *     +------------+----------+
      *     | 15s        | 22s      |
      *     +------------+----------+
-     * }</pre>
+     * </code></pre>
      *
      * @param sheet        excel sheet
      * @param numOfColumns number of the columns that have contents.
@@ -425,13 +425,13 @@ public final class ExcelUtils {
     /**
      * Sets alias for range.
      *
-     * <pre>{@code
+     * <pre><code>
      *     Workbook workbook = new XSSFWorkbook();
      *     Sheet sheet = workbook.createSheet("mySheet");
      *     String ref = sheet.getSheetName() + "!$A$1:$A$2";
      *
      *     setRangeAlias(workbook, "MY_RANGE", ref);
-     * }</pre>
+     * </code></pre>
      *
      * @param workbook excel workbook
      * @param alias    alias for cell range address
@@ -446,14 +446,14 @@ public final class ExcelUtils {
     /**
      * Converts a reference for cell range address.
      *
-     * <pre>{@code
+     * <pre><code>
      *     Workbook workbook = new XSSFWorkbook();
      *     Sheet sheet = workbook.createSheet("mySheet");
      *     Cell startCell = sheet.createRow(0).createCell(0);
      *     Cell endCell = sheet.createRow(1).createCell(0);
      *
      *     toRangeReference(sheet, startCell, endCell); // mySheet!$A$1:$A$2
-     * }</pre>
+     * </code></pre>
      *
      * @param sheet     excel sheet
      * @param startCell first cell in cell range address
@@ -480,13 +480,13 @@ public final class ExcelUtils {
     /**
      * Converts a reference for cell range address.
      *
-     * <pre>{@code
+     * <pre><code>
      *     Workbook workbook = new XSSFWorkbook();
      *     Sheet sheet = workbook.createSheet("mySheet");
      *
      *     toRangeReference(sheet, 0, 0, 0, 1); // mySheet!$A$1:$A$2
      *     toRangeReference(sheet, 2, 1, 5, 4); // mySheet!$C$2:$F$5
-     * }</pre>
+     * </code></pre>
      *
      * @param sheet            excel sheet
      * @param startColumnIndex column index of first cell in cell range address
@@ -515,7 +515,7 @@ public final class ExcelUtils {
     /**
      * Converts a reference for column range address except first row.
      *
-     * <pre>{@code
+     * <pre><code>
      *     Workbook hssfWorkbook = new HSSFWorkbook();
      *     Sheet hssfSheet = hssfWorkbook.createSheet("mySheet");
      *     toRangeReference(hssfSheet, 0); // mySheet!$A$2:$A$65536
@@ -523,7 +523,7 @@ public final class ExcelUtils {
      *     Workbook xssfWorkbook = new XSSFWorkbook();
      *     Sheet xssfSheet = xssfWorkbook.createSheet("mySheet");
      *     toRangeReference(xssfSheet, 2); // mySheet!$C$2:$A$1048576
-     * }</pre>
+     * </code></pre>
      *
      * @param sheet       excel sheet
      * @param columnIndex column index for cell range address
@@ -543,14 +543,14 @@ public final class ExcelUtils {
     /**
      * Sets a validation to the cells on the reference.
      *
-     * <pre>{@code
+     * <pre><code>
      *     Workbook workbook = new XSSFWorkbook();
      *     Sheet sheet = workbook.createSheet("mySheet");
      *     DataValidationHelper helper = sheet.getDataValidationHelper();
      *     String ref = toRangeReference(sheet, 2);
      *
      *     setValidation(sheet, helper, ref, "RED", "GREEN", "BLUE");
-     * }</pre>
+     * </code></pre>
      *
      * @param sheet  excel sheet
      * @param helper data validation helper

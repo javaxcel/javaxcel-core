@@ -166,7 +166,7 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
      * ({@link DataFormatter#formatCellValue(Cell, FormulaEvaluator)})
      * to the model. The result is the same as the following code.
      *
-     * <pre>{@code
+     * <pre><code>
      *     +------+--------+--------+----------+
      *     | name | height | weight | eyesight |
      *     +------+--------+--------+----------+
@@ -176,7 +176,7 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
      *     This row will be converted to
      *
      *     { "name": "John", "height": "180.5", "weight": "79.2", "eyesight": null }
-     * }</pre>
+     * </code></pre>
      *
      * @param row row in sheet
      * @return imitated model

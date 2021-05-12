@@ -88,7 +88,7 @@ public class ModelReader<W extends Workbook, T> extends AbstractExcelReader<W, T
      * <p> We recommend processing in parallel only when
      * dealing with large data. The following table is a benchmark.
      *
-     * <pre>{@code
+     * <pre><code>
      *     +------------+------------+----------+
      *     | row \ type | sequential | parallel |
      *     +------------+------------+----------+
@@ -100,7 +100,7 @@ public class ModelReader<W extends Workbook, T> extends AbstractExcelReader<W, T
      *     +------------+------------+----------+
      *     | 150,000    | 3m 28s     | 2m 1s    |
      *     +------------+------------+----------+
-     * }</pre>
+     * </code></pre>
      *
      * @return {@link ModelReader}
      */
