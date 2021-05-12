@@ -82,7 +82,7 @@ class HeaderNamesTest extends MapWriterTester {
         stopwatch.start("#1 sort with unmatched list");
         assertThatThrownBy(() -> ExcelWriterFactory.create(workbook)
                 .headerNames(Arrays.asList("FIELD_1", "FIELD_2", "FIELD_3"))
-                .write(null, TestUtils.getRandomMaps(10, 10)))
+                .write(null, TestUtils.getRandomMaps(10, NUM_OF_COLUMNS)))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessageStartingWith("Ordered keys are at variance with maps' keys");
         stopwatch.stop();
@@ -90,7 +90,7 @@ class HeaderNamesTest extends MapWriterTester {
         stopwatch.start("#2 sort with unmatched list");
         assertThatThrownBy(() -> ExcelWriterFactory.create(workbook)
                 .headerNames(headerNames)
-                .write(null, TestUtils.getRandomMaps(10, 10)))
+                .write(null, TestUtils.getRandomMaps(10, NUM_OF_COLUMNS)))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessageStartingWith("Ordered keys are at variance with maps' keys");
         stopwatch.stop();
