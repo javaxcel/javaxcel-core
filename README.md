@@ -39,7 +39,7 @@ Javaxcel core is helpful for converting `java.util.List` object to a excel file 
 
 ```groovy
 // Gradle
-implementation 'com.github.javaxcel:javaxcel-core:$javaxcel_core_version'
+implementation group: "com.github.javaxcel", name: "javaxcel-core", version: "$javaxcelCoreVersion"
 ```
 
 <br>
@@ -111,7 +111,7 @@ There is a list that contains a `Product`.
 
 ## No option
 
-### write:
+### writer:
 
 ```java
 File dest = new File("/data", "products.xlsx")
@@ -132,7 +132,7 @@ If nothing is specified for the column, header name is the field name.
 
 <br>
 
-### read:
+### reader:
 
 ```java
 File src = new File("/data", "products.xlsx");
@@ -170,7 +170,7 @@ Model must has a constructor without parameters, so that `ExcelReader` can insta
 private String accessId;
 ```
 
-### write:
+### writer:
 
 | serialNumber | name         | width | depth | height | weight |
 | ------------ | ------------ | ----- | ----- | ------ | ------ |
@@ -180,7 +180,7 @@ If you want to exclude several fields, annotate `@ExcelIgnore` to them.
 
 <br>
 
-### read:
+### reader:
 
 ```json
 [
@@ -214,7 +214,7 @@ private long serialNumber;
 private String name;
 ```
 
-### write:
+### writer:
 
 | PRODUCT_NO | name         | accessId            | width | depth | height | weight |
 | ---------- | ------------ | ------------------- | ----- | ----- | ------ | ------ |
@@ -243,7 +243,7 @@ If the number of arguments is not equal to the number of targeted fields, `Excel
 
 <br>
 
-### read:
+### reader:
 
 Not affected.
 
@@ -262,7 +262,7 @@ private double depth;
 private double height;
 ```
 
-### write:
+### writer:
 
 | serialNumber | name         | accessId            | WIDTH | Depth | height | weight |
 | ------------ | ------------ | ------------------- | ----- | ----- | ------ | ------ |
@@ -293,7 +293,7 @@ The result is
 
 <br>
 
-### read:
+### reader:
 
 Not affected,
 
@@ -315,7 +315,7 @@ class AllIgnoredModel {
 }
 ```
 
-### write:
+### writer:
 
 ```java
 ExcelWriterFactory.create(workbook, NoFieldModel.class); // Occurs exception.
@@ -326,7 +326,7 @@ If you try to write with the class that has no targeted fields, `ExcelWriter` wi
 
 <br>
 
-### read:
+### reader:
 
 ```java
 List<NoFieldModel> noFieldModels = ExcelReaderFactory.create(workbook, NoFieldModel.class); // Occurs exception.
@@ -371,7 +371,7 @@ There is a list that contains a `EducationalProduct`.
 
 <br>
 
-### write:
+### writer:
 
 ```java
 ExcelWriterFactory.create(workbook, EducationalProduct.class).write(out, list);
@@ -402,7 +402,7 @@ The result is
 
 <br>
 
-### read:
+### reader:
 
 ```java
 List<EducationalProduct> eduProducts = ExcelReaderFactory.create(workbook, EducationalProduct.class).read();
@@ -453,7 +453,7 @@ private LocalTime time = LocalTime.now();
 private LocalDateTime dateTime = LocalDateTime.now();
 ```
 
-### write:
+### writer:
 
 | date     | time     | dateTime                |
 | -------- | -------- | ----------------------- |
@@ -463,7 +463,7 @@ If you want to write formatted `LocalDate`, `LocalTime` or `LocalDateTime`, anno
 
 <br>
 
-### read:
+### reader:
 
 ```json
 {
@@ -479,7 +479,7 @@ If you want to write formatted `LocalDate`, `LocalTime` or `LocalDateTime`, anno
 
 ## Name a Sheet
 
-### write:
+### writer:
 
 ```java
 ExcelWriterFactory.create(workbook, Product.class)
@@ -493,7 +493,7 @@ If you don't, the name is `Sheet`.
 
 <br>
 
-### read:
+### reader:
 
 Not affected.
 
@@ -501,7 +501,7 @@ Not affected.
 
 ## Decoration
 
-### write:
+### writer:
 
 ```java
 ExcelWriterFactory.create(workbook, Product.class)
@@ -561,7 +561,7 @@ Look [here](https://github.com/javaxcel/javaxcel-styler) for how to configure st
 
 <br>
 
-### read:
+### reader:
 
 Not affected.
 
@@ -569,7 +569,7 @@ Not affected.
 
 ## Expression
 
-### write:
+### writer:
 
 ```java
 class Product {
@@ -641,7 +641,7 @@ If type of expression result is not `String`, the converter will invoke `Object#
 
 <br>
 
-### read:
+### reader:
 
 ```java
 class Product {
