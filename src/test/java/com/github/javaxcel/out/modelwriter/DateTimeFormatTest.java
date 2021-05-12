@@ -31,9 +31,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,6 +90,9 @@ class DateTimeFormatTest extends ModelWriterTester {
             String date = (String) model.get("date");
             String time = (String) model.get("time");
             String dateTime = (String) model.get("dateTime");
+            String zonedDateTime = (String) model.get("zonedDateTime");
+            String offsetTime = (String) model.get("offsetTime");
+            String offsetDateTime = (String) model.get("offsetDateTime");
 
             assertThat(date)
                     .as("#2 Pattern of LocalDate field is equal to '%s'", ChronoModel.DATE_PATTERN)
@@ -105,6 +106,21 @@ class DateTimeFormatTest extends ModelWriterTester {
                     .matches(patternMap.get(ChronoModel.TIME_PATTERN));
             assertThat(dateTime)
                     .as("#4 Pattern of LocalDateTime field is equal to '%s'", ChronoModel.DATE_TIME_PATTERN)
+                    .isNotBlank()
+                    .hasSize(ChronoModel.DATE_TIME_PATTERN.length())
+                    .matches(patternMap.get(ChronoModel.DATE_TIME_PATTERN));
+            assertThat(zonedDateTime)
+                    .as("#5 Pattern of ZonedDateTime field is equal to '%s'", ChronoModel.DATE_TIME_PATTERN)
+                    .isNotBlank()
+                    .hasSize(ChronoModel.DATE_TIME_PATTERN.length())
+                    .matches(patternMap.get(ChronoModel.DATE_TIME_PATTERN));
+            assertThat(offsetTime)
+                    .as("#6 Pattern of OffsetTime field is equal to '%s'", ChronoModel.TIME_PATTERN)
+                    .isNotBlank()
+                    .hasSameSizeAs(ChronoModel.TIME_PATTERN)
+                    .matches(patternMap.get(ChronoModel.TIME_PATTERN));
+            assertThat(offsetDateTime)
+                    .as("#7 Pattern of OffsetDateTime field is equal to '%s'", ChronoModel.DATE_TIME_PATTERN)
                     .isNotBlank()
                     .hasSize(ChronoModel.DATE_TIME_PATTERN.length())
                     .matches(patternMap.get(ChronoModel.DATE_TIME_PATTERN));
@@ -125,6 +141,12 @@ class DateTimeFormatTest extends ModelWriterTester {
         private LocalTime time;
         @ExcelDateTimeFormat(pattern = DATE_TIME_PATTERN)
         private LocalDateTime dateTime;
+        @ExcelDateTimeFormat(pattern = DATE_TIME_PATTERN)
+        private ZonedDateTime zonedDateTime;
+        @ExcelDateTimeFormat(pattern = TIME_PATTERN)
+        private OffsetTime offsetTime;
+        @ExcelDateTimeFormat(pattern = DATE_TIME_PATTERN)
+        private OffsetDateTime offsetDateTime;
     }
 
 }

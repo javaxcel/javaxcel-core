@@ -57,6 +57,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @StopwatchProvider
 class DecorationTest extends MapWriterTester {
 
+    private static final ExcelStyleConfig[] rainbowHeader = DefaultHeaderStyleConfig.getRainbowHeader();
+
     @Test
     @StopwatchProvider(TimeUnit.MILLISECONDS)
     void fail(Stopwatch stopwatch) {
@@ -68,16 +70,16 @@ class DecorationTest extends MapWriterTester {
         // when & then
         stopwatch.start("set unmatched header style");
         assertThatThrownBy(() -> ExcelWriterFactory.create(workbook)
-                .headerStyles(DefaultHeaderStyleConfig.getRainbowHeader())
-                .write(null, TestUtils.getRandomMaps(10, 10)))
+                .headerStyles(rainbowHeader)
+                .write(null, TestUtils.getRandomMaps(10, rainbowHeader.length - 1)))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessageStartingWith("Number of header styles");
         stopwatch.stop();
 
         stopwatch.start("set unmatched body style");
         assertThatThrownBy(() -> ExcelWriterFactory.create(workbook)
-                .bodyStyles(DefaultHeaderStyleConfig.getRainbowHeader())
-                .write(null, TestUtils.getRandomMaps(10, 10)))
+                .bodyStyles(rainbowHeader)
+                .write(null, TestUtils.getRandomMaps(10, rainbowHeader.length + 1)))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessageStartingWith("Number of body styles");
     }
@@ -100,7 +102,7 @@ class DecorationTest extends MapWriterTester {
 
     @Override
     protected ThenModel whenCreateModels(GivenModel givenModel, WhenModel whenModel) {
-        List<Map<String, Object>> models = TestUtils.getRandomMaps(whenModel.getNumOfMocks(), 7);
+        List<Map<String, Object>> models = TestUtils.getRandomMaps(whenModel.getNumOfMocks(), rainbowHeader.length);
         return new ThenModel(models);
     }
 
@@ -111,7 +113,7 @@ class DecorationTest extends MapWriterTester {
                 .unrotate()
                 .autoResizeColumns().hideExtraRows().hideExtraColumns()
                 .headerStyle(new DefaultHeaderStyleConfig())
-                .headerStyles(DefaultHeaderStyleConfig.getRainbowHeader())
+                .headerStyles(rainbowHeader)
                 .bodyStyle(new DefaultBodyStyleConfig())
                 .bodyStyles(new DefaultBodyStyleConfig())
                 .write(whenModel.getOutputStream(), thenModel.getModels());
