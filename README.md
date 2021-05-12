@@ -1,28 +1,49 @@
-<p align="center" width="40%">
-	<img  src="./src/main/resources/main-image.png" alt="Javaxcel Core">
-</p>
-
-
 <p align="center">
-    <a href="https://codecov.io/gh/javaxcel/javaxcel-core">
-        <img src="https://codecov.io/gh/javaxcel/javaxcel-core/branch/dev/graph/badge.svg?token=X7ZO535W9K"/>
-    </a>
-    <a href="https://lgtm.com/projects/g/javaxcel/javaxcel-core/context:java"><img alt="Language grade: Java" src="https://img.shields.io/lgtm/grade/java/g/javaxcel/javaxcel-core.svg?logo=lgtm&logoWidth=18"/></a>
-    <a href="https://frontend.code-inspector.com/project/16361/dashboard"><img alt="Code Inspector" src="https://www.code-inspector.com/project/16361/score/svg"></a>
+    <img  src="./src/main/resources/javaxcel-core-logo.png" alt="Javaxcel Core" width="20%">
 </p>
+
+<h1 align="center">Javaxcel Core</h1>
+
+<p align="center">Supporter for export and import of excel file</p>
 
 <p align="center">
     <a href="https://travis-ci.com/github/javaxcel/javaxcel-core">
         <img src="https://travis-ci.com/javaxcel/javaxcel-core.svg?branch=release"/>
     </a>
-    <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/javaxcel/javaxcel-core?label=github">
+    <a href="https://codecov.io/gh/javaxcel/javaxcel-core">
+        <img src="https://codecov.io/gh/javaxcel/javaxcel-core/branch/dev/graph/badge.svg?token=X7ZO535W9K"/>
+    </a>
     <img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.github.javaxcel/javaxcel-core">
+</p>
+
+<p align="center">
+    <a href="https://lgtm.com/projects/g/javaxcel/javaxcel-core/context:java"><img alt="Language grade: Java" src="https://img.shields.io/lgtm/grade/java/g/javaxcel/javaxcel-core.svg?logo=lgtm&logoWidth=18"/></a>
+    <a href="https://frontend.code-inspector.com/project/16361/dashboard"><img alt="Code Inspector" src="https://www.code-inspector.com/project/16361/score/svg"></a>
     <img alt="jdk8" src="https://img.shields.io/badge/jdk-8-orange">
 </p>
 
+## Table of Contents
 
+- [What is Javaxcel Core?](#what-is-javaxcel-core)
+- [Getting started](#getting-started)
+- [Examples](#examples)
+  1. [No option](#no-option)
+  2. [Exclude field](#exclude-field)
+  3. [Name the header](#name-the-header)
+  4. [Set the default value](#set-the-default-value)
+  5. [Model without the targeted fields](#model-without-the-targeted-fields)
+  6. [Model that extends class](#model-that-extends-class)
+  7. [Format date/time](#format-datetime)
+  8. [Name a Sheet](#name-a-sheet)
+  9. [Decoration](#decoration)
+  10. [Expression](#expression)
+  11. [Value constraint](#value-constraint)
 
-Javaxcel core is helpful for converting `java.util.List` object to a excel file and vice versa.
+<br><br>
+
+# What is Javaxcel Core?
+
+Javaxcel Core is a supporter for exporting list object to spread sheets and importing list object from spread sheets using apache POI library.
 
 <br><br>
 
@@ -67,20 +88,6 @@ Code with simple usage.
 <br><br>
 
 # Examples
-
-1. [No option](#no-option)
-2. [Exclude field](#exclude-field)
-3. [Name the header](#name-the-header)
-4. [Set the default value](#set-the-default-value)
-5. [Model without the targeted fields](#model-without-the-targeted-fields)
-6. [Model that extends class](#model-that-extends-class)
-7. [Format date/time](#format-datetime)
-8. [Name a Sheet](#name-a-sheet)
-9. [Decoration](#decoration)
-10. [Expression](#expression)
-11. [Value constraint](#value-constraint)
-
-<br>
 
 ```java
 class Product {
