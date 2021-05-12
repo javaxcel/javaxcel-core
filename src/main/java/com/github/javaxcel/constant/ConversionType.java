@@ -16,14 +16,19 @@
 
 package com.github.javaxcel.constant;
 
+import com.github.javaxcel.annotation.ExcelReaderExpression;
 import com.github.javaxcel.annotation.ExcelWriterExpression;
 import com.github.javaxcel.converter.in.DefaultInputConverter;
 import com.github.javaxcel.converter.in.ExpressionInputConverter;
 import com.github.javaxcel.converter.out.DefaultOutputConverter;
 import com.github.javaxcel.converter.out.ExpressionOutputConverter;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
+/**
+ * Type of conversion
+ */
 public enum ConversionType {
 
     /**
@@ -38,8 +43,19 @@ public enum ConversionType {
      */
     EXPRESSION;
 
-    public static ConversionType of(Field field) {
-        ExcelWriterExpression annotation = field.getAnnotation(ExcelWriterExpression.class);
+    public static ConversionType of(Field field, ConverterType converterType) {
+        Annotation annotation;
+        switch (converterType) {
+            case IN:
+                annotation = field.getAnnotation(ExcelReaderExpression.class);
+                break;
+            case OUT:
+                annotation = field.getAnnotation(ExcelWriterExpression.class);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown converter type: " + converterType);
+        }
+
         return annotation == null ? DEFAULT : EXPRESSION;
     }
 

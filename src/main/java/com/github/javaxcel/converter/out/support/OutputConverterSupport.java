@@ -19,6 +19,7 @@ package com.github.javaxcel.converter.out.support;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.constant.ConversionType;
+import com.github.javaxcel.constant.ConverterType;
 import com.github.javaxcel.converter.out.DefaultOutputConverter;
 import com.github.javaxcel.converter.out.ExpressionOutputConverter;
 import com.github.javaxcel.converter.out.OutputConverter;
@@ -92,7 +93,7 @@ public class OutputConverterSupport<T> implements OutputConverter<T> {
             Column column = new Column();
 
             // Checks which conversion type of a field value when it is written.
-            column.conversionType = ConversionType.of(field);
+            column.conversionType = ConversionType.of(field, ConverterType.OUT);
 
             // Decides the proper default value for a field value.
             // @ExcelColumn's default value takes precedence over @ExcelModel's default value.
