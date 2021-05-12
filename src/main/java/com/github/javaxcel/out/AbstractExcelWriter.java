@@ -289,6 +289,10 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     /**
      * {@inheritDoc}
      *
+     * <p> This will automatically create rows up to the maximum number of rows
+     * and hide them. This action takes more time and makes file size bigger
+     * than it doesn't.
+     *
      * @return {@link AbstractExcelWriter}
      * @see #write(OutputStream, List)
      */
