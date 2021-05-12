@@ -86,7 +86,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     /**
      * @see #filter()
      */
-    protected boolean filtered = true;
+    protected boolean filtered = false;
 
     //////////////////////////////////////// Style ////////////////////////////////////////
 
@@ -243,7 +243,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      */
     @Override
     public AbstractExcelWriter<W, T> filter() {
-        this.filtered = false;
+        this.filtered = true;
         return this;
     }
 
