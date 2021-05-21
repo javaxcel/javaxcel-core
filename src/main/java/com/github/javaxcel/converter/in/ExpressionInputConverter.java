@@ -17,6 +17,7 @@
 package com.github.javaxcel.converter.in;
 
 import com.github.javaxcel.annotation.ExcelReaderExpression;
+import io.github.imsejin.common.util.CollectionUtils;
 import io.github.imsejin.expression.Expression;
 import io.github.imsejin.expression.ExpressionParser;
 import io.github.imsejin.expression.spel.standard.SpelExpressionParser;
@@ -34,11 +35,10 @@ public class ExpressionInputConverter implements InputConverter {
 
     private static final ExpressionParser parser = new SpelExpressionParser();
 
-    @Nullable
-    private final Map<String, Expression> cache;
+    private final Map<Field, Expression> cache;
 
     public ExpressionInputConverter() {
-        this.cache = null;
+        this.cache = Collections.emptyMap();
     }
 
     public ExpressionInputConverter(@Nonnull List<Field> fields) {
@@ -51,15 +51,15 @@ public class ExpressionInputConverter implements InputConverter {
      * @param fields fields of model
      * @return unmodifiable cache of expressions
      */
-    private static Map<String, Expression> createCache(List<Field> fields) {
-        Map<String, Expression> cache = new HashMap<>();
+    private static Map<Field, Expression> createCache(List<Field> fields) {
+        Map<Field, Expression> cache = new HashMap<>();
 
         for (Field field : fields) {
             ExcelReaderExpression annotation = field.getAnnotation(ExcelReaderExpression.class);
             if (annotation == null) continue;
 
             Expression expression = parser.parseExpression(annotation.value());
-            cache.put(field.getName(), expression);
+            cache.put(field, expression);
         }
 
         return Collections.unmodifiableMap(cache);
@@ -77,14 +77,14 @@ public class ExpressionInputConverter implements InputConverter {
     @Nullable
     public Object convert(Map<String, Object> variables, Field field) {
         Expression expression;
-        if (this.cache == null) {
+        if (CollectionUtils.isNullOrEmpty(this.cache)) {
             // When this instantiated without cache.
             ExcelReaderExpression annotation = field.getAnnotation(ExcelReaderExpression.class);
             expression = parser.parseExpression(annotation.value());
 
         } else {
             // When this instantiated with cache.
-            expression = this.cache.get(field.getName());
+            expression = this.cache.get(field);
         }
 
         // To read in parallel, instantiates on each call.
