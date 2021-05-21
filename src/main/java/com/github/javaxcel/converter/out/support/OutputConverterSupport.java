@@ -42,7 +42,7 @@ public class OutputConverterSupport<T> implements OutputConverter<T> {
     private final OutputConverter<T> expressionConverter;
 
     public OutputConverterSupport(List<Field> fields) {
-        this.columnMap = fields.stream().collect(collectingAndThen(toMap(it -> it, Column::from),
+        this.columnMap = fields.stream().collect(collectingAndThen(toMap(it -> it, Column::new),
                 Collections::unmodifiableMap));
 
         this.defaultConverter = new DefaultOutputConverter<>();
@@ -82,33 +82,26 @@ public class OutputConverterSupport<T> implements OutputConverter<T> {
     }
 
     private static class Column {
-        private ConversionType conversionType;
+        private final ConversionType conversionType;
         private String defaultValue;
 
-        private Column() {
-        }
-
-        private static Column from(Field field) {
-            Column column = new Column();
-
-            // Checks which conversion type of a field value when it is written.
-            column.conversionType = ConversionType.of(field, ConverterType.OUT);
+        private Column(Field field) {
+            // Checks which conversion type of a field value, when it is written.
+            this.conversionType = ConversionType.of(field, ConverterType.OUT);
 
             // Decides the proper default value for a field value.
             // @ExcelColumn's default value takes precedence over @ExcelModel's default value.
             ExcelColumn columnAnnotation = field.getAnnotation(ExcelColumn.class);
             if (columnAnnotation != null && !columnAnnotation.defaultValue().equals("")) {
                 // Default value on @ExcelColumn
-                column.defaultValue = columnAnnotation.defaultValue();
+                this.defaultValue = columnAnnotation.defaultValue();
             } else {
                 ExcelModel modelAnnotation = field.getDeclaringClass().getAnnotation(ExcelModel.class);
                 if (modelAnnotation != null && !modelAnnotation.defaultValue().equals("")) {
                     // Default value on @ExcelModel
-                    column.defaultValue = modelAnnotation.defaultValue();
+                    this.defaultValue = modelAnnotation.defaultValue();
                 }
             }
-
-            return column;
         }
     }
 
