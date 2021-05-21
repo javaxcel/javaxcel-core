@@ -97,6 +97,24 @@ public final class FieldUtils {
     }
 
     /**
+     * Gets initial value of the type.
+     *
+     * @param type type of the object
+     * @return initial value of the type
+     * @see TypeClassifier#isNumericPrimitive(Class)
+     */
+    @Nullable
+    public static Object initialValueOf(Class<?> type) {
+        // Value of primitive type cannot be null.
+        if (TypeClassifier.isNumericPrimitive(type)) return 0;
+        else if (type == char.class) return '\u0000';
+        else if (type == boolean.class) return false;
+
+        // The others can be null.
+        return null;
+    }
+
+    /**
      * Converts fields to header names.
      *
      * <p> This checks whether the field is annotated with {@link ExcelColumn} or not.
