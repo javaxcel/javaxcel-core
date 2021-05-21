@@ -16,10 +16,7 @@
 
 package com.github.javaxcel.in;
 
-import com.github.javaxcel.annotation.ExcelReaderExpression;
-import com.github.javaxcel.converter.in.DefaultInputConverter;
-import com.github.javaxcel.converter.in.ExpressionInputConverter;
-import com.github.javaxcel.converter.in.InputConverter;
+import com.github.javaxcel.converter.in.support.InputConverterSupport;
 import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.util.FieldUtils;
 import org.apache.poi.ss.usermodel.Cell;
@@ -42,10 +39,6 @@ import static java.util.stream.Collectors.toList;
  */
 public class ModelReader<W extends Workbook, T> extends AbstractExcelReader<W, T> {
 
-    private final InputConverter defaultConverter = new DefaultInputConverter();
-
-    private final InputConverter expressionConverter;
-
     private final Class<T> type;
 
     /**
@@ -54,6 +47,8 @@ public class ModelReader<W extends Workbook, T> extends AbstractExcelReader<W, T
      * @see Class<T>
      */
     private final List<Field> fields;
+
+    private final InputConverterSupport converter;
 
     private boolean parallel;
 
@@ -68,7 +63,7 @@ public class ModelReader<W extends Workbook, T> extends AbstractExcelReader<W, T
 
         if (this.fields.isEmpty()) throw new NoTargetedFieldException(this.type);
 
-        this.expressionConverter = new ExpressionInputConverter(this.fields);
+        this.converter = new InputConverterSupport(this.fields);
     }
 
     /**
@@ -149,17 +144,7 @@ public class ModelReader<W extends Workbook, T> extends AbstractExcelReader<W, T
         T model = FieldUtils.instantiate(this.type);
 
         for (Field field : this.fields) {
-            ExcelReaderExpression annotation = field.getAnnotation(ExcelReaderExpression.class);
-            Object fieldValue;
-
-            if (annotation == null) {
-                // When the field is not annotated with @ExcelReaderExpression.
-                fieldValue = this.defaultConverter.convert(imitation, field);
-            } else {
-                // When the field is annotated with @ExcelReaderExpression.
-                fieldValue = this.expressionConverter.convert(imitation, field);
-            }
-
+            Object fieldValue = this.converter.convert(imitation, field);
             FieldUtils.setFieldValue(model, field, fieldValue);
         }
 
