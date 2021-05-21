@@ -23,7 +23,8 @@ import org.junit.jupiter.api.extension.*;
 /**
  * @see StopwatchProvider
  */
-public class StopwatchProviderExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback, ParameterResolver {
+public class StopwatchProviderExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback,
+        ParameterResolver {
 
     protected Stopwatch stopwatch = new Stopwatch();
 
@@ -56,21 +57,14 @@ public class StopwatchProviderExtension implements BeforeTestExecutionCallback, 
     }
 
     @Override
-    public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-        return parameterContext.getParameter().getType().isAssignableFrom(Stopwatch.class);
+    public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+            throws ParameterResolutionException {
+        return Stopwatch.class.isAssignableFrom(parameterContext.getParameter().getType());
     }
 
     @Override
-    public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-        // Parameter[] params = parameterContext.getDeclaringExecutable().getParameters();
-        // System.out.println(params[0].getType());
-        // System.out.println(params[0].getParameterizedType().getTypeName());
-        // System.out.println(params[0].getName());
-        // System.out.println(params[0].getClass());
-        // System.out.println(params[0].getDeclaringExecutable().getDeclaringClass());
-        // System.out.println(params[0].getDeclaringExecutable().getParameterCount());
-        // System.out.println(Arrays.toString(params[0].getDeclaringExecutable().getParameterTypes()));
-
+    public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+            throws ParameterResolutionException {
         return this.stopwatch;
     }
 

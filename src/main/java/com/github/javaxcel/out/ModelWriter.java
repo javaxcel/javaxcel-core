@@ -43,14 +43,14 @@ import java.util.stream.IntStream;
  */
 public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T> {
 
-    private final OutputConverterSupport<T> converter;
-
     private final Class<T> type;
 
     /**
      * The type's fields that will be actually written in excel.
      */
     private final List<Field> fields;
+
+    private final OutputConverterSupport<T> converter;
 
     /**
      * @see #enumDropdown()
