@@ -13,7 +13,9 @@
     <a href="https://codecov.io/gh/javaxcel/javaxcel-core">
         <img src="https://codecov.io/gh/javaxcel/javaxcel-core/branch/dev/graph/badge.svg?token=X7ZO535W9K"/>
     </a>
-    <img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.github.javaxcel/javaxcel-core">
+    <a href="https://search.maven.org/artifact/com.github.javaxcel/javaxcel-core">
+        <img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.github.javaxcel/javaxcel-core">
+    </a>
 </p>
 
 <p align="center">
@@ -49,8 +51,9 @@ Javaxcel Core is a supporter for exporting list object to spread sheets and impo
 
 # Getting started
 
+### Maven
+
 ```xml
-<!-- Maven -->
 <dependency>
   <groupId>com.github.javaxcel</groupId>
   <artifactId>javaxcel-core</artifactId>
@@ -58,8 +61,9 @@ Javaxcel Core is a supporter for exporting list object to spread sheets and impo
 </dependency>
 ```
 
+### Gradle
+
 ```groovy
-// Gradle
 implementation group: "com.github.javaxcel", name: "javaxcel-core", version: "$javaxcelCoreVersion"
 ```
 
