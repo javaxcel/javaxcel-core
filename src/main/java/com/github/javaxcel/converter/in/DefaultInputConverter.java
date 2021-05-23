@@ -29,6 +29,7 @@ import java.math.BigInteger;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.UUID;
 
 public class DefaultInputConverter implements InputConverter {
 
@@ -47,6 +48,7 @@ public class DefaultInputConverter implements InputConverter {
         else if (type == boolean.class || type == Boolean.class) return Boolean.parseBoolean(value);
         else if (type == BigInteger.class) return new BigInteger(value);
         else if (type == BigDecimal.class) return new BigDecimal(value);
+        else if (type == UUID.class) return UUID.fromString(value);
         else if (TypeClassifier.isTemporal(type)) {
             ExcelDateTimeFormat annotation = field.getAnnotation(ExcelDateTimeFormat.class);
             if (annotation == null || StringUtils.isNullOrEmpty(annotation.pattern())) {
