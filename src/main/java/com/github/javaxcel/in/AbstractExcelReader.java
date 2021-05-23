@@ -17,6 +17,7 @@
 package com.github.javaxcel.in;
 
 import com.github.javaxcel.util.ExcelUtils;
+import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 
@@ -91,7 +92,9 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
      */
     @Override
     public AbstractExcelReader<W, T> limit(int limit) {
-        if (limit < 0) throw new IllegalArgumentException("Limit cannot be negative");
+        Asserts.that(limit)
+                .as("Limit is not allowed to be negative")
+                .isZeroOrPositive();
 
         this.limit = limit;
         return this;

@@ -19,6 +19,7 @@ package com.github.javaxcel.in;
 import com.github.javaxcel.converter.in.support.InputConverterSupport;
 import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.util.FieldUtils;
+import io.github.imsejin.common.assertion.Asserts;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -58,10 +59,17 @@ public class ModelReader<W extends Workbook, T> extends AbstractExcelReader<W, T
     public ModelReader(W workbook, Class<T> type) {
         super(workbook);
 
+        Asserts.that(type)
+                .as("Type is not allowed to be null")
+                .isNotNull();
         this.type = type;
-        this.fields = FieldUtils.getTargetedFields(type);
 
-        if (this.fields.isEmpty()) throw new NoTargetedFieldException(this.type);
+        // Finds targeted fields.
+        this.fields = FieldUtils.getTargetedFields(this.type);
+        Asserts.that(this.fields)
+                .as("Cannot find the targeted fields in the class({0})", this.type.getName())
+                .exception(desc -> new NoTargetedFieldException(desc, this.type))
+                .hasElement();
 
         this.converter = new InputConverterSupport(this.fields);
     }

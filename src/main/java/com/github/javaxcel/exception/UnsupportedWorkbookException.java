@@ -19,7 +19,6 @@ package com.github.javaxcel.exception;
 public class UnsupportedWorkbookException extends RuntimeException {
 
     public UnsupportedWorkbookException() {
-        super("SXSSFWorkbook is not supported workbook");
     }
 
     public UnsupportedWorkbookException(String message) {
@@ -31,7 +30,7 @@ public class UnsupportedWorkbookException extends RuntimeException {
     }
 
     public UnsupportedWorkbookException(Throwable cause) {
-        super("SXSSFWorkbook is not supported workbook", cause);
+        super(cause);
     }
 
 }

@@ -76,7 +76,7 @@ class HeaderNamesTest extends MapWriterTester {
         assertThatThrownBy(() -> ExcelWriterFactory.create(workbook)
                 .headerNames(Collections.emptyList()))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Ordered keys cannot be null or empty");
+                .hasMessage("Ordered keys is now allowed to be null or empty");
         stopwatch.stop();
 
         stopwatch.start("#1 sort with unmatched list");

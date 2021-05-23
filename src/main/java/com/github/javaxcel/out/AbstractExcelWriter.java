@@ -21,8 +21,8 @@ import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.exception.WritingExcelException;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
+import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.CollectionUtils;
-import io.github.imsejin.common.util.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.WorkbookUtil;
@@ -122,7 +122,10 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     ///////////////////////////////////////////////////////////////////////////////////////
 
     protected AbstractExcelWriter(W workbook) {
-        if (workbook == null) throw new IllegalArgumentException("Workbook cannot be null");
+        Asserts.that(workbook)
+                .as("Workbook is not allowed to be null")
+                .isNotNull();
+
         this.workbook = workbook;
     }
 
@@ -133,9 +136,9 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      */
     @Override
     public AbstractExcelWriter<W, T> defaultValue(String defaultValue) {
-        if (StringUtils.isNullOrEmpty(defaultValue)) {
-            throw new IllegalArgumentException("Default value cannot be null or empty");
-        }
+        Asserts.that(defaultValue)
+                .as("Default value is not allowed to be null or empty")
+                .isNotNull().hasText();
 
         return this;
     }
@@ -341,7 +344,9 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      */
     @Override
     public final void write(OutputStream out, List<T> list) {
-        if (list == null) throw new IllegalArgumentException("List of models cannot be null");
+        Asserts.that(list)
+                .as("List of models is not allowed to be null")
+                .isNotNull();
 
         beforeWrite(out, list);
 

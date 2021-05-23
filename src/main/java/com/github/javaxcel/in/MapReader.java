@@ -16,7 +16,7 @@
 
 package com.github.javaxcel.in;
 
-import io.github.imsejin.common.util.CollectionUtils;
+import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -58,13 +58,12 @@ public class MapReader<W extends Workbook, T extends Map<String, ?>> extends Abs
     }
 
     public MapReader<W, T> headerNames(List<String> headerNames) {
-        if (CollectionUtils.isNullOrEmpty(headerNames)) {
-            throw new IllegalArgumentException("Header names cannot be null or empty");
-        }
+        Asserts.that(headerNames)
+                .as("Header names cannot be null or empty")
+                .isNotNull().hasElement();
 
         // Replaces current header names with the new things.
-        if (!this.headerNames.isEmpty()) this.headerNames.clear();
-
+        this.headerNames.clear();
         this.headerNames.addAll(headerNames);
 
         return this;

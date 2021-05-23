@@ -20,6 +20,7 @@ import com.github.javaxcel.exception.UnsupportedWorkbookException;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.styler.NoStyleConfig;
 import com.github.javaxcel.styler.config.Configurer;
+import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.FilenameUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -72,9 +73,10 @@ public final class ExcelUtils {
      */
     public static Workbook getWorkbook(File file) {
         final String extension = FilenameUtils.extension(file);
-        if (!extension.equals(EXCEL_97_EXTENSION) && !extension.equals(EXCEL_2007_EXTENSION)) {
-            throw new IllegalArgumentException("Extension of excel file must be 'xls' or 'xlsx'");
-        }
+        Asserts.that(extension)
+                .as("Extension of excel file must be '{0}' or '{1}'",
+                        EXCEL_97_EXTENSION, EXCEL_2007_EXTENSION)
+                .matches(EXCEL_97_EXTENSION + '|' + EXCEL_2007_EXTENSION);
 
         Workbook workbook;
         try {
@@ -123,7 +125,11 @@ public final class ExcelUtils {
      * @throws UnsupportedWorkbookException if instance of sheet is {@link SXSSFSheet}
      */
     public static int getNumOfRows(Sheet sheet) {
-        if (sheet instanceof SXSSFSheet) throw new UnsupportedWorkbookException();
+        Asserts.that(SXSSFSheet.class)
+                .as("SXSSFWorkbook is not supported workbook when read")
+                .exception(UnsupportedWorkbookException::new)
+                .isNotActualTypeOf(sheet);
+
         return Math.max(0, sheet.getPhysicalNumberOfRows());
     }
 
@@ -135,7 +141,11 @@ public final class ExcelUtils {
      * @throws UnsupportedWorkbookException if instance of workbook is {@link SXSSFWorkbook}
      */
     public static long getNumOfRows(Workbook workbook) {
-        if (workbook instanceof SXSSFWorkbook) throw new UnsupportedWorkbookException();
+        Asserts.that(SXSSFWorkbook.class)
+                .as("SXSSFWorkbook is not supported workbook when read")
+                .exception(UnsupportedWorkbookException::new)
+                .isNotActualTypeOf(workbook);
+
         return getSheets(workbook).stream().mapToInt(ExcelUtils::getNumOfRows).sum();
     }
 
@@ -161,7 +171,11 @@ public final class ExcelUtils {
      * @throws UnsupportedWorkbookException if instance of sheet is {@link SXSSFSheet}
      */
     public static int getNumOfModels(Sheet sheet) {
-        if (sheet instanceof SXSSFSheet) throw new UnsupportedWorkbookException();
+        Asserts.that(SXSSFSheet.class)
+                .as("SXSSFWorkbook is not supported workbook when read")
+                .exception(UnsupportedWorkbookException::new)
+                .isNotActualTypeOf(sheet);
+
         return Math.max(0, sheet.getPhysicalNumberOfRows() - 1);
     }
 
@@ -176,7 +190,11 @@ public final class ExcelUtils {
      * @throws UnsupportedWorkbookException if instance of workbook is {@link SXSSFWorkbook}
      */
     public static long getNumOfModels(Workbook workbook) {
-        if (workbook instanceof SXSSFWorkbook) throw new UnsupportedWorkbookException();
+        Asserts.that(SXSSFWorkbook.class)
+                .as("SXSSFWorkbook is not supported workbook when read")
+                .exception(UnsupportedWorkbookException::new)
+                .isNotActualTypeOf(workbook);
+
         return getSheets(workbook).stream().mapToInt(ExcelUtils::getNumOfModels).sum();
     }
 
@@ -401,9 +419,9 @@ public final class ExcelUtils {
      */
     @Nullable
     public static CellStyle[] toCellStyles(Workbook workbook, ExcelStyleConfig... configs) {
-        if (configs == null || configs.length == 0) {
-            throw new IllegalArgumentException("Configurations for style cannot be null or empty");
-        }
+        Asserts.that(configs)
+                .as("Configurations for style cannot be null or empty")
+                .isNotNull().hasElement();
 
         /*
             Prevents cell style from being instantiated to save memory

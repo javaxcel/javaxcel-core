@@ -24,7 +24,7 @@ import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.styler.NoStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
-import io.github.imsejin.common.util.CollectionUtils;
+import io.github.imsejin.common.assertion.Asserts;
 import org.apache.poi.ss.usermodel.*;
 
 import java.io.OutputStream;
@@ -68,12 +68,17 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
     public ModelWriter(W workbook, Class<T> type) {
         super(workbook);
 
-        if (type == null) throw new IllegalArgumentException("Type cannot be null");
+        Asserts.that(type)
+                .as("Type is not allowed to be null")
+                .isNotNull();
         this.type = type;
 
         // Finds targeted fields.
-        this.fields = FieldUtils.getTargetedFields(type);
-        if (this.fields.isEmpty()) throw new NoTargetedFieldException(type);
+        this.fields = FieldUtils.getTargetedFields(this.type);
+        Asserts.that(this.fields)
+                .as("Cannot find the targeted fields in the class({0})", this.type.getName())
+                .exception(desc -> new NoTargetedFieldException(desc, this.type))
+                .hasElement();
 
         this.converter = new OutputConverterSupport<>(fields);
 
@@ -162,14 +167,12 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
      */
     @Override
     public ModelWriter<W, T> headerNames(List<String> headerNames) {
-        if (CollectionUtils.isNullOrEmpty(headerNames)) {
-            throw new IllegalArgumentException("Header names cannot be null or empty");
-        }
-
-        if (headerNames.size() != this.fields.size()) {
-            throw new IllegalArgumentException(String.format(
-                    "The number of header names is not equal to the number of targeted fields in the class '%s'", this.type.getName()));
-        }
+        Asserts.that(headerNames)
+                .as("Header names cannot be null or empty")
+                .isNotNull().hasElement()
+                .as("The number of header names is not equal to the number of targeted fields in the class '{0}'",
+                        this.type.getName())
+                .isSameSize(this.fields);
 
         super.headerNames(headerNames);
 
@@ -233,12 +236,11 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
     public ModelWriter<W, T> headerStyles(ExcelStyleConfig... configs) {
         super.headerStyles(configs);
 
-        if (this.headerStyles != null && this.headerStyles.length != 1 &&
-                this.headerStyles.length != this.fields.size()) {
-            String message = String.format(
-                    "Number of header styles(%d) must be 1 or equal to number of targeted fields(%d) in the class '%s'",
-                    this.headerStyles.length, this.fields.size(), this.type.getName());
-            throw new IllegalArgumentException(message);
+        if (this.headerStyles != null) {
+            Asserts.that(this.headerStyles.length == 1 || this.headerStyles.length == this.fields.size())
+                    .as("Number of header styles({0}) must be 1 or equal to number of targeted fields({1}) in the class '{2}'",
+                            this.headerStyles.length, this.fields.size(), this.type.getName())
+                    .isTrue();
         }
 
         return this;
@@ -263,12 +265,11 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
     public ModelWriter<W, T> bodyStyles(ExcelStyleConfig... configs) {
         super.bodyStyles(configs);
 
-        if (this.bodyStyles != null && this.bodyStyles.length != 1 &&
-                this.bodyStyles.length != this.fields.size()) {
-            String message = String.format(
-                    "Number of body styles(%d) must be 1 or equal to number of targeted fields(%d) in the class '%s'",
-                    this.bodyStyles.length, this.fields.size(), this.type.getName());
-            throw new IllegalArgumentException(message);
+        if (this.bodyStyles != null) {
+            Asserts.that(this.bodyStyles.length == 1 || this.bodyStyles.length == this.fields.size())
+                    .as("Number of body styles({0}) must be 1 or equal to number of targeted fields({1}) in the class '{2}'",
+                            this.bodyStyles.length, this.fields.size(), this.type.getName())
+                    .isTrue();
         }
 
         return this;
