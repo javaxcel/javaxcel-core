@@ -11,7 +11,7 @@
         <img src="https://travis-ci.com/javaxcel/javaxcel-core.svg?branch=release"/>
     </a>
     <a href="https://codecov.io/gh/javaxcel/javaxcel-core">
-        <img src="https://codecov.io/gh/javaxcel/javaxcel-core/branch/dev/graph/badge.svg?token=X7ZO535W9K"/>
+        <img src="https://codecov.io/gh/javaxcel/javaxcel-core/branch/release/graph/badge.svg?token=X7ZO535W9K"/>
     </a>
     <a href="https://search.maven.org/artifact/com.github.javaxcel/javaxcel-core">
         <img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.github.javaxcel/javaxcel-core">
