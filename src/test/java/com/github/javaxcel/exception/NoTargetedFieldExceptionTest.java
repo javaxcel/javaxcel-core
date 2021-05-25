@@ -21,73 +21,73 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class NoTargetedConstructorExceptionTest {
+class NoTargetedFieldExceptionTest {
 
     @Test
-    @DisplayName("NoTargetedConstructorException(Class)")
+    @DisplayName("NoTargetedFieldException(Class)")
     void test0() {
         // given
         Class<TestModel> type = TestModel.class;
 
         // when
-        NoTargetedConstructorException exception = new NoTargetedConstructorException(type);
+        NoTargetedFieldException exception = new NoTargetedFieldException(type);
 
         // then
         assertThat(exception)
-                .isExactlyInstanceOf(NoTargetedConstructorException.class)
-                .hasMessage("Cannot find a default constructor in the class(%s)", type.getName());
+                .isExactlyInstanceOf(NoTargetedFieldException.class)
+                .hasMessage("Cannot find the targeted fields in the class(%s)", type.getName());
         assertThat(exception.getType()).isEqualTo(type);
     }
 
     @Test
-    @DisplayName("NoTargetedConstructorException(Class, String, Object...)")
+    @DisplayName("NoTargetedFieldException(Class, String, Object...)")
     void test1() {
         // given
-        String message = "Exception of failure of finding constructor";
+        String message = "Exception of failure of finding the targeted fields";
         Class<TestModel> type = TestModel.class;
 
         // when
-        NoTargetedConstructorException exception = new NoTargetedConstructorException(type, message);
+        NoTargetedFieldException exception = new NoTargetedFieldException(type, message);
 
         // then
         assertThat(exception)
-                .isExactlyInstanceOf(NoTargetedConstructorException.class)
+                .isExactlyInstanceOf(NoTargetedFieldException.class)
                 .hasMessage(message);
         assertThat(exception.getType()).isEqualTo(type);
     }
 
     @Test
-    @DisplayName("NoTargetedConstructorException(Class, Throwable)")
+    @DisplayName("NoTargetedFieldException(Class, Throwable)")
     void test2() {
         // given
-        Throwable cause = new RuntimeException("Exception of failure of finding constructor");
+        Throwable cause = new RuntimeException("Exception of failure of finding the targeted fields");
         Class<TestModel> type = TestModel.class;
 
         // when
-        NoTargetedConstructorException exception = new NoTargetedConstructorException(type, cause);
+        NoTargetedFieldException exception = new NoTargetedFieldException(type, cause);
 
         // then
         assertThat(exception)
-                .isExactlyInstanceOf(NoTargetedConstructorException.class)
+                .isExactlyInstanceOf(NoTargetedFieldException.class)
                 .hasCause(cause)
-                .hasMessage("Cannot find a default constructor in the class(%s)", type.getName());
+                .hasMessage("Cannot find the targeted fields in the class(%s)", type.getName());
         assertThat(exception.getType()).isEqualTo(type);
     }
 
     @Test
-    @DisplayName("NoTargetedConstructorException(Class, Throwable, String, Object...)")
+    @DisplayName("NoTargetedFieldException(Class, Throwable, String, Object...)")
     void test3() {
         // given
-        String message = "Exception of failure of finding constructor";
+        String message = "Exception of failure of finding the targeted fields";
         Throwable cause = new RuntimeException(message);
         Class<TestModel> type = TestModel.class;
 
         // when
-        NoTargetedConstructorException exception = new NoTargetedConstructorException(type, cause, message);
+        NoTargetedFieldException exception = new NoTargetedFieldException(type, cause, message);
 
         // then
         assertThat(exception)
-                .isExactlyInstanceOf(NoTargetedConstructorException.class)
+                .isExactlyInstanceOf(NoTargetedFieldException.class)
                 .hasCause(cause)
                 .hasMessage(message);
         assertThat(exception.getType()).isEqualTo(type);

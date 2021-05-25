@@ -16,6 +16,7 @@
 
 package com.github.javaxcel.exception;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
@@ -25,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SettingFieldValueExceptionTest {
 
     @Test
+    @DisplayName("SettingFieldValueException(Class, Field)")
     void test0() throws NoSuchFieldException {
         // given
         Class<TestModel> type = TestModel.class;
@@ -42,6 +44,7 @@ class SettingFieldValueExceptionTest {
     }
 
     @Test
+    @DisplayName("SettingFieldValueException(Class, Field, String, Object...)")
     void test1() throws NoSuchFieldException {
         // given
         String message = "Exception of setting field value";
@@ -49,7 +52,7 @@ class SettingFieldValueExceptionTest {
         Field field = type.getDeclaredField("id");
 
         // when
-        SettingFieldValueException exception = new SettingFieldValueException(message, type, field);
+        SettingFieldValueException exception = new SettingFieldValueException(type, field, message);
 
         // then
         assertThat(exception)
@@ -60,7 +63,28 @@ class SettingFieldValueExceptionTest {
     }
 
     @Test
+    @DisplayName("SettingFieldValueException(Class, Field, Throwable)")
     void test2() throws NoSuchFieldException {
+        // given
+        Throwable cause = new RuntimeException("Exception of setting field value");
+        Class<TestModel> type = TestModel.class;
+        Field field = type.getDeclaredField("id");
+
+        // when
+        SettingFieldValueException exception = new SettingFieldValueException(type, field, cause);
+
+        // then
+        assertThat(exception)
+                .isExactlyInstanceOf(SettingFieldValueException.class)
+                .hasCause(cause)
+                .hasMessage("Failed to set value into the field(%s) of the class(%s)", field.getName(), type.getName());
+        assertThat(exception.getType()).isEqualTo(type);
+        assertThat(exception.getField()).isEqualTo(field);
+    }
+
+    @Test
+    @DisplayName("SettingFieldValueException(Class, Field, Throwable, String, Object...)")
+    void test3() throws NoSuchFieldException {
         // given
         String message = "Exception of setting field value";
         Throwable cause = new RuntimeException(message);
@@ -68,32 +92,13 @@ class SettingFieldValueExceptionTest {
         Field field = type.getDeclaredField("id");
 
         // when
-        SettingFieldValueException exception = new SettingFieldValueException(message, cause, type, field);
+        SettingFieldValueException exception = new SettingFieldValueException(type, field, cause, message);
 
         // then
         assertThat(exception)
                 .isExactlyInstanceOf(SettingFieldValueException.class)
                 .hasCause(cause)
-                .hasMessage(cause.getMessage());
-        assertThat(exception.getType()).isEqualTo(type);
-        assertThat(exception.getField()).isEqualTo(field);
-    }
-
-    @Test
-    void test3() throws NoSuchFieldException {
-        // given
-        Throwable cause = new RuntimeException("Exception of setting field value");
-        Class<TestModel> type = TestModel.class;
-        Field field = type.getDeclaredField("id");
-
-        // when
-        SettingFieldValueException exception = new SettingFieldValueException(cause, type, field);
-
-        // then
-        assertThat(exception)
-                .isExactlyInstanceOf(SettingFieldValueException.class)
-                .hasCause(cause)
-                .hasMessage("Failed to set value into the field(%s) of the class(%s)", field.getName(), type.getName());
+                .hasMessage(message);
         assertThat(exception.getType()).isEqualTo(type);
         assertThat(exception.getField()).isEqualTo(field);
     }
