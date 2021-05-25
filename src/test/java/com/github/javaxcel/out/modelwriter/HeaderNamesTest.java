@@ -16,12 +16,12 @@
 
 package com.github.javaxcel.out.modelwriter;
 
-import com.github.javaxcel.out.ModelWriterTester;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.AbstractExcelWriter;
 import com.github.javaxcel.out.ModelWriter;
+import com.github.javaxcel.out.ModelWriterTester;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.tool.Stopwatch;
@@ -37,7 +37,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
@@ -45,7 +45,6 @@ import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.IntStream;
@@ -66,7 +65,7 @@ class HeaderNamesTest extends ModelWriterTester {
      * @see #invalidHeaderNames()
      */
     @ParameterizedTest
-    @NullSource
+    @NullAndEmptySource
     @MethodSource("invalidHeaderNames")
     @DisplayName("When sets invalid header names")
     void fail(List<String> headerNames, Stopwatch stopwatch) {
@@ -140,7 +139,6 @@ class HeaderNamesTest extends ModelWriterTester {
         int numOfFields = FieldUtils.getTargetedFields(KebabCaseComputer.class).size();
 
         return Stream.of(
-                Arguments.of(Collections.emptyList()),
                 Arguments.of(IntStream.range(0, numOfFields - 1).mapToObj(n -> "Field_" + n).collect(toList())),
                 Arguments.of(IntStream.range(0, numOfFields + 1).mapToObj(n -> "Field_" + n).collect(toList()))
         );
