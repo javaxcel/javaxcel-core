@@ -1,7 +1,9 @@
 package com.github.javaxcel.util;
 
+import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.converter.out.DefaultOutputConverter;
+import com.github.javaxcel.converter.out.OutputConverter;
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
 import com.github.javaxcel.out.ExcelWriter;
@@ -100,9 +102,9 @@ class ExcelUtilsTest {
     @SneakyThrows
     void stringifyValue(String fieldName) {
         // given
-        DefaultOutputConverter<EducationToy> converter = new DefaultOutputConverter<>();
+        OutputConverter<EducationToy> converter = new DefaultOutputConverter<>();
 
-        for (EducationToy toy : new EducationToy().createRandoms(10)) {
+        for (EducationToy toy : TestUtils.getMocks(EducationToy.class, 10)) {
             // when
             String stringifyValue = converter.convert(toy, toy.getClass().getDeclaredField(fieldName));
 

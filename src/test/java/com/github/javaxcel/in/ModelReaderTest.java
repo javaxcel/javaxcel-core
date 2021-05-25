@@ -79,27 +79,27 @@ class ModelReaderTest {
         String filename = "products.xls";
 
         // given
-        stopwatch.start(String.format("create '%s' file", filename));
+        stopwatch.start("create '%s' file", filename);
         File file = new File(path.toFile(), filename);
         @Cleanup HSSFWorkbook workbook = new HSSFWorkbook();
         @Cleanup OutputStream out = new FileOutputStream(file);
         stopwatch.stop();
 
         int numOfMocks = 10_000;
-        stopwatch.start(String.format("create %,d mocks", numOfMocks));
+        stopwatch.start("create %,d mocks", numOfMocks);
         List<Product> mocks = Product.createRandoms(numOfMocks);
         stopwatch.stop();
 
-        stopwatch.start(String.format("write %,d models", numOfMocks));
+        stopwatch.start("write %,d models", numOfMocks);
         ExcelWriterFactory.create(workbook, Product.class).write(out, mocks);
         stopwatch.stop();
 
-        stopwatch.start(String.format("load '%s' file", filename));
+        stopwatch.start("load '%s' file", filename);
         @Cleanup HSSFWorkbook wb = new HSSFWorkbook(new FileInputStream(file));
         stopwatch.stop();
 
         // when
-        stopwatch.start(String.format("read %,d models", numOfMocks));
+        stopwatch.start("read %,d models", numOfMocks);
         List<Product> products = ExcelReaderFactory.create(wb, Product.class).read();
         stopwatch.stop();
 
@@ -122,7 +122,7 @@ class ModelReaderTest {
         String filename = "computers.xlsx";
 
         // given
-        stopwatch.start(String.format("create '%s' file", filename));
+        stopwatch.start("create '%s' file", filename);
         File file = new File(path.toFile(), filename);
         @Cleanup Workbook workbook = new SXSSFWorkbook();
         @Cleanup OutputStream out = new FileOutputStream(file);
@@ -130,20 +130,20 @@ class ModelReaderTest {
 
         int limit = 10;
         int numOfMocks = 1000;
-        stopwatch.start(String.format("create %,d mocks", numOfMocks));
+        stopwatch.start("create %,d mocks", numOfMocks);
         List<Computer> mocks = Computer.createRandoms(numOfMocks);
         stopwatch.stop();
 
-        stopwatch.start(String.format("write %,d models", numOfMocks));
+        stopwatch.start("write %,d models", numOfMocks);
         ExcelWriterFactory.create(workbook, Computer.class).write(out, mocks);
         stopwatch.stop();
 
-        stopwatch.start(String.format("load '%s' file", filename));
+        stopwatch.start("load '%s' file", filename);
         @Cleanup Workbook wb = new XSSFWorkbook(file);
         stopwatch.stop();
 
         // when
-        stopwatch.start(String.format("read %,d models", Math.min(limit, numOfMocks)));
+        stopwatch.start("read %,d models", Math.min(limit, numOfMocks));
         List<Computer> computers = ExcelReaderFactory.create(wb, Computer.class)
                 .limit(limit).read();
         stopwatch.stop();
@@ -168,27 +168,27 @@ class ModelReaderTest {
         String filename = "toys.xlsx";
 
         // given
-        stopwatch.start(String.format("create '%s' file", filename));
+        stopwatch.start("create '%s' file", filename);
         File file = new File(path.toFile(), filename);
         @Cleanup Workbook workbook = new SXSSFWorkbook();
         @Cleanup OutputStream out = new FileOutputStream(file);
         stopwatch.stop();
 
         int numOfMocks = 10_000;
-        stopwatch.start(String.format("create %,d mocks", numOfMocks));
+        stopwatch.start("create %,d mocks", numOfMocks);
         List<EducationToy> mocks = new EducationToy().createRandoms(numOfMocks);
         stopwatch.stop();
 
-        stopwatch.start(String.format("write %,d models", numOfMocks));
+        stopwatch.start("write %,d models", numOfMocks);
         ExcelWriterFactory.create(workbook, EducationToy.class).write(out, mocks);
         stopwatch.stop();
 
-        stopwatch.start(String.format("load '%s' file", filename));
+        stopwatch.start("load '%s' file", filename);
         @Cleanup Workbook wb = new XSSFWorkbook(file);
         stopwatch.stop();
 
         // when
-        stopwatch.start(String.format("read %,d models", numOfMocks));
+        stopwatch.start("read %,d models", numOfMocks);
         List<EducationToy> educationToys = ExcelReaderFactory.create(wb, EducationToy.class).read();
         stopwatch.stop();
 
@@ -262,27 +262,27 @@ class ModelReaderTest {
         String filename = "people.xlsx";
 
         // given
-        stopwatch.start(String.format("create '%s' file", filename));
+        stopwatch.start("create '%s' file", filename);
         File file = new File(path.toFile(), filename);
         @Cleanup Workbook workbook = new SXSSFWorkbook();
         @Cleanup OutputStream out = new FileOutputStream(file);
         stopwatch.stop();
 
         int numOfMocks = 10_000;
-        stopwatch.start(String.format("create %,d mocks", numOfMocks));
+        stopwatch.start("create %,d mocks", numOfMocks);
         List<Human> mocks = new Human().createRandoms(numOfMocks);
         stopwatch.stop();
 
-        stopwatch.start(String.format("write %,d models", numOfMocks));
+        stopwatch.start("write %,d models", numOfMocks);
         ExcelWriterFactory.create(workbook, Human.class).write(out, mocks);
         stopwatch.stop();
 
-        stopwatch.start(String.format("load '%s' file", filename));
+        stopwatch.start("load '%s' file", filename);
         @Cleanup Workbook wb = new XSSFWorkbook(file);
         stopwatch.stop();
 
         // when
-        stopwatch.start(String.format("read %,d models", numOfMocks));
+        stopwatch.start("read %,d models", numOfMocks);
         List<Human> people = ExcelReaderFactory.create(wb, Human.class).parallel().read();
         stopwatch.stop();
 
