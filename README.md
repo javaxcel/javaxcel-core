@@ -45,7 +45,7 @@
 
 # What is Javaxcel Core?
 
-Javaxcel Core is a supporter for exporting list object to spread sheets and importing list object from spread sheets using apache POI library.
+Javaxcel Core is a supporter for exporting list object to spread sheets and importing list object from spread sheets using [Apache POI](https://github.com/apache/poi).
 
 <br><br>
 
