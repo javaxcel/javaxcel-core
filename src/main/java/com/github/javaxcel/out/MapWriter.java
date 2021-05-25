@@ -52,6 +52,7 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
     private String defaultValue;
 
     /**
+     * @param workbook excel workbook
      * @see com.github.javaxcel.factory.ExcelWriterFactory#create(Workbook)
      */
     public MapWriter(W workbook) {
@@ -113,14 +114,14 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      *
      * <p> To rearrange the column order, place the keys in the order you want like this.
      *
-     * <pre><code>
+     * <pre>{@code
      *     List<String> orderedKeys = Arrays.asList(
      *             "width" "depth", "height", "weight", "serialNumber", "name", "apiId");
      *
      *     ExcelWriterFactory.create(new SXSSFWorkbook())
      *             .headerNames(orderedKeys)
      *             .write(new FileOutputStream(file), list);
-     * </code></pre>
+     * }</pre>
      *
      * <p> Then the columns will be arranged in the order you want.
      *
@@ -177,7 +178,7 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      * to the first argument. To change the header names, place the names
      * you want them changed to in the custom order to the second argument like this.
      *
-     * <pre><code>
+     * <pre>{@code
      *     List<String> orderedKeys = Arrays.asList(
      *             "width" "depth", "height", "weight", "serialNumber", "name", "apiId");
      *     List<String> name = Arrays.asList(
@@ -186,7 +187,7 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      *     ExcelWriterFactory.create(new SXSSFWorkbook())
      *             .headerNames(orderedKeys, name)
      *             .write(new FileOutputStream(file), list);
-     * </code></pre>
+     * }</pre>
      *
      * <p> Then the column order and the names will be changed you want.
      *
