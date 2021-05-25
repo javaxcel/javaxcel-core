@@ -63,6 +63,8 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
     private Map<Integer, String[]> enumDropdownItemsMap;
 
     /**
+     * @param workbook excel workbook
+     * @param type     type of model
      * @see com.github.javaxcel.factory.ExcelWriterFactory#create(Workbook, Class)
      */
     public ModelWriter(W workbook, Class<T> type) {

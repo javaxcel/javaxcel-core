@@ -195,14 +195,14 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      * <p> To change the header names, place the names you want them changed to
      * in the order like this.
      *
-     * <pre><code>
+     * <pre>{@code
      *     List<String> names = Arrays.asList(
      *             "SERIAL_NUMBER", "NAME", "API_ID", "WIDTH" "DEPTH", "HEIGHT", "WEIGHT");
      *
      *     ExcelWriterFactory.create(new SXSSFWorkbook(), Product.class)
      *             .headerNames(names)
      *             .write(new FileOutputStream(file), list);
-     * </code></pre>
+     * }</pre>
      *
      * <p> Then the header names will be changed you want.
      *
