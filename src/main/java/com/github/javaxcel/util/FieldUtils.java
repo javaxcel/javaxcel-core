@@ -168,7 +168,7 @@ public final class FieldUtils {
             // Returns value in the field.
             return field.get(model);
         } catch (IllegalAccessException e) {
-            throw new GettingFieldValueException(e, model.getClass(), field);
+            throw new GettingFieldValueException(model.getClass(), field, e);
         }
     }
 
@@ -188,7 +188,7 @@ public final class FieldUtils {
         try {
             field.set(model, value);
         } catch (IllegalAccessException e) {
-            throw new SettingFieldValueException(e, model.getClass(), field);
+            throw new SettingFieldValueException(model.getClass(), field, e);
         }
     }
 
@@ -208,7 +208,7 @@ public final class FieldUtils {
             // Allows only constructor without parameter.
             constructor = type.getDeclaredConstructor();
         } catch (NoSuchMethodException e) {
-            throw new NoTargetedConstructorException(e, type);
+            throw new NoTargetedConstructorException(type, e);
         }
         constructor.setAccessible(true);
 

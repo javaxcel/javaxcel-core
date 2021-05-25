@@ -16,27 +16,27 @@
 
 package com.github.javaxcel.exception;
 
-public class NoTargetedConstructorException extends RuntimeException {
+public class NoTargetedConstructorException extends JavaxcelException {
 
     private final Class<?> type;
 
     public NoTargetedConstructorException(Class<?> type) {
-        super(String.format("Cannot find a default constructor in the class(%s)", type.getName()));
+        super("Cannot find a default constructor in the class(%s)", type.getName());
         this.type = type;
     }
 
-    public NoTargetedConstructorException(String message, Class<?> type) {
-        super(message);
+    public NoTargetedConstructorException(Class<?> type, String format, Object... args) {
+        super(format, args);
         this.type = type;
     }
 
-    public NoTargetedConstructorException(String message, Throwable cause, Class<?> type) {
-        super(message, cause);
+    public NoTargetedConstructorException(Class<?> type, Throwable cause) {
+        super(cause, "Cannot find a default constructor in the class(%s)", type.getName());
         this.type = type;
     }
 
-    public NoTargetedConstructorException(Throwable cause, Class<?> type) {
-        super(String.format("Cannot find a default constructor in the class(%s)", type.getName()), cause);
+    public NoTargetedConstructorException(Class<?> type, Throwable cause, String format, Object... args) {
+        super(cause, format, args);
         this.type = type;
     }
 

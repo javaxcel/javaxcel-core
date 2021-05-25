@@ -16,22 +16,22 @@
 
 package com.github.javaxcel.exception;
 
-public class WritingExcelException extends RuntimeException {
+public class WritingExcelException extends JavaxcelException {
 
     public WritingExcelException() {
         super("Failed to write data to the excel sheet");
     }
 
-    public WritingExcelException(String message) {
-        super(message);
-    }
-
-    public WritingExcelException(String message, Throwable cause) {
-        super(message, cause);
+    public WritingExcelException(String format, Object... args) {
+        super(format, args);
     }
 
     public WritingExcelException(Throwable cause) {
-        super("Failed to write data to the excel sheet", cause);
+        super(cause, "Failed to write data to the excel sheet");
+    }
+
+    public WritingExcelException(Throwable cause, String format, Object... args) {
+        super(cause, format, args);
     }
 
 }

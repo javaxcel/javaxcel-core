@@ -68,7 +68,7 @@ public class ModelReader<W extends Workbook, T> extends AbstractExcelReader<W, T
         this.fields = FieldUtils.getTargetedFields(this.type);
         Asserts.that(this.fields)
                 .as("Cannot find the targeted fields in the class({0})", this.type.getName())
-                .exception(desc -> new NoTargetedFieldException(desc, this.type))
+                .exception(desc -> new NoTargetedFieldException(this.type, desc))
                 .hasElement();
 
         this.converter = new InputConverterSupport(this.fields);

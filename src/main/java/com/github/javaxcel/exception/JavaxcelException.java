@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Javaxcel
+ * Copyright 2021 Javaxcel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,14 @@
 
 package com.github.javaxcel.exception;
 
-public class UnsupportedWorkbookException extends JavaxcelException {
+public abstract class JavaxcelException extends RuntimeException {
 
-    public UnsupportedWorkbookException(String format, Object... args) {
-        super(format, args);
+    protected JavaxcelException(String format, Object... args) {
+        super(String.format(format, args));
     }
 
-    public UnsupportedWorkbookException(Throwable cause, String format, Object... args) {
-        super(cause, format, args);
+    protected JavaxcelException(Throwable cause, String format, Object... args) {
+        super(String.format(format, args), cause);
     }
 
 }
