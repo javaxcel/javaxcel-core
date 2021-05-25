@@ -6,11 +6,11 @@
 
     <groupId>com.github.javaxcel</groupId>
     <artifactId>javaxcel-core</artifactId>
-    <version>0.7.0</version>
+    <version>0.7.1</version>
     <packaging>jar</packaging>
 
     <name>Javaxcel Core</name>
-    <description>Interconverter for DTO list and excel file with simple usage based annotations.</description>
+    <description>Supporter for export and import of excel file</description>
     <url>https://github.com/javaxcel/javaxcel-core</url>
 
     <licenses>
@@ -39,7 +39,6 @@
     <distributionManagement>
         <repository>
             <id>ossrh</id>
-            <!--  https://oss.sonatype.org/service/local/staging/deploy/maven2/com/github/javaxcel/javaxcel-core/ -->
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
         <snapshotRepository>
@@ -56,7 +55,8 @@
 
         <apache.poi.version>4.1.2</apache.poi.version>
         <javaxcel.styler.version>0.2.1</javaxcel.styler.version>
-        <common.utils.version>0.3.4</common.utils.version>
+        <common.utils.version>0.4.4</common.utils.version>
+        <junit5.version>5.7.2</junit5.version>
     </properties>
 
     <dependencies>
@@ -138,19 +138,19 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.7.1</version>
+            <version>${junit5.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.7.1</version>
+            <version>${junit5.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
-            <version>5.7.1</version>
+            <version>${junit5.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -188,6 +188,42 @@
             </activation>
             <build>
                 <plugins>
+                    <!-- Attaches java source files for view -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Generates javadoc -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <configuration>
+                            <!-- https://bugs.openjdk.java.net/browse/JDK-8212233 -->
+                            <source>${java.version}</source>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
                     <!-- Plugin for signing with GPG key -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -258,42 +294,6 @@
                 </configuration>
             </plugin>
 
-            <!-- Attaches java source files for view -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Generates javadoc -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
-                <configuration>
-                    <!-- https://bugs.openjdk.java.net/browse/JDK-8212233 -->
-                    <source>${java.version}</source>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
             <!--
                 Jacoco
 
@@ -302,7 +302,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.6</version>
+                <version>0.8.7</version>
                 <executions>
                     <execution>
                         <goals>

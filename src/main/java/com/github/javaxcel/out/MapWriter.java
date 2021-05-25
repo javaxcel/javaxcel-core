@@ -17,7 +17,7 @@
 package com.github.javaxcel.out;
 
 import com.github.javaxcel.styler.ExcelStyleConfig;
-import io.github.imsejin.common.util.CollectionUtils;
+import io.github.imsejin.common.assertion.Asserts;
 import org.apache.poi.ss.usermodel.*;
 
 import javax.annotation.Nullable;
@@ -88,7 +88,7 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      * column order is not guaranteed, unless the type of its instance is {@link LinkedHashMap}.
      * For example, the following list will be exported.
      *
-     * <pre>{@code
+     * <pre><code>
      * [
      *     {
      *         "serialNumber": 10000,
@@ -109,22 +109,22 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      *         "weight": 575.0
      *     }
      * ]
-     * }</pre>
+     * </code></pre>
      *
      * <p> To rearrange the column order, place the keys in the order you want like this.
      *
-     * <pre>{@code
+     * <pre><code>
      *     List<String> orderedKeys = Arrays.asList(
      *             "width" "depth", "height", "weight", "serialNumber", "name", "apiId");
      *
      *     ExcelWriterFactory.create(new SXSSFWorkbook())
      *             .headerNames(orderedKeys)
      *             .write(new FileOutputStream(file), list);
-     * }</pre>
+     * </code></pre>
      *
      * <p> Then the columns will be arranged in the order you want.
      *
-     * <pre>{@code
+     * <pre><code>
      * +-------+-------+--------+--------+--------------+----------------+---------------------+
      * | width | depth | height | weight | serialNumber | name           | apiId               |
      * +-------+-------+--------+--------+--------------+----------------+---------------------+
@@ -132,7 +132,7 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      * +-------+-------+--------+--------+--------------+----------------+---------------------+
      * | 10.2  | 4.0   | 6.0    | 575.0  | 10001        | Oatmeal cereal | f15d-384d-0a4b-97ec |
      * +-------+-------+--------+--------+--------------+----------------+---------------------+
-     * }</pre>
+     * </code></pre>
      *
      * @param orderedKeys keys ordered as you want
      * @return {@link MapWriter}
@@ -150,7 +150,7 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      * column order is not guaranteed, unless the type of its instance is {@link LinkedHashMap}.
      * For example, the following list will be exported.
      *
-     * <pre>{@code
+     * <pre><code>
      * [
      *     {
      *         "serialNumber": 10000,
@@ -171,13 +171,13 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      *         "weight": 575.0
      *     }
      * ]
-     * }</pre>
+     * </code></pre>
      *
      * <p> To rearrange the column order, place the keys in the order you want
      * to the first argument. To change the header names, place the names
      * you want them changed to in the custom order to the second argument like this.
      *
-     * <pre>{@code
+     * <pre><code>
      *     List<String> orderedKeys = Arrays.asList(
      *             "width" "depth", "height", "weight", "serialNumber", "name", "apiId");
      *     List<String> name = Arrays.asList(
@@ -186,11 +186,11 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      *     ExcelWriterFactory.create(new SXSSFWorkbook())
      *             .headerNames(orderedKeys, name)
      *             .write(new FileOutputStream(file), list);
-     * }</pre>
+     * </code></pre>
      *
      * <p> Then the column order and the names will be changed you want.
      *
-     * <pre>{@code
+     * <pre><code>
      * +-------+-------+--------+--------+---------------+----------------+---------------------+
      * | WIDTH | DEPTH | HEIGHT | WEIGHT | SERIAL_NUMBER | NAME           | API_ID              |
      * +-------+-------+--------+--------+---------------+----------------+---------------------+
@@ -198,7 +198,7 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      * +-------+-------+--------+--------+---------------+----------------+---------------------+
      * | 10.2  | 4.0   | 6.0    | 575.0  | 10001         | Oatmeal cereal | f15d-384d-0a4b-97ec |
      * +-------+-------+--------+--------+---------------+----------------+---------------------+
-     * }</pre>
+     * </code></pre>
      *
      * @param orderedKeys keys ordered as you want
      * @param headerNames header names in key order
@@ -207,13 +207,17 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      * @throws IllegalArgumentException if num of ordered keys is not equal to num of header names
      */
     public MapWriter<W, T> headerNames(List<String> orderedKeys, @Nullable List<String> headerNames) {
-        if (CollectionUtils.isNullOrEmpty(orderedKeys)) {
-            throw new IllegalArgumentException("Ordered keys cannot be null or empty");
-        }
+        Asserts.that(orderedKeys)
+                .as("Ordered keys is now allowed to be null or empty")
+                .hasElement();
 
-        // Validates ordered keys and header names.
-        if (headerNames != null && orderedKeys.size() != headerNames.size()) {
-            throw new IllegalArgumentException("The number of ordered keys is not equal to the number of header names");
+        if (headerNames != null) {
+            // Validates ordered keys and header names.
+            Asserts.that(orderedKeys)
+                    .as("The number of ordered keys is not equal to the number of header names")
+                    .isSameSize(headerNames);
+
+            super.headerNames(headerNames);
         }
 
         // Creates indexed map for rearrange.
@@ -223,7 +227,6 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
         }
 
         this.indexedMap = indexedMap;
-        if (headerNames != null) super.headerNames(headerNames);
 
         return this;
     }
@@ -339,7 +342,9 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
     @Override
     protected void beforeWrite(OutputStream out, List<T> list) {
         // To write a header, this doesn't allow to accept empty list of maps.
-        if (list.isEmpty()) throw new IllegalArgumentException("List of maps cannot be empty");
+        Asserts.that(list)
+                .as("List of maps is not allowed to be empty")
+                .hasElement();
 
         // Gets all the maps' keys.
         this.keys.addAll(list.stream().flatMap(it -> it.keySet().stream()).distinct().collect(toList()));
@@ -347,32 +352,34 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
         if (this.indexedMap != null) {
             // Invalidates the number of ordered keys and their each element.
             Set<String> orderedKeys = this.indexedMap.keySet();
-            if (this.keys.size() != orderedKeys.size() || !this.keys.containsAll(orderedKeys)) {
-                String message = String.format(
-                        "Ordered keys are at variance with maps' keys%nmaps' keys: %s%nordered keys: %s",
-                        this.keys, orderedKeys);
-                throw new IllegalArgumentException(message);
-            }
+
+            Asserts.that(this.keys)
+                    .as("Ordered keys are at variance with maps' keys\nmaps' keys: {0}\nordered keys: {1}",
+                            this.keys, orderedKeys)
+                    .isSameSize(orderedKeys)
+                    .containsAll(orderedKeys);
 
             // Rearranges the keys as you want: it changes order of columns.
             this.keys.sort(comparing(this.indexedMap::get));
         }
 
         final int numOfKeys = this.keys.size();
-        Predicate<CellStyle[]> validator = them -> them == null || them.length == 1 || them.length == numOfKeys;
+        Predicate<CellStyle[]> validator = them -> them.length == 1 || them.length == numOfKeys;
 
         // Validates the number of header styles.
-        if (!validator.test(this.headerStyles)) {
-            throw new IllegalArgumentException(String.format(
-                    "Number of header styles(%d) must be 1 or equal to number of maps' keys(%d)",
-                    this.headerStyles.length, numOfKeys));
+        if (this.headerStyles != null) {
+            Asserts.that(validator.test(this.headerStyles))
+                    .as("Number of header styles({0}) must be 1 or equal to number of maps' keys({1})",
+                            this.headerStyles.length, numOfKeys)
+                    .isTrue();
         }
 
         // Validates the number of body styles.
-        if (!validator.test(this.bodyStyles)) {
-            throw new IllegalArgumentException(String.format(
-                    "Number of body styles(%d) must be 1 or equal to number of maps' keys(%d)",
-                    this.bodyStyles.length, numOfKeys));
+        if (this.bodyStyles != null) {
+            Asserts.that(validator.test(this.bodyStyles))
+                    .as("Number of body styles({0}) must be 1 or equal to number of maps' keys({1})",
+                            this.bodyStyles.length, numOfKeys)
+                    .isTrue();
         }
     }
 

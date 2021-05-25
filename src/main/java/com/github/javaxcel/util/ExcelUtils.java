@@ -20,6 +20,7 @@ import com.github.javaxcel.exception.UnsupportedWorkbookException;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.styler.NoStyleConfig;
 import com.github.javaxcel.styler.config.Configurer;
+import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.FilenameUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -72,9 +73,10 @@ public final class ExcelUtils {
      */
     public static Workbook getWorkbook(File file) {
         final String extension = FilenameUtils.extension(file);
-        if (!extension.equals(EXCEL_97_EXTENSION) && !extension.equals(EXCEL_2007_EXTENSION)) {
-            throw new IllegalArgumentException("Extension of excel file must be 'xls' or 'xlsx'");
-        }
+        Asserts.that(extension)
+                .as("Extension of excel file must be '{0}' or '{1}'",
+                        EXCEL_97_EXTENSION, EXCEL_2007_EXTENSION)
+                .matches(EXCEL_97_EXTENSION + '|' + EXCEL_2007_EXTENSION);
 
         Workbook workbook;
         try {
@@ -123,7 +125,11 @@ public final class ExcelUtils {
      * @throws UnsupportedWorkbookException if instance of sheet is {@link SXSSFSheet}
      */
     public static int getNumOfRows(Sheet sheet) {
-        if (sheet instanceof SXSSFSheet) throw new UnsupportedWorkbookException();
+        Asserts.that(SXSSFSheet.class)
+                .as("SXSSFWorkbook is not supported workbook when read")
+                .exception(UnsupportedWorkbookException::new)
+                .isNotActualTypeOf(sheet);
+
         return Math.max(0, sheet.getPhysicalNumberOfRows());
     }
 
@@ -135,7 +141,11 @@ public final class ExcelUtils {
      * @throws UnsupportedWorkbookException if instance of workbook is {@link SXSSFWorkbook}
      */
     public static long getNumOfRows(Workbook workbook) {
-        if (workbook instanceof SXSSFWorkbook) throw new UnsupportedWorkbookException();
+        Asserts.that(SXSSFWorkbook.class)
+                .as("SXSSFWorkbook is not supported workbook when read")
+                .exception(UnsupportedWorkbookException::new)
+                .isNotActualTypeOf(workbook);
+
         return getSheets(workbook).stream().mapToInt(ExcelUtils::getNumOfRows).sum();
     }
 
@@ -161,7 +171,11 @@ public final class ExcelUtils {
      * @throws UnsupportedWorkbookException if instance of sheet is {@link SXSSFSheet}
      */
     public static int getNumOfModels(Sheet sheet) {
-        if (sheet instanceof SXSSFSheet) throw new UnsupportedWorkbookException();
+        Asserts.that(SXSSFSheet.class)
+                .as("SXSSFWorkbook is not supported workbook when read")
+                .exception(UnsupportedWorkbookException::new)
+                .isNotActualTypeOf(sheet);
+
         return Math.max(0, sheet.getPhysicalNumberOfRows() - 1);
     }
 
@@ -176,7 +190,11 @@ public final class ExcelUtils {
      * @throws UnsupportedWorkbookException if instance of workbook is {@link SXSSFWorkbook}
      */
     public static long getNumOfModels(Workbook workbook) {
-        if (workbook instanceof SXSSFWorkbook) throw new UnsupportedWorkbookException();
+        Asserts.that(SXSSFWorkbook.class)
+                .as("SXSSFWorkbook is not supported workbook when read")
+                .exception(UnsupportedWorkbookException::new)
+                .isNotActualTypeOf(workbook);
+
         return getSheets(workbook).stream().mapToInt(ExcelUtils::getNumOfModels).sum();
     }
 
@@ -353,13 +371,13 @@ public final class ExcelUtils {
      * If try it, this is about 46% slower when handled in parallel
      * than when handled in sequential.
      *
-     * <pre>{@code
+     * <pre><code>
      *     +------------+----------+
      *     | sequential | parallel |
      *     +------------+----------+
      *     | 15s        | 22s      |
      *     +------------+----------+
-     * }</pre>
+     * </code></pre>
      *
      * @param sheet        excel sheet
      * @param numOfColumns number of the columns that have contents.
@@ -401,9 +419,9 @@ public final class ExcelUtils {
      */
     @Nullable
     public static CellStyle[] toCellStyles(Workbook workbook, ExcelStyleConfig... configs) {
-        if (configs == null || configs.length == 0) {
-            throw new IllegalArgumentException("Configurations for style cannot be null or empty");
-        }
+        Asserts.that(configs)
+                .as("Configurations for style cannot be null or empty")
+                .isNotNull().hasElement();
 
         /*
             Prevents cell style from being instantiated to save memory
@@ -425,13 +443,13 @@ public final class ExcelUtils {
     /**
      * Sets alias for range.
      *
-     * <pre>{@code
+     * <pre><code>
      *     Workbook workbook = new XSSFWorkbook();
      *     Sheet sheet = workbook.createSheet("mySheet");
      *     String ref = sheet.getSheetName() + "!$A$1:$A$2";
      *
      *     setRangeAlias(workbook, "MY_RANGE", ref);
-     * }</pre>
+     * </code></pre>
      *
      * @param workbook excel workbook
      * @param alias    alias for cell range address
@@ -446,14 +464,14 @@ public final class ExcelUtils {
     /**
      * Converts a reference for cell range address.
      *
-     * <pre>{@code
+     * <pre><code>
      *     Workbook workbook = new XSSFWorkbook();
      *     Sheet sheet = workbook.createSheet("mySheet");
      *     Cell startCell = sheet.createRow(0).createCell(0);
      *     Cell endCell = sheet.createRow(1).createCell(0);
      *
      *     toRangeReference(sheet, startCell, endCell); // mySheet!$A$1:$A$2
-     * }</pre>
+     * </code></pre>
      *
      * @param sheet     excel sheet
      * @param startCell first cell in cell range address
@@ -480,13 +498,13 @@ public final class ExcelUtils {
     /**
      * Converts a reference for cell range address.
      *
-     * <pre>{@code
+     * <pre><code>
      *     Workbook workbook = new XSSFWorkbook();
      *     Sheet sheet = workbook.createSheet("mySheet");
      *
      *     toRangeReference(sheet, 0, 0, 0, 1); // mySheet!$A$1:$A$2
      *     toRangeReference(sheet, 2, 1, 5, 4); // mySheet!$C$2:$F$5
-     * }</pre>
+     * </code></pre>
      *
      * @param sheet            excel sheet
      * @param startColumnIndex column index of first cell in cell range address
@@ -515,7 +533,7 @@ public final class ExcelUtils {
     /**
      * Converts a reference for column range address except first row.
      *
-     * <pre>{@code
+     * <pre><code>
      *     Workbook hssfWorkbook = new HSSFWorkbook();
      *     Sheet hssfSheet = hssfWorkbook.createSheet("mySheet");
      *     toRangeReference(hssfSheet, 0); // mySheet!$A$2:$A$65536
@@ -523,7 +541,7 @@ public final class ExcelUtils {
      *     Workbook xssfWorkbook = new XSSFWorkbook();
      *     Sheet xssfSheet = xssfWorkbook.createSheet("mySheet");
      *     toRangeReference(xssfSheet, 2); // mySheet!$C$2:$A$1048576
-     * }</pre>
+     * </code></pre>
      *
      * @param sheet       excel sheet
      * @param columnIndex column index for cell range address
@@ -543,14 +561,14 @@ public final class ExcelUtils {
     /**
      * Sets a validation to the cells on the reference.
      *
-     * <pre>{@code
+     * <pre><code>
      *     Workbook workbook = new XSSFWorkbook();
      *     Sheet sheet = workbook.createSheet("mySheet");
      *     DataValidationHelper helper = sheet.getDataValidationHelper();
      *     String ref = toRangeReference(sheet, 2);
      *
      *     setValidation(sheet, helper, ref, "RED", "GREEN", "BLUE");
-     * }</pre>
+     * </code></pre>
      *
      * @param sheet  excel sheet
      * @param helper data validation helper

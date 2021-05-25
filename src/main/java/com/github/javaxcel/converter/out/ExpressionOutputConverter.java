@@ -18,6 +18,7 @@ package com.github.javaxcel.converter.out;
 
 import com.github.javaxcel.annotation.ExcelWriterExpression;
 import com.github.javaxcel.util.FieldUtils;
+import io.github.imsejin.common.util.CollectionUtils;
 import io.github.imsejin.expression.Expression;
 import io.github.imsejin.expression.ExpressionParser;
 import io.github.imsejin.expression.spel.standard.SpelExpressionParser;
@@ -37,15 +38,13 @@ public class ExpressionOutputConverter<T> implements OutputConverter<T> {
 
     private final StandardEvaluationContext context = new StandardEvaluationContext();
 
-    @Nullable
     private final List<Field> fields;
 
-    @Nullable
     private final Map<Field, Expression> cache;
 
     public ExpressionOutputConverter() {
-        this.fields = null;
-        this.cache = null;
+        this.fields = Collections.emptyList();
+        this.cache = Collections.emptyMap();
     }
 
     /**
@@ -54,7 +53,7 @@ public class ExpressionOutputConverter<T> implements OutputConverter<T> {
      *
      * <p> The following table is a benchmark.
      *
-     * <pre>{@code
+     * <pre><code>
      *     +--------------+--------+--------+
      *     | row \ cached | true   | false  |
      *     +--------------+--------+--------+
@@ -70,7 +69,7 @@ public class ExpressionOutputConverter<T> implements OutputConverter<T> {
      *     +--------------+--------+--------+
      *     | 1,048,574    | 1m 28s | 6m 35s |
      *     +--------------+--------+--------+
-     * }</pre>
+     * </code></pre>
      *
      * @param fields fields of model
      */
@@ -112,10 +111,10 @@ public class ExpressionOutputConverter<T> implements OutputConverter<T> {
     @Nullable
     @Override
     public String convert(T model, Field field) {
-        Map<String, Object> variables;
         Expression expression;
+        Map<String, Object> variables;
 
-        if (this.fields == null || this.cache == null) {
+        if (CollectionUtils.isNullOrEmpty(this.fields) || CollectionUtils.isNullOrEmpty(this.cache)) {
             // When this instantiated by constructor without argument.
             List<Field> fields = FieldUtils.getTargetedFields(model.getClass());
             ExcelWriterExpression annotation = field.getAnnotation(ExcelWriterExpression.class);

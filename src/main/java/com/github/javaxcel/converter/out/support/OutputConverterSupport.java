@@ -26,9 +26,12 @@ import com.github.javaxcel.converter.out.OutputConverter;
 import io.github.imsejin.common.util.StringUtils;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toMap;
 
 public class OutputConverterSupport<T> implements OutputConverter<T> {
 
@@ -39,13 +42,9 @@ public class OutputConverterSupport<T> implements OutputConverter<T> {
     private final OutputConverter<T> expressionConverter;
 
     public OutputConverterSupport(List<Field> fields) {
-        Map<Field, Column> map = new HashMap<>();
+        this.columnMap = fields.stream().collect(collectingAndThen(toMap(it -> it, Column::new),
+                Collections::unmodifiableMap));
 
-        for (Field field : fields) {
-            map.put(field, Column.from(field));
-        }
-
-        this.columnMap = map;
         this.defaultConverter = new DefaultOutputConverter<>();
         // Caches expressions for each field to improve performance.
         this.expressionConverter = new ExpressionOutputConverter<>(fields);
@@ -83,33 +82,26 @@ public class OutputConverterSupport<T> implements OutputConverter<T> {
     }
 
     private static class Column {
-        private ConversionType conversionType;
+        private final ConversionType conversionType;
         private String defaultValue;
 
-        private Column() {
-        }
-
-        private static Column from(Field field) {
-            Column column = new Column();
-
-            // Checks which conversion type of a field value when it is written.
-            column.conversionType = ConversionType.of(field, ConverterType.OUT);
+        private Column(Field field) {
+            // Checks which conversion type of a field value, when it is written.
+            this.conversionType = ConversionType.of(field, ConverterType.OUT);
 
             // Decides the proper default value for a field value.
             // @ExcelColumn's default value takes precedence over @ExcelModel's default value.
             ExcelColumn columnAnnotation = field.getAnnotation(ExcelColumn.class);
             if (columnAnnotation != null && !columnAnnotation.defaultValue().equals("")) {
                 // Default value on @ExcelColumn
-                column.defaultValue = columnAnnotation.defaultValue();
+                this.defaultValue = columnAnnotation.defaultValue();
             } else {
                 ExcelModel modelAnnotation = field.getDeclaringClass().getAnnotation(ExcelModel.class);
                 if (modelAnnotation != null && !modelAnnotation.defaultValue().equals("")) {
                     // Default value on @ExcelModel
-                    column.defaultValue = modelAnnotation.defaultValue();
+                    this.defaultValue = modelAnnotation.defaultValue();
                 }
             }
-
-            return column;
         }
     }
 

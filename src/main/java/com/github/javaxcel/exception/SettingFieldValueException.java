@@ -18,32 +18,32 @@ package com.github.javaxcel.exception;
 
 import java.lang.reflect.Field;
 
-public class SettingFieldValueException extends RuntimeException {
+public class SettingFieldValueException extends JavaxcelException {
 
     private final Class<?> type;
 
     private final transient Field field;
 
     public SettingFieldValueException(Class<?> type, Field field) {
-        super(String.format("Failed to set value into the field(%s) of the class(%s)", field.getName(), type.getName()));
+        super("Failed to set value into the field(%s) of the class(%s)", field.getName(), type.getName());
         this.type = type;
         this.field = field;
     }
 
-    public SettingFieldValueException(String message, Class<?> type, Field field) {
-        super(message);
+    public SettingFieldValueException(Class<?> type, Field field, String format, Object... args) {
+        super(format, args);
         this.type = type;
         this.field = field;
     }
 
-    public SettingFieldValueException(String message, Throwable cause, Class<?> type, Field field) {
-        super(message, cause);
+    public SettingFieldValueException(Class<?> type, Field field, Throwable cause) {
+        super(cause, "Failed to set value into the field(%s) of the class(%s)", field.getName(), type.getName());
         this.type = type;
         this.field = field;
     }
 
-    public SettingFieldValueException(Throwable cause, Class<?> type, Field field) {
-        super(String.format("Failed to set value into the field(%s) of the class(%s)", field.getName(), type.getName()), cause);
+    public SettingFieldValueException(Class<?> type, Field field, Throwable cause, String format, Object... args) {
+        super(cause, format, args);
         this.type = type;
         this.field = field;
     }

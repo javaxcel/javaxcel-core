@@ -20,6 +20,7 @@ import com.github.javaxcel.annotation.ExcelIgnore;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
 import com.github.javaxcel.util.TypeClassifier;
+import io.github.imsejin.common.util.MathUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
@@ -91,7 +92,7 @@ public class TestUtils {
             Object randomized = randomize(classes[index]);
 
             // For abundant test cases, some empty strings will be converted to null.
-            if ((i & 1) == 1 && "".equals(randomized)) {
+            if (MathUtils.isOdd(i) && "".equals(randomized)) {
                 randomized = null;
             }
 

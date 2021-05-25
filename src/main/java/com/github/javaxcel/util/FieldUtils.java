@@ -97,6 +97,24 @@ public final class FieldUtils {
     }
 
     /**
+     * Gets initial value of the type.
+     *
+     * @param type type of the object
+     * @return initial value of the type
+     * @see TypeClassifier#isNumericPrimitive(Class)
+     */
+    @Nullable
+    public static Object initialValueOf(Class<?> type) {
+        // Value of primitive type cannot be null.
+        if (TypeClassifier.isNumericPrimitive(type)) return 0;
+        else if (type == char.class) return '\u0000';
+        else if (type == boolean.class) return false;
+
+        // The others can be null.
+        return null;
+    }
+
+    /**
      * Converts fields to header names.
      *
      * <p> This checks whether the field is annotated with {@link ExcelColumn} or not.
@@ -150,7 +168,7 @@ public final class FieldUtils {
             // Returns value in the field.
             return field.get(model);
         } catch (IllegalAccessException e) {
-            throw new GettingFieldValueException(e, model.getClass(), field);
+            throw new GettingFieldValueException(model.getClass(), field, e);
         }
     }
 
@@ -170,7 +188,7 @@ public final class FieldUtils {
         try {
             field.set(model, value);
         } catch (IllegalAccessException e) {
-            throw new SettingFieldValueException(e, model.getClass(), field);
+            throw new SettingFieldValueException(model.getClass(), field, e);
         }
     }
 
@@ -190,7 +208,7 @@ public final class FieldUtils {
             // Allows only constructor without parameter.
             constructor = type.getDeclaredConstructor();
         } catch (NoSuchMethodException e) {
-            throw new NoTargetedConstructorException(e, type);
+            throw new NoTargetedConstructorException(type, e);
         }
         constructor.setAccessible(true);
 

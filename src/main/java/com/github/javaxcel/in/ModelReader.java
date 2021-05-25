@@ -16,12 +16,10 @@
 
 package com.github.javaxcel.in;
 
-import com.github.javaxcel.annotation.ExcelReaderExpression;
-import com.github.javaxcel.converter.in.DefaultInputConverter;
-import com.github.javaxcel.converter.in.ExpressionInputConverter;
-import com.github.javaxcel.converter.in.InputConverter;
+import com.github.javaxcel.converter.in.support.InputConverterSupport;
 import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.util.FieldUtils;
+import io.github.imsejin.common.assertion.Asserts;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -42,10 +40,6 @@ import static java.util.stream.Collectors.toList;
  */
 public class ModelReader<W extends Workbook, T> extends AbstractExcelReader<W, T> {
 
-    private final InputConverter defaultConverter = new DefaultInputConverter();
-
-    private final InputConverter expressionConverter;
-
     private final Class<T> type;
 
     /**
@@ -55,6 +49,8 @@ public class ModelReader<W extends Workbook, T> extends AbstractExcelReader<W, T
      */
     private final List<Field> fields;
 
+    private final InputConverterSupport converter;
+
     private boolean parallel;
 
     /**
@@ -63,12 +59,19 @@ public class ModelReader<W extends Workbook, T> extends AbstractExcelReader<W, T
     public ModelReader(W workbook, Class<T> type) {
         super(workbook);
 
+        Asserts.that(type)
+                .as("Type is not allowed to be null")
+                .isNotNull();
         this.type = type;
-        this.fields = FieldUtils.getTargetedFields(type);
 
-        if (this.fields.isEmpty()) throw new NoTargetedFieldException(this.type);
+        // Finds targeted fields.
+        this.fields = FieldUtils.getTargetedFields(this.type);
+        Asserts.that(this.fields)
+                .as("Cannot find the targeted fields in the class({0})", this.type.getName())
+                .exception(desc -> new NoTargetedFieldException(this.type, desc))
+                .hasElement();
 
-        this.expressionConverter = new ExpressionInputConverter(this.fields);
+        this.converter = new InputConverterSupport(this.fields);
     }
 
     /**
@@ -88,7 +91,7 @@ public class ModelReader<W extends Workbook, T> extends AbstractExcelReader<W, T
      * <p> We recommend processing in parallel only when
      * dealing with large data. The following table is a benchmark.
      *
-     * <pre>{@code
+     * <pre><code>
      *     +------------+------------+----------+
      *     | row \ type | sequential | parallel |
      *     +------------+------------+----------+
@@ -100,7 +103,7 @@ public class ModelReader<W extends Workbook, T> extends AbstractExcelReader<W, T
      *     +------------+------------+----------+
      *     | 150,000    | 3m 28s     | 2m 1s    |
      *     +------------+------------+----------+
-     * }</pre>
+     * </code></pre>
      *
      * @return {@link ModelReader}
      */
@@ -149,17 +152,7 @@ public class ModelReader<W extends Workbook, T> extends AbstractExcelReader<W, T
         T model = FieldUtils.instantiate(this.type);
 
         for (Field field : this.fields) {
-            ExcelReaderExpression annotation = field.getAnnotation(ExcelReaderExpression.class);
-            Object fieldValue;
-
-            if (annotation == null) {
-                // When the field is not annotated with @ExcelReaderExpression.
-                fieldValue = this.defaultConverter.convert(imitation, field);
-            } else {
-                // When the field is annotated with @ExcelReaderExpression.
-                fieldValue = this.expressionConverter.convert(imitation, field);
-            }
-
+            Object fieldValue = this.converter.convert(imitation, field);
             FieldUtils.setFieldValue(model, field, fieldValue);
         }
 

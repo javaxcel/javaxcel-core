@@ -18,6 +18,7 @@ package com.github.javaxcel.converter.in;
 
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
+import com.github.javaxcel.util.FieldUtils;
 import com.github.javaxcel.util.TypeClassifier;
 import io.github.imsejin.common.util.StringUtils;
 
@@ -28,26 +29,9 @@ import java.math.BigInteger;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.UUID;
 
 public class DefaultInputConverter implements InputConverter {
-
-    /**
-     * Gets initial value of the type.
-     *
-     * @param type type of the object
-     * @return initial value of the type
-     * @see TypeClassifier#isNumericPrimitive(Class)
-     */
-    @Nullable
-    private static Object initialValueOf(Class<?> type) {
-        // Value of primitive type cannot be null.
-        if (TypeClassifier.isNumericPrimitive(type)) return 0;
-        else if (type == char.class) return '\u0000';
-        else if (type == boolean.class) return false;
-
-        // The others can be null.
-        return null;
-    }
 
     @Nullable
     private static Object parse(String value, Field field) {
@@ -64,6 +48,7 @@ public class DefaultInputConverter implements InputConverter {
         else if (type == boolean.class || type == Boolean.class) return Boolean.parseBoolean(value);
         else if (type == BigInteger.class) return new BigInteger(value);
         else if (type == BigDecimal.class) return new BigDecimal(value);
+        else if (type == UUID.class) return UUID.fromString(value);
         else if (TypeClassifier.isTemporal(type)) {
             ExcelDateTimeFormat annotation = field.getAnnotation(ExcelDateTimeFormat.class);
             if (annotation == null || StringUtils.isNullOrEmpty(annotation.pattern())) {
@@ -99,11 +84,10 @@ public class DefaultInputConverter implements InputConverter {
         String value = (String) variables.get(field.getName());
 
         ExcelColumn excelColumn = field.getAnnotation(ExcelColumn.class);
-        Class<?> type = field.getType();
 
         // When you don't explicitly define default value and the cell value is null or empty.
         if ((excelColumn == null || excelColumn.defaultValue().equals("")) && StringUtils.isNullOrEmpty(value)) {
-            return initialValueOf(type);
+            return FieldUtils.initialValueOf(field.getType());
         }
 
         // Converts string to the type of field.

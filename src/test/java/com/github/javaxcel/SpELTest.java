@@ -193,7 +193,7 @@ class SpELTest {
 
         // when
         StandardEvaluationContext context = new StandardEvaluationContext(toy);
-        context.registerFunction(converterName, SpELTest.class.getDeclaredMethod(converterName, IntStream.class));
+        context.registerFunction(converterName, getClass().getDeclaredMethod(converterName, IntStream.class));
         context.setVariable(fieldName, toy.getTargetAges());
         String value = StringUtils.ifNullOrEmpty(
                 (String) parser.parseExpression(exp).getValue(context), "");

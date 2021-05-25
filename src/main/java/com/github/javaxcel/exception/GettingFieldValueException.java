@@ -18,32 +18,32 @@ package com.github.javaxcel.exception;
 
 import java.lang.reflect.Field;
 
-public class GettingFieldValueException extends RuntimeException {
+public class GettingFieldValueException extends JavaxcelException {
 
     private final Class<?> type;
 
     private final transient Field field;
 
     public GettingFieldValueException(Class<?> type, Field field) {
-        super(String.format("Failed to get value in the field(%s) of the class(%s)", field.getName(), type.getName()));
+        super("Failed to get value in the field(%s) of the class(%s)", field.getName(), type.getName());
         this.type = type;
         this.field = field;
     }
 
-    public GettingFieldValueException(String message, Class<?> type, Field field) {
-        super(message);
+    public GettingFieldValueException(Class<?> type, Field field, String format, Object... args) {
+        super(format, args);
         this.type = type;
         this.field = field;
     }
 
-    public GettingFieldValueException(String message, Throwable cause, Class<?> type, Field field) {
-        super(message, cause);
+    public GettingFieldValueException(Class<?> type, Field field, Throwable cause) {
+        super(cause, "Failed to get value in the field(%s) of the class(%s)", field.getName(), type.getName());
         this.type = type;
         this.field = field;
     }
 
-    public GettingFieldValueException(Throwable cause, Class<?> type, Field field) {
-        super(String.format("Failed to get value in the field(%s) of the class(%s)", field.getName(), type.getName()), cause);
+    public GettingFieldValueException(Class<?> type, Field field, Throwable cause, String format, Object... args) {
+        super(cause, format, args);
         this.type = type;
         this.field = field;
     }
