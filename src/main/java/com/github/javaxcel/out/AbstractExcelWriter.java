@@ -138,7 +138,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
     public AbstractExcelWriter<W, T> defaultValue(String defaultValue) {
         Asserts.that(defaultValue)
                 .as("Default value is not allowed to be null or empty")
-                .isNotNull().hasText();
+                .isNotNull().isNotEmpty();
 
         return this;
     }
