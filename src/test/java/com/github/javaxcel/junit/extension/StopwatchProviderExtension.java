@@ -53,7 +53,7 @@ public class StopwatchProviderExtension implements BeforeTestExecutionCallback, 
         a instance of this extension is reused.
         It seems that the test cases are in a group.
         */
-        if (!this.stopwatch.hasNeverBeenStopped()) this.stopwatch = new Stopwatch();
+        if (!this.stopwatch.hasNeverBeenStopped()) this.stopwatch.clear();
     }
 
     @Override
