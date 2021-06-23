@@ -8,20 +8,22 @@
 
 <p align="center">
     <a href="https://travis-ci.com/github/javaxcel/javaxcel-core">
-        <img src="https://travis-ci.com/javaxcel/javaxcel-core.svg?branch=release"/>
+        <img alt="Travis CI" src="https://img.shields.io/travis/com/javaxcel/javaxcel-core/release?style=flat-square"/>
     </a>
     <a href="https://codecov.io/gh/javaxcel/javaxcel-core">
-        <img src="https://codecov.io/gh/javaxcel/javaxcel-core/branch/release/graph/badge.svg?token=X7ZO535W9K"/>
+        <img alt="Codecov branch" src="https://img.shields.io/codecov/c/github/javaxcel/javaxcel-core/release?label=code%20coverage&style=flat-square&token=X7ZO535W9K"/>
     </a>
     <a href="https://search.maven.org/artifact/com.github.javaxcel/javaxcel-core">
-        <img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.github.javaxcel/javaxcel-core">
+        <img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.github.javaxcel/javaxcel-core?style=flat-square">
     </a>
-</p>
-
-<p align="center">
-    <a href="https://lgtm.com/projects/g/javaxcel/javaxcel-core/context:java"><img alt="Language grade: Java" src="https://img.shields.io/lgtm/grade/java/g/javaxcel/javaxcel-core.svg?logo=lgtm&logoWidth=18"/></a>
-    <a href="https://frontend.code-inspector.com/project/16361/dashboard"><img alt="Code Inspector" src="https://www.code-inspector.com/project/16361/score/svg"></a>
-    <img alt="jdk8" src="https://img.shields.io/badge/jdk-8-orange">
+    <br/>
+    <a href="https://lgtm.com/projects/g/javaxcel/javaxcel-core/context:java">
+        <img alt="Lgtm grade" src="https://img.shields.io/lgtm/grade/java/github/javaxcel/javaxcel-core.svg?logo=&logoWidth=&label=lgtm%3A%20code%20quality&&style=flat-square"/>
+    </a>
+    <a href="https://www.codacy.com/gh/javaxcel/javaxcel-core/dashboard">
+        <img alt="Codacy grade" src="https://img.shields.io/codacy/grade/a430e1580c5f44d2b2f1b2c11195cc49?label=codacy%3A%20code%20quality&style=flat-square">
+    </a>
+    <img alt="jdk8" src="https://img.shields.io/badge/jdk-8-orange?style=flat-square">
 </p>
 
 ## Table of Contents
