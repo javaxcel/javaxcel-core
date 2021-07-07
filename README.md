@@ -59,7 +59,7 @@ Javaxcel Core is a supporter for exporting list object to spread sheets and impo
 <dependency>
   <groupId>com.github.javaxcel</groupId>
   <artifactId>javaxcel-core</artifactId>
-  <version>${javaxcel.core.version}</version>
+  <version>${javaxcel-core.version}</version>
 </dependency>
 ```
 
