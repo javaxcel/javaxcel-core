@@ -27,7 +27,7 @@ public @interface ExcelDateTimeFormat {
      * Pattern for formatting datetime.
      *
      * @return pattern for formatting datetime
-     * @see com.github.javaxcel.util.TypeClassifier#isTemporal(Class)
+     * @see io.github.imsejin.common.tool.TypeClassifier#isTemporal(Class)
      * @see java.time.format.DateTimeFormatter
      */
     String pattern();

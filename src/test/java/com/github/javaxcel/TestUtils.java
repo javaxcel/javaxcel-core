@@ -19,7 +19,7 @@ package com.github.javaxcel;
 import com.github.javaxcel.annotation.ExcelIgnore;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
-import com.github.javaxcel.util.TypeClassifier;
+import io.github.imsejin.common.tool.TypeClassifier;
 import io.github.imsejin.common.util.MathUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.jeasy.random.EasyRandom;
@@ -32,10 +32,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Month;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -54,8 +51,8 @@ public class TestUtils {
             TypeClassifier.Types.PRIMITIVE.getClasses(),
             TypeClassifier.Types.WRAPPER.getClasses(),
             TypeClassifier.Types.DATETIME.getClasses(),
-            new Class[]{String.class})
-            .flatMap(Arrays::stream).toArray(Class[]::new);
+            Collections.singleton(String.class))
+            .flatMap(Collection::stream).toArray(Class[]::new);
 
     static {
         EasyRandomParameters parameters =
