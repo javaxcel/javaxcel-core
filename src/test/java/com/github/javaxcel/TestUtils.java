@@ -62,7 +62,7 @@ public class TestUtils {
                         .timeRange(LocalTime.MIN, LocalTime.MAX)
                         .stringLengthRange(0, 15)
                         .collectionSizeRange(0, 10)
-                        .excludeField(field -> field.getAnnotation(Unrandomized.class) != null || field.getAnnotation(ExcelIgnore.class) != null)
+                        .excludeField(field -> field.isAnnotationPresent(Unrandomized.class) || field.isAnnotationPresent(ExcelIgnore.class))
                         .overrideDefaultInitialization(false)
                         .scanClasspathForConcreteTypes(true);
         generator = new EasyRandom(parameters);
