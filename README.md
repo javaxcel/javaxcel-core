@@ -7,8 +7,13 @@
 <p align="center">Supporter for export and import of excel file</p>
 
 <p align="center">
+    <!--
     <a href="https://travis-ci.com/github/javaxcel/javaxcel-core">
         <img alt="Travis CI" src="https://img.shields.io/travis/com/javaxcel/javaxcel-core/release?style=flat-square"/>
+    </a>
+    -->
+    <a href="https://github.com/ImSejin/common-utils/actions/workflows/maven-build.yml">
+    <img alt="Github Workflows" src="https://img.shields.io/github/workflow/status/javaxcel/javaxcel-core/Java%20CI%20with%20Maven?label=build&style=flat-square">
     </a>
     <a href="https://codecov.io/gh/javaxcel/javaxcel-core">
         <img alt="Codecov branch" src="https://img.shields.io/codecov/c/github/javaxcel/javaxcel-core/release?label=code%20coverage&style=flat-square&token=X7ZO535W9K"/>
