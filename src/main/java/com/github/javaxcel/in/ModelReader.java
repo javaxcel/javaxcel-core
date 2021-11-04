@@ -20,6 +20,7 @@ import com.github.javaxcel.converter.in.support.InputConverterSupport;
 import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.assertion.Asserts;
+import io.github.imsejin.common.util.ReflectionUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -151,11 +152,11 @@ public class ModelReader<W extends Workbook, T> extends AbstractExcelReader<W, T
      * @return real model
      */
     private T toRealModel(Map<String, Object> imitation) {
-        T model = FieldUtils.instantiate(this.type);
+        T model = ReflectionUtils.instantiate(this.type);
 
         for (Field field : this.fields) {
             Object fieldValue = this.converter.convert(imitation, field);
-            FieldUtils.setFieldValue(model, field, fieldValue);
+            ReflectionUtils.setFieldValue(model, field, fieldValue);
         }
 
         return model;

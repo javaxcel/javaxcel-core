@@ -23,7 +23,6 @@ import org.apache.poi.ss.usermodel.*;
 import javax.annotation.Nullable;
 import java.io.OutputStream;
 import java.util.*;
-import java.util.function.Predicate;
 
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
@@ -365,22 +364,21 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
         }
 
         final int numOfKeys = this.keys.size();
-        Predicate<CellStyle[]> validator = them -> them.length == 1 || them.length == numOfKeys;
 
         // Validates the number of header styles.
         if (this.headerStyles != null) {
-            Asserts.that(validator.test(this.headerStyles))
+            Asserts.that(this.headerStyles.length)
                     .as("Number of header styles({0}) must be 1 or equal to number of maps' keys({1})",
                             this.headerStyles.length, numOfKeys)
-                    .isTrue();
+                    .predicate(it -> it == 1 || it == numOfKeys);
         }
 
         // Validates the number of body styles.
         if (this.bodyStyles != null) {
-            Asserts.that(validator.test(this.bodyStyles))
+            Asserts.that(this.bodyStyles.length)
                     .as("Number of body styles({0}) must be 1 or equal to number of maps' keys({1})",
                             this.bodyStyles.length, numOfKeys)
-                    .isTrue();
+                    .predicate(it -> it == 1 || it == numOfKeys);
         }
     }
 

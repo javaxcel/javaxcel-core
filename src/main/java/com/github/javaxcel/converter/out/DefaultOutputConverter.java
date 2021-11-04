@@ -17,8 +17,8 @@
 package com.github.javaxcel.converter.out;
 
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
-import com.github.javaxcel.util.FieldUtils;
-import com.github.javaxcel.util.TypeClassifier;
+import io.github.imsejin.common.tool.TypeClassifier;
+import io.github.imsejin.common.util.ReflectionUtils;
 import io.github.imsejin.common.util.StringUtils;
 
 import javax.annotation.Nullable;
@@ -31,13 +31,12 @@ public class DefaultOutputConverter<T> implements OutputConverter<T> {
     /**
      * {@inheritDoc}
      *
-     * @see FieldUtils#getFieldValue(Object, Field)
      * @see ExcelDateTimeFormat#pattern()
      */
     @Nullable
     @Override
     public String convert(T model, Field field) {
-        Object value = FieldUtils.getFieldValue(model, field);
+        Object value = ReflectionUtils.getFieldValue(model, field);
         if (value == null) return null;
 
         // Stringifies datetime with pattern if the value of type is datetime.

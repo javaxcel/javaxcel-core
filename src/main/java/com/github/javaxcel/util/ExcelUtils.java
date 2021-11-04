@@ -20,6 +20,7 @@ import com.github.javaxcel.exception.UnsupportedWorkbookException;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.styler.NoStyleConfig;
 import com.github.javaxcel.styler.config.Configurer;
+import io.github.imsejin.common.annotation.ExcludeFromGeneratedJacocoReport;
 import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.FilenameUtils;
 import org.apache.poi.hssf.usermodel.*;
@@ -61,7 +62,9 @@ public final class ExcelUtils {
     public static final String EXCEL_97_EXTENSION = "xls";
     public static final String EXCEL_2007_EXTENSION = "xlsx";
 
+    @ExcludeFromGeneratedJacocoReport
     private ExcelUtils() {
+        throw new UnsupportedOperationException(getClass().getName() + " is not allowed to instantiate");
     }
 
     /**
@@ -72,7 +75,7 @@ public final class ExcelUtils {
      * @throws IllegalArgumentException unless file extension is equal to 'xls' or 'xlsx'
      */
     public static Workbook getWorkbook(File file) {
-        final String extension = FilenameUtils.extension(file);
+        final String extension = FilenameUtils.getExtension(file.getName());
         Asserts.that(extension)
                 .as("Extension of excel file must be '{0}' or '{1}'",
                         EXCEL_97_EXTENSION, EXCEL_2007_EXTENSION)
@@ -128,7 +131,7 @@ public final class ExcelUtils {
         Asserts.that(SXSSFSheet.class)
                 .as("SXSSFWorkbook is not supported workbook when read")
                 .exception(UnsupportedWorkbookException::new)
-                .isNotActualTypeOf(sheet);
+                .isNotTypeOf(sheet);
 
         return Math.max(0, sheet.getPhysicalNumberOfRows());
     }
@@ -144,7 +147,7 @@ public final class ExcelUtils {
         Asserts.that(SXSSFWorkbook.class)
                 .as("SXSSFWorkbook is not supported workbook when read")
                 .exception(UnsupportedWorkbookException::new)
-                .isNotActualTypeOf(workbook);
+                .isNotTypeOf(workbook);
 
         return getSheets(workbook).stream().mapToInt(ExcelUtils::getNumOfRows).sum();
     }
@@ -174,7 +177,7 @@ public final class ExcelUtils {
         Asserts.that(SXSSFSheet.class)
                 .as("SXSSFWorkbook is not supported workbook when read")
                 .exception(UnsupportedWorkbookException::new)
-                .isNotActualTypeOf(sheet);
+                .isNotTypeOf(sheet);
 
         return Math.max(0, sheet.getPhysicalNumberOfRows() - 1);
     }
@@ -193,7 +196,7 @@ public final class ExcelUtils {
         Asserts.that(SXSSFWorkbook.class)
                 .as("SXSSFWorkbook is not supported workbook when read")
                 .exception(UnsupportedWorkbookException::new)
-                .isNotActualTypeOf(workbook);
+                .isNotTypeOf(workbook);
 
         return getSheets(workbook).stream().mapToInt(ExcelUtils::getNumOfModels).sum();
     }
