@@ -325,7 +325,7 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
 
         for (int i = 0; i < this.fields.size(); i++) {
             Field field = this.fields.get(i);
-            if (field.getType().getSuperclass() != Enum.class) continue;
+            if (!field.getType().isEnum()) continue;
 
             ExcelColumn excelColumn = field.getAnnotation(ExcelColumn.class);
             boolean enableByColumn = excelColumn != null && excelColumn.enumDropdown();
