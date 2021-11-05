@@ -48,10 +48,10 @@ public class TestUtils {
     private static final EasyRandom generator;
 
     private static final Class<?>[] classes = Stream.of(
-            TypeClassifier.Types.PRIMITIVE.getClasses(),
-            TypeClassifier.Types.WRAPPER.getClasses(),
+            TypeClassifier.Types.PRIMITIVE_NUMBER.getClasses(),
+            TypeClassifier.Types.WRAPPER_NUMBER.getClasses(),
             TypeClassifier.Types.DATETIME.getClasses(),
-            Collections.singleton(String.class))
+            Arrays.asList(char.class, boolean.class, Character.class, Boolean.class, String.class))
             .flatMap(Collection::stream).toArray(Class[]::new);
 
     static {
@@ -62,7 +62,7 @@ public class TestUtils {
                         .timeRange(LocalTime.MIN, LocalTime.MAX)
                         .stringLengthRange(0, 15)
                         .collectionSizeRange(0, 10)
-                        .excludeField(field -> field.getAnnotation(Unrandomized.class) != null || field.getAnnotation(ExcelIgnore.class) != null)
+                        .excludeField(field -> field.isAnnotationPresent(Unrandomized.class) || field.isAnnotationPresent(ExcelIgnore.class))
                         .overrideDefaultInitialization(false)
                         .scanClasspathForConcreteTypes(true);
         generator = new EasyRandom(parameters);
@@ -100,7 +100,7 @@ public class TestUtils {
         return map;
     }
 
-    public static List<Map<String, Object>> getRandomMaps(int size, int numOfEntries) {
+    public static List<Map<String, ?>> getRandomMaps(int size, int numOfEntries) {
         if (size < 0) throw new IllegalArgumentException("Size cannot be negative");
         if (numOfEntries < 0) throw new IllegalArgumentException("Number of entries cannot be negative");
 

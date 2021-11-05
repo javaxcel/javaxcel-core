@@ -53,10 +53,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+        <!-- Dependency versions -->
         <apache.poi.version>4.1.2</apache.poi.version>
         <javaxcel.styler.version>0.2.1</javaxcel.styler.version>
-        <common.utils.version>0.5.0</common.utils.version>
-        <junit5.version>5.7.2</junit5.version>
+        <spel.version>5.2.9</spel.version>
+        <common.utils.version>0.7.0</common.utils.version>
+        <junit5.version>5.8.1</junit5.version>
+        <assertj.version>3.21.0</assertj.version>
     </properties>
 
     <dependencies>
@@ -103,7 +106,7 @@
         <dependency>
             <groupId>io.github.imsejin</groupId>
             <artifactId>spel</artifactId>
-            <version>5.2.9</version>
+            <version>${spel.version}</version>
         </dependency>
 
         <!-- Javaxcel Styler -->
@@ -130,7 +133,7 @@
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
-            <version>1.10.22</version>
+            <version>1.11.1</version>
             <scope>test</scope>
         </dependency>
 
@@ -158,7 +161,7 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.19.0</version>
+            <version>${assertj.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -249,6 +252,16 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.2.0</version>
                 <configuration>
@@ -263,34 +276,6 @@
                 <version>2.22.2</version>
                 <configuration>
                     <testFailureIgnore>true</testFailureIgnore>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.1.2</version>
-                <executions>
-                    <execution>
-                        <id>copy</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
                 </configuration>
             </plugin>
 
