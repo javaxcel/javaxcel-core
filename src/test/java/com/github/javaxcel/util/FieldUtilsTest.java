@@ -23,16 +23,6 @@ class FieldUtilsTest {
 
     @ParameterizedTest
     @ValueSource(classes = {Product.class, Toy.class, EducationToy.class})
-    void getInheritedFields(Class<?> type) {
-        // when
-        List<Field> inheritedFields = FieldUtils.getInheritedFields(type);
-
-        // then
-        inheritedFields.forEach(System.out::println);
-    }
-
-    @ParameterizedTest
-    @ValueSource(classes = {Product.class, Toy.class, EducationToy.class})
     void toHeaderNames(Class<?> type) {
         // given
         List<Field> targetedFields = FieldUtils.getTargetedFields(type);

@@ -51,7 +51,7 @@ class MapReaderTest {
         int numOfMocks = ExcelUtils.getMaxRows(workbook) + 10_000;
         stopwatch.start(String.format("create %,d mocks", numOfMocks));
         List<Map<String, Object>> maps = IntStream.range(0, numOfMocks)
-                                                 .mapToObj(i -> getRandomMap(keys)).collect(toList());
+                .mapToObj(i -> getRandomMap(keys)).collect(toList());
         stopwatch.stop();
 
         stopwatch.start(String.format("write %,d maps", numOfMocks));

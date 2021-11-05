@@ -81,7 +81,7 @@ class HeaderNamesTest extends MapWriterTester {
 
         stopwatch.start("#1 sort with unmatched list");
         assertThatThrownBy(() -> ExcelWriterFactory.create(workbook)
-                .headerNames(Arrays.asList("FIELD_1", "FIELD_2", "FIELD_3"))
+                .headerNames(Arrays.asList("column_1", "column_2", "column_3"))
                 .write(null, TestUtils.getRandomMaps(10, NUM_OF_COLUMNS)))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessageStartingWith("Ordered keys are at variance with maps' keys");
@@ -97,7 +97,7 @@ class HeaderNamesTest extends MapWriterTester {
 
         stopwatch.start("convert header names with unmatched list");
         assertThatThrownBy(() -> ExcelWriterFactory.create(workbook)
-                .headerNames(Arrays.asList("FIELD_1", "FIELD_2", "FIELD_3"), Arrays.asList("FIELD_1", "FIELD_2")))
+                .headerNames(Arrays.asList("column_1", "column_2", "column_3"), Arrays.asList("column_1", "column_2")))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessage("The number of ordered keys is not equal to the number of header names");
     }

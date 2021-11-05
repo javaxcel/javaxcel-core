@@ -19,7 +19,7 @@ package com.github.javaxcel;
 import com.github.javaxcel.annotation.ExcelIgnore;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
-import com.github.javaxcel.util.TypeClassifier;
+import io.github.imsejin.common.tool.TypeClassifier;
 import io.github.imsejin.common.util.MathUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.jeasy.random.EasyRandom;
@@ -32,10 +32,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Month;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -51,11 +48,11 @@ public class TestUtils {
     private static final EasyRandom generator;
 
     private static final Class<?>[] classes = Stream.of(
-            TypeClassifier.Types.PRIMITIVE.getClasses(),
-            TypeClassifier.Types.WRAPPER.getClasses(),
+            TypeClassifier.Types.PRIMITIVE_NUMBER.getClasses(),
+            TypeClassifier.Types.WRAPPER_NUMBER.getClasses(),
             TypeClassifier.Types.DATETIME.getClasses(),
-            new Class[]{String.class})
-            .flatMap(Arrays::stream).toArray(Class[]::new);
+            Arrays.asList(char.class, boolean.class, Character.class, Boolean.class, String.class))
+            .flatMap(Collection::stream).toArray(Class[]::new);
 
     static {
         EasyRandomParameters parameters =
@@ -65,7 +62,7 @@ public class TestUtils {
                         .timeRange(LocalTime.MIN, LocalTime.MAX)
                         .stringLengthRange(0, 15)
                         .collectionSizeRange(0, 10)
-                        .excludeField(field -> field.getAnnotation(Unrandomized.class) != null || field.getAnnotation(ExcelIgnore.class) != null)
+                        .excludeField(field -> field.isAnnotationPresent(Unrandomized.class) || field.isAnnotationPresent(ExcelIgnore.class))
                         .overrideDefaultInitialization(false)
                         .scanClasspathForConcreteTypes(true);
         generator = new EasyRandom(parameters);

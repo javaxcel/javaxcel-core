@@ -25,6 +25,7 @@ import com.github.javaxcel.styler.NoStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.assertion.Asserts;
+import io.github.imsejin.common.util.ReflectionUtils;
 import org.apache.poi.ss.usermodel.*;
 
 import java.io.OutputStream;
@@ -96,7 +97,7 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
 
     private void setStylesByModel(ExcelModel excelModel) {
         // Sets configurations for header style.
-        ExcelStyleConfig headerConfig = FieldUtils.instantiate(excelModel.headerStyle());
+        ExcelStyleConfig headerConfig = ReflectionUtils.instantiate(excelModel.headerStyle());
         if (!(headerConfig instanceof NoStyleConfig)) {
             CellStyle headerStyle = ExcelUtils.toCellStyle(this.workbook, headerConfig);
             this.headerStyles = IntStream.range(0, this.fields.size())
@@ -104,7 +105,7 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
         }
 
         // Sets configurations for body style.
-        ExcelStyleConfig bodyConfig = FieldUtils.instantiate(excelModel.bodyStyle());
+        ExcelStyleConfig bodyConfig = ReflectionUtils.instantiate(excelModel.bodyStyle());
         if (!(bodyConfig instanceof NoStyleConfig)) {
             CellStyle bodyStyle = ExcelUtils.toCellStyle(this.workbook, bodyConfig);
             this.bodyStyles = IntStream.range(0, this.fields.size())
@@ -124,14 +125,14 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
             if (excelColumn == null) continue;
 
             // Replaces header style of 'ExcelModel' with header style of 'ExcelColumn'.
-            ExcelStyleConfig headerConfig = FieldUtils.instantiate(excelColumn.headerStyle());
+            ExcelStyleConfig headerConfig = ReflectionUtils.instantiate(excelColumn.headerStyle());
             if (!(headerConfig instanceof NoStyleConfig)) {
                 CellStyle headerStyle = ExcelUtils.toCellStyle(this.workbook, headerConfig);
                 this.headerStyles[i] = headerStyle;
             }
 
             // Replaces body style of 'ExcelModel' with body style of 'ExcelColumn'.
-            ExcelStyleConfig bodyConfig = FieldUtils.instantiate(excelColumn.bodyStyle());
+            ExcelStyleConfig bodyConfig = ReflectionUtils.instantiate(excelColumn.bodyStyle());
             if (!(bodyConfig instanceof NoStyleConfig)) {
                 CellStyle bodyStyle = ExcelUtils.toCellStyle(this.workbook, bodyConfig);
                 this.bodyStyles[i] = bodyStyle;
@@ -239,10 +240,10 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
         super.headerStyles(configs);
 
         if (this.headerStyles != null) {
-            Asserts.that(this.headerStyles.length == 1 || this.headerStyles.length == this.fields.size())
+            Asserts.that(this.headerStyles.length)
                     .as("Number of header styles({0}) must be 1 or equal to number of targeted fields({1}) in the class '{2}'",
                             this.headerStyles.length, this.fields.size(), this.type.getName())
-                    .isTrue();
+                    .predicate(it -> it == 1 || it == this.fields.size());
         }
 
         return this;
@@ -268,10 +269,10 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
         super.bodyStyles(configs);
 
         if (this.bodyStyles != null) {
-            Asserts.that(this.bodyStyles.length == 1 || this.bodyStyles.length == this.fields.size())
+            Asserts.that(this.bodyStyles.length)
                     .as("Number of body styles({0}) must be 1 or equal to number of targeted fields({1}) in the class '{2}'",
                             this.bodyStyles.length, this.fields.size(), this.type.getName())
-                    .isTrue();
+                    .predicate(it -> it == 1 || it == this.fields.size());
         }
 
         return this;
@@ -324,7 +325,7 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
 
         for (int i = 0; i < this.fields.size(); i++) {
             Field field = this.fields.get(i);
-            if (field.getType().getSuperclass() != Enum.class) continue;
+            if (!field.getType().isEnum()) continue;
 
             ExcelColumn excelColumn = field.getAnnotation(ExcelColumn.class);
             boolean enableByColumn = excelColumn != null && excelColumn.enumDropdown();

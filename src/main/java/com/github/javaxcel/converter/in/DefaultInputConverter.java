@@ -18,8 +18,8 @@ package com.github.javaxcel.converter.in;
 
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
-import com.github.javaxcel.util.FieldUtils;
-import com.github.javaxcel.util.TypeClassifier;
+import io.github.imsejin.common.tool.TypeClassifier;
+import io.github.imsejin.common.util.ClassUtils;
 import io.github.imsejin.common.util.StringUtils;
 
 import javax.annotation.Nullable;
@@ -87,7 +87,7 @@ public class DefaultInputConverter implements InputConverter {
 
         // When you don't explicitly define default value and the cell value is null or empty.
         if ((excelColumn == null || excelColumn.defaultValue().equals("")) && StringUtils.isNullOrEmpty(value)) {
-            return FieldUtils.initialValueOf(field.getType());
+            return ClassUtils.initialValueOf(field.getType());
         }
 
         // Converts string to the type of field.
