@@ -17,12 +17,15 @@
 package com.github.javaxcel.out.modelwriter;
 
 import com.github.javaxcel.TestUtils;
-import com.github.javaxcel.out.ModelWriterTester;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
+import com.github.javaxcel.out.ExcelWriter;
 import com.github.javaxcel.out.ModelWriter;
+import com.github.javaxcel.out.ModelWriterTester;
+import com.github.javaxcel.out.strategy.ExcelWriteStrategy.BodyStyles;
+import com.github.javaxcel.out.strategy.ExcelWriteStrategy.HeaderStyles;
 import com.github.javaxcel.style.DefaultBodyStyleConfig;
 import com.github.javaxcel.style.DefaultHeaderStyleConfig;
 import com.github.javaxcel.styler.ExcelStyleConfig;
@@ -47,6 +50,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -54,6 +58,7 @@ import java.util.stream.IntStream;
 
 import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 import static com.github.javaxcel.util.ExcelUtils.equalsCellStyleAndFont;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -76,19 +81,19 @@ class DecorationTest extends ModelWriterTester {
 
         // when & then
         stopwatch.start("set unmatched header style");
-        assertThatThrownBy(() -> ExcelWriterFactory.create(workbook, WithModel.class)
-                .headerStyles(DefaultHeaderStyleConfig.getRainbowHeader())
+        assertThatThrownBy(() -> ExcelWriterFactory.init().create(workbook, WithModel.class)
+                .options(new HeaderStyles(Arrays.asList(DefaultHeaderStyleConfig.getRainbowHeader())))
                 .write(null, TestUtils.getMocks(WithModel.class, 10)))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessageStartingWith("Number of header styles");
+                .hasMessageStartingWith("headerStyles.size must be 1 or equal to fields.size");
         stopwatch.stop();
 
         stopwatch.start("set unmatched body style");
-        assertThatThrownBy(() -> ExcelWriterFactory.create(workbook, WithColumn.class)
-                .bodyStyles(DefaultHeaderStyleConfig.getRainbowHeader())
+        assertThatThrownBy(() -> ExcelWriterFactory.init().create(workbook, WithColumn.class)
+                .options(new BodyStyles(Arrays.asList(DefaultHeaderStyleConfig.getRainbowHeader())))
                 .write(null, TestUtils.getMocks(WithColumn.class, 10)))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessageStartingWith("Number of body styles");
+                .hasMessageStartingWith("bodyStyles.size must be 1 or equal to fields.size");
     }
 
     @ParameterizedTest
@@ -117,18 +122,16 @@ class DecorationTest extends ModelWriterTester {
         Workbook workbook = whenModel.getWorkbook();
         Class<?> type = givenModel.getType();
 
-        ModelWriter<Workbook, ?> writer = ExcelWriterFactory.create(workbook, type);
+        ExcelWriter<?> writer = ExcelWriterFactory.init().create(workbook, type);
 
         if (isTypeDefinedStyleDirectly(type)) {
-            NoStyleConfig config = new NoStyleConfig();
+            ExcelStyleConfig config = new NoStyleConfig();
             int numOfFields = FieldUtils.getTargetedFields(type).size();
-            NoStyleConfig[] configs = IntStream.range(0, numOfFields)
-                    .mapToObj(i -> config).toArray(NoStyleConfig[]::new);
+            List<ExcelStyleConfig> configs = IntStream.range(0, numOfFields)
+                    .mapToObj(i -> config).collect(toList());
 
-            writer.headerStyle(config);
-            writer.headerStyles(configs);
-            writer.bodyStyle(config);
-            writer.bodyStyles(configs);
+            writer.options(new HeaderStyles(config), new HeaderStyles(configs),
+                    new BodyStyles(config), new BodyStyles(configs));
         }
 
         writer.write(whenModel.getOutputStream(), (List) thenModel.getModels());
@@ -250,10 +253,10 @@ class DecorationTest extends ModelWriterTester {
         } else if (type == WithModelAndDirect.class) {
             assertThat(cellStyles.stream()
                     .filter(it -> equalsCellStyleAndFont(workbook, it, workbook, headerStyle)).count())
-                    .isEqualTo(1);
+                    .isEqualTo(0); // Overrides NoStyleConfig that doesn't make CellStyle.
             assertThat(cellStyles.stream()
                     .filter(it -> equalsCellStyleAndFont(workbook, it, workbook, bodyStyle)).count())
-                    .isEqualTo(1);
+                    .isEqualTo(0); // Overrides NoStyleConfig that doesn't make CellStyle.
 
             for (Sheet sheet : workbook) {
                 for (Row row : sheet) {
@@ -267,10 +270,10 @@ class DecorationTest extends ModelWriterTester {
         } else if (type == WithColumnAndDirect.class) {
             assertThat(cellStyles.stream()
                     .filter(it -> equalsCellStyleAndFont(workbook, it, workbook, headerStyle)).count())
-                    .isEqualTo(3);
+                    .isEqualTo(0); // Overrides NoStyleConfig that doesn't make CellStyle.
             assertThat(cellStyles.stream()
                     .filter(it -> equalsCellStyleAndFont(workbook, it, workbook, bodyStyle)).count())
-                    .isEqualTo(3);
+                    .isEqualTo(0); // Overrides NoStyleConfig that doesn't make CellStyle.
 
             for (Sheet sheet : workbook) {
                 for (Row row : sheet) {
@@ -284,10 +287,10 @@ class DecorationTest extends ModelWriterTester {
         } else if (type == WithModelAndColumnAndDirect.class) {
             assertThat(cellStyles.stream()
                     .filter(it -> equalsCellStyleAndFont(workbook, it, workbook, headerStyle)).count())
-                    .isEqualTo(3);
+                    .isEqualTo(0); // Overrides NoStyleConfig that doesn't make CellStyle.
             assertThat(cellStyles.stream()
                     .filter(it -> equalsCellStyleAndFont(workbook, it, workbook, bodyStyle)).count())
-                    .isEqualTo(2);
+                    .isEqualTo(0); // Overrides NoStyleConfig that doesn't make CellStyle.
 
             for (Sheet sheet : workbook) {
                 for (Row row : sheet) {

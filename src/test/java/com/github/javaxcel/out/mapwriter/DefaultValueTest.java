@@ -21,6 +21,7 @@ import com.github.javaxcel.factory.ExcelReaderFactory;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.MapWriterTester;
+import com.github.javaxcel.out.strategy.ExcelWriteStrategy;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import io.github.imsejin.common.util.StringUtils;
@@ -56,14 +57,14 @@ class DefaultValueTest extends MapWriterTester {
 
     @Override
     protected ThenModel whenCreateModels(GivenModel givenModel, WhenModel whenModel) {
-        List<Map<String, Object>> models = TestUtils.getRandomMaps(whenModel.getNumOfMocks(), 10);
+        List<Map<String, ?>> models = TestUtils.getRandomMaps(whenModel.getNumOfMocks(), 10);
         return new ThenModel(models);
     }
 
     @Override
     protected void whenWriteWorkbook(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) {
         ExcelWriterFactory.create(whenModel.getWorkbook())
-                .defaultValue(DEFAULT_VALUE)
+                .options(new ExcelWriteStrategy.DefaultValue(DEFAULT_VALUE))
                 .write(whenModel.getOutputStream(), thenModel.getModels());
     }
 
@@ -75,7 +76,7 @@ class DefaultValueTest extends MapWriterTester {
         assertDefaultValue(file, thenModel.getModels());
     }
 
-    private void assertDefaultValue(File file, List<Map<String, Object>> models) throws IOException {
+    private void assertDefaultValue(File file, List<Map<String, ?>> models) throws IOException {
         @Cleanup Workbook workbook = ExcelUtils.getWorkbook(file);
         List<Map<String, Object>> written = ExcelReaderFactory.create(workbook).read();
 

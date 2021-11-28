@@ -21,7 +21,8 @@ import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.MapWriter;
 import com.github.javaxcel.out.MapWriterTester;
-import com.github.javaxcel.style.DefaultBodyStyleConfig;
+import com.github.javaxcel.out.strategy.ExcelWriteStrategy;
+import com.github.javaxcel.out.strategy.ExcelWriteStrategy.*;
 import com.github.javaxcel.style.DefaultHeaderStyleConfig;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
@@ -37,6 +38,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -70,18 +72,18 @@ class DecorationTest extends MapWriterTester {
         // when & then
         stopwatch.start("set unmatched header style");
         assertThatThrownBy(() -> ExcelWriterFactory.create(workbook)
-                .headerStyles(rainbowHeader)
+                .options(new ExcelWriteStrategy.HeaderStyles(Arrays.asList(rainbowHeader)))
                 .write(null, TestUtils.getRandomMaps(10, rainbowHeader.length - 1)))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessageStartingWith("Number of header styles");
+                .hasMessageStartingWith("headerStyles.size must be 1 or equal to keys.size");
         stopwatch.stop();
 
         stopwatch.start("set unmatched body style");
         assertThatThrownBy(() -> ExcelWriterFactory.create(workbook)
-                .bodyStyles(rainbowHeader)
+                .options(new ExcelWriteStrategy.BodyStyles(Arrays.asList(rainbowHeader)))
                 .write(null, TestUtils.getRandomMaps(10, rainbowHeader.length + 1)))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessageStartingWith("Number of body styles");
+                .hasMessageStartingWith("bodyStyles.size must be 1 or equal to keys.size");
     }
 
     @Test
@@ -102,20 +104,21 @@ class DecorationTest extends MapWriterTester {
 
     @Override
     protected ThenModel whenCreateModels(GivenModel givenModel, WhenModel whenModel) {
-        List<Map<String, Object>> models = TestUtils.getRandomMaps(whenModel.getNumOfMocks(), rainbowHeader.length);
+        List<Map<String, ?>> models = TestUtils.getRandomMaps(whenModel.getNumOfMocks(), rainbowHeader.length);
         return new ThenModel(models);
     }
 
     @Override
     protected void whenWriteWorkbook(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) {
         ExcelWriterFactory.create(whenModel.getWorkbook())
-                .sheetName("Rainbow")
-                .unrotate()
-                .autoResizeColumns().hideExtraRows().hideExtraColumns()
-                .headerStyle(new DefaultHeaderStyleConfig())
-                .headerStyles(rainbowHeader)
-                .bodyStyle(new DefaultBodyStyleConfig())
-                .bodyStyles(new DefaultBodyStyleConfig())
+                .options(new SheetName("Rainbow"),
+                        new AutoResizedColumns(),
+                        new HiddenExtraRows(),
+                        new HiddenExtraColumns(),
+                        new HeaderStyles(new DefaultHeaderStyleConfig()),
+                        new HeaderStyles(Arrays.asList(rainbowHeader)),
+                        new BodyStyles(new DefaultHeaderStyleConfig()),
+                        new BodyStyles(Arrays.asList(rainbowHeader)))
                 .write(whenModel.getOutputStream(), thenModel.getModels());
     }
 

@@ -16,15 +16,16 @@
 
 package com.github.javaxcel.out.modelwriter;
 
-import com.github.javaxcel.out.ModelWriterTester;
 import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.factory.ExcelReaderFactory;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
-import com.github.javaxcel.out.AbstractExcelWriter;
+import com.github.javaxcel.out.ExcelWriter;
 import com.github.javaxcel.out.ModelWriter;
+import com.github.javaxcel.out.ModelWriterTester;
+import com.github.javaxcel.out.strategy.ExcelWriteStrategy.DefaultValue;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
@@ -75,8 +76,11 @@ class DefaultValueTest extends ModelWriterTester {
     protected void whenWriteWorkbook(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) {
         Class<?> type = givenModel.getType();
 
-        AbstractExcelWriter<Workbook, ?> writer = ExcelWriterFactory.create(whenModel.getWorkbook(), type);
-        if (getDefaultValueFromType(type).equals(DIRECT_DEFAULT_VALUE)) writer.defaultValue(DIRECT_DEFAULT_VALUE);
+        ExcelWriter<?> writer = ExcelWriterFactory.init().create(whenModel.getWorkbook(), type);
+        if (getDefaultValueFromType(type).equals(DIRECT_DEFAULT_VALUE)) {
+            writer.options(new DefaultValue(DIRECT_DEFAULT_VALUE));
+        }
+
         writer.write(whenModel.getOutputStream(), (List) thenModel.getModels());
     }
 

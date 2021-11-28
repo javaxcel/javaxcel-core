@@ -19,8 +19,9 @@ package com.github.javaxcel.out.mapwriter;
 import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
-import com.github.javaxcel.out.MapWriter;
+import com.github.javaxcel.out.ExcelWriter;
 import com.github.javaxcel.out.MapWriterTester;
+import com.github.javaxcel.out.strategy.ExcelWriteStrategy.KeyNames;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import io.github.imsejin.common.util.StreamUtils;
@@ -28,7 +29,7 @@ import lombok.Cleanup;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -66,40 +67,35 @@ class HeaderNamesTest extends MapWriterTester {
     @Test
     @StopwatchProvider(TimeUnit.MILLISECONDS)
     void fail(Stopwatch stopwatch) {
-        // given
-        stopwatch.start("create '%s' instance", SXSSFWorkbook.class.getSimpleName());
-        Workbook workbook = new SXSSFWorkbook();
-        stopwatch.stop();
-
-        // when & then
+        // expect
         stopwatch.start("sort with empty list");
-        assertThatThrownBy(() -> ExcelWriterFactory.create(workbook)
-                .headerNames(Collections.emptyList()))
+        assertThatThrownBy(() -> ExcelWriterFactory.create(new XSSFWorkbook())
+                .options(new KeyNames(Collections.emptyList())))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Ordered keys is now allowed to be null or empty");
+                .hasMessageStartingWith("keyOrders is not allowed to be null or empty");
         stopwatch.stop();
 
         stopwatch.start("#1 sort with unmatched list");
-        assertThatThrownBy(() -> ExcelWriterFactory.create(workbook)
-                .headerNames(Arrays.asList("FIELD_1", "FIELD_2", "FIELD_3"))
+        assertThatThrownBy(() -> ExcelWriterFactory.create(new XSSFWorkbook())
+                .options(new KeyNames(Arrays.asList("column_1", "column_2", "column_3")))
                 .write(null, TestUtils.getRandomMaps(10, NUM_OF_COLUMNS)))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessageStartingWith("Ordered keys are at variance with maps' keys");
+                .hasMessageStartingWith("MapWriter.keys is not equal to keyMap.orders.size");
         stopwatch.stop();
 
         stopwatch.start("#2 sort with unmatched list");
-        assertThatThrownBy(() -> ExcelWriterFactory.create(workbook)
-                .headerNames(headerNames)
+        assertThatThrownBy(() -> ExcelWriterFactory.create(new XSSFWorkbook())
+                .options(new KeyNames(headerNames))
                 .write(null, TestUtils.getRandomMaps(10, NUM_OF_COLUMNS)))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessageStartingWith("Ordered keys are at variance with maps' keys");
+                .hasMessageStartingWith("MapWriter.keys is at variance with keyMap.orders.keySet");
         stopwatch.stop();
 
         stopwatch.start("convert header names with unmatched list");
-        assertThatThrownBy(() -> ExcelWriterFactory.create(workbook)
-                .headerNames(Arrays.asList("FIELD_1", "FIELD_2", "FIELD_3"), Arrays.asList("FIELD_1", "FIELD_2")))
+        assertThatThrownBy(() -> ExcelWriterFactory.create(new XSSFWorkbook())
+                .options(new KeyNames(Arrays.asList("column_1", "column_2", "column_3"), Arrays.asList("column_1", "column_2"))))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessage("The number of ordered keys is not equal to the number of header names");
+                .hasMessageStartingWith("newKeyNames.size is not equal to keyOrders.size");
     }
 
     @ParameterizedTest
@@ -125,19 +121,19 @@ class HeaderNamesTest extends MapWriterTester {
 
     @Override
     protected ThenModel whenCreateModels(GivenModel givenModel, WhenModel whenModel) {
-        List<Map<String, Object>> models = TestUtils.getRandomMaps(whenModel.getNumOfMocks(), NUM_OF_COLUMNS);
+        List<Map<String, ?>> models = TestUtils.getRandomMaps(whenModel.getNumOfMocks(), NUM_OF_COLUMNS);
         return new ThenModel(models);
     }
 
     @Override
     protected void whenWriteWorkbook(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) {
-        MapWriter<Workbook, Map<String, Object>> writer = ExcelWriterFactory.create(whenModel.getWorkbook());
+        ExcelWriter<Map<String, ?>> writer = ExcelWriterFactory.create(whenModel.getWorkbook());
 
         TestCase testCase = (TestCase) Objects.requireNonNull(givenModel.getArgs())[0];
         if (testCase == TestCase.JUST_ORDERED) {
-            writer.headerNames(orderedKeys);
+            writer.options(new KeyNames(orderedKeys));
         } else if (testCase == TestCase.ORDER_AND_CONVERT) {
-            writer.headerNames(orderedKeys, headerNames);
+            writer.options(new KeyNames(orderedKeys, headerNames));
         } else {
             throw new IllegalArgumentException("Unexpected enum constant: " + testCase);
         }
@@ -160,7 +156,7 @@ class HeaderNamesTest extends MapWriterTester {
                 .collect(toList()))
                 .as("#2 All header names at each sheet must be sorted")
                 .containsExactlyElementsOf(Collections.nCopies(workbook.getNumberOfSheets(),
-                        testCase == TestCase.JUST_ORDERED ? orderedKeys : headerNames)
+                                testCase == TestCase.JUST_ORDERED ? orderedKeys : headerNames)
                         .stream().flatMap(List::stream).collect(toList()));
     }
 

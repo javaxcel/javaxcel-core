@@ -19,9 +19,10 @@ package com.github.javaxcel.out.modelwriter;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
-import com.github.javaxcel.out.AbstractExcelWriter;
+import com.github.javaxcel.out.ExcelWriter;
 import com.github.javaxcel.out.ModelWriter;
 import com.github.javaxcel.out.ModelWriterTester;
+import com.github.javaxcel.out.strategy.ExcelWriteStrategy.HeaderNames;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.tool.Stopwatch;
@@ -45,6 +46,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.IntStream;
@@ -77,10 +79,12 @@ class HeaderNamesTest extends ModelWriterTester {
         // when & then
         stopwatch.start("create '%s' instance with invalid header names(%s)",
                 ModelWriter.class.getSimpleName(), headerNames);
-        assertThatThrownBy(() -> ExcelWriterFactory.create(workbook, KebabCaseComputer.class)
-                .headerNames(headerNames))
+        assertThatThrownBy(() -> ExcelWriterFactory.init().create(workbook, KebabCaseComputer.class)
+                .options(new HeaderNames(headerNames)).write(null, Collections.emptyList()))
                 .as("Throws IllegalArgumentException")
-                .isExactlyInstanceOf(IllegalArgumentException.class);
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessageMatching("^(headerNames is not allowed to be null or empty|" +
+                        "headerNames\\.size is not equal to the number of targeted fields in the class).+$");
     }
 
     @ParameterizedTest
@@ -101,12 +105,13 @@ class HeaderNamesTest extends ModelWriterTester {
         Workbook workbook = whenModel.getWorkbook();
         List<?> models = thenModel.getModels();
 
-        AbstractExcelWriter<Workbook, ?> writer = ExcelWriterFactory.create(workbook, type);
+        ExcelWriter<?> writer = ExcelWriterFactory.init().create(workbook, type);
         if (type == KebabCaseComputer.class) {
             List<String> headerNames = FieldUtils.getTargetedFields(type)
                     .stream().map(Field::getName).map(getFunctionByType(type)).collect(toList());
-            writer.headerNames(headerNames);
+            writer.options(new HeaderNames(headerNames));
         }
+
         writer.write(outputStream, (List) models);
     }
 
