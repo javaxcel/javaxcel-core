@@ -47,7 +47,7 @@ import java.util.List;
  *     <li>{@link #afterWrite(OutputStream, List)}</li>
  * </ol>
  */
-public abstract class AbstractExcelWriter<W extends Workbook, T> implements ExcelWriter<W, T> {
+public abstract class AbstractExcelWriter<T> {
 
     /**
      * Apache POI workbook.
@@ -56,7 +56,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      * @see org.apache.poi.xssf.usermodel.XSSFWorkbook
      * @see org.apache.poi.xssf.streaming.SXSSFWorkbook
      */
-    protected final W workbook;
+    protected final Workbook workbook;
 
     /**
      * Header's names.
@@ -121,7 +121,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    protected AbstractExcelWriter(W workbook) {
+    protected AbstractExcelWriter(Workbook workbook) {
         Asserts.that(workbook)
                 .as("Workbook is not allowed to be null")
                 .isNotNull();
@@ -134,8 +134,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      *
      * @return {@link AbstractExcelWriter}
      */
-    @Override
-    public AbstractExcelWriter<W, T> defaultValue(String defaultValue) {
+    public AbstractExcelWriter<T> defaultValue(String defaultValue) {
         Asserts.that(defaultValue)
                 .as("Default value is not allowed to be null or empty")
                 .isNotNull().isNotEmpty();
@@ -157,8 +156,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      * @see #unrotate()
      * @see org.apache.poi.ss.util.WorkbookUtil#validateSheetName(String)
      */
-    @Override
-    public AbstractExcelWriter<W, T> sheetName(String sheetName) {
+    public AbstractExcelWriter<T> sheetName(String sheetName) {
         WorkbookUtil.validateSheetName(sheetName);
         this.sheetName = sheetName;
         return this;
@@ -219,8 +217,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      * @return {@link AbstractExcelWriter}
      * @see #createHeader(Sheet)
      */
-    @Override
-    public AbstractExcelWriter<W, T> headerNames(List<String> headerNames) {
+    public AbstractExcelWriter<T> headerNames(List<String> headerNames) {
         // Replaces current header names with the new things.
         if (!this.headerNames.isEmpty()) this.headerNames.clear();
 
@@ -233,8 +230,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      *
      * @return {@link AbstractExcelWriter}
      */
-    @Override
-    public AbstractExcelWriter<W, T> unrotate() {
+    public AbstractExcelWriter<T> unrotate() {
         this.rotated = false;
         return this;
     }
@@ -244,8 +240,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      *
      * @return {@link AbstractExcelWriter}
      */
-    @Override
-    public AbstractExcelWriter<W, T> filter() {
+    public AbstractExcelWriter<T> filter() {
         this.filtered = true;
         return this;
     }
@@ -257,8 +252,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      *
      * @return {@link AbstractExcelWriter}
      */
-    @Override
-    public AbstractExcelWriter<W, T> headerStyle(ExcelStyleConfig config) {
+    public AbstractExcelWriter<T> headerStyle(ExcelStyleConfig config) {
         return headerStyles(config);
     }
 
@@ -267,8 +261,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      *
      * @return {@link AbstractExcelWriter}
      */
-    @Override
-    public AbstractExcelWriter<W, T> headerStyles(ExcelStyleConfig... configs) {
+    public AbstractExcelWriter<T> headerStyles(ExcelStyleConfig... configs) {
         this.headerStyles = ExcelUtils.toCellStyles(this.workbook, configs);
         return this;
     }
@@ -278,8 +271,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      *
      * @return {@link AbstractExcelWriter}
      */
-    @Override
-    public AbstractExcelWriter<W, T> bodyStyle(ExcelStyleConfig config) {
+    public AbstractExcelWriter<T> bodyStyle(ExcelStyleConfig config) {
         return bodyStyles(config);
     }
 
@@ -288,8 +280,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      *
      * @return {@link AbstractExcelWriter}
      */
-    @Override
-    public AbstractExcelWriter<W, T> bodyStyles(ExcelStyleConfig... configs) {
+    public AbstractExcelWriter<T> bodyStyles(ExcelStyleConfig... configs) {
         this.bodyStyles = ExcelUtils.toCellStyles(this.workbook, configs);
         return this;
     }
@@ -300,8 +291,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      * @return {@link AbstractExcelWriter}
      * @see #write(OutputStream, List)
      */
-    @Override
-    public AbstractExcelWriter<W, T> autoResizeColumns() {
+    public AbstractExcelWriter<T> autoResizeColumns() {
         this.willAutoResize = true;
         return this;
     }
@@ -316,8 +306,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      * @return {@link AbstractExcelWriter}
      * @see #write(OutputStream, List)
      */
-    @Override
-    public AbstractExcelWriter<W, T> hideExtraRows() {
+    public AbstractExcelWriter<T> hideExtraRows() {
         this.willHideRows = true;
         return this;
     }
@@ -328,8 +317,7 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      * @return {@link AbstractExcelWriter}
      * @see #write(OutputStream, List)
      */
-    @Override
-    public AbstractExcelWriter<W, T> hideExtraColumns() {
+    public AbstractExcelWriter<T> hideExtraColumns() {
         this.willHideColumns = true;
         return this;
     }
@@ -342,7 +330,6 @@ public abstract class AbstractExcelWriter<W extends Workbook, T> implements Exce
      * @throws IllegalArgumentException if list is null
      * @throws IllegalArgumentException if {@link MapWriter#write(OutputStream, List)} is invoked with empty list
      */
-    @Override
     public final void write(OutputStream out, List<T> list) {
         Asserts.that(list)
                 .as("List of models is not allowed to be null")

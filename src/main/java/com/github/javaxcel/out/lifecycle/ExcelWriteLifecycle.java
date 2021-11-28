@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Javaxcel
+ * Copyright 2021 Javaxcel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.out;
+package com.github.javaxcel.out.lifecycle;
 
-import com.github.javaxcel.out.strategy.ExcelWriteStrategy;
+import com.github.javaxcel.out.context.ExcelWriteContext;
+import io.github.imsejin.common.annotation.ExcludeFromGeneratedJacocoReport;
 
-import java.io.OutputStream;
-import java.util.List;
+@ExcludeFromGeneratedJacocoReport
+public interface ExcelWriteLifecycle<T> {
 
-public interface ExcelWriter<T> {
+    default void prepare(ExcelWriteContext<T> context) {
+    }
 
-    ExcelWriter<T> options(ExcelWriteStrategy... strategies);
+    default void preWriteSheet(ExcelWriteContext<T> context) {
+    }
 
-    /**
-     * Writes the data in the excel file.
-     *
-     * @param out  output stream for writing excel file
-     * @param list list of models
-     */
-    void write(OutputStream out, List<T> list);
+    default void postWriteSheet(ExcelWriteContext<T> context) {
+    }
+
+    default void complete(ExcelWriteContext<T> context) {
+    }
 
 }

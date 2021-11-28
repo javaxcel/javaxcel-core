@@ -16,16 +16,16 @@
 
 package com.github.javaxcel.factory;
 
+import com.github.javaxcel.out.$MapWriter;
+import com.github.javaxcel.out.$ModelWriter;
 import com.github.javaxcel.out.ExcelWriter;
-import com.github.javaxcel.out.MapWriter;
-import com.github.javaxcel.out.ModelWriter;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import java.util.Map;
 
 /**
  * Factory for creating the appropriate implementation of {@link ExcelWriter}.
- * This will create instance of {@link ModelWriter} or {@link MapWriter}.
+ * This will create instance of {@link $ModelWriter} or {@link $MapWriter}.
  */
 public abstract class ExcelWriterFactory {
 
@@ -33,28 +33,29 @@ public abstract class ExcelWriterFactory {
     }
 
     /**
-     * Returns instance of {@link MapWriter}.
-     *
-     * @param workbook excel workbook
-     * @param <W>      implementation of {@link Workbook}
-     * @param <V>      {@link Map}'s value
-     * @return {@link MapWriter}
-     */
-    public static <W extends Workbook, V> MapWriter<W, Map<String, V>> create(W workbook) {
-        return new MapWriter<>(workbook);
-    }
-
-    /**
-     * Returns instance of {@link ModelWriter}.
+     * Returns instance of {@link $ModelWriter}.
      *
      * @param workbook excel workbook
      * @param type     type of model
-     * @param <W>      implementation of {@link Workbook}
      * @param <T>      type of the element
-     * @return {@link ModelWriter}
+     * @return {@link $ModelWriter}
      */
-    public static <W extends Workbook, T> ModelWriter<W, T> create(W workbook, Class<T> type) {
-        return new ModelWriter<>(workbook, type);
+    public <T> ExcelWriter<T> create(Workbook workbook, Class<T> type) {
+        return new $ModelWriter<>(workbook, type, this.factory);
+    }
+
+    /**
+     * Returns instance of {@link $MapWriter}.
+     *
+     * @param workbook excel workbook
+     * @return {@link $MapWriter}
+     */
+    public static ExcelWriter<Map<String, ?>> create(Workbook workbook) {
+        try {
+            return new $MapWriter<>(workbook);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

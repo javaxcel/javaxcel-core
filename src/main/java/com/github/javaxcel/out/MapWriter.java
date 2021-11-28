@@ -31,10 +31,9 @@ import static java.util.stream.Collectors.toList;
 /**
  * Excel writer for {@link Map}.
  *
- * @param <W> excel workbook
  * @param <T> {@link Map}
  */
-public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends AbstractExcelWriter<W, T> {
+public class MapWriter<T extends Map<String, ?>> extends AbstractExcelWriter<T> {
 
     /**
      * @see #beforeWrite(OutputStream, List)
@@ -55,7 +54,7 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      * @param workbook excel workbook
      * @see com.github.javaxcel.factory.ExcelWriterFactory#create(Workbook)
      */
-    public MapWriter(W workbook) {
+    public MapWriter(Workbook workbook) {
         super(workbook);
     }
 
@@ -65,7 +64,7 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      * @return {@link MapWriter}
      */
     @Override
-    public MapWriter<W, T> defaultValue(String defaultValue) {
+    public MapWriter<T> defaultValue(String defaultValue) {
         super.defaultValue(defaultValue);
         this.defaultValue = defaultValue;
         return this;
@@ -77,7 +76,7 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      * @return {@link MapWriter}
      */
     @Override
-    public MapWriter<W, T> sheetName(String sheetName) {
+    public MapWriter<T> sheetName(String sheetName) {
         super.sheetName(sheetName);
         return this;
     }
@@ -140,7 +139,7 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      * @throws IllegalArgumentException if ordered keys is null or empty
      */
     @Override
-    public MapWriter<W, T> headerNames(List<String> orderedKeys) {
+    public MapWriter<T> headerNames(List<String> orderedKeys) {
         return headerNames(orderedKeys, null);
     }
 
@@ -207,7 +206,7 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      * @throws IllegalArgumentException if ordered keys is null or empty
      * @throws IllegalArgumentException if num of ordered keys is not equal to num of header names
      */
-    public MapWriter<W, T> headerNames(List<String> orderedKeys, @Nullable List<String> headerNames) {
+    public MapWriter<T> headerNames(List<String> orderedKeys, @Nullable List<String> headerNames) {
         Asserts.that(orderedKeys)
                 .as("Ordered keys is now allowed to be null or empty")
                 .hasElement();
@@ -238,7 +237,7 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      * @return {@link MapWriter}
      */
     @Override
-    public MapWriter<W, T> unrotate() {
+    public MapWriter<T> unrotate() {
         super.unrotate();
         return this;
     }
@@ -249,7 +248,7 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      * @return {@link MapWriter}
      */
     @Override
-    public MapWriter<W, T> filter() {
+    public MapWriter<T> filter() {
         super.filter();
         return this;
     }
@@ -262,7 +261,7 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      * @return {@link MapWriter}
      */
     @Override
-    public MapWriter<W, T> headerStyle(ExcelStyleConfig config) {
+    public MapWriter<T> headerStyle(ExcelStyleConfig config) {
         return headerStyles(config);
     }
 
@@ -272,7 +271,7 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      * @return {@link MapWriter}
      */
     @Override
-    public MapWriter<W, T> headerStyles(ExcelStyleConfig... configs) {
+    public MapWriter<T> headerStyles(ExcelStyleConfig... configs) {
         super.headerStyles(configs);
         return this;
     }
@@ -283,7 +282,7 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      * @return {@link MapWriter}
      */
     @Override
-    public MapWriter<W, T> bodyStyle(ExcelStyleConfig config) {
+    public MapWriter<T> bodyStyle(ExcelStyleConfig config) {
         return bodyStyles(config);
     }
 
@@ -293,7 +292,7 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      * @return {@link MapWriter}
      */
     @Override
-    public MapWriter<W, T> bodyStyles(ExcelStyleConfig... configs) {
+    public MapWriter<T> bodyStyles(ExcelStyleConfig... configs) {
         super.bodyStyles(configs);
         return this;
     }
@@ -304,7 +303,7 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      * @return {@link MapWriter}
      */
     @Override
-    public MapWriter<W, T> autoResizeColumns() {
+    public MapWriter<T> autoResizeColumns() {
         super.autoResizeColumns();
         return this;
     }
@@ -315,7 +314,7 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      * @return {@link MapWriter}
      */
     @Override
-    public MapWriter<W, T> hideExtraRows() {
+    public MapWriter<T> hideExtraRows() {
         super.hideExtraRows();
         return this;
     }
@@ -326,7 +325,7 @@ public class MapWriter<W extends Workbook, T extends Map<String, ?>> extends Abs
      * @return {@link MapWriter}
      */
     @Override
-    public MapWriter<W, T> hideExtraColumns() {
+    public MapWriter<T> hideExtraColumns() {
         super.hideExtraColumns();
         return this;
     }

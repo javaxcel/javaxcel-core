@@ -38,10 +38,9 @@ import java.util.stream.IntStream;
 /**
  * Excel writer
  *
- * @param <W> excel workbook
  * @param <T> type of model
  */
-public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T> {
+public class ModelWriter<T> extends AbstractExcelWriter<T> {
 
     private final Class<T> type;
 
@@ -145,7 +144,7 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
      * @return {@link ModelWriter}
      */
     @Override
-    public ModelWriter<W, T> defaultValue(String defaultValue) {
+    public ModelWriter<T> defaultValue(String defaultValue) {
         super.defaultValue(defaultValue);
         this.converter.setDefaultValue(defaultValue);
         return this;
@@ -157,7 +156,7 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
      * @return {@link ModelWriter}
      */
     @Override
-    public ModelWriter<W, T> sheetName(String sheetName) {
+    public ModelWriter<T> sheetName(String sheetName) {
         super.sheetName(sheetName);
         return this;
     }
@@ -168,7 +167,7 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
      * @return {@link ModelWriter}
      */
     @Override
-    public ModelWriter<W, T> headerNames(List<String> headerNames) {
+    public ModelWriter<T> headerNames(List<String> headerNames) {
         Asserts.that(headerNames)
                 .as("Header names cannot be null or empty")
                 .isNotNull().hasElement()
@@ -187,7 +186,7 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
      * @return {@link ModelWriter}
      */
     @Override
-    public ModelWriter<W, T> unrotate() {
+    public ModelWriter<T> unrotate() {
         super.unrotate();
         return this;
     }
@@ -198,7 +197,7 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
      * @return {@link ModelWriter}
      */
     @Override
-    public ModelWriter<W, T> filter() {
+    public ModelWriter<T> filter() {
         super.filter();
         return this;
     }
@@ -212,7 +211,7 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
      * @see ExcelModel#enumDropdown()
      * @see ExcelColumn#enumDropdown()
      */
-    public ModelWriter<W, T> enumDropdown() {
+    public ModelWriter<T> enumDropdown() {
         this.enableDropdown = true;
         return this;
     }
@@ -225,7 +224,7 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
      * @return {@link ModelWriter}
      */
     @Override
-    public ModelWriter<W, T> headerStyle(ExcelStyleConfig config) {
+    public ModelWriter<T> headerStyle(ExcelStyleConfig config) {
         return headerStyles(config);
     }
 
@@ -235,7 +234,7 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
      * @return {@link ModelWriter}
      */
     @Override
-    public ModelWriter<W, T> headerStyles(ExcelStyleConfig... configs) {
+    public ModelWriter<T> headerStyles(ExcelStyleConfig... configs) {
         super.headerStyles(configs);
 
         if (this.headerStyles != null) {
@@ -254,7 +253,7 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
      * @return {@link ModelWriter}
      */
     @Override
-    public ModelWriter<W, T> bodyStyle(ExcelStyleConfig config) {
+    public ModelWriter<T> bodyStyle(ExcelStyleConfig config) {
         return bodyStyles(config);
     }
 
@@ -264,7 +263,7 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
      * @return {@link ModelWriter}
      */
     @Override
-    public ModelWriter<W, T> bodyStyles(ExcelStyleConfig... configs) {
+    public ModelWriter<T> bodyStyles(ExcelStyleConfig... configs) {
         super.bodyStyles(configs);
 
         if (this.bodyStyles != null) {
@@ -283,7 +282,7 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
      * @return {@link ModelWriter}
      */
     @Override
-    public ModelWriter<W, T> autoResizeColumns() {
+    public ModelWriter<T> autoResizeColumns() {
         super.autoResizeColumns();
         return this;
     }
@@ -294,7 +293,7 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
      * @return {@link ModelWriter}
      */
     @Override
-    public ModelWriter<W, T> hideExtraRows() {
+    public ModelWriter<T> hideExtraRows() {
         super.hideExtraRows();
         return this;
     }
@@ -305,7 +304,7 @@ public class ModelWriter<W extends Workbook, T> extends AbstractExcelWriter<W, T
      * @return {@link ModelWriter}
      */
     @Override
-    public ModelWriter<W, T> hideExtraColumns() {
+    public ModelWriter<T> hideExtraColumns() {
         super.hideExtraColumns();
         return this;
     }
