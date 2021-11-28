@@ -20,7 +20,9 @@ import com.github.javaxcel.exception.UnsupportedWorkbookException;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.styler.NoStyleConfig;
 import com.github.javaxcel.styler.config.Configurer;
+import io.github.imsejin.common.annotation.ExcludeFromGeneratedJacocoReport;
 import io.github.imsejin.common.assertion.Asserts;
+import io.github.imsejin.common.util.ArrayUtils;
 import io.github.imsejin.common.util.FilenameUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -39,8 +41,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.IntStream;
 
@@ -61,7 +64,9 @@ public final class ExcelUtils {
     public static final String EXCEL_97_EXTENSION = "xls";
     public static final String EXCEL_2007_EXTENSION = "xlsx";
 
+    @ExcludeFromGeneratedJacocoReport
     private ExcelUtils() {
+        throw new UnsupportedOperationException(getClass().getName() + " is not allowed to instantiate");
     }
 
     /**
@@ -72,7 +77,7 @@ public final class ExcelUtils {
      * @throws IllegalArgumentException unless file extension is equal to 'xls' or 'xlsx'
      */
     public static Workbook getWorkbook(File file) {
-        final String extension = FilenameUtils.extension(file);
+        final String extension = FilenameUtils.getExtension(file.getName());
         Asserts.that(extension)
                 .as("Extension of excel file must be '{0}' or '{1}'",
                         EXCEL_97_EXTENSION, EXCEL_2007_EXTENSION)
@@ -128,7 +133,7 @@ public final class ExcelUtils {
         Asserts.that(SXSSFSheet.class)
                 .as("SXSSFWorkbook is not supported workbook when read")
                 .exception(UnsupportedWorkbookException::new)
-                .isNotActualTypeOf(sheet);
+                .isNotTypeOf(sheet);
 
         return Math.max(0, sheet.getPhysicalNumberOfRows());
     }
@@ -144,7 +149,7 @@ public final class ExcelUtils {
         Asserts.that(SXSSFWorkbook.class)
                 .as("SXSSFWorkbook is not supported workbook when read")
                 .exception(UnsupportedWorkbookException::new)
-                .isNotActualTypeOf(workbook);
+                .isNotTypeOf(workbook);
 
         return getSheets(workbook).stream().mapToInt(ExcelUtils::getNumOfRows).sum();
     }
@@ -174,7 +179,7 @@ public final class ExcelUtils {
         Asserts.that(SXSSFSheet.class)
                 .as("SXSSFWorkbook is not supported workbook when read")
                 .exception(UnsupportedWorkbookException::new)
-                .isNotActualTypeOf(sheet);
+                .isNotTypeOf(sheet);
 
         return Math.max(0, sheet.getPhysicalNumberOfRows() - 1);
     }
@@ -193,7 +198,7 @@ public final class ExcelUtils {
         Asserts.that(SXSSFWorkbook.class)
                 .as("SXSSFWorkbook is not supported workbook when read")
                 .exception(UnsupportedWorkbookException::new)
-                .isNotActualTypeOf(workbook);
+                .isNotTypeOf(workbook);
 
         return getSheets(workbook).stream().mapToInt(ExcelUtils::getNumOfModels).sum();
     }
@@ -396,10 +401,12 @@ public final class ExcelUtils {
      *
      * @param workbook excel workbook
      * @param config   configuration of cell style
-     * @return cell style | null if instance type of config is {@link NoStyleConfig}
+     * @return cell style | null if config type is {@link NoStyleConfig}
      */
     @Nullable
     public static CellStyle toCellStyle(Workbook workbook, ExcelStyleConfig config) {
+        // To save memory and prevent the number of cell styles in a workbook from increasing,
+        // replaces redundant cell style with null.
         if (config.getClass() == NoStyleConfig.class) return null;
 
         CellStyle cellStyle = workbook.createCellStyle();
@@ -415,26 +422,32 @@ public final class ExcelUtils {
      * @param workbook excel workbook
      * @param configs  configurations of cell style
      * @return cell styles | null if all instance types of configs are {@link NoStyleConfig}
-     * @throws IllegalArgumentException if configs is null or its length is zero.
+     * @throws IllegalArgumentException if configs is null, these length is 0 or they contains null
      */
-    @Nullable
     public static CellStyle[] toCellStyles(Workbook workbook, ExcelStyleConfig... configs) {
-        Asserts.that(configs)
-                .as("Configurations for style cannot be null or empty")
-                .isNotNull().hasElement();
+        Asserts.that(configs).exception(IllegalArgumentException::new)
+                .as("configs is not allowed to be null or empty: {0}", ArrayUtils.toString(configs))
+                .isNotNull().hasElement()
+                .as("configs is not allowed to contain null: {0}", ArrayUtils.toString(configs))
+                .doesNotContainNull();
 
-        /*
-            Prevents cell style from being instantiated to save memory
-            and not to increase the number of cell styles in a workbook.
-         */
-        if (Arrays.stream(configs).map(Object::getClass).allMatch(NoStyleConfig.class::equals)) {
-            return null;
-        }
+        // CellStyle is reusable class, so we uses cache
+        // to restrain excessive instantiation of that class.
+        Map<Class<? extends ExcelStyleConfig>, CellStyle> cache = new HashMap<>();
 
         CellStyle[] cellStyles = new CellStyle[configs.length];
         for (int i = 0; i < configs.length; i++) {
             ExcelStyleConfig config = configs[i];
+            Class<? extends ExcelStyleConfig> configType = config.getClass();
+
+            // When cache hit.
+            if (cache.containsKey(configType)) {
+                cellStyles[i] = cache.get(configType);
+                continue;
+            }
+
             cellStyles[i] = toCellStyle(workbook, config);
+            cache.put(configType, cellStyles[i]);
         }
 
         return cellStyles;

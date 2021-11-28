@@ -25,10 +25,7 @@ import io.github.imsejin.common.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -85,17 +82,24 @@ public final class FieldUtils {
      *
      * <p> This checks whether the field is annotated with {@link ExcelColumn} or not.
      * If {@link ExcelColumn#name()} is not null and not empty,
-     * this returns a header name defined in the field.
-     * Otherwise returns name of the field.
+     * this returns a header name defined in the field, otherwise returns name of the field.
      *
      * @param fields targeted fields
      * @return list of {@link ExcelColumn#name()} or {@link Field#getName()}
      */
     public static List<String> toHeaderNames(List<Field> fields) {
-        return fields.stream().map(field -> {
+        List<String> headerNames = new ArrayList<>();
+
+        for (Field field : fields) {
             ExcelColumn annotation = field.getAnnotation(ExcelColumn.class);
-            return annotation == null || StringUtils.isNullOrEmpty(annotation.name()) ? field.getName() : annotation.name();
-        }).collect(toList());
+            if (annotation == null || StringUtils.isNullOrEmpty(annotation.name())) {
+                headerNames.add(field.getName());
+            } else {
+                headerNames.add(annotation.name());
+            }
+        }
+
+        return headerNames;
     }
 
     /**
