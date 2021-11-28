@@ -3,6 +3,7 @@ package com.github.javaxcel.util;
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
 import com.github.javaxcel.model.toy.Toy;
+import io.github.imsejin.common.util.ReflectionUtils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -19,16 +20,6 @@ class FieldUtilsTest {
 
         // then
         targetedFields.forEach(System.out::println);
-    }
-
-    @ParameterizedTest
-    @ValueSource(classes = {Product.class, Toy.class, EducationToy.class})
-    void getInheritedFields(Class<?> type) {
-        // when
-        List<Field> inheritedFields = FieldUtils.getInheritedFields(type);
-
-        // then
-        inheritedFields.forEach(System.out::println);
     }
 
     @ParameterizedTest

@@ -21,6 +21,10 @@ import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.ModelWriter;
 import com.github.javaxcel.out.ModelWriterTester;
+import com.github.javaxcel.out.strategy.ExcelWriteStrategy.AutoResizedColumns;
+import com.github.javaxcel.out.strategy.ExcelWriteStrategy.HiddenExtraColumns;
+import com.github.javaxcel.out.strategy.ExcelWriteStrategy.HiddenExtraRows;
+import com.github.javaxcel.out.strategy.ExcelWriteStrategy.SheetName;
 import com.github.javaxcel.style.DefaultBodyStyleConfig;
 import com.github.javaxcel.style.DefaultHeaderStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
@@ -69,9 +73,8 @@ class SheetManipulationTest extends ModelWriterTester {
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected void whenWriteWorkbook(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) {
-        ExcelWriterFactory.create(whenModel.getWorkbook(), givenModel.getType())
-                .sheetName("Rainbow")
-                .autoResizeColumns().hideExtraRows().hideExtraColumns()
+        ExcelWriterFactory.init().create(whenModel.getWorkbook(), givenModel.getType())
+                .options(new SheetName("Rainbow"), new AutoResizedColumns(), new HiddenExtraRows(), new HiddenExtraColumns())
                 .write(whenModel.getOutputStream(), (List) thenModel.getModels());
     }
 

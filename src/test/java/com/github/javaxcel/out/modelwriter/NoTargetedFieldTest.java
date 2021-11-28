@@ -49,7 +49,7 @@ class NoTargetedFieldTest {
 
         // when & then
         stopwatch.start("create '%s' instance with '%s'", ModelWriter.class.getSimpleName(), type.getSimpleName());
-        assertThatThrownBy(() -> ExcelWriterFactory.create(workbook, type))
+        assertThatThrownBy(() -> ExcelWriterFactory.init().create(workbook, type))
                 .as("When creates ModelWriter with model type without targeted field")
                 .isExactlyInstanceOf(NoTargetedFieldException.class);
     }

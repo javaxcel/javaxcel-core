@@ -16,9 +16,10 @@
 
 package com.github.javaxcel.out.modelwriter;
 
-import com.github.javaxcel.out.ModelWriterTester;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
+import com.github.javaxcel.out.ModelWriterTester;
+import com.github.javaxcel.out.strategy.ExcelWriteStrategy.SheetName;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
@@ -72,11 +73,11 @@ class SheetRotationTest extends ModelWriterTester {
         return new WhenModel(out, workbook, numOfMocks);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected void whenWriteWorkbook(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) {
-        ExcelWriterFactory.create(whenModel.getWorkbook(), givenModel.getType())
-                .sheetName(SHEET_NAME)
+        ExcelWriterFactory.init().create(whenModel.getWorkbook(), givenModel.getType())
+                .options(new SheetName(SHEET_NAME))
                 .write(whenModel.getOutputStream(), (List) thenModel.getModels());
     }
 

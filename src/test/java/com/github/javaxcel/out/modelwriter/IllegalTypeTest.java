@@ -42,7 +42,7 @@ class IllegalTypeTest {
 
         // when & then
         stopwatch.start("create '%s' instance without type", ModelWriter.class.getSimpleName());
-        assertThatThrownBy(() -> ExcelWriterFactory.create(workbook, null))
+        assertThatThrownBy(() -> ExcelWriterFactory.init().create(workbook, null))
                 .as("Throws IllegalArgumentException")
                 .isExactlyInstanceOf(IllegalArgumentException.class);
     }
