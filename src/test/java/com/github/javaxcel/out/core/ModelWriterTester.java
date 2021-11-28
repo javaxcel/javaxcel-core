@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.out;
+package com.github.javaxcel.out.core;
 
 import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.factory.ExcelWriterFactory;
@@ -74,7 +74,7 @@ public abstract class ModelWriterTester {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected void whenWriteWorkbook(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) {
-        ExcelWriterFactory.create(whenModel.workbook, givenModel.type)
+        ExcelWriterFactory.init().create(whenModel.workbook, givenModel.type)
                 .write(whenModel.outputStream, (List) thenModel.models);
     }
 

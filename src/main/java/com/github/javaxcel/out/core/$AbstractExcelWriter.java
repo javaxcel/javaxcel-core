@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.out;
+package com.github.javaxcel.out.core;
 
 import com.github.javaxcel.exception.WritingExcelException;
 import com.github.javaxcel.out.context.ExcelWriteContext;

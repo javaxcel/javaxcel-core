@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.out.modelwriter;
+package com.github.javaxcel.out.core.modelwriter;
 
 import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
-import com.github.javaxcel.out.ExcelWriter;
+import com.github.javaxcel.out.core.ExcelWriter;
 import com.github.javaxcel.out.ModelWriter;
-import com.github.javaxcel.out.ModelWriterTester;
+import com.github.javaxcel.out.core.ModelWriterTester;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy.BodyStyles;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy.HeaderStyles;
 import com.github.javaxcel.style.DefaultBodyStyleConfig;

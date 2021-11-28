@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.out;
+package com.github.javaxcel.out.core.impl;
 
 import com.github.javaxcel.out.context.ExcelWriteContext;
+import com.github.javaxcel.out.core.$AbstractExcelWriter;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy.*;
 import com.github.javaxcel.styler.ExcelStyleConfig;

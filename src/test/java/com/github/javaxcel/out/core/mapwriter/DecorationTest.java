@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.out.mapwriter;
+package com.github.javaxcel.out.core.mapwriter;
 
 import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.MapWriter;
-import com.github.javaxcel.out.MapWriterTester;
+import com.github.javaxcel.out.core.MapWriterTester;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy.*;
 import com.github.javaxcel.style.DefaultHeaderStyleConfig;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.out.modelwriter;
+package com.github.javaxcel.out.core.modelwriter;
 
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;

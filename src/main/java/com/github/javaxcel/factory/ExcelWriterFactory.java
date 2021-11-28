@@ -16,9 +16,9 @@
 
 package com.github.javaxcel.factory;
 
-import com.github.javaxcel.out.$MapWriter;
-import com.github.javaxcel.out.$ModelWriter;
-import com.github.javaxcel.out.ExcelWriter;
+import com.github.javaxcel.out.core.impl.$MapWriter;
+import com.github.javaxcel.out.core.impl.$ModelWriter;
+import com.github.javaxcel.out.core.ExcelWriter;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import java.util.Map;

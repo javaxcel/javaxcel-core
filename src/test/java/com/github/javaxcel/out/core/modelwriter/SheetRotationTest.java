@@ -14,25 +14,20 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.out.modelwriter;
+package com.github.javaxcel.out.core.modelwriter;
 
-import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
-import com.github.javaxcel.out.ModelWriter;
-import com.github.javaxcel.out.ModelWriterTester;
-import com.github.javaxcel.out.strategy.ExcelWriteStrategy.AutoResizedColumns;
-import com.github.javaxcel.out.strategy.ExcelWriteStrategy.HiddenExtraColumns;
-import com.github.javaxcel.out.strategy.ExcelWriteStrategy.HiddenExtraRows;
+import com.github.javaxcel.out.core.ModelWriterTester;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy.SheetName;
-import com.github.javaxcel.style.DefaultBodyStyleConfig;
-import com.github.javaxcel.style.DefaultHeaderStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
-import lombok.ToString;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -42,24 +37,26 @@ import java.io.OutputStream;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.regex.Pattern;
 
+import static com.github.javaxcel.TestUtils.assertEqualsNumOfModels;
 import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * @see ModelWriter#autoResizeColumns()
- * @see ModelWriter#hideExtraRows()
- * @see ModelWriter#hideExtraColumns()
- */
 @StopwatchProvider
-class SheetManipulationTest extends ModelWriterTester {
+class SheetRotationTest extends ModelWriterTester {
+
+    private static final String SHEET_NAME = SheetRotationTest.class.getSimpleName() + "Sheet";
 
     @Test
-    void succeed(@TempDir Path path, Stopwatch stopwatch) throws Exception {
-        String filename = getClass().getSimpleName().toLowerCase() + '.' + ExcelUtils.EXCEL_97_EXTENSION;
+    @DisplayName("When writes models rotating sheet")
+    void test(@TempDir Path path, Stopwatch stopwatch) throws Exception {
+        Class<SimpleModel> type = SimpleModel.class;
+        String filename = type.getSimpleName().toLowerCase() + '.' + ExcelUtils.EXCEL_97_EXTENSION;
         File file = new File(path.toFile(), filename);
 
-        run(file, Book.class, stopwatch);
+        run(file, type, stopwatch);
     }
 
     @Override
@@ -67,42 +64,45 @@ class SheetManipulationTest extends ModelWriterTester {
         OutputStream out = new FileOutputStream(givenModel.getFile());
         Workbook workbook = new HSSFWorkbook();
 
-        return new WhenModel(out, workbook, 1024);
+        /*
+        To create multiple sheets, generates models as many
+        as the amount exceeds the maximum number of rows per sheet.
+        */
+        final int numOfMocks = (int) (ExcelUtils.getMaxRows(workbook) * 1.1);
+
+        return new WhenModel(out, workbook, numOfMocks);
     }
 
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected void whenWriteWorkbook(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) {
         ExcelWriterFactory.init().create(whenModel.getWorkbook(), givenModel.getType())
-                .options(new SheetName("Rainbow"), new AutoResizedColumns(), new HiddenExtraRows(), new HiddenExtraColumns())
+                .options(new SheetName(SHEET_NAME))
                 .write(whenModel.getOutputStream(), (List) thenModel.getModels());
     }
 
     @Override
     protected void then(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) throws Exception {
-        File file = givenModel.getFile();
+        List<?> models = thenModel.getModels();
 
-        assertNotEmptyFile(file, "#1 Excel file must be created and have content");
+        assertNotEmptyFile(givenModel.getFile(), "#1 Excel file must be created and have content");
 
-        @Cleanup Workbook workbook = ExcelUtils.getWorkbook(file);
-        int maxModels = ExcelUtils.getMaxRows(workbook) - 1;
-        assertThat(ExcelUtils.getNumOfModels(file))
-                .as("#2 The number of actually written maps is %,d", maxModels)
-                .isEqualTo(maxModels);
+        @Cleanup Workbook workbook = WorkbookFactory.create(givenModel.getFile());
+        assertEqualsNumOfModels(workbook, models, "#2 The number of actually written rows is %,d", models.size());
+
+        Pattern pattern = Pattern.compile("^" + SHEET_NAME + "\\d+$");
+        assertThat(ExcelUtils.getSheets(workbook).stream()
+                .map(Sheet::getSheetName).collect(toList()))
+                .as("#3 Each sheet name matches the pattern")
+                .allMatch(name -> pattern.matcher(name).matches());
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    @ToString
-    @ExcelModel(headerStyle = DefaultHeaderStyleConfig.class, bodyStyle = DefaultBodyStyleConfig.class)
-    private static class Book {
+    private static class SimpleModel {
         private Long id;
-        private String title;
-        private List<String> authors;
-        private List<String> publishers;
+        private String name;
         private LocalDateTime createdAt;
-        private LocalDateTime publishedAt;
-        private short price;
     }
 
 }

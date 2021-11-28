@@ -18,7 +18,7 @@ package com.github.javaxcel.out.context;
 
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
-import com.github.javaxcel.out.ExcelWriter;
+import com.github.javaxcel.out.core.ExcelWriter;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy;
 import io.github.imsejin.common.assertion.Asserts;
 import org.apache.poi.ss.usermodel.CellStyle;

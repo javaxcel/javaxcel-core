@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.out.modelwriter;
+package com.github.javaxcel.out.core.modelwriter;
 
 import com.github.javaxcel.Converter;
-import com.github.javaxcel.out.ModelWriterTester;
+import com.github.javaxcel.out.core.ModelWriterTester;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.annotation.ExcelWriterExpression;
 import com.github.javaxcel.factory.ExcelReaderFactory;
