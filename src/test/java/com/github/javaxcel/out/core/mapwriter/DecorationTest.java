@@ -19,7 +19,6 @@ package com.github.javaxcel.out.core.mapwriter;
 import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
-import com.github.javaxcel.out.MapWriter;
 import com.github.javaxcel.out.core.MapWriterTester;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy.*;
@@ -48,13 +47,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * @see MapWriter#autoResizeColumns()
- * @see MapWriter#hideExtraRows()
- * @see MapWriter#hideExtraColumns()
- * @see MapWriter#headerStyle(ExcelStyleConfig)
- * @see MapWriter#headerStyles(ExcelStyleConfig...)
- * @see MapWriter#bodyStyle(ExcelStyleConfig)
- * @see MapWriter#bodyStyles(ExcelStyleConfig...)
+ * @see AutoResizedColumns
+ * @see HiddenExtraRows
+ * @see HiddenExtraColumns
+ * @see HeaderStyles
+ * @see BodyStyles
  */
 @StopwatchProvider
 class DecorationTest extends MapWriterTester {

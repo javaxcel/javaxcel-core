@@ -21,7 +21,7 @@ import com.github.javaxcel.factory.ExcelReaderFactory;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.core.MapWriterTester;
-import com.github.javaxcel.out.strategy.ExcelWriteStrategy;
+import com.github.javaxcel.out.strategy.ExcelWriteStrategy.DefaultValue;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import io.github.imsejin.common.util.StringUtils;
@@ -41,7 +41,7 @@ import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * @see com.github.javaxcel.out.MapWriter#defaultValue(String)
+ * @see DefaultValue
  */
 @StopwatchProvider
 class DefaultValueTest extends MapWriterTester {
@@ -64,7 +64,7 @@ class DefaultValueTest extends MapWriterTester {
     @Override
     protected void whenWriteWorkbook(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) {
         ExcelWriterFactory.create(whenModel.getWorkbook())
-                .options(new ExcelWriteStrategy.DefaultValue(DEFAULT_VALUE))
+                .options(new DefaultValue(DEFAULT_VALUE))
                 .write(whenModel.getOutputStream(), thenModel.getModels());
     }
 

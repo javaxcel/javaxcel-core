@@ -20,8 +20,8 @@ import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.core.ExcelWriter;
-import com.github.javaxcel.out.ModelWriter;
 import com.github.javaxcel.out.core.ModelWriterTester;
+import com.github.javaxcel.out.core.impl.$ModelWriter;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy.HeaderNames;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
@@ -58,7 +58,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * @see ModelWriter#headerNames(List)
+ * @see HeaderNames
  */
 @StopwatchProvider
 class HeaderNamesTest extends ModelWriterTester {
@@ -78,7 +78,7 @@ class HeaderNamesTest extends ModelWriterTester {
 
         // when & then
         stopwatch.start("create '%s' instance with invalid header names(%s)",
-                ModelWriter.class.getSimpleName(), headerNames);
+                $ModelWriter.class.getSimpleName(), headerNames);
         assertThatThrownBy(() -> ExcelWriterFactory.init().create(workbook, KebabCaseComputer.class)
                 .options(new HeaderNames(headerNames)).write(null, Collections.emptyList()))
                 .as("Throws IllegalArgumentException")

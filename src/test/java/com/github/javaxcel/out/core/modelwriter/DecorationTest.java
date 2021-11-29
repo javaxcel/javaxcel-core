@@ -22,7 +22,6 @@ import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.core.ExcelWriter;
-import com.github.javaxcel.out.ModelWriter;
 import com.github.javaxcel.out.core.ModelWriterTester;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy.BodyStyles;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy.HeaderStyles;
@@ -63,10 +62,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * @see ModelWriter#headerStyle(ExcelStyleConfig)
- * @see ModelWriter#headerStyles(ExcelStyleConfig...)
- * @see ModelWriter#bodyStyle(ExcelStyleConfig)
- * @see ModelWriter#bodyStyles(ExcelStyleConfig...)
+ * @see HeaderStyles
+ * @see BodyStyles
  */
 @StopwatchProvider
 class DecorationTest extends ModelWriterTester {

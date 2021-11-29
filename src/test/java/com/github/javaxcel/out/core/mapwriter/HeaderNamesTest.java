@@ -50,8 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * @see com.github.javaxcel.out.MapWriter#headerNames(List)
- * @see com.github.javaxcel.out.MapWriter#headerNames(List, List)
+ * @see KeyNames
  */
 @StopwatchProvider
 class HeaderNamesTest extends MapWriterTester {

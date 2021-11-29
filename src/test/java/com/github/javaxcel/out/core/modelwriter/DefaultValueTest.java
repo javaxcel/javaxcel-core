@@ -23,7 +23,6 @@ import com.github.javaxcel.factory.ExcelReaderFactory;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.core.ExcelWriter;
-import com.github.javaxcel.out.ModelWriter;
 import com.github.javaxcel.out.core.ModelWriterTester;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy.DefaultValue;
 import com.github.javaxcel.util.ExcelUtils;
@@ -49,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @see ExcelModel#defaultValue()
  * @see ExcelColumn#defaultValue()
- * @see ModelWriter#defaultValue(String)
+ * @see DefaultValue
  */
 @StopwatchProvider
 class DefaultValueTest extends ModelWriterTester {

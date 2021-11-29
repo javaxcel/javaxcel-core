@@ -21,7 +21,7 @@ import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
-import com.github.javaxcel.out.ModelWriter;
+import com.github.javaxcel.out.core.impl.$ModelWriter;
 import io.github.imsejin.common.tool.Stopwatch;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -46,7 +46,7 @@ class NoTargetedFieldTest {
         stopwatch.stop();
 
         // when & then
-        stopwatch.start("create '%s' instance with '%s'", ModelWriter.class.getSimpleName(), type.getSimpleName());
+        stopwatch.start("create '%s' instance with '%s'", $ModelWriter.class.getSimpleName(), type.getSimpleName());
         assertThatThrownBy(() -> ExcelWriterFactory.init().create(workbook, type))
                 .as("When creates ModelWriter with model type without targeted field")
                 .isExactlyInstanceOf(NoTargetedFieldException.class);

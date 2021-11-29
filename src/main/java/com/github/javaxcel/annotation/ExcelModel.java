@@ -16,7 +16,8 @@
 
 package com.github.javaxcel.annotation;
 
-import com.github.javaxcel.out.ModelWriter;
+import com.github.javaxcel.out.strategy.ExcelWriteStrategy.DefaultValue;
+import com.github.javaxcel.out.strategy.ExcelWriteStrategy.EnumDropdown;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.styler.NoStyleConfig;
 
@@ -53,7 +54,7 @@ public @interface ExcelModel {
      * <p> If this is {@code true}, this will make the column of {@link Enum} field dropdown.
      *
      * @return whether this column will be dropdown or not.
-     * @see ModelWriter#enumDropdown()
+     * @see EnumDropdown
      * @see ExcelColumn#enumDropdown()
      * @see ExcelColumn#dropdownItems()
      */
@@ -65,7 +66,7 @@ public @interface ExcelModel {
      * <p> This is ineffective to primitive type.
      *
      * @return replacement of the value when the value is null or empty string
-     * @see com.github.javaxcel.out.AbstractExcelWriter#defaultValue(String)
+     * @see DefaultValue
      * @see ExcelColumn#defaultValue()
      */
     String defaultValue() default "";

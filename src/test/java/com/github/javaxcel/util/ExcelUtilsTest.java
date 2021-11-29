@@ -8,10 +8,11 @@ import com.github.javaxcel.converter.out.factory.DefaultOutputConverterFactory;
 import com.github.javaxcel.converter.out.factory.OutputConverterFactory;
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
-import com.github.javaxcel.out.AbstractExcelWriter;
-import com.github.javaxcel.out.ModelWriter;
+import com.github.javaxcel.out.core.ExcelWriter;
+import com.github.javaxcel.out.core.impl.$ModelWriter;
 import io.github.imsejin.common.tool.Stopwatch;
 import io.github.imsejin.common.tool.TypeClassifier;
+import io.github.imsejin.common.util.ReflectionUtils;
 import io.github.imsejin.common.util.StringUtils;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
@@ -28,7 +29,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -180,31 +180,23 @@ class ExcelUtilsTest {
         Stopwatch stopwatch = new Stopwatch(TimeUnit.MILLISECONDS);
 
         // given
-        String className = "com.github.javaxcel.out.ModelWriter";
+        String className = $ModelWriter.class.getName();
 
         // when
         stopwatch.start("load class");
-        Class<?> clazz = Class.forName(className, true, getClass().getClassLoader());
+        Class<?> clazz = Class.forName(className, true, Thread.currentThread().getContextClassLoader());
         stopwatch.stop();
 
-        stopwatch.start("get constructor");
-        Constructor<?> constructor = clazz.getDeclaredConstructor(Workbook.class, Class.class, OutputConverterFactory.class);
-        stopwatch.stop();
-
-        stopwatch.start("set accessible");
-        constructor.setAccessible(true);
-        stopwatch.stop();
-
-        Workbook workbook = new XSSFWorkbook();
         stopwatch.start("instantiate");
-        OutputConverterFactory factory = new DefaultOutputConverterFactory();
-        AbstractExcelWriter<Product> instance = (AbstractExcelWriter<Product>) constructor.newInstance(workbook, Product.class, factory);
+        Class<?>[] paramTypes = {Workbook.class, Class.class, OutputConverterFactory.class};
+        Object[] initArgs = {new XSSFWorkbook(), Product.class, new DefaultOutputConverterFactory()};
+        ExcelWriter<Product> instance = (ExcelWriter<Product>) ReflectionUtils.instantiate(clazz, paramTypes, initArgs);
         stopwatch.stop();
 
         // then
         assertThat(instance)
                 .isNotNull()
-                .isInstanceOf(ModelWriter.class);
+                .isInstanceOf($ModelWriter.class);
         System.out.println(stopwatch.getStatistics());
     }
 

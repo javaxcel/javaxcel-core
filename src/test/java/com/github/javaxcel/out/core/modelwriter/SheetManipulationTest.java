@@ -19,7 +19,6 @@ package com.github.javaxcel.out.core.modelwriter;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
-import com.github.javaxcel.out.ModelWriter;
 import com.github.javaxcel.out.core.ModelWriterTester;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy.AutoResizedColumns;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy.HiddenExtraColumns;
@@ -47,9 +46,9 @@ import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * @see ModelWriter#autoResizeColumns()
- * @see ModelWriter#hideExtraRows()
- * @see ModelWriter#hideExtraColumns()
+ * @see AutoResizedColumns
+ * @see HiddenExtraRows
+ * @see HiddenExtraColumns
  */
 @StopwatchProvider
 class SheetManipulationTest extends ModelWriterTester {
