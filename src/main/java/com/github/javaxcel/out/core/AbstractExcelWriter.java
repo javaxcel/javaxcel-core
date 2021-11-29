@@ -24,6 +24,7 @@ import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.styler.NoStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.assertion.Asserts;
+import io.github.imsejin.common.util.ArrayUtils;
 import io.github.imsejin.common.util.CollectionUtils;
 import io.github.imsejin.common.util.NumberUtils;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -37,21 +38,31 @@ import java.util.function.Function;
 
 import static java.util.stream.Collectors.toMap;
 
-public abstract class $AbstractExcelWriter<T> implements ExcelWriter<T>, ExcelWriteLifecycle<T> {
+public abstract class AbstractExcelWriter<T> implements ExcelWriter<T>, ExcelWriteLifecycle<T> {
 
+    /**
+     * Default cell style configuration to save memory.
+     */
     protected static final ExcelStyleConfig DEFAULT_STYLE_CONFIG = new NoStyleConfig();
 
     private final ExcelWriteContext<T> context;
 
     @SuppressWarnings("unchecked")
-    protected $AbstractExcelWriter(Workbook workbook, Class<T> type) {
-        Class<? extends ExcelWriter<?>> writerType = (Class<? extends ExcelWriter<?>>) getClass();
+    protected AbstractExcelWriter(Workbook workbook, Class<T> type) {
+        Class<? extends ExcelWriter<T>> writerType = (Class<? extends ExcelWriter<T>>) getClass();
         this.context = new ExcelWriteContext<>(workbook, type, writerType);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final ExcelWriter<T> options(ExcelWriteStrategy... strategies) {
-        Asserts.that(strategies).isNotNull().doesNotContainNull();
+        Asserts.that(strategies)
+                .as("strategies is not allowed to be null")
+                .isNotNull()
+                .as("strategies cannot have null element: {0}", ArrayUtils.toString(strategies))
+                .doesNotContainNull();
         if (strategies.length == 0) return this;
 
         // Makes each strategy be unique; removes duplication.
@@ -63,6 +74,9 @@ public abstract class $AbstractExcelWriter<T> implements ExcelWriter<T>, ExcelWr
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final void write(OutputStream out, List<T> list) {
         // Lifecycle method.
@@ -75,7 +89,7 @@ public abstract class $AbstractExcelWriter<T> implements ExcelWriter<T>, ExcelWr
         final int numOfSheets = NumberUtils.toPositive(chunkedList.size());
 
         // Creates sheet names by this or implementation.
-        List<String> sheetNames = createSheetNames(numOfSheets);
+        List<String> sheetNames = createSheetNames(this.context, numOfSheets);
         Asserts.that(sheetNames)
                 .as("sheetNames is not allowed to be null or empty: {0}", sheetNames)
                 .isNotNull().hasElement()
@@ -83,7 +97,8 @@ public abstract class $AbstractExcelWriter<T> implements ExcelWriter<T>, ExcelWr
                 .doesNotContainNull()
                 .as("sheetNames cannot have duplicated elements: {0}", sheetNames)
                 .predicate(them -> them.stream().noneMatch(it -> Collections.frequency(them, it) > 1))
-                .asSize().as("sheetNames.size is not equal to the actual number of sheets: {0} != {1}", sheetNames.size(), numOfSheets)
+                .asSize().as("sheetNames.size is not equal to numOfSheets: (sheetName.size: {0}, numOfSheets: {1})",
+                        sheetNames.size(), numOfSheets)
                 .isEqualTo(numOfSheets);
 
         for (int i = 0; i < numOfSheets; i++) {
@@ -112,7 +127,7 @@ public abstract class $AbstractExcelWriter<T> implements ExcelWriter<T>, ExcelWr
     }
 
     /**
-     * Saves the data into a excel file.
+     * Saves models into an Excel file.
      *
      * @param out output stream
      */
@@ -126,8 +141,23 @@ public abstract class $AbstractExcelWriter<T> implements ExcelWriter<T>, ExcelWr
 
     ///////////////////////////////////// Overridable /////////////////////////////////////
 
+    /**
+     * Creates sheet names following with the below instructions.
+     *
+     * <ul>
+     *     <li>Sheet names don't be null or empty.</li>
+     *     <li>Sheet names don't have null element.</li>
+     *     <li>Sheet names don't have duplicated elements.</li>
+     *     <li>The number of sheet names is equal to numOfSheets.</li>
+     * </ul>
+     *
+     * @param context     context with current sheet and chunked models.
+     * @param numOfSheets the number of sheets
+     * @return sheet names
+     * @throws IllegalArgumentException if sheet names is null or empty
+     */
     @Nonnull
-    protected List<String> createSheetNames(int numOfSheets) {
+    protected List<String> createSheetNames(ExcelWriteContext<T> context, int numOfSheets) {
         ExcelWriteStrategy strategy = this.context.getStrategyMap().get(ExcelWriteStrategy.SheetName.class);
         String sheetName = strategy == null ? "Sheet" : (String) strategy.execute(this.context);
 
@@ -141,10 +171,17 @@ public abstract class $AbstractExcelWriter<T> implements ExcelWriter<T>, ExcelWr
         return sheetNames;
     }
 
+    /**
+     * Creates the first row as header for each sheet.
+     *
+     * @param context context with current sheet and chunked models.
+     */
     protected abstract void createHeader(ExcelWriteContext<T> context);
 
     /**
-     * Writes chunked list to the sheet.
+     * Creates the second row and below as body for each sheet.
+     *
+     * @param context context with current sheet and chunked models.
      */
     protected abstract void createBody(ExcelWriteContext<T> context);
 

@@ -22,7 +22,7 @@ import com.github.javaxcel.converter.out.factory.OutputConverterFactory;
 import com.github.javaxcel.converter.out.support.OutputConverterSupport;
 import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.out.context.ExcelWriteContext;
-import com.github.javaxcel.out.core.$AbstractExcelWriter;
+import com.github.javaxcel.out.core.AbstractExcelWriter;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy.*;
 import com.github.javaxcel.styler.ExcelStyleConfig;
@@ -40,11 +40,16 @@ import java.util.*;
 import java.util.logging.Filter;
 import java.util.stream.IntStream;
 
+/**
+ * Excel writer with model
+ *
+ * @param <T> model type
+ */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class $ModelWriter<T> extends $AbstractExcelWriter<T> {
+public class ModelWriter<T> extends AbstractExcelWriter<T> {
 
     /**
-     * The type's fields that will be actually written in excel.
+     * The type's fields that will be actually written in Excel file.
      */
     private final List<Field> fields;
 
@@ -52,7 +57,7 @@ public class $ModelWriter<T> extends $AbstractExcelWriter<T> {
 
     private Map<Integer, String[]> enumDropdownMap;
 
-    public $ModelWriter(Workbook workbook, Class<T> type, OutputConverterFactory factory) {
+    public ModelWriter(Workbook workbook, Class<T> type, OutputConverterFactory factory) {
         super(workbook, type);
 
         // Finds targeted fields.
@@ -80,7 +85,7 @@ public class $ModelWriter<T> extends $AbstractExcelWriter<T> {
 
         boolean enabled = context.getStrategyMap().containsKey(EnumDropdown.class);
         if (!enabled) {
-            ExcelModel excelModel = context.getElementType().getAnnotation(ExcelModel.class);
+            ExcelModel excelModel = context.getModelType().getAnnotation(ExcelModel.class);
             enabled = excelModel != null && excelModel.enumDropdown();
         }
 
@@ -139,8 +144,8 @@ public class $ModelWriter<T> extends $AbstractExcelWriter<T> {
         }
 
         // Sets configurations for header styles by ExcelModel.
-        if (context.getElementType().isAnnotationPresent(ExcelModel.class)) {
-            ExcelModel excelModel = context.getElementType().getAnnotation(ExcelModel.class);
+        if (context.getModelType().isAnnotationPresent(ExcelModel.class)) {
+            ExcelModel excelModel = context.getModelType().getAnnotation(ExcelModel.class);
 
             // Sets cell style for header.
             ExcelStyleConfig headerConfig = excelModel.headerStyle() == NoStyleConfig.class
@@ -196,8 +201,8 @@ public class $ModelWriter<T> extends $AbstractExcelWriter<T> {
         }
 
         // Sets configurations for body styles by ExcelModel.
-        if (context.getElementType().isAnnotationPresent(ExcelModel.class)) {
-            ExcelModel excelModel = context.getElementType().getAnnotation(ExcelModel.class);
+        if (context.getModelType().isAnnotationPresent(ExcelModel.class)) {
+            ExcelModel excelModel = context.getModelType().getAnnotation(ExcelModel.class);
 
             // Sets cell style for body.
             ExcelStyleConfig bodyConfig = excelModel.bodyStyle() == NoStyleConfig.class
@@ -234,11 +239,11 @@ public class $ModelWriter<T> extends $AbstractExcelWriter<T> {
 
     @Override
     public void preWriteSheet(ExcelWriteContext<T> context) {
-        if (context.getStrategyMap().containsKey(Filter.class)) {
-            Sheet sheet = context.getSheet();
-            String ref = ExcelUtils.toRangeReference(sheet, 0, 0, this.fields.size() - 1, context.getChunk().size() - 1);
-            sheet.setAutoFilter(CellRangeAddress.valueOf(ref));
-        }
+        if (!context.getStrategyMap().containsKey(Filter.class)) return;
+
+        Sheet sheet = context.getSheet();
+        String ref = ExcelUtils.toRangeReference(sheet, 0, 0, this.fields.size() - 1, context.getChunk().size() - 1);
+        sheet.setAutoFilter(CellRangeAddress.valueOf(ref));
     }
 
     @Override
@@ -246,19 +251,15 @@ public class $ModelWriter<T> extends $AbstractExcelWriter<T> {
         // Creates the first row that is header.
         Row row = context.getSheet().createRow(0);
 
-        List<String> headerNames;
         ExcelWriteStrategy strategy = context.getStrategyMap().get(HeaderNames.class);
-        if (strategy == null) {
-            headerNames = FieldUtils.toHeaderNames(this.fields);
-        } else {
-            headerNames = (List<String>) strategy.execute(context);
-        }
+        List<String> headerNames = strategy == null ? FieldUtils.toHeaderNames(this.fields)
+                : (List<String>) strategy.execute(context);
 
         Asserts.that(headerNames)
                 .as("headerNames is not allowed to be null or empty: {0}", headerNames)
                 .isNotNull().hasElement()
                 .as("headerNames.size is not equal to the number of targeted fields in the class: {0}",
-                        context.getElementType().getName())
+                        context.getModelType().getName())
                 .isSameSize(this.fields);
 
         List<CellStyle> headerStyles = context.getHeaderStyles();

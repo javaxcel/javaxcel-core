@@ -9,7 +9,7 @@ import com.github.javaxcel.converter.out.factory.OutputConverterFactory;
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
 import com.github.javaxcel.out.core.ExcelWriter;
-import com.github.javaxcel.out.core.impl.$ModelWriter;
+import com.github.javaxcel.out.core.impl.ModelWriter;
 import io.github.imsejin.common.tool.Stopwatch;
 import io.github.imsejin.common.tool.TypeClassifier;
 import io.github.imsejin.common.util.ReflectionUtils;
@@ -180,7 +180,7 @@ class ExcelUtilsTest {
         Stopwatch stopwatch = new Stopwatch(TimeUnit.MILLISECONDS);
 
         // given
-        String className = $ModelWriter.class.getName();
+        String className = ModelWriter.class.getName();
 
         // when
         stopwatch.start("load class");
@@ -196,7 +196,7 @@ class ExcelUtilsTest {
         // then
         assertThat(instance)
                 .isNotNull()
-                .isInstanceOf($ModelWriter.class);
+                .isInstanceOf(ModelWriter.class);
         System.out.println(stopwatch.getStatistics());
     }
 

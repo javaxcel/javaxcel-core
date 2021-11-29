@@ -17,7 +17,7 @@
 package com.github.javaxcel.out.core.impl;
 
 import com.github.javaxcel.out.context.ExcelWriteContext;
-import com.github.javaxcel.out.core.$AbstractExcelWriter;
+import com.github.javaxcel.out.core.AbstractExcelWriter;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy.*;
 import com.github.javaxcel.styler.ExcelStyleConfig;
@@ -38,7 +38,7 @@ import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
 
 @SuppressWarnings("unchecked")
-public class $MapWriter<T extends Map<String, ?>> extends $AbstractExcelWriter<T> {
+public class MapWriter<T extends Map<String, ?>> extends AbstractExcelWriter<T> {
 
     private List<String> keys;
 
@@ -49,7 +49,7 @@ public class $MapWriter<T extends Map<String, ?>> extends $AbstractExcelWriter<T
      */
     private String defaultValue;
 
-    public $MapWriter(Workbook workbook) throws ClassNotFoundException {
+    public MapWriter(Workbook workbook) throws ClassNotFoundException {
         // incompatible types: java.lang.Class<java.util.Map> cannot be converted to java.lang.Class<T>
         super(workbook, (Class<T>) Class.forName("java.util.Map"));
     }

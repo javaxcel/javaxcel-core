@@ -19,7 +19,7 @@ package com.github.javaxcel.out.core.modelwriter;
 import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.core.ModelWriterTester;
-import com.github.javaxcel.out.core.impl.$ModelWriter;
+import com.github.javaxcel.out.core.impl.ModelWriter;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy.SheetName;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
@@ -68,7 +68,7 @@ class SheetNameTest extends ModelWriterTester {
 
         // when & then
         stopwatch.start("create '%s' instance with invalid sheet name(%s)",
-                $ModelWriter.class.getSimpleName(), sheetName);
+                ModelWriter.class.getSimpleName(), sheetName);
         assertThatThrownBy(() -> ExcelWriterFactory.init().create(workbook, FailureModel.class)
                 .options(new SheetName(sheetName)))
                 .as("Throws IllegalArgumentException")

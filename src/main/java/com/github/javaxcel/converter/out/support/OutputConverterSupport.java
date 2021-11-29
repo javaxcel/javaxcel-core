@@ -23,6 +23,7 @@ import com.github.javaxcel.constant.ConverterType;
 import com.github.javaxcel.converter.out.DefaultOutputConverter;
 import com.github.javaxcel.converter.out.ExpressionOutputConverter;
 import com.github.javaxcel.converter.out.OutputConverter;
+import com.github.javaxcel.out.strategy.ExcelWriteStrategy.DefaultValue;
 import io.github.imsejin.common.util.StringUtils;
 
 import java.lang.reflect.Field;
@@ -59,7 +60,7 @@ public class OutputConverterSupport<T> implements OutputConverter<T> {
      * if the value is null or empty string, converts it to default value.
      *
      * <ol>
-     *     <li>{@link com.github.javaxcel.out.AbstractExcelWriter#defaultValue(String)}</li>
+     *     <li>{@link DefaultValue}</li>
      *     <li>{@link ExcelColumn#defaultValue()}</li>
      *     <li>{@link ExcelModel#defaultValue()}</li>
      * </ol>
