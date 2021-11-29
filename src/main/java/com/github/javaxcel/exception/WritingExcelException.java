@@ -19,7 +19,7 @@ package com.github.javaxcel.exception;
 public class WritingExcelException extends JavaxcelException {
 
     public WritingExcelException() {
-        super("Failed to write data to the excel sheet");
+        super("Failed to write data to the Excel sheet");
     }
 
     public WritingExcelException(String format, Object... args) {
@@ -27,7 +27,7 @@ public class WritingExcelException extends JavaxcelException {
     }
 
     public WritingExcelException(Throwable cause) {
-        super(cause, "Failed to write data to the excel sheet");
+        super(cause, "Failed to write data to the Excel sheet");
     }
 
     public WritingExcelException(Throwable cause, String format, Object... args) {

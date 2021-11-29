@@ -37,7 +37,7 @@ public class ExcelWriteContext<T> {
     private final Class<? extends ExcelWriter<?>> writerType;
 
     /**
-     * Strategies for writing excel file.
+     * Strategies for writing Excel file.
      * <p>
      * To prevent {@link NullPointerException} from being thrown,
      * initialize this field with empty map.

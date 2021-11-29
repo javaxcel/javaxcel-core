@@ -50,7 +50,7 @@ import java.util.stream.IntStream;
 import static java.util.stream.Collectors.toList;
 
 /**
- * Utilities for spreadsheet excel with Apache POI.
+ * Utilities for spreadsheet Excel with Apache POI.
  *
  * @see Workbook
  * @see Sheet
@@ -72,14 +72,14 @@ public final class ExcelUtils {
     /**
      * Returns the instance of {@link Workbook} by reading file.
      *
-     * @param file excel file
-     * @return excel workbook instance
+     * @param file Excel file
+     * @return Excel workbook instance
      * @throws IllegalArgumentException unless file extension is equal to 'xls' or 'xlsx'
      */
     public static Workbook getWorkbook(File file) {
         final String extension = FilenameUtils.getExtension(file.getName());
         Asserts.that(extension)
-                .as("Extension of excel file must be '{0}' or '{1}'",
+                .as("Extension of Excel file must be '{0}' or '{1}'",
                         EXCEL_97_EXTENSION, EXCEL_2007_EXTENSION)
                 .matches(EXCEL_97_EXTENSION + '|' + EXCEL_2007_EXTENSION);
 
@@ -101,7 +101,7 @@ public final class ExcelUtils {
     /**
      * Returns range of the sheets.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @return range that from 0 to (the number of sheets - 1)
      * @see Workbook#getNumberOfSheets()
      */
@@ -112,7 +112,7 @@ public final class ExcelUtils {
     /**
      * Returns all sheets in a workbook.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @return all sheets
      */
     public static List<Sheet> getSheets(Workbook workbook) {
@@ -141,7 +141,7 @@ public final class ExcelUtils {
     /**
      * Returns the number of rows in all sheets.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @return the number of rows
      * @throws UnsupportedWorkbookException if instance of workbook is {@link SXSSFWorkbook}
      */
@@ -157,7 +157,7 @@ public final class ExcelUtils {
     /**
      * Returns the number of rows in all sheets.
      *
-     * @param file excel file
+     * @param file Excel file
      * @return the number of rows
      */
     public static long getNumOfRows(File file) {
@@ -190,7 +190,7 @@ public final class ExcelUtils {
      * <p> This excludes header row. In other words,
      * this returns the total number of rows minus number of all headers.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @return the number of models
      * @throws UnsupportedWorkbookException if instance of workbook is {@link SXSSFWorkbook}
      */
@@ -209,7 +209,7 @@ public final class ExcelUtils {
      * <p> This excludes header row. In other words,
      * this returns the total number of rows minus number of all headers.
      *
-     * @param file excel file
+     * @param file Excel file
      * @return the number of models
      */
     public static long getNumOfModels(File file) {
@@ -220,7 +220,7 @@ public final class ExcelUtils {
     /**
      * Returns maximum number of rows in a spreadsheet.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @return maximum number of rows in a spreadsheet
      */
     public static int getMaxRows(Workbook workbook) {
@@ -244,7 +244,7 @@ public final class ExcelUtils {
     /**
      * Returns maximum number of columns in a spreadsheet.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @return maximum number of columns in a spreadsheet
      */
     public static int getMaxColumns(Workbook workbook) {
@@ -268,7 +268,7 @@ public final class ExcelUtils {
     /**
      * Checks if spreadsheet's version is 97.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @return whether spreadsheet's version is 97 or not
      */
     public static boolean isExcel97(Workbook workbook) {
@@ -278,7 +278,7 @@ public final class ExcelUtils {
     /**
      * Checks if spreadsheet's version is 97.
      *
-     * @param sheet excel sheet
+     * @param sheet Excel sheet
      * @return whether spreadsheet's version is 97 or not
      */
     public static boolean isExcel97(Sheet sheet) {
@@ -315,7 +315,7 @@ public final class ExcelUtils {
      * <p> If instance of sheet is {@link SXSSFSheet}, the columns may be
      * inaccurately auto-resized compared to {@link HSSFSheet} and {@link org.apache.poi.xssf.usermodel.XSSFSheet}.
      *
-     * @param sheet        excel sheet
+     * @param sheet        Excel sheet
      * @param numOfColumns number of the columns that wanted to make fit contents.
      * @see Sheet#autoSizeColumn(int)
      */
@@ -354,7 +354,7 @@ public final class ExcelUtils {
      * <p> This process will be performed in single-thread.
      * If change this code to be in parallel, this will throw {@link java.util.ConcurrentModificationException}.
      *
-     * @param sheet     excel sheet
+     * @param sheet     Excel sheet
      * @param numOfRows number of the rows that have contents.
      * @see Row#setZeroHeight(boolean)
      */
@@ -384,7 +384,7 @@ public final class ExcelUtils {
      *     +------------+----------+
      * </code></pre>
      *
-     * @param sheet        excel sheet
+     * @param sheet        Excel sheet
      * @param numOfColumns number of the columns that have contents.
      * @see Sheet#setColumnHidden(int, boolean)
      */
@@ -399,7 +399,7 @@ public final class ExcelUtils {
     /**
      * Converts configuration to cell style.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @param config   configuration of cell style
      * @return cell style | null if config type is {@link NoStyleConfig}
      */
@@ -419,7 +419,7 @@ public final class ExcelUtils {
     /**
      * Converts configurations to cell styles.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @param configs  configurations of cell style
      * @return cell styles | null if all instance types of configs are {@link NoStyleConfig}
      * @throws IllegalArgumentException if configs is null, these length is 0 or they contains null
@@ -464,7 +464,7 @@ public final class ExcelUtils {
      *     setRangeAlias(workbook, "MY_RANGE", ref);
      * </code></pre>
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @param alias    alias for cell range address
      * @param ref      reference for cell range address
      */
@@ -486,7 +486,7 @@ public final class ExcelUtils {
      *     toRangeReference(sheet, startCell, endCell); // mySheet!$A$1:$A$2
      * </code></pre>
      *
-     * @param sheet     excel sheet
+     * @param sheet     Excel sheet
      * @param startCell first cell in cell range address
      * @param endCell   last cell in cell range address
      * @return reference for cell range address
@@ -519,7 +519,7 @@ public final class ExcelUtils {
      *     toRangeReference(sheet, 2, 1, 5, 4); // mySheet!$C$2:$F$5
      * </code></pre>
      *
-     * @param sheet            excel sheet
+     * @param sheet            Excel sheet
      * @param startColumnIndex column index of first cell in cell range address
      * @param startRowIndex    row index of first cell in cell range address
      * @param endColumnIndex   column index of end cell in cell range address
@@ -556,7 +556,7 @@ public final class ExcelUtils {
      *     toRangeReference(xssfSheet, 2); // mySheet!$C$2:$A$1048576
      * </code></pre>
      *
-     * @param sheet       excel sheet
+     * @param sheet       Excel sheet
      * @param columnIndex column index for cell range address
      * @return reference for column range address except first row
      * @throws IllegalArgumentException if column index is greater than max column index of the sheet
@@ -583,7 +583,7 @@ public final class ExcelUtils {
      *     setValidation(sheet, helper, ref, "RED", "GREEN", "BLUE");
      * </code></pre>
      *
-     * @param sheet  excel sheet
+     * @param sheet  Excel sheet
      * @param helper data validation helper
      * @param ref    reference for cell range address
      * @param values constraint values
@@ -605,7 +605,7 @@ public final class ExcelUtils {
     /**
      * Returns the number of declared cell styles.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @return number of declared cell styles
      */
     public static int getNumOfDeclaredCellStyles(Workbook workbook) {
@@ -616,7 +616,7 @@ public final class ExcelUtils {
     /**
      * Returns the number of initial cell styles.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @return the number of initial cell styles
      */
     public static int getNumOfInitialCellStyles(Workbook workbook) {
@@ -626,7 +626,7 @@ public final class ExcelUtils {
     /**
      * Returns the declared cell styles.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @return the declared cell styles
      */
     public static List<CellStyle> getDeclaredCellStyles(Workbook workbook) {
@@ -640,7 +640,7 @@ public final class ExcelUtils {
     /**
      * Returns a font on cell style in workbook.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @param style    cell style
      * @return font on cell style
      */
@@ -655,9 +655,9 @@ public final class ExcelUtils {
     /**
      * Returns whether one cell style/font is equal to the other.
      *
-     * @param workbook      excel workbook
+     * @param workbook      Excel workbook
      * @param style         cell style
-     * @param otherWorkbook other excel workbook
+     * @param otherWorkbook other Excel workbook
      * @param otherStyle    other cell style
      * @return whether one cell style/font is equal to the other
      */

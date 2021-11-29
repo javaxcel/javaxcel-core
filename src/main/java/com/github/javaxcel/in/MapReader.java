@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * Excel reader for {@link Map}.
  *
- * @param <W> excel workbook
+ * @param <W> Excel workbook
  * @param <T> {@link Map}
  */
 public class MapReader<W extends Workbook, T extends Map<String, ?>> extends AbstractExcelReader<W, T> {
@@ -40,7 +40,7 @@ public class MapReader<W extends Workbook, T extends Map<String, ?>> extends Abs
     private final List<String> headerNames = new ArrayList<>();
 
     /**
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @see com.github.javaxcel.factory.ExcelReaderFactory#create(Workbook)
      */
     public MapReader(W workbook) {

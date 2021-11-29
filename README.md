@@ -82,7 +82,7 @@ try (InputStream in = new FileInputStream(src);
     // Reads all the sheet and returns data as a list.
     List<Product> products = ExcelReaderFactory.create(oldWorkbook, Product.class).read();
     
-    // Creates a excel file and writes data to it.
+    // Creates an Excel file and writes data to it.
     ExcelWriterFactory.create(newWorkbook, Product.class).write(out, products);
 } catch (IOException e) {
     e.printStackTrace();

@@ -32,14 +32,14 @@ class WritingExcelExceptionTest {
         // then
         assertThat(exception)
                 .isExactlyInstanceOf(WritingExcelException.class)
-                .hasMessage("Failed to write data to the excel sheet");
+                .hasMessage("Failed to write data to the Excel sheet");
     }
 
     @Test
     @DisplayName("WritingExcelException(String, Object...)")
     void test1() {
         // given
-        String message = "Exception of failure of writing excel file";
+        String message = "Exception of failure of writing Excel file";
 
         // when
         WritingExcelException exception = new WritingExcelException(message);
@@ -54,7 +54,7 @@ class WritingExcelExceptionTest {
     @DisplayName("WritingExcelException(Throwable)")
     void test2() {
         // given
-        Throwable cause = new RuntimeException("Exception of failure of writing excel file");
+        Throwable cause = new RuntimeException("Exception of failure of writing Excel file");
 
         // when
         WritingExcelException exception = new WritingExcelException(cause);
@@ -63,14 +63,14 @@ class WritingExcelExceptionTest {
         assertThat(exception)
                 .isExactlyInstanceOf(WritingExcelException.class)
                 .hasCause(cause)
-                .hasMessage("Failed to write data to the excel sheet");
+                .hasMessage("Failed to write data to the Excel sheet");
     }
 
     @Test
     @DisplayName("WritingExcelException(Throwable, String, Object...)")
     void test3() {
         // given
-        String message = "Exception of failure of writing excel file";
+        String message = "Exception of failure of writing Excel file";
         Throwable cause = new RuntimeException(message);
 
         // when

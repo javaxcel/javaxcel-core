@@ -34,7 +34,7 @@ public abstract class ExcelReaderFactory {
     /**
      * Returns instance of {@link MapReader}.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @param <W>      implementation of {@link Workbook}
      * @param <V>      {@link Map}'s value
      * @return {@link MapReader}

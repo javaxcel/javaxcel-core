@@ -35,7 +35,7 @@ public abstract class ExcelWriterFactory {
     /**
      * Returns instance of {@link ModelWriter}.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @param type     type of model
      * @param <T>      type of the element
      * @return {@link ModelWriter}

@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Abstract excel reader
+ * Abstract Excel reader
  *
  * <ol>
  *     <li>{@link #read()}</li>
@@ -137,7 +137,7 @@ public abstract class AbstractExcelReader<W extends Workbook, T> implements Exce
     /**
      * Gets models read as map from a sheet.
      *
-     * @param sheet excel sheet
+     * @param sheet Excel sheet
      * @return models read as map
      */
     protected final List<Map<String, Object>> readSheetAsMaps(Sheet sheet) {

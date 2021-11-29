@@ -31,7 +31,7 @@ public interface ExcelReader<W extends Workbook, T> {
     ExcelReader<W, T> limit(int limit);
 
     /**
-     * Returns a list after this reads the excel file.
+     * Returns a list after this reads the Excel file.
      *
      * @return list
      */

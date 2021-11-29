@@ -26,10 +26,10 @@ public interface ExcelWriter<T> {
     ExcelWriter<T> options(ExcelWriteStrategy... strategies);
 
     /**
-     * Writes the data in the excel file.
+     * Writes models in the Excel file.
      *
-     * @param out  output stream for writing excel file
-     * @param list list of models
+     * @param out  output stream for writing Excel file
+     * @param list models
      */
     void write(OutputStream out, List<T> list);
 

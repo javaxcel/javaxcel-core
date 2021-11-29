@@ -35,7 +35,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Excel reader for model.
  *
- * @param <W> excel workbook
+ * @param <W> Excel workbook
  * @param <T> type of model
  */
 public class ModelReader<W extends Workbook, T> extends AbstractExcelReader<W, T> {
@@ -54,7 +54,7 @@ public class ModelReader<W extends Workbook, T> extends AbstractExcelReader<W, T
     private boolean parallel;
 
     /**
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @param type     type of model
      * @see com.github.javaxcel.factory.ExcelReaderFactory#create(Workbook, Class)
      */

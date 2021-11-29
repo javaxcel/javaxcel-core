@@ -10,7 +10,7 @@
     <packaging>jar</packaging>
 
     <name>Javaxcel Core</name>
-    <description>Supporter for export and import of excel file</description>
+    <description>Supporter for export and import of Excel file</description>
     <url>https://github.com/javaxcel/javaxcel-core</url>
 
     <licenses>
