@@ -59,12 +59,15 @@ public final class FieldUtils {
      * @see ExcelIgnore
      */
     public static List<Field> getTargetedFields(Class<?> type) {
-        // Gets fields depending on the policies.
+        // Gets the fields depending on the policies.
         ExcelModel excelModel = type.getAnnotation(ExcelModel.class);
         Stream<Field> stream = excelModel == null || !excelModel.includeSuper()
                 ? Arrays.stream(type.getDeclaredFields())
                 : ReflectionUtils.getInheritedFields(type).stream();
 
+        // Excludes internal groovy fields.
+        stream = stream.filter(field -> !Modifier.isTransient(field.getModifiers()) ||
+                !field.getType().getName().equals("groovy.lang.MetaClass"));
         // Excludes the fields to be ignored.
         stream = stream.filter(field -> field.getAnnotation(ExcelIgnore.class) == null);
         // Excludes the static fields.
