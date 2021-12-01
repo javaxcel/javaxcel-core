@@ -54,10 +54,10 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- Dependency versions -->
-        <apache.poi.version>4.1.2</apache.poi.version>
-        <javaxcel.styler.version>0.2.1</javaxcel.styler.version>
+        <apache-poi.version>4.1.2</apache-poi.version>
+        <javaxcel-styler.version>0.2.1</javaxcel-styler.version>
         <spel.version>5.2.9</spel.version>
-        <common.utils.version>0.7.0</common.utils.version>
+        <common-utils.version>0.7.0</common-utils.version>
         <junit5.version>5.8.1</junit5.version>
         <assertj.version>3.21.0</assertj.version>
     </properties>
@@ -67,7 +67,7 @@
         <dependency>
             <groupId>io.github.imsejin</groupId>
             <artifactId>common-utils</artifactId>
-            <version>${common.utils.version}</version>
+            <version>${common-utils.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.code.gson</groupId>
@@ -84,22 +84,22 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>${apache.poi.version}</version>
+            <version>${apache-poi.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>${apache.poi.version}</version>
+            <version>${apache-poi.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml-schemas</artifactId>
-            <version>${apache.poi.version}</version>
+            <version>${apache-poi.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-scratchpad</artifactId>
-            <version>${apache.poi.version}</version>
+            <version>${apache-poi.version}</version>
         </dependency>
 
         <!-- SpEL(Spring Expression Language) -->
@@ -113,7 +113,7 @@
         <dependency>
             <groupId>com.github.javaxcel</groupId>
             <artifactId>javaxcel-styler</artifactId>
-            <version>${javaxcel.styler.version}</version>
+            <version>${javaxcel-styler.version}</version>
         </dependency>
 
         <!--
