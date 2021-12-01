@@ -59,6 +59,7 @@
         <spel.version>5.2.9</spel.version>
         <common-utils.version>0.7.0</common-utils.version>
         <junit5.version>5.8.1</junit5.version>
+        <spock.version>2.0-groovy-3.0</spock.version>
         <assertj.version>3.21.0</assertj.version>
         <lombok.version>1.18.22</lombok.version>
     </properties>
@@ -166,6 +167,19 @@
             <scope>test</scope>
         </dependency>
 
+        <!--
+           Spock Framework
+
+           Mandatory dependencies for using Spock.
+           This starts to support 'maven-surefire' since 2.0.
+       -->
+        <dependency>
+            <groupId>org.spockframework</groupId>
+            <artifactId>spock-core</artifactId>
+            <version>${spock.version}</version>
+            <scope>test</scope>
+        </dependency>
+
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -259,6 +273,29 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
+            </plugin>
+
+            <!--
+                Mandatory plugin for using Spock.
+                It enables you to check test cases using Spock automatically.
+
+                The gmavenplus plugin is used to compile Groovy code.
+                To learn more about this plugin,
+                visit https://github.com/groovy/GMavenPlus/wiki
+            -->
+            <plugin>
+                <groupId>org.codehaus.gmavenplus</groupId>
+                <artifactId>gmavenplus-plugin</artifactId>
+                <version>1.13.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>compileTests</goal>
+                            <goal>addTestSources</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
