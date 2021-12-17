@@ -53,14 +53,14 @@ public class MapWriter extends AbstractExcelWriter<Map<String, Object>> {
 
     static {
         try {
+            // incompatible types: java.lang.Class<java.util.Map> cannot be converted to java.lang.Class<T>
             MAP_TYPE = (Class<Map<String, Object>>) Class.forName(Map.class.getName());
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public MapWriter(Workbook workbook) throws ClassNotFoundException {
-        // incompatible types: java.lang.Class<java.util.Map> cannot be converted to java.lang.Class<T>
+    public MapWriter(Workbook workbook) {
         super(workbook, MAP_TYPE);
     }
 

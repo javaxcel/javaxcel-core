@@ -16,9 +16,9 @@
 
 package com.github.javaxcel.factory;
 
+import com.github.javaxcel.out.core.ExcelWriter;
 import com.github.javaxcel.out.core.impl.MapWriter;
 import com.github.javaxcel.out.core.impl.ModelWriter;
-import com.github.javaxcel.out.core.ExcelWriter;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import java.util.Map;
@@ -51,11 +51,7 @@ public abstract class ExcelWriterFactory {
      * @return {@link MapWriter}
      */
     public static ExcelWriter<Map<String, Object>> create(Workbook workbook) {
-        try {
-            return new MapWriter(workbook);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        return new MapWriter(workbook);
     }
 
 }
