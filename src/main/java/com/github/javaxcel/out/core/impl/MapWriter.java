@@ -38,7 +38,9 @@ import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
 
 @SuppressWarnings("unchecked")
-public class MapWriter<T extends Map<String, ?>> extends AbstractExcelWriter<T> {
+public class MapWriter extends AbstractExcelWriter<Map<String, Object>> {
+
+    private static final Class<Map<String, Object>> MAP_TYPE;
 
     private List<String> keys;
 
@@ -49,13 +51,21 @@ public class MapWriter<T extends Map<String, ?>> extends AbstractExcelWriter<T> 
      */
     private String defaultValue;
 
+    static {
+        try {
+            MAP_TYPE = (Class<Map<String, Object>>) Class.forName(Map.class.getName());
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public MapWriter(Workbook workbook) throws ClassNotFoundException {
         // incompatible types: java.lang.Class<java.util.Map> cannot be converted to java.lang.Class<T>
-        super(workbook, (Class<T>) Class.forName("java.util.Map"));
+        super(workbook, MAP_TYPE);
     }
 
     @Override
-    public void prepare(ExcelWriteContext<T> context) {
+    public void prepare(ExcelWriteContext<Map<String, Object>> context) {
         setKeys(context);
         changeKeys(context);
         setDefaultValue(context);
@@ -63,8 +73,8 @@ public class MapWriter<T extends Map<String, ?>> extends AbstractExcelWriter<T> 
         setBodyStyles(context);
     }
 
-    private void setKeys(ExcelWriteContext<T> context) {
-        List<T> list = context.getList();
+    private void setKeys(ExcelWriteContext<Map<String, Object>> context) {
+        List<Map<String, Object>> list = context.getList();
 
         // Gets the keys of all maps.
         this.keys = list.stream().flatMap(it -> it.keySet().stream()).distinct().collect(toList());
@@ -79,7 +89,7 @@ public class MapWriter<T extends Map<String, ?>> extends AbstractExcelWriter<T> 
                 .predicate(them -> them.stream().noneMatch(it -> Collections.frequency(them, it) > 1));
     }
 
-    private void changeKeys(ExcelWriteContext<T> context) {
+    private void changeKeys(ExcelWriteContext<Map<String, Object>> context) {
         ExcelWriteStrategy strategy = context.getStrategyMap().get(KeyNames.class);
         if (strategy == null) return;
 
@@ -101,14 +111,14 @@ public class MapWriter<T extends Map<String, ?>> extends AbstractExcelWriter<T> 
         this.keys.sort(comparing(orders::get));
     }
 
-    private void setDefaultValue(ExcelWriteContext<T> context) {
+    private void setDefaultValue(ExcelWriteContext<Map<String, Object>> context) {
         ExcelWriteStrategy strategy = context.getStrategyMap().get(DefaultValue.class);
         if (strategy == null) return;
 
         this.defaultValue = (String) strategy.execute(context);
     }
 
-    private void setHeaderStyles(ExcelWriteContext<T> context) {
+    private void setHeaderStyles(ExcelWriteContext<Map<String, Object>> context) {
         ExcelWriteStrategy strategy = context.getStrategyMap().get(HeaderStyles.class);
         if (strategy == null) return;
 
@@ -125,7 +135,7 @@ public class MapWriter<T extends Map<String, ?>> extends AbstractExcelWriter<T> 
         context.setHeaderStyles(Arrays.asList(headerStyles));
     }
 
-    private void setBodyStyles(ExcelWriteContext<T> context) {
+    private void setBodyStyles(ExcelWriteContext<Map<String, Object>> context) {
         ExcelWriteStrategy strategy = context.getStrategyMap().get(BodyStyles.class);
         if (strategy == null) return;
 
@@ -143,7 +153,7 @@ public class MapWriter<T extends Map<String, ?>> extends AbstractExcelWriter<T> 
     }
 
     @Override
-    public void preWriteSheet(ExcelWriteContext<T> context) {
+    public void preWriteSheet(ExcelWriteContext<Map<String, Object>> context) {
         if (context.getStrategyMap().containsKey(Filter.class)) {
             Sheet sheet = context.getSheet();
             String ref = ExcelUtils.toRangeReference(sheet, 0, 0, this.keys.size() - 1, context.getChunk().size() - 1);
@@ -152,7 +162,7 @@ public class MapWriter<T extends Map<String, ?>> extends AbstractExcelWriter<T> 
     }
 
     @Override
-    protected void createHeader(ExcelWriteContext<T> context) {
+    protected void createHeader(ExcelWriteContext<Map<String, Object>> context) {
         // Creates the first row that is header.
         Row row = context.getSheet().createRow(0);
 
@@ -179,16 +189,16 @@ public class MapWriter<T extends Map<String, ?>> extends AbstractExcelWriter<T> 
     }
 
     @Override
-    protected void createBody(ExcelWriteContext<T> context) {
+    protected void createBody(ExcelWriteContext<Map<String, Object>> context) {
         Sheet sheet = context.getSheet();
-        List<T> list = context.getChunk();
+        List<Map<String, Object>> list = context.getChunk();
         List<CellStyle> bodyStyles = context.getBodyStyles();
 
         final int numOfMaps = list.size();
         final int numOfKeys = this.keys.size();
 
         for (int i = 0; i < numOfMaps; i++) {
-            T map = list.get(i);
+            Map<String, Object> map = list.get(i);
 
             // Skips the first row that is header.
             Row row = sheet.createRow(i + 1);
@@ -217,7 +227,7 @@ public class MapWriter<T extends Map<String, ?>> extends AbstractExcelWriter<T> 
     }
 
     @Override
-    public void postWriteSheet(ExcelWriteContext<T> context) {
+    public void postWriteSheet(ExcelWriteContext<Map<String, Object>> context) {
         Map<Class<? extends ExcelWriteStrategy>, ExcelWriteStrategy> strategyMap = context.getStrategyMap();
         Sheet sheet = context.getSheet();
 

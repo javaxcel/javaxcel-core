@@ -100,7 +100,7 @@ public class TestUtils {
         return map;
     }
 
-    public static List<Map<String, ?>> getRandomMaps(int size, int numOfEntries) {
+    public static List<Map<String, Object>> getRandomMaps(int size, int numOfEntries) {
         if (size < 0) throw new IllegalArgumentException("Size cannot be negative");
         if (numOfEntries < 0) throw new IllegalArgumentException("Number of entries cannot be negative");
 

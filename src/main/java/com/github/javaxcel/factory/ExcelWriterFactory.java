@@ -50,9 +50,9 @@ public abstract class ExcelWriterFactory {
      * @param workbook Excel workbook
      * @return {@link MapWriter}
      */
-    public static ExcelWriter<Map<String, ?>> create(Workbook workbook) {
+    public static ExcelWriter<Map<String, Object>> create(Workbook workbook) {
         try {
-            return new MapWriter<>(workbook);
+            return new MapWriter(workbook);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

@@ -69,7 +69,7 @@ public abstract class MapWriterTester {
     }
 
     protected ThenModel whenCreateModels(GivenModel givenModel, WhenModel whenModel) {
-        List<Map<String, ?>> models = TestUtils.getRandomMaps(whenModel.numOfMocks, 10);
+        List<Map<String, Object>> models = TestUtils.getRandomMaps(whenModel.numOfMocks, 10);
         return new ThenModel(models);
     }
 
@@ -104,7 +104,7 @@ public abstract class MapWriterTester {
     @RequiredArgsConstructor
     protected static class ThenModel {
         @NonNull
-        private final List<Map<String, ?>> models;
+        private final List<Map<String, Object>> models;
     }
 
 }

@@ -128,7 +128,7 @@ public interface ExcelWriteStrategy {
     ///////////////////////////////////////////////////////////////////////////////////////
 
     class KeyNames extends AbstractExcelWriteStrategy {
-        private final Map<String, ?> keyMap;
+        private final Map<String, Object> keyMap;
 
         /**
          * Rearranges the keys of {@link Map} with custom order.

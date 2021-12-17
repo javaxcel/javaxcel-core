@@ -57,7 +57,7 @@ class DefaultValueTest extends MapWriterTester {
 
     @Override
     protected ThenModel whenCreateModels(GivenModel givenModel, WhenModel whenModel) {
-        List<Map<String, ?>> models = TestUtils.getRandomMaps(whenModel.getNumOfMocks(), 10);
+        List<Map<String, Object>> models = TestUtils.getRandomMaps(whenModel.getNumOfMocks(), 10);
         return new ThenModel(models);
     }
 
@@ -76,7 +76,7 @@ class DefaultValueTest extends MapWriterTester {
         assertDefaultValue(file, thenModel.getModels());
     }
 
-    private void assertDefaultValue(File file, List<Map<String, ?>> models) throws IOException {
+    private void assertDefaultValue(File file, List<Map<String, Object>> models) throws IOException {
         @Cleanup Workbook workbook = ExcelUtils.getWorkbook(file);
         List<Map<String, Object>> written = ExcelReaderFactory.create(workbook).read();
 

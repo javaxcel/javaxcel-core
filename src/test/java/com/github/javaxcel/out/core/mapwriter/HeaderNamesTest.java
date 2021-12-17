@@ -120,13 +120,13 @@ class HeaderNamesTest extends MapWriterTester {
 
     @Override
     protected ThenModel whenCreateModels(GivenModel givenModel, WhenModel whenModel) {
-        List<Map<String, ?>> models = TestUtils.getRandomMaps(whenModel.getNumOfMocks(), NUM_OF_COLUMNS);
+        List<Map<String, Object>> models = TestUtils.getRandomMaps(whenModel.getNumOfMocks(), NUM_OF_COLUMNS);
         return new ThenModel(models);
     }
 
     @Override
     protected void whenWriteWorkbook(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) {
-        ExcelWriter<Map<String, ?>> writer = ExcelWriterFactory.create(whenModel.getWorkbook());
+        ExcelWriter<Map<String, Object>> writer = ExcelWriterFactory.create(whenModel.getWorkbook());
 
         TestCase testCase = (TestCase) Objects.requireNonNull(givenModel.getArgs())[0];
         if (testCase == TestCase.JUST_ORDERED) {
