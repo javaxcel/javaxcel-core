@@ -93,17 +93,28 @@ public final class FieldUtils {
      */
     public static List<String> toHeaderNames(List<Field> fields) {
         List<String> headerNames = new ArrayList<>();
-
         for (Field field : fields) {
-            ExcelColumn annotation = field.getAnnotation(ExcelColumn.class);
-            if (annotation == null || StringUtils.isNullOrEmpty(annotation.name())) {
-                headerNames.add(field.getName());
-            } else {
-                headerNames.add(annotation.name());
-            }
+            headerNames.add(toHeaderName(field));
         }
 
         return headerNames;
+    }
+
+    /**
+     * Converts field to header name.
+     *
+     * <p> This checks whether the field is annotated with {@link ExcelColumn} or not.
+     * If {@link ExcelColumn#name()} is not null and not empty,
+     * this returns a header name defined in the field, otherwise returns name of the field.
+     *
+     * @param field targeted field
+     * @return {@link ExcelColumn#name()} or {@link Field#getName()}
+     */
+    public static String toHeaderName(Field field) {
+        ExcelColumn annotation = field.getAnnotation(ExcelColumn.class);
+
+        return annotation == null || StringUtils.isNullOrEmpty(annotation.name())
+                ? field.getName() : annotation.name();
     }
 
     /**
