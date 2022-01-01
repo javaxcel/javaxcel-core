@@ -26,6 +26,7 @@ import io.github.imsejin.common.util.StringUtils;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -66,18 +67,18 @@ public final class FieldUtils {
                 : ReflectionUtils.getInheritedFields(type).stream();
 
         // Excludes internal groovy fields.
-        stream = stream.filter(field -> !Modifier.isTransient(field.getModifiers()) ||
-                !field.getType().getName().equals("groovy.lang.MetaClass"));
+        Predicate<Field> filter = field -> !Modifier.isTransient(field.getModifiers()) ||
+                !field.getType().getName().equals("groovy.lang.MetaClass");
         // Excludes the fields to be ignored.
-        stream = stream.filter(field -> field.getAnnotation(ExcelIgnore.class) == null);
+        filter = filter.and(field -> field.getAnnotation(ExcelIgnore.class) == null);
         // Excludes the static fields.
-        stream = stream.filter(field -> !Modifier.isStatic(field.getModifiers()));
+        filter = filter.and(field -> !Modifier.isStatic(field.getModifiers()));
         // Excludes the implicit fields.
         if (excelModel != null && excelModel.explicit()) {
-            stream = stream.filter(field -> field.getAnnotation(ExcelColumn.class) != null);
+            filter = filter.and(field -> field.getAnnotation(ExcelColumn.class) != null);
         }
 
-        return stream.collect(toList());
+        return stream.filter(filter).collect(toList());
     }
 
     /**
