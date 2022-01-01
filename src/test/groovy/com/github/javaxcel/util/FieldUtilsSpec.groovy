@@ -21,29 +21,45 @@ import com.github.javaxcel.annotation.ExcelModel
 import io.github.imsejin.common.util.ReflectionUtils
 import spock.lang.Specification
 
+import java.lang.reflect.Field
+import java.util.function.Function
+
+import static java.util.stream.Collectors.toList
+import static java.util.stream.Collectors.toMap
+
 class FieldUtilsSpec extends Specification {
 
     def "Gets the targeted fields from the class"() {
-        expect:
-        FieldUtils.getTargetedFields(type).size() == expected
+        given:
+        def toNames = { List<Field> fields -> fields.stream().map({ it.name }).collect toList() }
+
+        when:
+        def fields = FieldUtils.getTargetedFields type
+
+        then:
+        fields.size() == expected.size()
+        toNames(fields) == expected
 
         where:
         type                       | expected
-        NoFieldSample              | 0
-        PlainSample                | 2
-        ExcelColumnSample          | 2
-        ExplicitSample             | 1
-        ExcludeSuperSample         | 1
-        IncludeSuperSample         | 2
-        ExplicitIncludeSuperSample | 1
+        NoFieldSample              | []
+        PlainSample                | ["field0", "field1"]
+        ExcelColumnSample          | ["field0", "field1"]
+        ExplicitSample             | ["field0"]
+        ExcludeSuperSample         | ["field1"]
+        IncludeSuperSample         | ["field0", "field1"]
+        ExplicitIncludeSuperSample | ["field0"]
     }
 
     def "Converts the fields to their names"() {
         given:
-        def fields = FieldUtils.getTargetedFields(type)
+        def fields = FieldUtils.getTargetedFields type
 
-        expect:
-        FieldUtils.toHeaderNames(fields) == expected
+        when:
+        def headerNames = FieldUtils.toHeaderNames fields
+
+        then:
+        headerNames == expected
 
         where:
         type              | expected
@@ -56,63 +72,69 @@ class FieldUtilsSpec extends Specification {
     def "Converts java object to map"() {
         given:
         def model = ReflectionUtils.instantiate type
-        model.field0 = field0
-        model.field1 = field1
 
-        expect:
-        FieldUtils.toMap(new NoFieldSample()) == [:]
-        FieldUtils.toMap(model) == expected
+        // Set value to the field dynamically.
+        def keyMap = model.properties.keySet().stream().collect toMap(Function.identity(), Function.identity())
+        Optional.ofNullable(keyMap["field0"]).ifPresent { model["field0"] = field0 }
+        Optional.ofNullable(keyMap["field1"]).ifPresent { model["field1"] = field1 }
+
+        when:
+        def map = FieldUtils.toMap model
+
+        then:
+        map == expected
 
         where:
-        type                       | field0 | field1    | expected
-        PlainSample                | 5.6    | "alpha"   | [field0: field0, field1: field1]
-        ExcelColumnSample          | 3.14   | "beta"    | [field0: field0, field1: field1]
-        ExplicitSample             | -1.141 | "gamma"   | [field0: field0]
-        ExcludeSuperSample         | 15.942 | "delta"   | [field1: field1]
-        IncludeSuperSample         | -0.1   | "epsilon" | [field0: field0, field1: field1]
-        ExplicitIncludeSuperSample | 0      | "zeta"    | [field0: field0]
+        type                       | field0 | field1    || expected
+        NoFieldSample              | 0.27   | "none"    || [:]
+        PlainSample                | 5.6    | "alpha"   || [field0: field0, field1: field1]
+        ExcelColumnSample          | 3.14   | "beta"    || [field0: field0, field1: field1]
+        ExplicitSample             | -1.141 | "gamma"   || [field0: field0]
+        ExcludeSuperSample         | 15.942 | "delta"   || [field1: field1]
+        IncludeSuperSample         | -0.1   | "epsilon" || [field0: field0, field1: field1]
+        ExplicitIncludeSuperSample | 0      | "zeta"    || [field0: field0]
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    static class NoFieldSample {
+    private static class NoFieldSample {
     }
 
-    static class PlainSample {
+    private static class PlainSample {
         Double field0
         String field1
     }
 
-    static class ExcelColumnSample {
+    private static class ExcelColumnSample {
         @ExcelColumn(name = "FIELD_0")
         Double field0
         String field1
     }
 
     @ExcelModel(explicit = true)
-    static class ExplicitSample {
+    private static class ExplicitSample {
         @ExcelColumn
         Double field0
         String field1
     }
 
     @ExcelModel(explicit = true)
-    static class Parent {
+    private static class Parent {
         @ExcelColumn
         Double field0
     }
 
-    static class ExcludeSuperSample extends Parent {
+    private static class ExcludeSuperSample extends Parent {
         String field1
     }
 
     @ExcelModel(includeSuper = true)
-    static class IncludeSuperSample extends Parent {
+    private static class IncludeSuperSample extends Parent {
         String field1
     }
 
     @ExcelModel(explicit = true, includeSuper = true)
-    static class ExplicitIncludeSuperSample extends Parent {
+    private static class ExplicitIncludeSuperSample extends Parent {
         String field1
     }
 
