@@ -48,9 +48,9 @@ public abstract class AbstractExcelWriter<T> implements ExcelWriter<T>, ExcelWri
     private final ExcelWriteContext<T> context;
 
     @SuppressWarnings("unchecked")
-    protected AbstractExcelWriter(Workbook workbook, Class<T> type) {
+    protected AbstractExcelWriter(Workbook workbook, Class<T> modelType) {
         Class<? extends ExcelWriter<T>> writerType = (Class<? extends ExcelWriter<T>>) getClass();
-        this.context = new ExcelWriteContext<>(workbook, type, writerType);
+        this.context = new ExcelWriteContext<>(workbook, modelType, writerType);
     }
 
     /**
@@ -79,8 +79,9 @@ public abstract class AbstractExcelWriter<T> implements ExcelWriter<T>, ExcelWri
      */
     @Override
     public final void write(OutputStream out, List<T> list) {
-        // Lifecycle method.
         this.context.setList(list);
+
+        // Lifecycle method.
         prepare(this.context);
 
         Workbook workbook = this.context.getWorkbook();
@@ -158,8 +159,8 @@ public abstract class AbstractExcelWriter<T> implements ExcelWriter<T>, ExcelWri
      */
     @Nonnull
     protected List<String> createSheetNames(ExcelWriteContext<T> context, int numOfSheets) {
-        ExcelWriteStrategy strategy = this.context.getStrategyMap().get(ExcelWriteStrategy.SheetName.class);
-        String sheetName = strategy == null ? "Sheet" : (String) strategy.execute(this.context);
+        ExcelWriteStrategy strategy = context.getStrategyMap().get(ExcelWriteStrategy.SheetName.class);
+        String sheetName = strategy == null ? "Sheet" : (String) strategy.execute(context);
 
         if (numOfSheets < 2) return Collections.singletonList(sheetName);
 
@@ -174,14 +175,14 @@ public abstract class AbstractExcelWriter<T> implements ExcelWriter<T>, ExcelWri
     /**
      * Creates the first row as header for each sheet.
      *
-     * @param context context with current sheet and chunked models.
+     * @param context context with current sheet and chunked models
      */
     protected abstract void createHeader(ExcelWriteContext<T> context);
 
     /**
      * Creates the second row and below as body for each sheet.
      *
-     * @param context context with current sheet and chunked models.
+     * @param context context with current sheet and chunked models
      */
     protected abstract void createBody(ExcelWriteContext<T> context);
 

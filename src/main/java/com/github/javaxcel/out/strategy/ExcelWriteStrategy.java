@@ -105,7 +105,7 @@ public interface ExcelWriteStrategy {
                     .isNotNull().hasElement()
                     .as("headerNames cannot have null element: {0}", headerNames)
                     .doesNotContainNull()
-                    .as("headerNames must be a implementation of java.util.List: {0}", headerNames)
+                    .as("headerNames must be an implementation of java.util.List: {0}", headerNames)
                     .isInstanceOf(List.class)
                     .as("headerNames cannot have duplicated elements: {0}", headerNames)
                     .predicate(them -> them.stream().noneMatch(it -> Collections.frequency(them, it) > 1));
@@ -192,7 +192,7 @@ public interface ExcelWriteStrategy {
                     .isNotNull().hasElement()
                     .as("keyOrders cannot have null element: {0}", keyOrders)
                     .doesNotContainNull()
-                    .as("keyOrders must be a implementation of java.util.List: {0}", keyOrders)
+                    .as("keyOrders must be an implementation of java.util.List: {0}", keyOrders)
                     .isInstanceOf(List.class)
                     .as("keyOrders cannot have duplicated elements: {0}", keyOrders)
                     .predicate(them -> them.stream().noneMatch(it -> Collections.frequency(them, it) > 1));
@@ -274,7 +274,7 @@ public interface ExcelWriteStrategy {
                     .isNotNull().hasElement()
                     .as("keyOrders cannot have null element: {0}", keyOrders)
                     .doesNotContainNull()
-                    .as("keyOrders must be a implementation of java.util.List: {0}", keyOrders)
+                    .as("keyOrders must be an implementation of java.util.List: {0}", keyOrders)
                     .isInstanceOf(List.class)
                     .as("keyOrders cannot have duplicated elements: {0}", keyOrders)
                     .predicate(them -> them.stream().noneMatch(it -> Collections.frequency(them, it) > 1));
@@ -287,7 +287,7 @@ public interface ExcelWriteStrategy {
                     .isSameSize(keyOrders)
                     .as("newKeyNames cannot have null element: {0}", newKeyNames)
                     .doesNotContainNull()
-                    .as("newKeyNames must be a implementation of java.util.List: {0}", newKeyNames)
+                    .as("newKeyNames must be an implementation of java.util.List: {0}", newKeyNames)
                     .isInstanceOf(List.class)
                     .as("newKeyNames cannot have duplicated elements: {0}", newKeyNames)
                     .predicate(them -> them.stream().noneMatch(it -> Collections.frequency(them, it) > 1));
@@ -407,7 +407,7 @@ public interface ExcelWriteStrategy {
                     .isNotNull().hasElement()
                     .as("styleConfigs cannot have null element: {0}", styleConfigs)
                     .doesNotContainNull()
-                    .as("styleConfigs must be a implementation of java.util.List: {0}", styleConfigs)
+                    .as("styleConfigs must be an implementation of java.util.List: {0}", styleConfigs)
                     .isInstanceOf(List.class);
 
             this.styleConfigs = Collections.unmodifiableList(styleConfigs);
@@ -444,7 +444,7 @@ public interface ExcelWriteStrategy {
                     .isNotNull().hasElement()
                     .as("styleConfigs cannot have null element: {0}", styleConfigs)
                     .doesNotContainNull()
-                    .as("styleConfigs must be a implementation of java.util.List: {0}", styleConfigs)
+                    .as("styleConfigs must be an implementation of java.util.List: {0}", styleConfigs)
                     .isInstanceOf(List.class);
 
             this.styleConfigs = Collections.unmodifiableList(styleConfigs);

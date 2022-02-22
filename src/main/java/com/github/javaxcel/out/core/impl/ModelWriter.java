@@ -18,8 +18,8 @@ package com.github.javaxcel.out.core.impl;
 
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
-import com.github.javaxcel.converter.out.factory.OutputConverterFactory;
-import com.github.javaxcel.converter.out.support.OutputConverterSupport;
+import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
+import com.github.javaxcel.converter.out.support.ExcelWriteConverterSupport;
 import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.out.context.ExcelWriteContext;
 import com.github.javaxcel.out.core.AbstractExcelWriter;
@@ -49,15 +49,15 @@ import java.util.stream.IntStream;
 public class ModelWriter<T> extends AbstractExcelWriter<T> {
 
     /**
-     * The type's fields that will be actually written in Excel file.
+     * The fields of type that will be actually written in Excel file.
      */
     private final List<Field> fields;
 
-    private final OutputConverterSupport<T> converter;
+    private final ExcelWriteConverterSupport<T> converter;
 
     private Map<Integer, String[]> enumDropdownMap;
 
-    public ModelWriter(Workbook workbook, Class<T> type, OutputConverterFactory factory) {
+    public ModelWriter(Workbook workbook, Class<T> type, ExcelTypeHandlerRegistry registry) {
         super(workbook, type);
 
         // Finds targeted fields.
@@ -69,18 +69,18 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
                 .as("ModelWriter.fields cannot have null element: {0}", this.fields)
                 .doesNotContainNull();
 
-        this.converter = new OutputConverterSupport<>(fields, factory);
+        this.converter = new ExcelWriteConverterSupport<>(fields, registry);
     }
 
     @Override
     public void prepare(ExcelWriteContext<T> context) {
-        setEnumDropdowns(context);
-        setDefaultValue(context);
-        setHeaderStyles(context);
-        setBodyStyles(context);
+        resolveEnumDropdown(context);
+        resolveDefaultValue(context);
+        resolveHeaderStyles(context);
+        resolveBodyStyles(context);
     }
 
-    private void setEnumDropdowns(ExcelWriteContext<T> context) {
+    private void resolveEnumDropdown(ExcelWriteContext<T> context) {
         Map<Integer, String[]> enumDropdownMap = new HashMap<>();
 
         boolean enabled = context.getStrategyMap().containsKey(EnumDropdown.class);
@@ -116,14 +116,14 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
         if (!enumDropdownMap.isEmpty()) this.enumDropdownMap = enumDropdownMap;
     }
 
-    private void setDefaultValue(ExcelWriteContext<T> context) {
+    private void resolveDefaultValue(ExcelWriteContext<T> context) {
         ExcelWriteStrategy strategy = context.getStrategyMap().get(DefaultValue.class);
         if (strategy == null) return;
 
         this.converter.setDefaultValue((String) strategy.execute(context));
     }
 
-    private void setHeaderStyles(ExcelWriteContext<T> context) {
+    private void resolveHeaderStyles(ExcelWriteContext<T> context) {
         Workbook workbook = context.getWorkbook();
         ExcelWriteStrategy strategy = context.getStrategyMap().get(HeaderStyles.class);
 
@@ -180,7 +180,7 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
         if (!headerStyles.isEmpty()) context.setHeaderStyles(headerStyles);
     }
 
-    private void setBodyStyles(ExcelWriteContext<T> context) {
+    private void resolveBodyStyles(ExcelWriteContext<T> context) {
         Workbook workbook = context.getWorkbook();
         ExcelWriteStrategy strategy = context.getStrategyMap().get(BodyStyles.class);
 
@@ -239,6 +239,10 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
 
     @Override
     public void preWriteSheet(ExcelWriteContext<T> context) {
+        resolveFilter(context);
+    }
+
+    private void resolveFilter(ExcelWriteContext<T> context) {
         if (!context.getStrategyMap().containsKey(Filter.class)) return;
 
         Sheet sheet = context.getSheet();
@@ -251,10 +255,7 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
         // Creates the first row that is header.
         Row row = context.getSheet().createRow(0);
 
-        ExcelWriteStrategy strategy = context.getStrategyMap().get(HeaderNames.class);
-        List<String> headerNames = strategy == null ? FieldUtils.toHeaderNames(this.fields)
-                : (List<String>) strategy.execute(context);
-
+        List<String> headerNames = resolveHeaderNames(context);
         Asserts.that(headerNames)
                 .as("headerNames is not allowed to be null or empty: {0}", headerNames)
                 .isNotNull().hasElement()
@@ -281,6 +282,11 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
             // There is possibility that headerStyles has null elements, if you set NoStyleConfig.
             if (headerStyle != null) cell.setCellStyle(headerStyle);
         }
+    }
+
+    private List<String> resolveHeaderNames(ExcelWriteContext<T> context) {
+        ExcelWriteStrategy strategy = context.getStrategyMap().get(HeaderNames.class);
+        return strategy == null ? FieldUtils.toHeaderNames(this.fields, false) : (List<String>) strategy.execute(context);
     }
 
     @Override
@@ -338,19 +344,24 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
 
     @Override
     public void postWriteSheet(ExcelWriteContext<T> context) {
-        Map<Class<? extends ExcelWriteStrategy>, ExcelWriteStrategy> strategyMap = context.getStrategyMap();
-        Sheet sheet = context.getSheet();
+        resolveAutoResizedColumns(context);
+        resolveHiddenExtraRows(context);
+        resolveHiddenExtraColumns(context);
+    }
 
-        // Adjusts rows and columns.
-        if (strategyMap.containsKey(AutoResizedColumns.class)) {
-            ExcelUtils.autoResizeColumns(sheet, this.fields.size());
-        }
-        if (strategyMap.containsKey(HiddenExtraRows.class)) {
-            ExcelUtils.hideExtraRows(sheet, context.getChunk().size() + 1);
-        }
-        if (strategyMap.containsKey(HiddenExtraColumns.class)) {
-            ExcelUtils.hideExtraColumns(sheet, this.fields.size());
-        }
+    private void resolveAutoResizedColumns(ExcelWriteContext<T> context) {
+        if (!context.getStrategyMap().containsKey(AutoResizedColumns.class)) return;
+        ExcelUtils.autoResizeColumns(context.getSheet(), this.fields.size());
+    }
+
+    private void resolveHiddenExtraRows(ExcelWriteContext<T> context) {
+        if (!context.getStrategyMap().containsKey(HiddenExtraRows.class)) return;
+        ExcelUtils.hideExtraRows(context.getSheet(), context.getChunk().size() + 1);
+    }
+
+    private void resolveHiddenExtraColumns(ExcelWriteContext<T> context) {
+        if (!context.getStrategyMap().containsKey(HiddenExtraColumns.class)) return;
+        ExcelUtils.hideExtraColumns(context.getSheet(), this.fields.size());
     }
 
 }

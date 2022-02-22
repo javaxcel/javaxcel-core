@@ -23,6 +23,13 @@ import java.util.List;
 
 public interface ExcelWriter<T> {
 
+    /**
+     * Sets strategies for writing Excel file.
+     *
+     * @param strategies Excel strategies
+     * @return Excel writer
+     * @throws IllegalArgumentException if strategies is null or contain null
+     */
     ExcelWriter<T> options(ExcelWriteStrategy... strategies);
 
     /**

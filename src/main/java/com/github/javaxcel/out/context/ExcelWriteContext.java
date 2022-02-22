@@ -30,11 +30,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Context that has objects used on writing Excel file.
+ *
+ * @param <T> model type
+ */
 public class ExcelWriteContext<T> {
 
     private final Workbook workbook;
-    private final Class<T> elementType;
-    private final Class<? extends ExcelWriter<?>> writerType;
+    private final Class<T> modelType;
+    private final Class<? extends ExcelWriter<T>> writerType;
 
     /**
      * Strategies for writing Excel file.
@@ -60,19 +65,19 @@ public class ExcelWriteContext<T> {
      */
     private List<CellStyle> bodyStyles;
 
-    public ExcelWriteContext(Workbook workbook, Class<T> elementType, Class<? extends ExcelWriter<?>> writerType) {
+    public ExcelWriteContext(Workbook workbook, Class<T> modelType, Class<? extends ExcelWriter<T>> writerType) {
         Asserts.that(workbook)
                 .as("ExcelWriteContext.workbook is not allowed to be null")
                 .isNotNull();
-        Asserts.that(elementType)
-                .as("ExcelWriteContext.elementType is not allowed to be null")
+        Asserts.that(modelType)
+                .as("ExcelWriteContext.modelType is not allowed to be null")
                 .isNotNull();
         Asserts.that(writerType)
                 .as("ExcelWriteContext.writerType is not allowed to be null")
                 .isNotNull();
 
         this.workbook = workbook;
-        this.elementType = elementType;
+        this.modelType = modelType;
         this.writerType = writerType;
     }
 
@@ -82,8 +87,8 @@ public class ExcelWriteContext<T> {
     }
 
     @Nonnull
-    public Class<T> getElementType() {
-        return this.elementType;
+    public Class<T> getModelType() {
+        return this.modelType;
     }
 
     @Nonnull
