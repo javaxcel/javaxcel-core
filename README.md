@@ -640,7 +640,7 @@ Look [here](https://github.com/spring-projects/spring-framework/tree/master/spri
 
 <br>
 
-If you want to refer field in a expression, write `#` and the `field name`. (e.g. #targetAges)
+If you want to refer field in an expression, write `#` and the `field name`. (e.g. #targetAges)
 
 Also you can refer other field. We call this as `variable`.
 
