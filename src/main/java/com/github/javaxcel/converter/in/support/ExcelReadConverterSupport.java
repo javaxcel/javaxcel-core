@@ -18,33 +18,36 @@ package com.github.javaxcel.converter.in.support;
 
 import com.github.javaxcel.constant.ConversionType;
 import com.github.javaxcel.constant.ConverterType;
-import com.github.javaxcel.converter.in.DefaultInputConverter;
-import com.github.javaxcel.converter.in.ExpressionInputConverter;
-import com.github.javaxcel.converter.in.InputConverter;
+import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
+import com.github.javaxcel.converter.in.DefaultExcelReadConverter;
+import com.github.javaxcel.converter.in.ExcelReadConverter;
+import com.github.javaxcel.converter.in.ExpressionExcelReadConverter;
+import com.github.javaxcel.model.Column;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toMap;
 
-public class InputConverterSupport implements InputConverter {
+public class ExcelReadConverterSupport implements ExcelReadConverter {
 
     private final Map<Field, Column> columnMap;
 
-    private final InputConverter defaultConverter;
+    private final ExcelReadConverter defaultConverter;
 
-    private final InputConverter expressionConverter;
+    private final ExcelReadConverter expressionConverter;
 
-    public InputConverterSupport(List<Field> fields) {
-        this.columnMap = fields.stream().collect(collectingAndThen(toMap(it -> it, Column::new),
+    public ExcelReadConverterSupport(List<Field> fields, ExcelTypeHandlerRegistry registry) {
+        this.columnMap = fields.stream().collect(collectingAndThen(toMap(Function.identity(), it -> new Column(it, ConverterType.IN)),
                 Collections::unmodifiableMap));
 
-        this.defaultConverter = new DefaultInputConverter();
+        this.defaultConverter = new DefaultExcelReadConverter(registry);
         // Caches expressions for each field to improve performance.
-        this.expressionConverter = new ExpressionInputConverter(fields);
+        this.expressionConverter = new ExpressionExcelReadConverter(fields);
     }
 
     @Override
@@ -52,23 +55,13 @@ public class InputConverterSupport implements InputConverter {
         Column column = this.columnMap.get(field);
 
         Object fieldValue;
-        if (column.conversionType == ConversionType.DEFAULT) {
+        if (column.getConversionType() == ConversionType.DEFAULT) {
             fieldValue = this.defaultConverter.convert(variables, field);
         } else {
             fieldValue = this.expressionConverter.convert(variables, field);
         }
 
         return fieldValue;
-    }
-
-    private static class Column {
-        private final ConversionType conversionType;
-
-        private Column(Field field) {
-            // Checks which conversion type of a field value,
-            // when cell value is read and set it to the field.
-            this.conversionType = ConversionType.of(field, ConverterType.IN);
-        }
     }
 
 }

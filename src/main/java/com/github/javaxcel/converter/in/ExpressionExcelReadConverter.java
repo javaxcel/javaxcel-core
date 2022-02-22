@@ -31,17 +31,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ExpressionInputConverter implements InputConverter {
+public class ExpressionExcelReadConverter implements ExcelReadConverter {
 
     private static final ExpressionParser parser = new SpelExpressionParser();
 
     private final Map<Field, Expression> cache;
 
-    public ExpressionInputConverter() {
+    public ExpressionExcelReadConverter() {
         this.cache = Collections.emptyMap();
     }
 
-    public ExpressionInputConverter(@Nonnull List<Field> fields) {
+    public ExpressionExcelReadConverter(@Nonnull List<Field> fields) {
         this.cache = createCache(fields);
     }
 
@@ -68,7 +68,7 @@ public class ExpressionInputConverter implements InputConverter {
     /**
      * {@inheritDoc}
      *
-     * <p> If expressions are already parsed, uses it or parses a expression at that time.
+     * <p> If expressions are already parsed, uses it or parses an expression at that time.
      * This assigns the parsed value to field.
      *
      * @see ExcelReaderExpression#value()
@@ -77,7 +77,7 @@ public class ExpressionInputConverter implements InputConverter {
     @Nullable
     public Object convert(Map<String, Object> variables, Field field) {
         Expression expression;
-        if (CollectionUtils.isNullOrEmpty(this.cache)) {
+        if (CollectionUtils.isNullOrEmpty(this.cache) || !this.cache.containsKey(field)) {
             // When this instantiated without cache.
             ExcelReaderExpression annotation = field.getAnnotation(ExcelReaderExpression.class);
             expression = parser.parseExpression(annotation.value());
