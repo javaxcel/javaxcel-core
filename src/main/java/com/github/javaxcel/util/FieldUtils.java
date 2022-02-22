@@ -88,13 +88,14 @@ public final class FieldUtils {
      * If {@link ExcelColumn#name()} is not null and not empty,
      * this returns a header name defined in the field, otherwise returns name of the field.
      *
-     * @param fields targeted fields
+     * @param fields           targeted fields
+     * @param ignoreAnnotation whether {@link ExcelColumn#name()} is ignored
      * @return list of {@link ExcelColumn#name()} or {@link Field#getName()}
      */
-    public static List<String> toHeaderNames(List<Field> fields) {
+    public static List<String> toHeaderNames(List<Field> fields, boolean ignoreAnnotation) {
         List<String> headerNames = new ArrayList<>();
         for (Field field : fields) {
-            headerNames.add(toHeaderName(field));
+            headerNames.add(toHeaderName(field, ignoreAnnotation));
         }
 
         return headerNames;
@@ -107,12 +108,14 @@ public final class FieldUtils {
      * If {@link ExcelColumn#name()} is not null and not empty,
      * this returns a header name defined in the field, otherwise returns name of the field.
      *
-     * @param field targeted field
+     * @param field            targeted field
+     * @param ignoreAnnotation whether {@link ExcelColumn#name()} is ignored
      * @return {@link ExcelColumn#name()} or {@link Field#getName()}
      */
-    public static String toHeaderName(Field field) {
-        ExcelColumn annotation = field.getAnnotation(ExcelColumn.class);
+    public static String toHeaderName(Field field, boolean ignoreAnnotation) {
+        if (ignoreAnnotation) return field.getName();
 
+        ExcelColumn annotation = field.getAnnotation(ExcelColumn.class);
         return annotation == null || StringUtils.isNullOrEmpty(annotation.name())
                 ? field.getName() : annotation.name();
     }
