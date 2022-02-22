@@ -63,6 +63,7 @@
         <assertj.version>3.21.0</assertj.version>
         <lombok.version>1.18.22</lombok.version>
         <byte-buddy.version>1.12.8</byte-buddy.version>
+        <xlsx-streamer.version>2.2.0</xlsx-streamer.version>
     </properties>
 
     <dependencies>
@@ -137,6 +138,14 @@
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
             <version>${byte-buddy.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Excel Streaming Reader -->
+        <dependency>
+            <groupId>com.monitorjbl</groupId>
+            <artifactId>xlsx-streamer</artifactId>
+            <version>${xlsx-streamer.version}</version>
             <scope>test</scope>
         </dependency>
 
