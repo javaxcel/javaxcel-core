@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Javaxcel
+ * Copyright 2021 Javaxcel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,24 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.in;
+package com.github.javaxcel.in.lifecycle;
 
-import org.apache.poi.ss.usermodel.Workbook;
+import com.github.javaxcel.in.context.ExcelReadContext;
+import io.github.imsejin.common.annotation.ExcludeFromGeneratedJacocoReport;
 
-import java.util.List;
+@ExcludeFromGeneratedJacocoReport
+public interface ExcelReadLifecycle<T> {
 
-public interface ExcelReader<W extends Workbook, T> {
+    default void prepare(ExcelReadContext<T> context) {
+    }
 
-    /**
-     * Limits the number of models.
-     *
-     * @param limit limit for the number of models
-     * @return {@link ExcelReader}
-     */
-    ExcelReader<W, T> limit(int limit);
+    default void preReadSheet(ExcelReadContext<T> context) {
+    }
 
-    /**
-     * Returns a list after this reads the Excel file.
-     *
-     * @return list
-     */
-    List<T> read();
+    default void postReadSheet(ExcelReadContext<T> context) {
+    }
+
+    default void complete(ExcelReadContext<T> context) {
+    }
 
 }
