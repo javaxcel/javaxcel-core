@@ -23,6 +23,7 @@ import io.github.imsejin.common.annotation.ExcludeFromGeneratedJacocoReport;
 import io.github.imsejin.common.util.ReflectionUtils;
 import io.github.imsejin.common.util.StringUtils;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -150,6 +151,29 @@ public final class FieldUtils {
         }
 
         return map;
+    }
+
+    @Nullable
+    @SuppressWarnings("unchecked")
+    public static <T> T resolveFirst(Class<T> type, Object... arguments) {
+        for (Object argument : arguments) {
+            if (argument == null || !type.isAssignableFrom(argument.getClass())) continue;
+            return (T) argument;
+        }
+
+        return null;
+    }
+
+    @Nullable
+    @SuppressWarnings("unchecked")
+    public static <T> T resolveLast(Class<T> type, Object... arguments) {
+        T t = null;
+        for (Object argument : arguments) {
+            if (argument == null || !type.isAssignableFrom(argument.getClass())) continue;
+            t = (T) argument;
+        }
+
+        return t;
     }
 
 }
