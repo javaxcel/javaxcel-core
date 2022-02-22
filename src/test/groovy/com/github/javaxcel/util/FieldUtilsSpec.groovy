@@ -43,12 +43,12 @@ class FieldUtilsSpec extends Specification {
         where:
         type                       | expected
         NoFieldSample              | []
-        PlainSample                | ["field0", "field1"]
-        ExcelColumnSample          | ["field0", "field1"]
-        ExplicitSample             | ["field0"]
-        ExcludeSuperSample         | ["field1"]
-        IncludeSuperSample         | ["field0", "field1"]
-        ExplicitIncludeSuperSample | ["field0"]
+        PlainSample                | ["f0", "f1"]
+        ExcelColumnSample          | ["f0", "f1"]
+        ExplicitSample             | ["f0"]
+        ExcludeSuperSample         | ["f1"]
+        IncludeSuperSample         | ["f0", "f1"]
+        ExplicitIncludeSuperSample | ["f0"]
     }
 
     def "Converts the fields to their names"() {
@@ -56,7 +56,7 @@ class FieldUtilsSpec extends Specification {
         def fields = FieldUtils.getTargetedFields type
 
         when:
-        def headerNames = FieldUtils.toHeaderNames fields
+        def headerNames = FieldUtils.toHeaderNames(fields, false)
 
         then:
         headerNames == expected
@@ -64,9 +64,9 @@ class FieldUtilsSpec extends Specification {
         where:
         type              | expected
         NoFieldSample     | []
-        PlainSample       | ["field0", "field1"]
-        ExcelColumnSample | ["FIELD_0", "field1"]
-        ExplicitSample    | ["field0"]
+        PlainSample       | ["f0", "f1"]
+        ExcelColumnSample | ["FIELD_0", "f1"]
+        ExplicitSample    | ["f0"]
     }
 
     def "Converts java object to map"() {
@@ -75,8 +75,8 @@ class FieldUtilsSpec extends Specification {
 
         // Set value to the field dynamically.
         def keyMap = model.properties.keySet().stream().collect toMap(Function.identity(), Function.identity())
-        Optional.ofNullable(keyMap["field0"]).ifPresent { model["field0"] = field0 }
-        Optional.ofNullable(keyMap["field1"]).ifPresent { model["field1"] = field1 }
+        Optional.ofNullable(keyMap["f0"]).ifPresent { model["f0"] = f0 }
+        Optional.ofNullable(keyMap["f1"]).ifPresent { model["f1"] = f1 }
 
         when:
         def map = FieldUtils.toMap model
@@ -85,14 +85,14 @@ class FieldUtilsSpec extends Specification {
         map == expected
 
         where:
-        type                       | field0 | field1    || expected
+        type                       | f0     | f1        || expected
         NoFieldSample              | 0.27   | "none"    || [:]
-        PlainSample                | 5.6    | "alpha"   || [field0: field0, field1: field1]
-        ExcelColumnSample          | 3.14   | "beta"    || [field0: field0, field1: field1]
-        ExplicitSample             | -1.141 | "gamma"   || [field0: field0]
-        ExcludeSuperSample         | 15.942 | "delta"   || [field1: field1]
-        IncludeSuperSample         | -0.1   | "epsilon" || [field0: field0, field1: field1]
-        ExplicitIncludeSuperSample | 0      | "zeta"    || [field0: field0]
+        PlainSample                | 5.6    | "alpha"   || [f0: f0, f1: f1]
+        ExcelColumnSample          | 3.14   | "beta"    || [f0: f0, f1: f1]
+        ExplicitSample             | -1.141 | "gamma"   || [f0: f0]
+        ExcludeSuperSample         | 15.942 | "delta"   || [f1: f1]
+        IncludeSuperSample         | -0.1   | "epsilon" || [f0: f0, f1: f1]
+        ExplicitIncludeSuperSample | 0      | "zeta"    || [f0: f0]
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -101,41 +101,41 @@ class FieldUtilsSpec extends Specification {
     }
 
     private static class PlainSample {
-        Double field0
-        String field1
+        Double f0
+        String f1
     }
 
     private static class ExcelColumnSample {
         @ExcelColumn(name = "FIELD_0")
-        Double field0
-        String field1
+        Double f0
+        String f1
     }
 
     @ExcelModel(explicit = true)
     private static class ExplicitSample {
         @ExcelColumn
-        Double field0
-        String field1
+        Double f0
+        String f1
     }
 
     @ExcelModel(explicit = true)
     private static class Parent {
         @ExcelColumn
-        Double field0
+        Double f0
     }
 
     private static class ExcludeSuperSample extends Parent {
-        String field1
+        String f1
     }
 
     @ExcelModel(includeSuper = true)
     private static class IncludeSuperSample extends Parent {
-        String field1
+        String f1
     }
 
     @ExcelModel(explicit = true, includeSuper = true)
     private static class ExplicitIncludeSuperSample extends Parent {
-        String field1
+        String f1
     }
 
 }

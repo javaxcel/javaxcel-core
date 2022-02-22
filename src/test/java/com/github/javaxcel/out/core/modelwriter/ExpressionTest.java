@@ -17,12 +17,13 @@
 package com.github.javaxcel.out.core.modelwriter;
 
 import com.github.javaxcel.Converter;
-import com.github.javaxcel.out.core.ModelWriterTester;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.annotation.ExcelWriterExpression;
 import com.github.javaxcel.factory.ExcelReaderFactory;
+import com.github.javaxcel.in.strategy.ExcelReadStrategy.KeyNames;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.model.creature.Human;
+import com.github.javaxcel.out.core.ModelWriterTester;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.tool.Stopwatch;
@@ -82,10 +83,10 @@ class ExpressionTest extends ModelWriterTester {
 
     private static void assertCorrectParsed(Workbook workbook, List<Human> models) {
         int numOfFields = FieldUtils.getTargetedFields(Human.class).size();
-        List<String> headerNames = IntStream.range(0, numOfFields)
+        List<String> keyNames = IntStream.range(0, numOfFields)
                 .mapToObj(Integer::toString).collect(toList());
         List<Map<String, Object>> list = ExcelReaderFactory.create(workbook)
-                .headerNames(headerNames).read();
+                .options(new KeyNames(keyNames)).read();
 
         Map<String, List<Object>> columns = list.stream().flatMap(map -> map.entrySet().stream())
                 .collect(groupingBy(Map.Entry::getKey,
@@ -164,7 +165,7 @@ class ExpressionTest extends ModelWriterTester {
         assertThat(columns.get("12"))
                 .as("Ages from twilight to death")
                 .containsExactlyElementsOf(models.stream().map(Human::getAgesFromTwilightToDeath)
-                        .map(Object::toString).collect(toList()));
+                        .map(it -> Arrays.toString(it).replaceAll("\\[|]", "")).collect(toList()));
         // Disabled
         assertThat(columns.get("13"))
                 .as("Disabled")

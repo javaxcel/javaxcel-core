@@ -1,19 +1,18 @@
 package com.github.javaxcel.util;
 
 import com.github.javaxcel.TestUtils;
-import com.github.javaxcel.annotation.ExcelDateTimeFormat;
-import com.github.javaxcel.converter.out.DefaultOutputConverter;
-import com.github.javaxcel.converter.out.OutputConverter;
-import com.github.javaxcel.converter.out.factory.DefaultOutputConverterFactory;
-import com.github.javaxcel.converter.out.factory.OutputConverterFactory;
+import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
+import com.github.javaxcel.converter.handler.registry.impl.ExcelTypeHandlerRegistryImpl;
+import com.github.javaxcel.converter.out.DefaultExcelWriteConverter;
+import com.github.javaxcel.converter.out.ExcelWriteConverter;
+import com.github.javaxcel.exception.NoTargetedConstructorException;
+import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
 import com.github.javaxcel.out.core.ExcelWriter;
 import com.github.javaxcel.out.core.impl.ModelWriter;
 import io.github.imsejin.common.tool.Stopwatch;
-import io.github.imsejin.common.tool.TypeClassifier;
 import io.github.imsejin.common.util.ReflectionUtils;
-import io.github.imsejin.common.util.StringUtils;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFPalette;
@@ -23,13 +22,14 @@ import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.lang.reflect.Field;
+import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
@@ -37,67 +37,40 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Comparator;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ExcelUtilsTest {
 
-    private static Object convert(String value, Field field) {
-        Class<?> type = field.getType();
-
-        if (String.class.equals(type)) return value;
-        else if (byte.class.equals(type) || Byte.class.equals(type)) return Byte.parseByte(value);
-        else if (short.class.equals(type) || Short.class.equals(type)) return Short.parseShort(value);
-        else if (int.class.equals(type) || Integer.class.equals(type)) return Integer.parseInt(value);
-        else if (long.class.equals(type) || Long.class.equals(type)) return Long.parseLong(value);
-        else if (float.class.equals(type) || Float.class.equals(type)) return Float.parseFloat(value);
-        else if (double.class.equals(type) || Double.class.equals(type)) return Double.parseDouble(value);
-        else if (char.class.equals(type) || Character.class.equals(type)) return value.charAt(0);
-        else if (boolean.class.equals(type) || Boolean.class.equals(type)) return Boolean.parseBoolean(value);
-        else if (BigInteger.class.equals(type)) return new BigInteger(value);
-        else if (BigDecimal.class.equals(type)) return new BigDecimal(value);
-        else if (TypeClassifier.isTemporal(type)) {
-            ExcelDateTimeFormat excelDateTimeFormat = field.getAnnotation(ExcelDateTimeFormat.class);
-            String pattern = excelDateTimeFormat == null ? null : excelDateTimeFormat.pattern();
-
-            if (StringUtils.isNullOrEmpty(pattern)) {
-                // When pattern is undefined or implicitly defined.
-                if (LocalTime.class.equals(type)) return LocalTime.parse(value);
-                else if (LocalDate.class.equals(type)) return LocalDate.parse(value);
-                else if (LocalDateTime.class.equals(type)) return LocalDateTime.parse(value);
-
-            } else {
-                // When pattern is explicitly defined.
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-                if (LocalTime.class.equals(type)) return LocalTime.parse(value, formatter);
-                else if (LocalDate.class.equals(type)) return LocalDate.parse(value, formatter);
-                else if (LocalDateTime.class.equals(type)) return LocalDateTime.parse(value, formatter);
-            }
-        }
-
-        return null;
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {
-            "E:/works/대한상공회의소 - 유통상품지식뱅크 서비스포털/2020/06/20200618_미기재 설명 등록/상품분류별 부가속성/200519_분류별_부가속성예시.xlsx",
-            "E:/works/대한상공회의소 - 유통상품지식뱅크 서비스포털/2020/06/20200618_미기재 설명 등록/상품분류별 부가속성/[가공] 상품분류별_부가속성_설명.xlsx",
-    })
-    @Disabled
+    @Test
     @SneakyThrows
-    void getSheetRange(String pathname) {
+    @StopwatchProvider
+    @DisplayName("Find constructor with min params")
+    void getDeclaredConstructorWithMinimumParameters(Stopwatch stopwatch) {
         // given
-        File file = new File(pathname);
-        @Cleanup Workbook workbook = new XSSFWorkbook(file);
+        stopwatch.start();
+        Class<Product> clazz = Product.class;
 
         // when
-        int[] range = ExcelUtils.getSheetRange(workbook);
+        Constructor<?>[] declaredConstructors = clazz.getDeclaredConstructors();
 
         // then
-        IntStream.of(range).forEach(i -> System.out.println("[" + i + "] " + workbook.getSheetAt(i).getSheetName()));
+        for (Constructor<?> constructor : declaredConstructors) {
+            System.out.println(constructor);
+        }
+        Constructor<?> constructor = Arrays.stream(declaredConstructors)
+                .min(Comparator.comparingInt(Constructor::getParameterCount))
+                .orElseThrow(() -> new NoTargetedConstructorException(clazz));
+        if (!constructor.isAccessible()) constructor.setAccessible(true);
+        stopwatch.stop();
+
+        assertThat(constructor.newInstance())
+                .as("Instantiates class without params")
+                .isInstanceOf(clazz);
+        Arrays.stream(constructor.getParameterTypes()).forEach(System.out::println);
+        System.out.printf("Constructor with minimum parameters: %s%n", constructor);
     }
 
     @ParameterizedTest
@@ -105,8 +78,8 @@ class ExcelUtilsTest {
     @SneakyThrows
     void stringifyValue(String fieldName) {
         // given
-        OutputConverterFactory factory = new DefaultOutputConverterFactory();
-        OutputConverter<EducationToy> converter = new DefaultOutputConverter<>(factory);
+        ExcelTypeHandlerRegistry registry = new ExcelTypeHandlerRegistryImpl();
+        ExcelWriteConverter<EducationToy> converter = new DefaultExcelWriteConverter<>(registry);
 
         for (EducationToy toy : TestUtils.getMocks(EducationToy.class, 10)) {
             // when
@@ -114,27 +87,6 @@ class ExcelUtilsTest {
 
             // then
             System.out.println(stringifyValue);
-        }
-    }
-
-    @Test
-    @Disabled
-    void convert() {
-        // given
-        List<String> values = Arrays.asList("Toy.name", "ADULT", "645.70", "[1,2,3,4]", "educationToys.goals", "2020-08-31", "01/23/45/678", "2020-08-31T01:23:45");
-        List<Field> targetedFields = FieldUtils.getTargetedFields(EducationToy.class);
-
-        assertThat(targetedFields.size()).isEqualTo(values.size());
-
-        for (int i = 0; i < values.size(); i++) {
-            String value = values.get(i);
-            Field field = targetedFields.get(i);
-
-            // when
-            Object converted = convert(value, field);
-
-            // then
-            System.out.println(converted);
         }
     }
 
@@ -188,8 +140,8 @@ class ExcelUtilsTest {
         stopwatch.stop();
 
         stopwatch.start("instantiate");
-        Class<?>[] paramTypes = {Workbook.class, Class.class, OutputConverterFactory.class};
-        Object[] initArgs = {new XSSFWorkbook(), Product.class, new DefaultOutputConverterFactory()};
+        Class<?>[] paramTypes = {Workbook.class, Class.class, ExcelTypeHandlerRegistry.class};
+        Object[] initArgs = {new XSSFWorkbook(), Product.class, new ExcelTypeHandlerRegistryImpl()};
         ExcelWriter<Product> instance = (ExcelWriter<Product>) ReflectionUtils.instantiate(clazz, paramTypes, initArgs);
         stopwatch.stop();
 

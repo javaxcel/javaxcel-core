@@ -146,7 +146,7 @@ class SpELTest {
                 .as("#{fieldName} is converted into field value")
                 .isEqualTo(exp.replaceAll("#\\{.+}", product.getName()));
         assertThat(expressionResult)
-                .as("Executes a expression as converted template")
+                .as("Executes an expression as converted template")
                 .isEqualTo("milk_tea");
     }
 

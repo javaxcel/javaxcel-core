@@ -1,7 +1,7 @@
 package com.github.javaxcel.model.creature;
 
+import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.annotation.*;
-import com.github.javaxcel.model.Mockables;
 import com.github.javaxcel.style.DefaultBodyStyleConfig;
 import com.github.javaxcel.style.DefaultHeaderStyleConfig;
 import lombok.*;
@@ -10,10 +10,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 @Setter
@@ -21,7 +18,7 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = true, exclude = "agesFromTwilightToDeath")
 @NoArgsConstructor
 @ExcelModel(includeSuper = true, headerStyle = DefaultHeaderStyleConfig.class, bodyStyle = DefaultBodyStyleConfig.class)
-public class Human extends Creature implements Mockables<Human> {
+public class Human extends Creature {
 
     @ExcelColumn(name = "Name", bodyStyle = DefaultHeaderStyleConfig.class)
     private String name;
@@ -94,8 +91,7 @@ public class Human extends Creature implements Mockables<Human> {
         this.disabled = disabled;
     }
 
-    @Override
-    public List<Human> createDesignees() {
+    public static List<Human> createDesignees() {
         return Arrays.asList(
                 new Human(Kingdom.ANIMALIA, Sex.MALE, 30, "Jeremy", LocalDate.now(), LocalTime.now(),
                         UUID.randomUUID(), new BigDecimal("34857058102347105675.583417804735034534756348701"),
@@ -116,36 +112,36 @@ public class Human extends Creature implements Mockables<Human> {
         );
     }
 
-    @Override
-    public List<Human> createRandoms(int size) {
+    public static List<Human> newRandomList(int size) {
         List<Human> people = new ArrayList<>();
+        Random random = TestUtils.getRandom();
 
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < size; i++) {
             Kingdom kingdom = Kingdom.ANIMALIA;
-            Sex sex = Sex.MALE.createRandom();
-            int lifespan = RANDOM.nextInt(140) + 1;
-            String name = RANDOM.nextDouble() <= 0.85 ? Mockables.generateRandomText(RANDOM.nextInt(24) + 1) : null;
+            Sex sex = Sex.newRandom();
+            int lifespan = random.nextInt(140) + 1;
+            String name = random.nextDouble() <= 0.85 ? TestUtils.generateRandomText(random.nextInt(24) + 1) : null;
             LocalDate birthday = LocalDate.now();
             LocalTime birthTime = LocalTime.now().withNano(123_000_000); // with 123 ms
             UUID placeOfBirth = name == null ? null : UUID.randomUUID();
 
             sb.setLength(0);
-            sb.append(RANDOM.nextInt(Integer.MAX_VALUE - 10_000_000) + 10_000_000);
-            sb.append(RANDOM.nextInt(Integer.MAX_VALUE));
+            sb.append(random.nextInt(Integer.MAX_VALUE - 10_000_000) + 10_000_000);
+            sb.append(random.nextInt(Integer.MAX_VALUE));
             BigInteger numOfCells = new BigInteger(sb.toString());
 
-            BigDecimal restSecondsOfLife = BigDecimal.valueOf(Integer.MAX_VALUE).add(BigDecimal.valueOf(RANDOM.nextInt())).add(BigDecimal.valueOf(RANDOM.nextDouble()));
-            int[] agesFromBirthToPuberty = RANDOM.nextDouble() >= 0.2
-                    ? RANDOM.ints(10, 0, 18).toArray()
-                    : RANDOM.ints(5, 0, 12).toArray();
+            BigDecimal restSecondsOfLife = BigDecimal.valueOf(Integer.MAX_VALUE).add(BigDecimal.valueOf(random.nextInt())).add(BigDecimal.valueOf(random.nextDouble()));
+            int[] agesFromBirthToPuberty = random.nextDouble() >= 0.2
+                    ? random.ints(10, 0, 18).toArray()
+                    : random.ints(5, 0, 12).toArray();
             int[] agesFromTwilightToDeath = agesFromBirthToPuberty == null
                     ? null
-                    : RANDOM.ints(18, lifespan - 1, lifespan).toArray();
+                    : random.ints(18, lifespan - 1, lifespan).toArray();
 
-            float height = RANDOM.nextFloat() * 160F + 30F; // 30.0 ~ 250.0
-            float weight = RANDOM.nextFloat() * 330F + 2.5F; // 2.5 ~ 330.0
-            boolean disabled = RANDOM.nextInt(100) <= 1; // 2%
+            float height = random.nextFloat() * 160F + 30F; // 30.0 ~ 250.0
+            float weight = random.nextFloat() * 330F + 2.5F; // 2.5 ~ 330.0
+            boolean disabled = random.nextInt(100) <= 1; // 2%
 
             Human human = new Human(kingdom, sex, lifespan, name, birthday, birthTime,
                     placeOfBirth, restSecondsOfLife, numOfCells, height, weight,

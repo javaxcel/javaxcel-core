@@ -16,9 +16,8 @@
 
 package com.github.javaxcel.out.core.modelwriter;
 
-import com.github.javaxcel.out.core.ModelWriterTester;
-import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
+import com.github.javaxcel.out.core.ModelWriterTester;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
@@ -65,7 +64,7 @@ class DynamicTypeTest extends ModelWriterTester {
 
     private Class<?> createDynamicType() {
         AnnotationDescription unrandomized = AnnotationDescription.Builder
-                .ofType(TestUtils.Unrandomized.class).build();
+                .ofType(Unrandomized.class).build();
 
         return new ByteBuddy()
                 .subclass(Object.class)

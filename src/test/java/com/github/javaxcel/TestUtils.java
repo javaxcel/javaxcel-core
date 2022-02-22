@@ -48,10 +48,10 @@ public class TestUtils {
     private static final EasyRandom generator;
 
     private static final Class<?>[] classes = Stream.of(
-            TypeClassifier.Types.PRIMITIVE_NUMBER.getClasses(),
-            TypeClassifier.Types.WRAPPER_NUMBER.getClasses(),
-            TypeClassifier.Types.DATETIME.getClasses(),
-            Arrays.asList(char.class, boolean.class, Character.class, Boolean.class, String.class))
+                    TypeClassifier.Types.PRIMITIVE_NUMBER.getClasses(),
+                    TypeClassifier.Types.WRAPPER_NUMBER.getClasses(),
+                    TypeClassifier.Types.DATETIME.getClasses(),
+                    Arrays.asList(char.class, boolean.class, Character.class, Boolean.class, String.class))
             .flatMap(Collection::stream).toArray(Class[]::new);
 
     static {
@@ -60,19 +60,33 @@ public class TestUtils {
                         .charset(StandardCharsets.UTF_8)
                         .dateRange(LocalDate.of(1000, Month.JANUARY, 1), LocalDate.now())
                         .timeRange(LocalTime.MIN, LocalTime.MAX)
-                        .stringLengthRange(0, 15)
-                        .collectionSizeRange(0, 10)
+                        .stringLengthRange(1, 15) // Not allow empty string.
+                        .collectionSizeRange(1, 10) // Not allow empty array or collection.
                         .excludeField(field -> field.isAnnotationPresent(Unrandomized.class) || field.isAnnotationPresent(ExcelIgnore.class))
                         .overrideDefaultInitialization(false)
                         .scanClasspathForConcreteTypes(true);
         generator = new EasyRandom(parameters);
     }
 
-    public static <T> T randomize(Class<? extends T> type) {
+    public static Random getRandom() {
+        return generator;
+    }
+
+    public static String generateRandomText(int len) {
+        final int leftLimit = 97; // letter 'a'
+        final int rightLimit = 122; // letter 'z'
+
+        return generator.ints(leftLimit, rightLimit + 1)
+                .limit(len)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+    }
+
+    public static <T> T randomize(Class<T> type) {
         return generator.nextObject(type);
     }
 
-    public static <T> List<T> getMocks(Class<? extends T> type, int size) {
+    public static <T> List<T> getMocks(Class<T> type, int size) {
         if (size < 0) throw new IllegalArgumentException("Size cannot be negative");
 
         return IntStream.range(0, size).parallel()
