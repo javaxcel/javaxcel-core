@@ -16,6 +16,8 @@
 
 package com.github.javaxcel.factory;
 
+import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
+import com.github.javaxcel.converter.handler.registry.impl.ExcelTypeHandlerRegistryImpl;
 import com.github.javaxcel.out.core.ExcelWriter;
 import com.github.javaxcel.out.core.impl.MapWriter;
 import com.github.javaxcel.out.core.impl.ModelWriter;
@@ -29,7 +31,18 @@ import java.util.Map;
  */
 public abstract class ExcelWriterFactory {
 
+    private final ExcelTypeHandlerRegistry registry = new ExcelTypeHandlerRegistryImpl();
+
     private ExcelWriterFactory() {
+    }
+
+    public static ExcelWriterFactory init() {
+        return new ExcelWriterFactoryImpl();
+    }
+
+    public ExcelWriterFactory registry(ExcelTypeHandlerRegistry registry) {
+        this.registry.addAll(registry);
+        return this;
     }
 
     /**
@@ -41,7 +54,7 @@ public abstract class ExcelWriterFactory {
      * @return {@link ModelWriter}
      */
     public <T> ExcelWriter<T> create(Workbook workbook, Class<T> type) {
-        return new ModelWriter<>(workbook, type, this.factory);
+        return new ModelWriter<>(workbook, type, this.registry);
     }
 
     /**
@@ -52,6 +65,9 @@ public abstract class ExcelWriterFactory {
      */
     public static ExcelWriter<Map<String, Object>> create(Workbook workbook) {
         return new MapWriter(workbook);
+    }
+
+    private static class ExcelWriterFactoryImpl extends ExcelWriterFactory {
     }
 
 }

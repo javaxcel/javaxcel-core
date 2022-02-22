@@ -16,44 +16,58 @@
 
 package com.github.javaxcel.factory;
 
-import com.github.javaxcel.in.MapReader;
-import com.github.javaxcel.in.ModelReader;
+import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
+import com.github.javaxcel.converter.handler.registry.impl.ExcelTypeHandlerRegistryImpl;
+import com.github.javaxcel.in.core.ExcelReader;
+import com.github.javaxcel.in.core.impl.MapReader;
+import com.github.javaxcel.in.core.impl.ModelReader;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import java.util.Map;
 
 /**
- * Factory for creating the appropriate implementation of {@link com.github.javaxcel.in.ExcelReader}.
+ * Factory for creating the appropriate implementation of {@link ExcelReader}.
  * This will create instance of {@link ModelReader} or {@link MapReader}.
  */
 public abstract class ExcelReaderFactory {
 
+    private final ExcelTypeHandlerRegistry registry = new ExcelTypeHandlerRegistryImpl();
+
     private ExcelReaderFactory() {
+    }
+
+    public static ExcelReaderFactory init() {
+        return new ExcelReaderFactoryImpl();
+    }
+
+    public ExcelReaderFactory registry(ExcelTypeHandlerRegistry registry) {
+        this.registry.addAll(registry);
+        return this;
+    }
+
+    /**
+     * Returns instance of {@link ModelReader}.
+     *
+     * @param workbook Excel workbook
+     * @param type     type of model
+     * @param <T>      type of the element
+     * @return {@link ModelReader}
+     */
+    public <T> ExcelReader<T> create(Workbook workbook, Class<T> type) {
+        return new ModelReader<>(workbook, type, this.registry);
     }
 
     /**
      * Returns instance of {@link MapReader}.
      *
      * @param workbook Excel workbook
-     * @param <W>      implementation of {@link Workbook}
-     * @param <V>      {@link Map}'s value
      * @return {@link MapReader}
      */
-    public static <W extends Workbook, V> MapReader<W, Map<String, V>> create(W workbook) {
-        return new MapReader<>(workbook);
+    public static ExcelReader<Map<String, Object>> create(Workbook workbook) {
+        return new MapReader(workbook);
     }
 
-    /**
-     * Returns instance of {@link ModelReader}.
-     *
-     * @param workbook excel workbook
-     * @param type     type of model
-     * @param <W>      implementation of {@link Workbook}
-     * @param <T>      type of the element
-     * @return {@link ModelReader}
-     */
-    public static <W extends Workbook, T> ModelReader<W, T> create(W workbook, Class<T> type) {
-        return new ModelReader<>(workbook, type);
+    private static class ExcelReaderFactoryImpl extends ExcelReaderFactory {
     }
 
 }
