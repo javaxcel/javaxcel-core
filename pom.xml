@@ -55,16 +55,26 @@
 
         <!-- Dependency versions -->
         <apache-poi.version>4.1.2</apache-poi.version>
-        <javaxcel-styler.version>0.2.1</javaxcel-styler.version>
         <spel.version>5.2.9</spel.version>
+        <javaxcel-styler.version>0.2.1</javaxcel-styler.version>
         <common-utils.version>0.7.1</common-utils.version>
+
+        <!-- Test dependency versions -->
         <junit5.version>5.8.2</junit5.version>
         <assertj.version>3.22.0</assertj.version>
         <spock.version>2.0-groovy-3.0</spock.version>
         <lombok.version>1.18.22</lombok.version>
         <byte-buddy.version>1.12.8</byte-buddy.version>
+        <easy-random.version>4.3.0</easy-random.version>
         <xlsx-streamer.version>2.2.0</xlsx-streamer.version>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <!-- Common Utils -->
@@ -129,7 +139,7 @@
         <dependency>
             <groupId>org.jeasy</groupId>
             <artifactId>easy-random-core</artifactId>
-            <version>4.3.0</version>
+            <version>${easy-random.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -323,7 +333,17 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
                 <configuration>
-                    <testFailureIgnore>true</testFailureIgnore>
+                    <testFailureIgnore>false</testFailureIgnore>
+                    <!--
+                        Only required if names of test classes don't match default Surefire patterns('*Test').
+                        By default only files ending in 'Test' will be included,
+                        so also include support for Spock style naming convention.
+                        Oddly enough for Groovy files, '*Spec.groovy' does not work, but '*Spec.java'.
+                    -->
+                    <includes>
+                        <include>**/*Test.java</include>
+                        <include>**/*Spec.java</include>
+                    </includes>
                 </configuration>
             </plugin>
 
