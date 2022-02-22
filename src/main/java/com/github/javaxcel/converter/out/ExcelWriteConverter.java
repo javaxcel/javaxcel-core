@@ -19,10 +19,10 @@ package com.github.javaxcel.converter.out;
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 
-public interface OutputConverter<T> {
+public interface ExcelWriteConverter<T> {
 
     /**
-     * Converts a field's value to the string.
+     * Converts value of the field to the string.
      *
      * <p> To write a value in the cell, this converts a field's value
      * to the string. The converted string will be written in cell.

@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ExpressionOutputConverter<T> implements OutputConverter<T> {
+public class ExpressionExcelWriteConverter<T> implements ExcelWriteConverter<T> {
 
     private static final ExpressionParser parser = new SpelExpressionParser();
 
@@ -42,7 +42,7 @@ public class ExpressionOutputConverter<T> implements OutputConverter<T> {
 
     private final Map<Field, Expression> cache;
 
-    public ExpressionOutputConverter() {
+    public ExpressionExcelWriteConverter() {
         this.fields = Collections.emptyList();
         this.cache = Collections.emptyMap();
     }
@@ -73,7 +73,7 @@ public class ExpressionOutputConverter<T> implements OutputConverter<T> {
      *
      * @param fields fields of model
      */
-    public ExpressionOutputConverter(@Nonnull List<Field> fields) {
+    public ExpressionExcelWriteConverter(@Nonnull List<Field> fields) {
         this.fields = fields;
         this.cache = createCache(fields);
     }
@@ -101,7 +101,7 @@ public class ExpressionOutputConverter<T> implements OutputConverter<T> {
     /**
      * {@inheritDoc}
      *
-     * <p> Parses a expression to be written as cell value.
+     * <p> Parses an expression to be written as cell value.
      *
      * @param model element in list
      * @param field field of model
@@ -116,10 +116,9 @@ public class ExpressionOutputConverter<T> implements OutputConverter<T> {
 
         if (CollectionUtils.isNullOrEmpty(this.fields) || CollectionUtils.isNullOrEmpty(this.cache)) {
             // When this instantiated by constructor without argument.
-            List<Field> fields = FieldUtils.getTargetedFields(model.getClass());
             ExcelWriterExpression annotation = field.getAnnotation(ExcelWriterExpression.class);
             expression = parser.parseExpression(annotation.value());
-            variables = FieldUtils.toMap(model, fields);
+            variables = FieldUtils.toMap(model);
 
         } else {
             // When this instantiated by constructor with fields.
