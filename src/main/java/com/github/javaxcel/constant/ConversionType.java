@@ -18,10 +18,10 @@ package com.github.javaxcel.constant;
 
 import com.github.javaxcel.annotation.ExcelReaderExpression;
 import com.github.javaxcel.annotation.ExcelWriterExpression;
-import com.github.javaxcel.converter.in.DefaultInputConverter;
-import com.github.javaxcel.converter.in.ExpressionInputConverter;
-import com.github.javaxcel.converter.out.DefaultOutputConverter;
-import com.github.javaxcel.converter.out.ExpressionOutputConverter;
+import com.github.javaxcel.converter.in.DefaultExcelReadConverter;
+import com.github.javaxcel.converter.in.ExpressionExcelReadConverter;
+import com.github.javaxcel.converter.out.DefaultExcelWriteConverter;
+import com.github.javaxcel.converter.out.ExpressionExcelWriteConverter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -32,14 +32,14 @@ import java.lang.reflect.Field;
 public enum ConversionType {
 
     /**
-     * @see DefaultOutputConverter
-     * @see DefaultInputConverter
+     * @see DefaultExcelWriteConverter
+     * @see DefaultExcelReadConverter
      */
     DEFAULT,
 
     /**
-     * @see ExpressionOutputConverter
-     * @see ExpressionInputConverter
+     * @see ExpressionExcelWriteConverter
+     * @see ExpressionExcelReadConverter
      */
     EXPRESSION;
 

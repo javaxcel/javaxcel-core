@@ -16,7 +16,7 @@
 
 package com.github.javaxcel.annotation;
 
-import com.github.javaxcel.converter.in.ExpressionInputConverter;
+import com.github.javaxcel.converter.in.ExpressionExcelReadConverter;
 
 import java.lang.annotation.*;
 
@@ -36,7 +36,7 @@ public @interface ExcelReaderExpression {
      * Expression to be assigned as field value.
      *
      * @return expression to be parsed
-     * @see ExpressionInputConverter
+     * @see ExpressionExcelReadConverter
      * @see io.github.imsejin.expression.Expression
      */
     String value();
