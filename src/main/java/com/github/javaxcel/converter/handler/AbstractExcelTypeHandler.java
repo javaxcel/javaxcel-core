@@ -16,17 +16,23 @@
 
 package com.github.javaxcel.converter.handler;
 
+import io.github.imsejin.common.assertion.Asserts;
+
 public abstract class AbstractExcelTypeHandler<T> implements ExcelTypeHandler<T> {
 
     private final Class<T> type;
 
     protected AbstractExcelTypeHandler(Class<T> type) {
+        Asserts.that(type)
+                .as("AbstractExcelTypeHandler.type is not allowed to be null")
+                .isNotNull();
+
         this.type = type;
     }
 
     @Override
-    public boolean matches(Class<?> type) {
-        return this.type == type;
+    public Class<T> getType() {
+        return this.type;
     }
 
     @Override

@@ -16,12 +16,39 @@
 
 package com.github.javaxcel.converter.handler;
 
+/**
+ * Handler for type to convert to string and from string.
+ *
+ * @param <T> handled type
+ */
 public interface ExcelTypeHandler<T> {
 
-    boolean matches(Class<?> type);
+    /**
+     * Returns type handled by this handler.
+     *
+     * @return handled type
+     */
+    Class<T> getType();
 
+    /**
+     * Stringifies the value with arguments to write in Excel file.
+     *
+     * @param value object value
+     * @param args  optional arguments
+     * @return stringified value
+     * @throws Exception if failed to handle the value
+     */
     String write(Object value, Object... args) throws Exception;
 
+    /**
+     * Instantiates the handled type with string value read from Excel file
+     * and arguments.
+     *
+     * @param value string value
+     * @param args  optional arguments
+     * @return stringified value
+     * @throws Exception if failed to handle the value
+     */
     T read(String value, Object... args) throws Exception;
 
 }
