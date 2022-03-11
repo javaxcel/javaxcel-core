@@ -18,30 +18,39 @@ package com.github.javaxcel.converter.handler.registry.impl
 
 import com.github.javaxcel.converter.handler.AbstractExcelTypeHandler
 import com.github.javaxcel.converter.handler.ExcelTypeHandler
-import com.github.javaxcel.converter.handler.impl.BooleanTypeHandler
+import com.github.javaxcel.converter.handler.impl.BigIntegerTypeHandler
+import com.github.javaxcel.converter.handler.impl.DateTypeHandler
+import com.github.javaxcel.converter.handler.impl.FileTypeHandler
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry
 import io.github.imsejin.common.util.ReflectionUtils
 import spock.lang.Specification
 
-import static java.util.stream.Collectors.toList
-
-class ExcelTypeHandlerRegistryImplSpec extends Specification {
+class StrictExcelTypeHandlerRegistrySpec extends Specification {
 
     def "getHandler"() {
         given:
-        def registry = new ExcelTypeHandlerRegistryImpl()
-        def allTypes = registry.allTypes
+        def registry = new StrictExcelTypeHandlerRegistry() as ExcelTypeHandlerRegistry
+        def allTypes = registry.allTypes as List<Class<?>>
 
         when:
-        def handlers = allTypes.stream().map(registry::getHandler).filter(Objects::nonNull).collect toList()
+        def handlers = allTypes.collect { registry.getHandler it }
 
         then:
         allTypes.size() == handlers.size()
+        allTypes == handlers.collect { it.type }
+
+        expect:
+        registry.getHandler(File).class == FileTypeHandler
+        registry.getHandler(new File("") {}.class) == null
+        registry.getHandler(BigInteger).class == BigIntegerTypeHandler
+        registry.getHandler(new BigInteger("0") {}.class) == null
+        registry.getHandler(Date).class == DateTypeHandler
+        registry.getHandler(new Date() {}.class) == null
     }
 
     def "getAllTypes"() {
         given:
-        def registry = new ExcelTypeHandlerRegistryImpl()
+        def registry = new StrictExcelTypeHandlerRegistry() as ExcelTypeHandlerRegistry
 
         when:
         def allTypes = registry.allTypes
@@ -55,38 +64,44 @@ class ExcelTypeHandlerRegistryImplSpec extends Specification {
 
     def "add"() {
         given:
-        def registry = new ExcelTypeHandlerRegistryImpl()
+        def registry = new StrictExcelTypeHandlerRegistry() as ExcelTypeHandlerRegistry
 
-        when: "Override type handler on class java.lang.Boolean"
-        def overridden = registry.add(Boolean, new BooleanTypeHandler())
-
-        then:
-        overridden
-
-        when: "Add new type handler on class java.lang.String"
-        def added = !registry.add(Object, new ObjectTypeHandler())
+        when: "Add new type handler on class java.lang.Object"
+        def added = registry.add(Object, new ObjectTypeHandler())
 
         then:
         added
+
+        when: "Override type handler on class java.lang.Object"
+        def overridden = registry.add(Object, new ObjectTypeHandler())
+
+        then:
+        !overridden
     }
 
     def "addAll"() {
         given:
-        def registry = new ExcelTypeHandlerRegistryImpl()
+        def registry = new StrictExcelTypeHandlerRegistry() as ExcelTypeHandlerRegistry
+        def newRegistry = new TempExcelTypeHandlerRegistry()
+
+        when: "Add empty registry to the other"
+        def addedNone = !registry.addAll(registry)
+
+        then:
+        addedNone
+
+        when: "Add new type handler with new registry"
+        newRegistry.add(Object, new ObjectTypeHandler())
+        def addedNew = registry.addAll newRegistry
+
+        then:
+        addedNew
 
         when: "Override type handlers with the same registry"
-        def overridden = registry.addAll new ExcelTypeHandlerRegistryImpl()
+        def overridden = !registry.addAll(new StrictExcelTypeHandlerRegistry())
 
         then:
         overridden
-
-        when: "Add new type handler with new registry"
-        def newRegistry = new TempExcelTypeHandlerRegistry()
-        newRegistry.add(Object, new ObjectTypeHandler())
-        def added = !registry.addAll(newRegistry)
-
-        then:
-        added
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -95,23 +110,26 @@ class ExcelTypeHandlerRegistryImplSpec extends Specification {
         final Map<Class, ExcelTypeHandler> handlerMap = new HashMap<>()
 
         @Override
-        <T> ExcelTypeHandler<T> getHandler(Class<T> type) {
-            return this.handlerMap.get(type)
+        ExcelTypeHandler<?> getHandler(Class<?> type) {
+            this.handlerMap.get(type)
         }
 
         @Override
         Set<Class<?>> getAllTypes() {
-            return this.handlerMap.keySet()
+            this.handlerMap.keySet()
         }
 
         @Override
         <T> boolean add(Class<T> type, ExcelTypeHandler<T> handler) {
-            return false
+            def hasType = this.handlerMap.containsKey type
+            if (!hasType) this.handlerMap.put(type, handler)
+
+            hasType
         }
 
         @Override
         boolean addAll(ExcelTypeHandlerRegistry registry) {
-            return false
+            false
         }
     }
 
@@ -122,12 +140,12 @@ class ExcelTypeHandlerRegistryImplSpec extends Specification {
 
         @Override
         protected String writeInternal(Object value, Object... args) throws Exception {
-            return value.toString()
+            value.toString()
         }
 
         @Override
         Object read(String value, Object... args) throws Exception {
-            return value
+            value
         }
     }
 

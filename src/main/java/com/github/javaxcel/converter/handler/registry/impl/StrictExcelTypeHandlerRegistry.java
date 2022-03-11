@@ -21,18 +21,21 @@ import com.github.javaxcel.converter.handler.impl.*;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
 import io.github.imsejin.common.assertion.Asserts;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URI;
+import java.net.URL;
+import java.nio.file.Path;
 import java.time.*;
 import java.util.*;
 
-public class ExcelTypeHandlerRegistryImpl implements ExcelTypeHandlerRegistry {
+public class StrictExcelTypeHandlerRegistry implements ExcelTypeHandlerRegistry {
 
     private final Map<Class<?>, ExcelTypeHandler<?>> handlerMap = new HashMap<>();
 
-    public ExcelTypeHandlerRegistryImpl() {
+    public StrictExcelTypeHandlerRegistry() {
         // primitive
         add(boolean.class, new BooleanTypeHandler(true));
         add(byte.class, new ByteTypeHandler(true));
@@ -66,22 +69,21 @@ public class ExcelTypeHandlerRegistryImpl implements ExcelTypeHandlerRegistry {
         add(ZonedDateTime.class, new ZonedDateTimeTypeHandler());
         add(OffsetDateTime.class, new OffsetDateTimeTypeHandler());
         add(OffsetTime.class, new OffsetTimeTypeHandler());
+        // java.net
+        add(URI.class, new URITypeHandler());
+        add(URL.class, new URLTypeHandler());
+        // java.io
+        add(File.class, new FileTypeHandler());
+        // java.nio.file
+        add(Path.class, new PathTypeHandler());
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p> Type checking is guaranteed by {@link #add(Class, ExcelTypeHandler)},
-     * so this is safe without type checking.
-     */
     @Nullable
     @Override
-    @SuppressWarnings("unchecked")
-    public <T> ExcelTypeHandler<T> getHandler(Class<T> type) {
-        return (ExcelTypeHandler<T>) this.handlerMap.get(type);
+    public ExcelTypeHandler<?> getHandler(Class<?> type) {
+        return this.handlerMap.get(type);
     }
 
-    @Nonnull
     @Override
     public Set<Class<?>> getAllTypes() {
         return this.handlerMap.keySet();
@@ -89,15 +91,15 @@ public class ExcelTypeHandlerRegistryImpl implements ExcelTypeHandlerRegistry {
 
     @Override
     public <T> boolean add(Class<T> type, ExcelTypeHandler<T> handler) {
-        Asserts.that(type)
+        Asserts.that(handler)
                 .isNotNull()
                 .as("ExcelTypeHandlerRegistry doesn't allow the addition of unmatched type and handler as a pair. (type: '{0}', handler: '{1}')", type, handler)
-                .predicate(handler::matches);
+                .predicate(it -> it.getType() == type);
 
-        boolean overridden = this.handlerMap.containsKey(type);
+        boolean added = !this.handlerMap.containsKey(type);
         this.handlerMap.put(type, handler);
 
-        return overridden;
+        return added;
     }
 
     /**
@@ -114,14 +116,15 @@ public class ExcelTypeHandlerRegistryImpl implements ExcelTypeHandlerRegistry {
     @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
     public boolean addAll(ExcelTypeHandlerRegistry registry) {
-        boolean merged = false;
+        Set<Class<?>> allTypes = registry.getAllTypes();
+        boolean added = !allTypes.isEmpty();
 
-        for (Class<?> type : registry.getAllTypes()) {
+        for (Class<?> type : allTypes) {
             ExcelTypeHandler handler = registry.getHandler(type);
-            merged |= add(type, handler);
+            added &= add(type, handler);
         }
 
-        return merged;
+        return added;
     }
 
 }

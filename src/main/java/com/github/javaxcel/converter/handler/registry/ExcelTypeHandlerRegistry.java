@@ -32,10 +32,9 @@ public interface ExcelTypeHandlerRegistry {
      * Returns a handler of the type.
      *
      * @param type handled type
-     * @param <T>  type
      * @return type handler
      */
-    <T> ExcelTypeHandler<T> getHandler(Class<T> type);
+    ExcelTypeHandler<?> getHandler(Class<?> type);
 
     /**
      * Returns all registered types.
@@ -54,7 +53,7 @@ public interface ExcelTypeHandlerRegistry {
      * @param type    handled type
      * @param handler type handler
      * @param <T>     type
-     * @return whether type is already added
+     * @return whether type has never been added this registry
      * @throws IllegalArgumentException if a pair of type and handler is unmatched
      */
     <T> boolean add(Class<T> type, ExcelTypeHandler<T> handler);
@@ -65,7 +64,7 @@ public interface ExcelTypeHandlerRegistry {
      * <p> If the type is already added, its handler will be overridden as new handler.
      *
      * @param registry registry of type handler
-     * @return whether any type is already added
+     * @return whether all types have never been added this registry
      * @throws IllegalArgumentException if any pair of type and handler is unmatched
      */
     boolean addAll(ExcelTypeHandlerRegistry registry);
