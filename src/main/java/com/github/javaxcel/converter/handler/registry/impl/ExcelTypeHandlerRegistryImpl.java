@@ -20,10 +20,6 @@ import com.github.javaxcel.converter.handler.ExcelTypeHandler;
 import com.github.javaxcel.converter.handler.impl.*;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
 import io.github.imsejin.common.assertion.Asserts;
-import io.github.imsejin.common.model.graph.DirectedGraph;
-import io.github.imsejin.common.model.graph.Graph;
-import io.github.imsejin.common.model.graph.traverse.BreadthFirstIterator;
-import io.github.imsejin.common.util.ClassUtils;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -35,13 +31,20 @@ import java.nio.file.Path;
 import java.time.*;
 import java.util.*;
 
-public class LenientExcelTypeHandlerRegistry implements ExcelTypeHandlerRegistry {
-
-//    private final Graph<Class<?>> classGraph = new DirectedGraph<>();
+public class ExcelTypeHandlerRegistryImpl implements ExcelTypeHandlerRegistry {
 
     private final Map<Class<?>, ExcelTypeHandler<?>> handlerMap = new HashMap<>();
 
-    public LenientExcelTypeHandlerRegistry() {
+    public ExcelTypeHandlerRegistryImpl() {
+        // primitive
+        add(boolean.class, new BooleanTypeHandler(true));
+        add(byte.class, new ByteTypeHandler(true));
+        add(short.class, new ShortTypeHandler(true));
+        add(char.class, new CharacterTypeHandler(true));
+        add(int.class, new IntegerTypeHandler(true));
+        add(long.class, new LongTypeHandler(true));
+        add(float.class, new FloatTypeHandler(true));
+        add(double.class, new DoubleTypeHandler(true));
         // java.lang
         add(Boolean.class, new BooleanTypeHandler());
         add(Byte.class, new ByteTypeHandler());
@@ -75,33 +78,10 @@ public class LenientExcelTypeHandlerRegistry implements ExcelTypeHandlerRegistry
         add(Path.class, new PathTypeHandler());
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p> Type checking is guaranteed by {@link #add(Class, ExcelTypeHandler)},
-     * so this is safe without type checking.
-     */
     @Nullable
     @Override
     public ExcelTypeHandler<?> getHandler(Class<?> type) {
-        // Finds a handler matched with the type leniently.
-        // To handle primitive value by wrapper type handler,
-        // Makes the type boxed.
-        if (type.isPrimitive()) type = ClassUtils.wrap(type);
-
-        ExcelTypeHandler<?> handler = this.handlerMap.get(type);
-        if (handler != null) return handler;
-
-        Graph<Class<?>> graph = ClassUtils.getAllExtendedOrImplementedTypesAsGraph(type);
-        Iterator<Class<?>> iterator = new BreadthFirstIterator<>(graph, type);
-        while (iterator.hasNext()) {
-            Class<?> clazz = iterator.next();
-            ExcelTypeHandler<?> delegate = this.handlerMap.get(clazz);
-
-            if (delegate != null) return delegate;
-        }
-
-        return null;
+        return this.handlerMap.get(type);
     }
 
     @Override
@@ -115,10 +95,6 @@ public class LenientExcelTypeHandlerRegistry implements ExcelTypeHandlerRegistry
                 .isNotNull()
                 .as("ExcelTypeHandlerRegistry doesn't allow the addition of unmatched type and handler as a pair. (type: '{0}', handler: '{1}')", type, handler)
                 .predicate(it -> it.getType() == type);
-
-//        Graph<Class<?>> graph = ClassUtils.getAllExtendedOrImplementedTypesAsGraph(type);
-//        this.classGraph.addVertex(type);
-//        this.classGraph.addAll(graph);
 
         boolean added = !this.handlerMap.containsKey(type);
         this.handlerMap.put(type, handler);

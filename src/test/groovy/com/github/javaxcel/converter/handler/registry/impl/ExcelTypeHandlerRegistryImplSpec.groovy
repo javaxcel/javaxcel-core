@@ -16,20 +16,20 @@
 
 package com.github.javaxcel.converter.handler.registry.impl
 
-import com.github.javaxcel.converter.handler.AbstractExcelTypeHandler
-import com.github.javaxcel.converter.handler.ExcelTypeHandler
 import com.github.javaxcel.converter.handler.impl.BigIntegerTypeHandler
 import com.github.javaxcel.converter.handler.impl.DateTypeHandler
 import com.github.javaxcel.converter.handler.impl.FileTypeHandler
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry
+import com.github.javaxcel.internal.ObjectTypeHandler
+import com.github.javaxcel.internal.TempExcelTypeHandlerRegistry
 import io.github.imsejin.common.util.ReflectionUtils
 import spock.lang.Specification
 
-class StrictExcelTypeHandlerRegistrySpec extends Specification {
+class ExcelTypeHandlerRegistryImplSpec extends Specification {
 
-    def "getHandler"() {
+    def "Gets a handler by type"() {
         given:
-        def registry = new StrictExcelTypeHandlerRegistry() as ExcelTypeHandlerRegistry
+        def registry = new ExcelTypeHandlerRegistryImpl() as ExcelTypeHandlerRegistry
         def allTypes = registry.allTypes as List<Class<?>>
 
         when:
@@ -48,9 +48,9 @@ class StrictExcelTypeHandlerRegistrySpec extends Specification {
         registry.getHandler(new Date() {}.class) == null
     }
 
-    def "getAllTypes"() {
+    def "Gets all the added type"() {
         given:
-        def registry = new StrictExcelTypeHandlerRegistry() as ExcelTypeHandlerRegistry
+        def registry = new ExcelTypeHandlerRegistryImpl() as ExcelTypeHandlerRegistry
 
         when:
         def allTypes = registry.allTypes
@@ -62,9 +62,9 @@ class StrictExcelTypeHandlerRegistrySpec extends Specification {
         allTypes == handlerMap.keySet()
     }
 
-    def "add"() {
+    def "Adds a type handler"() {
         given:
-        def registry = new StrictExcelTypeHandlerRegistry() as ExcelTypeHandlerRegistry
+        def registry = new ExcelTypeHandlerRegistryImpl() as ExcelTypeHandlerRegistry
 
         when: "Add new type handler on class java.lang.Object"
         def added = registry.add(Object, new ObjectTypeHandler())
@@ -79,9 +79,9 @@ class StrictExcelTypeHandlerRegistrySpec extends Specification {
         !overridden
     }
 
-    def "addAll"() {
+    def "Adds a registry"() {
         given:
-        def registry = new StrictExcelTypeHandlerRegistry() as ExcelTypeHandlerRegistry
+        def registry = new ExcelTypeHandlerRegistryImpl() as ExcelTypeHandlerRegistry
         def newRegistry = new TempExcelTypeHandlerRegistry()
 
         when: "Add empty registry to the other"
@@ -98,55 +98,10 @@ class StrictExcelTypeHandlerRegistrySpec extends Specification {
         addedNew
 
         when: "Override type handlers with the same registry"
-        def overridden = !registry.addAll(new StrictExcelTypeHandlerRegistry())
+        def overridden = !registry.addAll(new ExcelTypeHandlerRegistryImpl())
 
         then:
         overridden
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////////////
-
-    private static class TempExcelTypeHandlerRegistry implements ExcelTypeHandlerRegistry {
-        final Map<Class, ExcelTypeHandler> handlerMap = new HashMap<>()
-
-        @Override
-        ExcelTypeHandler<?> getHandler(Class<?> type) {
-            this.handlerMap.get(type)
-        }
-
-        @Override
-        Set<Class<?>> getAllTypes() {
-            this.handlerMap.keySet()
-        }
-
-        @Override
-        <T> boolean add(Class<T> type, ExcelTypeHandler<T> handler) {
-            def hasType = this.handlerMap.containsKey type
-            if (!hasType) this.handlerMap.put(type, handler)
-
-            hasType
-        }
-
-        @Override
-        boolean addAll(ExcelTypeHandlerRegistry registry) {
-            false
-        }
-    }
-
-    private static class ObjectTypeHandler extends AbstractExcelTypeHandler<Object> {
-        protected ObjectTypeHandler() {
-            super(Object)
-        }
-
-        @Override
-        protected String writeInternal(Object value, Object... args) throws Exception {
-            value.toString()
-        }
-
-        @Override
-        Object read(String value, Object... args) throws Exception {
-            value
-        }
     }
 
 }
