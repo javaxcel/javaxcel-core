@@ -17,7 +17,7 @@
 package com.github.javaxcel;
 
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
-import com.github.javaxcel.converter.handler.registry.impl.StrictExcelTypeHandlerRegistry;
+import com.github.javaxcel.converter.handler.registry.impl.ExcelTypeHandlerRegistryImpl;
 import com.github.javaxcel.in.core.ExcelReader;
 import com.github.javaxcel.in.core.impl.MapReader;
 import com.github.javaxcel.in.core.impl.ModelReader;
@@ -45,7 +45,7 @@ public class Javaxcel {
     }
 
     public static Javaxcel newInstance() {
-        return new Javaxcel(new StrictExcelTypeHandlerRegistry());
+        return new Javaxcel(new ExcelTypeHandlerRegistryImpl());
     }
 
     public static Javaxcel newInstance(ExcelTypeHandlerRegistry registry) {
