@@ -165,7 +165,7 @@ class ExpressionTest extends ModelWriterTester {
         assertThat(columns.get("12"))
                 .as("Ages from twilight to death")
                 .containsExactlyElementsOf(models.stream().map(Human::getAgesFromTwilightToDeath)
-                        .map(it -> Arrays.toString(it).replaceAll("\\[|]", "")).collect(toList()));
+                        .map(Arrays::toString).collect(toList()));
         // Disabled
         assertThat(columns.get("13"))
                 .as("Disabled")
