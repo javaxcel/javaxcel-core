@@ -42,7 +42,8 @@ public class ExcelReadConverterSupport implements ExcelReadConverter {
     private final ExcelReadConverter expressionConverter;
 
     public ExcelReadConverterSupport(List<Field> fields, ExcelTypeHandlerRegistry registry) {
-        this.columnMap = fields.stream().collect(collectingAndThen(toMap(Function.identity(), it -> new Column(it, ConverterType.IN)),
+        this.columnMap = fields.stream().collect(collectingAndThen(
+                toMap(Function.identity(), it -> new Column(it, ConverterType.IN)),
                 Collections::unmodifiableMap));
 
         this.defaultConverter = new DefaultExcelReadConverter(registry);

@@ -46,7 +46,8 @@ public class ExcelWriteConverterSupport<T> implements ExcelWriteConverter<T> {
     private final ExcelWriteConverter<T> expressionConverter;
 
     public ExcelWriteConverterSupport(List<Field> fields, ExcelTypeHandlerRegistry registry) {
-        this.columnMap = fields.stream().collect(collectingAndThen(toMap(Function.identity(), it -> new Column(it, ConverterType.OUT)),
+        this.columnMap = fields.stream().collect(collectingAndThen(
+                toMap(Function.identity(), it -> new Column(it, ConverterType.OUT)),
                 Collections::unmodifiableMap));
 
         this.defaultConverter = new DefaultExcelWriteConverter<>(registry);
