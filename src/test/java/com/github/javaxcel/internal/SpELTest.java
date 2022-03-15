@@ -39,8 +39,7 @@ class SpELTest {
 
     private static String convert(IntStream stream) {
         return stream.mapToObj(String::valueOf)
-                .collect(() -> new StringJoiner(","), StringJoiner::add, (s1, s2) -> {
-                }).toString();
+                .collect(() -> new StringJoiner(","), StringJoiner::add, StringJoiner::merge).toString();
     }
 
     @Test
@@ -59,36 +58,36 @@ class SpELTest {
     }
 
     @Test
-    @DisplayName("SpEL: Product#apiId = Product#name")
+    @DisplayName("SpEL: Product#name = Product#apiId")
     void setApiIdWithName() {
         // given
-        String name = "Mint Chocolate";
+        UUID uuid = UUID.randomUUID();
         Product product = new Product();
-        product.setName(name);
+        product.setApiId(uuid);
 
         // when
-        Expression expression = parser.parseExpression("apiId = name.toUpperCase()");
+        Expression expression = parser.parseExpression("name = apiId.toString().toUpperCase()");
         String actual = expression.getValue(product, String.class);
 
         // then
-        assertThat(product.getApiId())
+        assertThat(product.getName())
                 .as("Product's name is change into the capitalized")
-                .isEqualTo(name.toUpperCase());
+                .isEqualTo(uuid.toString().toUpperCase());
         assertThat(actual)
-                .as("Expression result is equal to product's api id")
-                .isEqualTo(product.getApiId());
+                .as("Expression result is equal to product's name")
+                .isEqualTo(product.getName());
     }
 
     @Test
-    @DisplayName("SpEL: Product#apiId = UUID#randomUUID()#toString()")
+    @DisplayName("SpEL: Product#apiId = UUID#randomUUID()")
     void setValueIntoProperty() {
         // given
-        String initialUuid = UUID.randomUUID().toString();
+        UUID initialUuid = UUID.randomUUID();
         Product product = new Product();
         product.setApiId(initialUuid);
 
         // when
-        String newUuid = UUID.randomUUID().toString();
+        UUID newUuid = UUID.randomUUID();
         parser.parseExpression("apiId").setValue(product, newUuid);
 
         // then
