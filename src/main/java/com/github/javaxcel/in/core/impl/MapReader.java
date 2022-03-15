@@ -51,7 +51,6 @@ public class MapReader extends AbstractExcelReader<Map<String, Object>> {
 
     /**
      * @param workbook Excel workbook
-     * @see com.github.javaxcel.factory.ExcelReaderFactory#create(Workbook)
      */
     public MapReader(Workbook workbook) {
         super(workbook, MAP_TYPE);

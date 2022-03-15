@@ -17,8 +17,6 @@
 package com.github.javaxcel.in.core.impl
 
 import com.github.javaxcel.TestUtils
-import com.github.javaxcel.factory.ExcelReaderFactory
-import com.github.javaxcel.factory.ExcelWriterFactory
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy.HeaderNames
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy.SheetName
 import com.github.javaxcel.util.ExcelUtils
@@ -60,7 +58,7 @@ class MapReaderSpec extends Specification {
 
         // Write excel file with mocks
         stopwatch.start("write %,d maps", numOfMocks)
-        ExcelWriterFactory.create(workbook)
+        TestUtils.JAVAXCEL.writer(workbook)
                 .options(new SheetName("Maps"), new HeaderNames(keys))
                 .write(out, maps)
         stopwatch.stop()
@@ -68,7 +66,7 @@ class MapReaderSpec extends Specification {
         when: "Read excel file"
         stopwatch.start("read %,d maps", numOfMocks)
         @Cleanup def newWorkbook = new HSSFWorkbook(new FileInputStream(file))
-        def actual = ExcelReaderFactory.create(newWorkbook).read()
+        def actual = TestUtils.JAVAXCEL.reader(newWorkbook).read()
         stopwatch.stop()
         println stopwatch.statistics
 

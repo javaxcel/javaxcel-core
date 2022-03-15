@@ -17,9 +17,9 @@
 package com.github.javaxcel.out.core.modelwriter;
 
 import com.github.javaxcel.Converter;
+import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.annotation.ExcelWriterExpression;
-import com.github.javaxcel.factory.ExcelReaderFactory;
 import com.github.javaxcel.in.strategy.ExcelReadStrategy.KeyNames;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.model.creature.Human;
@@ -85,7 +85,7 @@ class ExpressionTest extends ModelWriterTester {
         int numOfFields = FieldUtils.getTargetedFields(Human.class).size();
         List<String> keyNames = IntStream.range(0, numOfFields)
                 .mapToObj(Integer::toString).collect(toList());
-        List<Map<String, Object>> list = ExcelReaderFactory.create(workbook)
+        List<Map<String, Object>> list = TestUtils.JAVAXCEL.reader(workbook)
                 .options(new KeyNames(keyNames)).read();
 
         Map<String, List<Object>> columns = list.stream().flatMap(map -> map.entrySet().stream())

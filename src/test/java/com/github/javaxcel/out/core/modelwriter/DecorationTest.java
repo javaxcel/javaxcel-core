@@ -19,7 +19,6 @@ package com.github.javaxcel.out.core.modelwriter;
 import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
-import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.core.ExcelWriter;
 import com.github.javaxcel.out.core.ModelWriterTester;
@@ -78,7 +77,7 @@ class DecorationTest extends ModelWriterTester {
 
         // when & then
         stopwatch.start("set unmatched header style");
-        assertThatThrownBy(() -> ExcelWriterFactory.init().create(workbook, WithModel.class)
+        assertThatThrownBy(() -> TestUtils.JAVAXCEL.writer(workbook, WithModel.class)
                 .options(new HeaderStyles(Arrays.asList(DefaultHeaderStyleConfig.getRainbowHeader())))
                 .write(null, TestUtils.getMocks(WithModel.class, 10)))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
@@ -86,7 +85,7 @@ class DecorationTest extends ModelWriterTester {
         stopwatch.stop();
 
         stopwatch.start("set unmatched body style");
-        assertThatThrownBy(() -> ExcelWriterFactory.init().create(workbook, WithColumn.class)
+        assertThatThrownBy(() -> TestUtils.JAVAXCEL.writer(workbook, WithColumn.class)
                 .options(new BodyStyles(Arrays.asList(DefaultHeaderStyleConfig.getRainbowHeader())))
                 .write(null, TestUtils.getMocks(WithColumn.class, 10)))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
@@ -119,7 +118,7 @@ class DecorationTest extends ModelWriterTester {
         Workbook workbook = whenModel.getWorkbook();
         Class<?> type = givenModel.getType();
 
-        ExcelWriter<?> writer = ExcelWriterFactory.init().create(workbook, type);
+        ExcelWriter<?> writer = TestUtils.JAVAXCEL.writer(workbook, type);
 
         if (isTypeDefinedStyleDirectly(type)) {
             ExcelStyleConfig config = new NoStyleConfig();

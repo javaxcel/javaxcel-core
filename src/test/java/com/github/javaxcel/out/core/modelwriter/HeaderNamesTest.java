@@ -16,8 +16,8 @@
 
 package com.github.javaxcel.out.core.modelwriter;
 
+import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.annotation.ExcelColumn;
-import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.core.ExcelWriter;
 import com.github.javaxcel.out.core.ModelWriterTester;
@@ -79,7 +79,7 @@ class HeaderNamesTest extends ModelWriterTester {
         // when & then
         stopwatch.start("create '%s' instance with invalid header names(%s)",
                 ModelWriter.class.getSimpleName(), headerNames);
-        assertThatThrownBy(() -> ExcelWriterFactory.init().create(workbook, KebabCaseComputer.class)
+        assertThatThrownBy(() -> TestUtils.JAVAXCEL.writer(workbook, KebabCaseComputer.class)
                 .options(new HeaderNames(headerNames)).write(null, Collections.emptyList()))
                 .as("Throws IllegalArgumentException")
                 .isExactlyInstanceOf(IllegalArgumentException.class)
@@ -105,7 +105,7 @@ class HeaderNamesTest extends ModelWriterTester {
         Workbook workbook = whenModel.getWorkbook();
         List<?> models = thenModel.getModels();
 
-        ExcelWriter<?> writer = ExcelWriterFactory.init().create(workbook, type);
+        ExcelWriter<?> writer = TestUtils.JAVAXCEL.writer(workbook, type);
         if (type == KebabCaseComputer.class) {
             List<String> headerNames = FieldUtils.getTargetedFields(type)
                     .stream().map(Field::getName).map(getFunctionByType(type)).collect(toList());

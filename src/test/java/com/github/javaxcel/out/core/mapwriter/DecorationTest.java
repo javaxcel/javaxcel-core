@@ -17,7 +17,6 @@
 package com.github.javaxcel.out.core.mapwriter;
 
 import com.github.javaxcel.TestUtils;
-import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.core.MapWriterTester;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy;
@@ -68,7 +67,7 @@ class DecorationTest extends MapWriterTester {
 
         // when & then
         stopwatch.start("set unmatched header style");
-        assertThatThrownBy(() -> ExcelWriterFactory.create(workbook)
+        assertThatThrownBy(() -> TestUtils.JAVAXCEL.writer(workbook)
                 .options(new ExcelWriteStrategy.HeaderStyles(Arrays.asList(rainbowHeader)))
                 .write(null, TestUtils.getRandomMaps(10, rainbowHeader.length - 1)))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
@@ -76,7 +75,7 @@ class DecorationTest extends MapWriterTester {
         stopwatch.stop();
 
         stopwatch.start("set unmatched body style");
-        assertThatThrownBy(() -> ExcelWriterFactory.create(workbook)
+        assertThatThrownBy(() -> TestUtils.JAVAXCEL.writer(workbook)
                 .options(new ExcelWriteStrategy.BodyStyles(Arrays.asList(rainbowHeader)))
                 .write(null, TestUtils.getRandomMaps(10, rainbowHeader.length + 1)))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
@@ -107,7 +106,7 @@ class DecorationTest extends MapWriterTester {
 
     @Override
     protected void whenWriteWorkbook(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) {
-        ExcelWriterFactory.create(whenModel.getWorkbook())
+        TestUtils.JAVAXCEL.writer(whenModel.getWorkbook())
                 .options(new SheetName("Rainbow"),
                         new AutoResizedColumns(),
                         new HiddenExtraRows(),

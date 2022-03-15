@@ -75,7 +75,7 @@ class DefaultValueTest extends ModelWriterTester {
     protected void whenWriteWorkbook(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) {
         Class<?> type = givenModel.getType();
 
-        ExcelWriter<?> writer = ExcelWriterFactory.init().create(whenModel.getWorkbook(), type);
+        ExcelWriter<?> writer = TestUtils.JAVAXCEL.writer(whenModel.getWorkbook(), type);
         if (getDefaultValueFromType(type).equals(DIRECT_DEFAULT_VALUE)) {
             writer.options(new DefaultValue(DIRECT_DEFAULT_VALUE));
         }
@@ -94,7 +94,7 @@ class DefaultValueTest extends ModelWriterTester {
 
     private void assertDefaultValue(Class<?> type, File file) throws IOException {
         @Cleanup Workbook workbook = ExcelUtils.getWorkbook(file);
-        List<Map<String, Object>> models = ExcelReaderFactory.create(workbook).read();
+        List<Map<String, Object>> models = TestUtils.JAVAXCEL.reader(workbook).read();
 
         for (Map<String, Object> model : models) {
             String title = (String) model.get("title");

@@ -16,7 +16,7 @@
 
 package com.github.javaxcel.out.core.modelwriter;
 
-import com.github.javaxcel.factory.ExcelWriterFactory;
+import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.core.ModelWriterTester;
 import com.github.javaxcel.out.core.impl.ModelWriter;
@@ -69,7 +69,7 @@ class SheetNameTest extends ModelWriterTester {
         // when & then
         stopwatch.start("create '%s' instance with invalid sheet name(%s)",
                 ModelWriter.class.getSimpleName(), sheetName);
-        assertThatThrownBy(() -> ExcelWriterFactory.init().create(workbook, FailureModel.class)
+        assertThatThrownBy(() -> TestUtils.JAVAXCEL.writer(workbook, FailureModel.class)
                 .options(new SheetName(sheetName)))
                 .as("Throws IllegalArgumentException")
                 .isExactlyInstanceOf(IllegalArgumentException.class);
@@ -88,7 +88,7 @@ class SheetNameTest extends ModelWriterTester {
     @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected void whenWriteWorkbook(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) {
-        ExcelWriterFactory.init().create(whenModel.getWorkbook(), givenModel.getType())
+        TestUtils.JAVAXCEL.writer(whenModel.getWorkbook(), givenModel.getType())
                 .options(new SheetName(WorkbookUtil.createSafeSheetName(SHEET_NAME)))
                 .write(whenModel.getOutputStream(), (List) thenModel.getModels());
     }

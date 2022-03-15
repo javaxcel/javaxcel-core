@@ -45,6 +45,8 @@ public class TestUtils {
 
     public static final String MAP_KEY_PREFIX = "FIELD_";
 
+    public static final Javaxcel JAVAXCEL = Javaxcel.newInstance();
+
     private static final EasyRandom generator;
 
     private static final Class<?>[] classes = Stream.of(

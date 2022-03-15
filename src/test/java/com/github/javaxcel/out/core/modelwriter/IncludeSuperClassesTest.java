@@ -16,10 +16,10 @@
 
 package com.github.javaxcel.out.core.modelwriter;
 
-import com.github.javaxcel.out.core.ModelWriterTester;
+import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.annotation.ExcelModel;
-import com.github.javaxcel.factory.ExcelReaderFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
+import com.github.javaxcel.out.core.ModelWriterTester;
 import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.AllArgsConstructor;
@@ -73,7 +73,7 @@ class IncludeSuperClassesTest extends ModelWriterTester {
 
     private static void assertIncludeSuperClasses(File file, Class<?> type, List<?> list) throws IOException {
         @Cleanup Workbook workbook = WorkbookFactory.create(file);
-        List<Map<String, Object>> models = ExcelReaderFactory.create(workbook).read();
+        List<Map<String, Object>> models = TestUtils.JAVAXCEL.reader(workbook).read();
 
         assertThat(models.stream().mapToInt(Map::size).average().orElse(-1))
                 .as("#2 The header size is the number of targeted fields in '%s'", type.getSimpleName())

@@ -55,7 +55,6 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
     /**
      * @param workbook Excel workbook
      * @param type     type of model
-     * @see com.github.javaxcel.factory.ExcelReaderFactory#create(Workbook, Class)
      */
     public ModelReader(Workbook workbook, Class<T> type, ExcelTypeHandlerRegistry registry) {
         super(workbook, type);

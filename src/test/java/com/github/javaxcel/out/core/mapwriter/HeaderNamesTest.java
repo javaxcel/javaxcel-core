@@ -17,7 +17,6 @@
 package com.github.javaxcel.out.core.mapwriter;
 
 import com.github.javaxcel.TestUtils;
-import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.core.ExcelWriter;
 import com.github.javaxcel.out.core.MapWriterTester;
@@ -68,14 +67,14 @@ class HeaderNamesTest extends MapWriterTester {
     void fail(Stopwatch stopwatch) {
         // expect
         stopwatch.start("sort with empty list");
-        assertThatThrownBy(() -> ExcelWriterFactory.create(new XSSFWorkbook())
+        assertThatThrownBy(() -> TestUtils.JAVAXCEL.writer(new XSSFWorkbook())
                 .options(new KeyNames(Collections.emptyList())))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessageStartingWith("keyOrders is not allowed to be null or empty");
         stopwatch.stop();
 
         stopwatch.start("#1 sort with unmatched list");
-        assertThatThrownBy(() -> ExcelWriterFactory.create(new XSSFWorkbook())
+        assertThatThrownBy(() -> TestUtils.JAVAXCEL.writer(new XSSFWorkbook())
                 .options(new KeyNames(Arrays.asList("column_1", "column_2", "column_3")))
                 .write(null, TestUtils.getRandomMaps(10, NUM_OF_COLUMNS)))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
@@ -83,7 +82,7 @@ class HeaderNamesTest extends MapWriterTester {
         stopwatch.stop();
 
         stopwatch.start("#2 sort with unmatched list");
-        assertThatThrownBy(() -> ExcelWriterFactory.create(new XSSFWorkbook())
+        assertThatThrownBy(() -> TestUtils.JAVAXCEL.writer(new XSSFWorkbook())
                 .options(new KeyNames(headerNames))
                 .write(null, TestUtils.getRandomMaps(10, NUM_OF_COLUMNS)))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
@@ -91,7 +90,7 @@ class HeaderNamesTest extends MapWriterTester {
         stopwatch.stop();
 
         stopwatch.start("convert header names with unmatched list");
-        assertThatThrownBy(() -> ExcelWriterFactory.create(new XSSFWorkbook())
+        assertThatThrownBy(() -> TestUtils.JAVAXCEL.writer(new XSSFWorkbook())
                 .options(new KeyNames(Arrays.asList("column_1", "column_2", "column_3"), Arrays.asList("column_1", "column_2"))))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessageStartingWith("newKeyNames.size is not equal to keyOrders.size");
@@ -126,7 +125,7 @@ class HeaderNamesTest extends MapWriterTester {
 
     @Override
     protected void whenWriteWorkbook(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) {
-        ExcelWriter<Map<String, Object>> writer = ExcelWriterFactory.create(whenModel.getWorkbook());
+        ExcelWriter<Map<String, Object>> writer = TestUtils.JAVAXCEL.writer(whenModel.getWorkbook());
 
         TestCase testCase = (TestCase) Objects.requireNonNull(givenModel.getArgs())[0];
         if (testCase == TestCase.JUST_ORDERED) {

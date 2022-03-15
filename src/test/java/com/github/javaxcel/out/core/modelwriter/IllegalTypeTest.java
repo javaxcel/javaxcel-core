@@ -16,7 +16,7 @@
 
 package com.github.javaxcel.out.core.modelwriter;
 
-import com.github.javaxcel.factory.ExcelWriterFactory;
+import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.core.impl.ModelWriter;
 import io.github.imsejin.common.tool.Stopwatch;
@@ -42,7 +42,7 @@ class IllegalTypeTest {
 
         // when & then
         stopwatch.start("create '%s' instance without type", ModelWriter.class.getSimpleName());
-        assertThatThrownBy(() -> ExcelWriterFactory.init().create(workbook, null))
+        assertThatThrownBy(() -> TestUtils.JAVAXCEL.writer(workbook, null))
                 .as("Throws IllegalArgumentException")
                 .isExactlyInstanceOf(IllegalArgumentException.class);
     }

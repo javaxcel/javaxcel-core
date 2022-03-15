@@ -3,8 +3,6 @@ package com.github.javaxcel.in;
 import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.annotation.ExcelModel;
-import com.github.javaxcel.factory.ExcelReaderFactory;
-import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.in.strategy.ExcelReadStrategy.Limit;
 import com.github.javaxcel.in.strategy.ExcelReadStrategy.Parallel;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
@@ -33,7 +31,6 @@ import java.io.OutputStream;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,7 +60,7 @@ class ModelReaderTest {
         stopwatch.stop();
 
         stopwatch.start("write %,d models", numOfMocks);
-        ExcelWriterFactory.init().create(workbook, Product.class).write(out, mocks);
+        TestUtils.JAVAXCEL.writer(workbook, Product.class).write(out, mocks);
         stopwatch.stop();
 
         stopwatch.start("load '%s' file", filename);
@@ -72,7 +69,7 @@ class ModelReaderTest {
 
         // when
         stopwatch.start("read %,d models", numOfMocks);
-        List<Product> products = ExcelReaderFactory.init().create(wb, Product.class).read();
+        List<Product> products = TestUtils.JAVAXCEL.reader(wb, Product.class).read();
         stopwatch.stop();
 
         // then
@@ -107,11 +104,11 @@ class ModelReaderTest {
         int limit = 10;
         int numOfMocks = 1000;
         stopwatch.start("create %,d mocks", numOfMocks);
-        List<Computer> mocks = Computer.newRandomList(numOfMocks);
+        List<Computer> mocks = TestUtils.getMocks(Computer.class, numOfMocks);
         stopwatch.stop();
 
         stopwatch.start("write %,d models", numOfMocks);
-        ExcelWriterFactory.init().create(workbook, Computer.class).write(out, mocks);
+        TestUtils.JAVAXCEL.writer(workbook, Computer.class).write(out, mocks);
         stopwatch.stop();
 
         stopwatch.start("load '%s' file", filename);
@@ -120,7 +117,7 @@ class ModelReaderTest {
 
         // when
         stopwatch.start("read %,d models", Math.min(limit, numOfMocks));
-        List<Computer> computers = ExcelReaderFactory.init().create(wb, Computer.class)
+        List<Computer> computers = TestUtils.JAVAXCEL.reader(wb, Computer.class)
                 .options(new Limit(limit)).read();
         stopwatch.stop();
 
@@ -152,11 +149,11 @@ class ModelReaderTest {
 
         int numOfMocks = 10_000;
         stopwatch.start("create %,d mocks", numOfMocks);
-        List<EducationToy> mocks = EducationToy.newRandomList(numOfMocks);
+        List<EducationToy> mocks = TestUtils.getMocks(EducationToy.class, numOfMocks);
         stopwatch.stop();
 
         stopwatch.start("write %,d models", numOfMocks);
-        ExcelWriterFactory.init().create(workbook, EducationToy.class).write(out, mocks);
+        TestUtils.JAVAXCEL.writer(workbook, EducationToy.class).write(out, mocks);
         stopwatch.stop();
 
         stopwatch.start("load '%s' file", filename);
@@ -165,7 +162,7 @@ class ModelReaderTest {
 
         // when
         stopwatch.start("read %,d models", numOfMocks);
-        List<EducationToy> educationToys = ExcelReaderFactory.init().create(wb, EducationToy.class).read();
+        List<EducationToy> educationToys = TestUtils.JAVAXCEL.reader(wb, EducationToy.class).read();
         stopwatch.stop();
 
         // then
@@ -187,7 +184,7 @@ class ModelReaderTest {
         @Cleanup Workbook workbook = HSSFWorkbookFactory.create(file);
 
         // when
-        List<FinalFieldModel> list = ExcelReaderFactory.init().create(workbook, FinalFieldModel.class).read();
+        List<FinalFieldModel> list = TestUtils.JAVAXCEL.reader(workbook, FinalFieldModel.class).read();
 
         // then
         list.forEach(it -> {
@@ -225,7 +222,7 @@ class ModelReaderTest {
         stopwatch.stop();
 
         stopwatch.start("write %,d models", numOfMocks);
-        ExcelWriterFactory.init().create(workbook, Human.class).write(out, mocks);
+        TestUtils.JAVAXCEL.writer(workbook, Human.class).write(out, mocks);
         stopwatch.stop();
 
         stopwatch.start("load '%s' file", filename);
@@ -234,7 +231,7 @@ class ModelReaderTest {
 
         // when
         stopwatch.start("read %,d models", numOfMocks);
-        List<Human> people = ExcelReaderFactory.init().create(wb, Human.class).options(new Parallel()).read();
+        List<Human> people = TestUtils.JAVAXCEL.reader(wb, Human.class).options(new Parallel()).read();
         stopwatch.stop();
 
         // then

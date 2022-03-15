@@ -16,10 +16,10 @@
 
 package com.github.javaxcel.out.core.modelwriter;
 
+import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.annotation.ExcelIgnore;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.exception.NoTargetedFieldException;
-import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.core.impl.ModelWriter;
 import io.github.imsejin.common.tool.Stopwatch;
@@ -47,7 +47,7 @@ class NoTargetedFieldTest {
 
         // when & then
         stopwatch.start("create '%s' instance with '%s'", ModelWriter.class.getSimpleName(), type.getSimpleName());
-        assertThatThrownBy(() -> ExcelWriterFactory.init().create(workbook, type))
+        assertThatThrownBy(() -> TestUtils.JAVAXCEL.writer(workbook, type))
                 .as("When creates ModelWriter with model type without targeted field")
                 .isExactlyInstanceOf(NoTargetedFieldException.class);
     }

@@ -17,7 +17,6 @@
 package com.github.javaxcel.out.core;
 
 import com.github.javaxcel.TestUtils;
-import com.github.javaxcel.factory.ExcelWriterFactory;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.*;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -74,7 +73,7 @@ public abstract class ModelWriterTester {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected void whenWriteWorkbook(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) {
-        ExcelWriterFactory.init().create(whenModel.workbook, givenModel.type)
+        TestUtils.JAVAXCEL.writer(whenModel.workbook, givenModel.type)
                 .write(whenModel.outputStream, (List) thenModel.models);
     }
 

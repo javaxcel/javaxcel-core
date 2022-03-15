@@ -16,8 +16,8 @@
 
 package com.github.javaxcel.out.core.modelwriter;
 
+import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
-import com.github.javaxcel.factory.ExcelReaderFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.core.ModelWriterTester;
 import com.github.javaxcel.util.ExcelUtils;
@@ -85,7 +85,7 @@ class DateTimeFormatTest extends ModelWriterTester {
                         "[0-5]\\d\\." + // "ss."
                         "\\d{3}")); // "SSS"
 
-        List<Map<String, Object>> models = ExcelReaderFactory.create(workbook).read();
+        List<Map<String, Object>> models = TestUtils.JAVAXCEL.reader(workbook).read();
         for (Map<String, Object> model : models) {
             String date = (String) model.get("date");
             String time = (String) model.get("time");
