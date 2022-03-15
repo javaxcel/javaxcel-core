@@ -57,6 +57,7 @@ public class DefaultExcelWriteConverter<T> implements ExcelWriteConverter<T> {
     }
 
     private String handleArray(Field field, Object value) {
+        // Fast return.
         int length = Array.getLength(value);
         if (length == 0) return "[]";
 
@@ -68,7 +69,10 @@ public class DefaultExcelWriteConverter<T> implements ExcelWriteConverter<T> {
             Object element = Array.get(value, i);
 
             if (element != null) {
+                // Resolves type from each element, not from component type.
+                // Because one dimensional Object array can have array instance as an element.
                 Class<?> elementType = element.getClass();
+
                 String string = elementType.isArray()
                         ? handleArray(field, element)
                         : handleNonArray(field, elementType, element);
