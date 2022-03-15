@@ -19,6 +19,7 @@ package com.github.javaxcel;
 import com.github.javaxcel.annotation.ExcelIgnore;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
+import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.tool.TypeClassifier;
 import io.github.imsejin.common.util.MathUtils;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -28,11 +29,13 @@ import org.jeasy.random.EasyRandomParameters;
 import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Month;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -50,8 +53,7 @@ public class TestUtils {
     private static final EasyRandom generator;
 
     private static final Class<?>[] classes = Stream.of(
-                    TypeClassifier.Types.PRIMITIVE_NUMBER.getClasses(),
-                    TypeClassifier.Types.WRAPPER_NUMBER.getClasses(),
+                    TypeClassifier.Types.NUMBER.getClasses(),
                     TypeClassifier.Types.DATETIME.getClasses(),
                     Arrays.asList(char.class, boolean.class, Character.class, Boolean.class, String.class))
             .flatMap(Collection::stream).toArray(Class[]::new);
@@ -64,7 +66,7 @@ public class TestUtils {
                         .timeRange(LocalTime.MIN, LocalTime.MAX)
                         .stringLengthRange(1, 15) // Not allow empty string.
                         .collectionSizeRange(1, 10) // Not allow empty array or collection.
-                        .excludeField(field -> field.isAnnotationPresent(Unrandomized.class) || field.isAnnotationPresent(ExcelIgnore.class))
+                        .excludeField(new FieldExclusionPredicate())
                         .overrideDefaultInitialization(false)
                         .scanClasspathForConcreteTypes(true);
         generator = new EasyRandom(parameters);
@@ -90,6 +92,7 @@ public class TestUtils {
 
     public static <T> List<T> getMocks(Class<T> type, int size) {
         if (size < 0) throw new IllegalArgumentException("Size cannot be negative");
+        if (size == 0) return Collections.emptyList();
 
         return IntStream.range(0, size).parallel()
                 .mapToObj(i -> randomize(type)).collect(toList());
@@ -97,6 +100,7 @@ public class TestUtils {
 
     public static Map<String, Object> randomMap(int numOfEntries) {
         if (numOfEntries < 0) throw new IllegalArgumentException("Number of entries cannot be negative");
+        if (numOfEntries == 0) return Collections.emptyMap();
 
         Map<String, Object> map = new HashMap<>();
 
@@ -126,17 +130,35 @@ public class TestUtils {
 
     @Target(FIELD)
     @Retention(RUNTIME)
-    public @interface Unrandomized {
+    public @interface ConditionalOnPercentage {
+        double value();
+    }
+
+    private static class FieldExclusionPredicate implements Predicate<Field> {
+        private final Random random = new Random();
+
+        @Override
+        public boolean test(Field field) {
+            // Excludes the field in target.
+            if (field.isAnnotationPresent(ExcelIgnore.class)) return true;
+
+            // Includes.
+            ConditionalOnPercentage annotation = field.getAnnotation(ConditionalOnPercentage.class);
+            if (annotation == null) return false;
+
+            // Excludes the field depending on percentage.
+            double percentage = annotation.value();
+            Asserts.that(percentage)
+                    .as("ConditionalOnPercentage.value must be between 0.0 and 1.0")
+                    .isBetween(0.0, 1.0);
+            return percentage > this.random.nextFloat();
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
     public static void assertNotEmptyFile(File file) {
         assertNotEmptyFile(file, "File must be created and have content");
-    }
-
-    public static void assertNotEmptyFile(File file, String description) {
-        assertNotEmptyFile(file, description, (Object) null);
     }
 
     public static void assertNotEmptyFile(File file, String description, Object... args) {
@@ -151,12 +173,6 @@ public class TestUtils {
                 .isEqualTo(models.size());
     }
 
-    public static void assertEqualsNumOfModels(Workbook workbook, List<?> models, String description) {
-        assertThat(ExcelUtils.getNumOfModels(workbook))
-                .as(description)
-                .isEqualTo(models.size());
-    }
-
     public static void assertEqualsNumOfModels(Workbook workbook, List<?> models, String description, Object... args) {
         assertThat(ExcelUtils.getNumOfModels(workbook))
                 .as(description, args)
@@ -166,14 +182,6 @@ public class TestUtils {
     public static void assertEqualsHeaderSize(Workbook workbook, Class<?> type) {
         assertThat((double) FieldUtils.getTargetedFields(type).size())
                 .as("Header size is equal to the number of targeted fields in '%s'", type.getSimpleName())
-                .isEqualTo(ExcelUtils.getSheets(workbook).stream()
-                        .mapToInt(sheet -> sheet.getRow(0).getPhysicalNumberOfCells())
-                        .average().orElse(-1));
-    }
-
-    public static void assertEqualsHeaderSize(Workbook workbook, Class<?> type, String description) {
-        assertThat((double) FieldUtils.getTargetedFields(type).size())
-                .as(description)
                 .isEqualTo(ExcelUtils.getSheets(workbook).stream()
                         .mapToInt(sheet -> sheet.getRow(0).getPhysicalNumberOfCells())
                         .average().orElse(-1));

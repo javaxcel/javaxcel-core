@@ -16,11 +16,9 @@
 
 package com.github.javaxcel.out.core.modelwriter;
 
-import com.github.javaxcel.TestUtils.Unrandomized;
+import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
-import com.github.javaxcel.factory.ExcelReaderFactory;
-import com.github.javaxcel.factory.ExcelWriterFactory;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.core.ExcelWriter;
 import com.github.javaxcel.out.core.ModelWriterTester;
@@ -30,6 +28,7 @@ import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
 import lombok.ToString;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.jeasy.random.annotation.Exclude;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -118,7 +117,7 @@ class DefaultValueTest extends ModelWriterTester {
     @ExcelModel(defaultValue = MODEL_DEFAULT_VALUE)
     private static class WithModel {
         private Long id;
-        @Unrandomized
+        @Exclude
         private String title;
         private LocalDateTime createdAt;
     }
@@ -126,7 +125,7 @@ class DefaultValueTest extends ModelWriterTester {
     @ToString
     private static class WithColumn {
         private Long id;
-        @Unrandomized
+        @Exclude
         @ExcelColumn(defaultValue = COLUMN_DEFAULT_VALUE)
         private String title;
         private LocalDateTime createdAt;
@@ -136,7 +135,7 @@ class DefaultValueTest extends ModelWriterTester {
     @ExcelModel(defaultValue = MODEL_DEFAULT_VALUE)
     private static class WithModelAndColumn {
         private Long id;
-        @Unrandomized
+        @Exclude
         @ExcelColumn(defaultValue = COLUMN_DEFAULT_VALUE)
         private String title;
         private LocalDateTime createdAt;
@@ -146,7 +145,7 @@ class DefaultValueTest extends ModelWriterTester {
     @ExcelModel(defaultValue = MODEL_DEFAULT_VALUE)
     private static class WithModelAndDirect {
         private Long id;
-        @Unrandomized
+        @Exclude
         private String title;
         private LocalDateTime createdAt;
     }
@@ -154,7 +153,7 @@ class DefaultValueTest extends ModelWriterTester {
     @ToString
     private static class WithColumnAndDirect {
         private Long id;
-        @Unrandomized
+        @Exclude
         @ExcelColumn(defaultValue = COLUMN_DEFAULT_VALUE)
         private String title;
         private LocalDateTime createdAt;
@@ -164,7 +163,7 @@ class DefaultValueTest extends ModelWriterTester {
     @ExcelModel(defaultValue = MODEL_DEFAULT_VALUE)
     private static class WithModelAndColumnAndDirect {
         private Long id;
-        @Unrandomized
+        @Exclude
         @ExcelColumn(defaultValue = COLUMN_DEFAULT_VALUE)
         private String title;
         private LocalDateTime createdAt;

@@ -1,6 +1,6 @@
 package com.github.javaxcel.model.computer;
 
-import com.github.javaxcel.TestUtils;
+import com.github.javaxcel.TestUtils.ConditionalOnPercentage;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.style.DefaultBodyStyleConfig;
@@ -11,9 +11,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 @Data
 @NoArgsConstructor
@@ -22,49 +19,29 @@ import java.util.Random;
 @ExcelModel(explicit = true, headerStyle = DefaultHeaderStyleConfig.class, bodyStyle = DefaultBodyStyleConfig.class)
 public class Computer {
 
+    @ConditionalOnPercentage(0.9)
     @ExcelColumn(name = "CPU_CLOCK")
     private BigInteger cpu;
 
+    @ConditionalOnPercentage(0.85)
     private Double ram;
 
+    @ConditionalOnPercentage(0.8)
     @ExcelColumn(name = "DISK_SIZE")
     private Long disk;
 
+    @ConditionalOnPercentage(0.3)
     private String inputDevice;
 
+    @ConditionalOnPercentage(0.33)
     private String outputDevice;
 
     @ExcelColumn
+    @ConditionalOnPercentage(0.75)
     private String manufacturer;
 
     @ExcelColumn
+    @ConditionalOnPercentage(0.5)
     private int price;
-
-    public static List<Computer> newRandomList(int size) {
-        List<Computer> computers = new ArrayList<>();
-        Random random = TestUtils.getRandom();
-
-        for (int i = 0; i < size; i++) {
-            BigInteger cpu = random.nextDouble() <= 0.9
-                    ? BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.valueOf(random.nextLong())) : null;
-            Double ram = random.nextDouble() <= 0.85
-                    ? random.nextDouble() * 1000 : null;
-            Long disk = random.nextDouble() <= 0.8
-                    ? Math.abs(random.nextLong()) + 1000 : null;
-            String inputDevice = random.nextDouble() <= 0.3
-                    ? TestUtils.generateRandomText(random.nextInt(10) + 1) : null;
-            String outputDevice = random.nextDouble() <= 0.33
-                    ? TestUtils.generateRandomText(random.nextInt(10) + 1) : null;
-            String manufacturer = random.nextDouble() <= 0.75
-                    ? TestUtils.generateRandomText(random.nextInt(16) + 1) : null;
-            int price = random.nextDouble() <= 0.5
-                    ? random.nextInt(10_000_000) + 200_000 : 0;
-
-            Computer computer = new Computer(cpu, ram, disk, inputDevice, outputDevice, manufacturer, price);
-            computers.add(computer);
-        }
-
-        return computers;
-    }
 
 }

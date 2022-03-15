@@ -27,6 +27,7 @@ import net.bytebuddy.description.modifier.Visibility;
 import net.bytebuddy.implementation.ToStringMethod;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.jeasy.random.annotation.Exclude;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -64,7 +65,7 @@ class DynamicTypeTest extends ModelWriterTester {
 
     private Class<?> createDynamicType() {
         AnnotationDescription unrandomized = AnnotationDescription.Builder
-                .ofType(Unrandomized.class).build();
+                .ofType(Exclude.class).build();
 
         return new ByteBuddy()
                 .subclass(Object.class)

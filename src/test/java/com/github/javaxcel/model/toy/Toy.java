@@ -1,5 +1,6 @@
 package com.github.javaxcel.model.toy;
 
+import com.github.javaxcel.TestUtils.ConditionalOnPercentage;
 import lombok.*;
 
 @Getter
@@ -10,10 +11,13 @@ import lombok.*;
 @AllArgsConstructor
 public class Toy {
 
+    @ConditionalOnPercentage(0.75)
     private String name;
 
+    @ConditionalOnPercentage(0.99)
     private ToyType toyType;
 
+    @ConditionalOnPercentage(0.5)
     private Double weight;
 
 }
