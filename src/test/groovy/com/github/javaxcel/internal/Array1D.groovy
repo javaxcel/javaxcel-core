@@ -23,7 +23,7 @@ class Array1D {
 
         def componentType = array.class.componentType
         if (!componentType.isPrimitive()) {
-            this.objectArray = array as Object[]
+            this.localeArray = array as Locale[]
             return
         }
 
@@ -45,6 +45,6 @@ class Array1D {
     long[] longArray
     float[] floatArray
     double[] doubleArray
-    Object[] objectArray
+    Locale[] localeArray
 
 }
