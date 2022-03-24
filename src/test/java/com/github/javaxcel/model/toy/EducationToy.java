@@ -19,8 +19,8 @@ import java.time.LocalTime;
 public class EducationToy extends Toy {
 
     @ConditionalOnPercentage(0.5)
-    @ExcelColumn(defaultValue = "14")
-    private int[] targetAges;
+    @ExcelColumn(defaultValue = "[]")
+    private int[][] targetAges;
 
     @ConditionalOnPercentage(0.75)
     private String goals;

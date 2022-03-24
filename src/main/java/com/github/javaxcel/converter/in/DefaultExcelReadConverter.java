@@ -26,6 +26,8 @@ import io.github.imsejin.common.util.StringUtils;
 import javax.annotation.Nullable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class DefaultExcelReadConverter implements ExcelReadConverter {
@@ -67,26 +69,34 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
             }
         }
 
-        // Supports one-dimensional array type.
+        // Supports multi-dimensional array type.
         if (type.isArray()) return handleArray(field, type, value);
 
         return handleNonArray(field, type, value);
     }
 
     private Object handleArray(Field field, Class<?> type, String value) {
-        // Not support multi-dimensional array type.
         Class<?> componentType = type.getComponentType();
-        if (componentType.isArray()) return null;
+        if (componentType == null) return ClassUtils.initialValueOf(type);
 
-        String[] splitValue = value.split(", ");
+        String[] strings = Utils.shallowSplit(value, ", ");
 
         // To solve that ClassCastException(primitive array doesn't be assignable to Object array),
         // we use java.lang.reflect.Array API instead of casting primitive array to Object array.
-        Object array = Array.newInstance(componentType, splitValue.length);
-        for (int i = 0; i < splitValue.length; i++) {
-            String element = splitValue[i];
-            Object converted = handleNonArray(field, componentType, element);
-            Array.set(array, i, converted);
+        Object array = Array.newInstance(componentType, strings.length);
+
+        for (int i = 0; i < strings.length; i++) {
+            String string = strings[i];
+
+            Object element;
+            if (componentType.isArray()) {
+                element = string.isEmpty() ? null : handleArray(field, componentType, string);
+            } else {
+                // Allows empty string to handler for non-array type.
+                element = handleNonArray(field, componentType, string);
+            }
+
+            Array.set(array, i, element);
         }
 
         return array;
@@ -105,6 +115,122 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+}
+
+class Utils {
+
+    private static final String[] EMPTY_STRING_ARRAY = new String[0];
+
+    public static String[] shallowSplit(String src, String delimiter) {
+        Asserts.that(src)
+                .as("src must be array-like string, but it isn't: '{0}'", src)
+                .isNotNull().startsWith("[").endsWith("]");
+        Asserts.that(delimiter)
+                .as("Delimiter is not allowed to be null or empty: '{0}'", delimiter)
+                .isNotNull().isNotEmpty();
+
+        // Fast return.
+        if (src.equals("[]")) return EMPTY_STRING_ARRAY;
+
+        char opener = '[';
+        char closer = ']';
+
+        StringBuilder sb = new StringBuilder();
+        List<String> list = new ArrayList<>();
+
+        for (int i = 0, depth = 0; i < src.length(); i++) {
+            char c = src.charAt(i);
+
+            if (c == opener) {
+                int index = StringUtils.indexOfCurrentClosingBracket(src, i, opener, closer);
+                if (index == -1) throw new IllegalArgumentException("Unclosed bracket: index " + i + " of " + src);
+
+                depth++;
+
+                // Skips characters of nested array.
+                if (depth > 1) {
+                    list.add(src.substring(i, index + 1));
+                    i = index - 1;
+                }
+
+                continue;
+            }
+
+            if (c == closer) {
+                depth--;
+                continue;
+            }
+
+            if (depth == 1) {
+                if (isDelimiterByChar(src, i, delimiter)) {
+                    // '], '
+                    if (src.charAt(i - 1) != closer) {
+                        list.add(sb.toString());
+                        sb.setLength(0);
+                    }
+
+                    // Skips characters of delimiter.
+                    i = i + delimiter.length() - 1;
+                } else {
+                    sb.append(c);
+                }
+            }
+        }
+
+        // Adds not flushed string as the last element.
+        if (sb.length() > 0) list.add(sb.toString());
+
+        // Adds empty string as the last element.
+        if (src.endsWith(delimiter + closer)) list.add("");
+
+        return list.toArray(new String[0]);
+    }
+
+    public static int getShallowLength(String str) {
+        int length = 0;
+        boolean isEmpty = false;
+        char opener = '[';
+        char closer = ']';
+
+        for (int i = 0, depth = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+
+            if (c == opener) {
+                int index = StringUtils.indexOfCurrentClosingBracket(str, i, opener, closer);
+                if (index == -1) throw new IllegalArgumentException("Unclosed bracket: index " + i + " of " + str);
+
+                depth++;
+
+                // Checks if str is '[]'.
+                if (depth == 1 && str.charAt(i + 1) == closer) isEmpty = true;
+
+                // Skips characters until inner closer.
+                if (depth > 1) i = index - 1;
+            }
+
+            if (c == closer) depth--;
+            if (depth == 1 && c == ',' && str.charAt(i + 1) == ' ') length++;
+        }
+
+        if (!isEmpty) length++;
+
+        return length;
+    }
+
+    public static boolean isDelimiterByChar(String src, int pos, String delimiter) {
+        if (src == null || src.isEmpty() || delimiter == null || delimiter.isEmpty()) return false;
+        if (src.length() < delimiter.length()) return false;
+
+        for (int i = 0; i < delimiter.length(); i++) {
+            char c0 = delimiter.charAt(i);
+            char c1 = src.charAt(pos + i);
+
+            if (c0 != c1) return false;
+        }
+
+        return true;
     }
 
 }

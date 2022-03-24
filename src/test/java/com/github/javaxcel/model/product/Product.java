@@ -38,7 +38,7 @@ public class Product {
     private Double weight;
 
     @Exclude
-    @ExcelColumn(defaultValue = "1999.01.31., 2009.07.31., 2019.12.31.")
+    @ExcelColumn(defaultValue = "[1999.01.31., 2009.07.31., 2019.12.31.]")
     @ExcelDateTimeFormat(pattern = "yyyy.MM.dd.")
     private LocalDate[] dates;
 
