@@ -73,9 +73,12 @@ public class DefaultExcelWriteConverter<T> implements ExcelWriteConverter<T> {
                 // Because one dimensional Object array can have array instance as an element.
                 Class<?> elementType = element.getClass();
 
-                String string = elementType.isArray()
-                        ? handleArray(field, element)
-                        : handleNonArray(field, elementType, element);
+                String string;
+                if (elementType.isArray()) {
+                    string = handleArray(field, element);
+                } else {
+                    string = handleNonArray(field, elementType, element);
+                }
 
                 // Considers null as empty string.
                 if (string != null) sb.append(string);
