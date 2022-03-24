@@ -49,7 +49,10 @@ public class Javaxcel {
     }
 
     public static Javaxcel newInstance(ExcelTypeHandlerRegistry registry) {
-        return new Javaxcel(registry);
+        Javaxcel javaxcel = newInstance();
+        javaxcel.registry.addAll(registry);
+
+        return javaxcel;
     }
 
     /**
