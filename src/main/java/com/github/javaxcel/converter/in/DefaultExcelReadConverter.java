@@ -77,8 +77,6 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
 
     private Object handleArray(Field field, Class<?> type, String value) {
         Class<?> componentType = type.getComponentType();
-        if (componentType == null) return ClassUtils.initialValueOf(type);
-
         String[] strings = Utils.shallowSplit(value, ", ");
 
         // To solve that ClassCastException(primitive array doesn't be assignable to Object array),
@@ -117,120 +115,123 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
         }
     }
 
-}
+    ///////////////////////////////////////////////////////////////////////////////////////
 
-class Utils {
+    // To access at test source, modifier should be package-private.
+    static class Utils {
 
-    private static final String[] EMPTY_STRING_ARRAY = new String[0];
+        private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
-    public static String[] shallowSplit(String src, String delimiter) {
-        Asserts.that(src)
-                .as("src must be array-like string, but it isn't: '{0}'", src)
-                .isNotNull().startsWith("[").endsWith("]");
-        Asserts.that(delimiter)
-                .as("Delimiter is not allowed to be null or empty: '{0}'", delimiter)
-                .isNotNull().isNotEmpty();
+        public static String[] shallowSplit(String src, String delimiter) {
+            Asserts.that(src)
+                    .as("src must be array-like string, but it isn't: '{0}'", src)
+                    .isNotNull().startsWith("[").endsWith("]");
+            Asserts.that(delimiter)
+                    .as("Delimiter is not allowed to be null or empty: '{0}'", delimiter)
+                    .isNotNull().isNotEmpty();
 
-        // Fast return.
-        if (src.equals("[]")) return EMPTY_STRING_ARRAY;
+            // Fast return.
+            if (src.equals("[]")) return EMPTY_STRING_ARRAY;
 
-        char opener = '[';
-        char closer = ']';
+            char opener = '[';
+            char closer = ']';
 
-        StringBuilder sb = new StringBuilder();
-        List<String> list = new ArrayList<>();
+            StringBuilder sb = new StringBuilder();
+            List<String> list = new ArrayList<>();
 
-        for (int i = 0, depth = 0; i < src.length(); i++) {
-            char c = src.charAt(i);
+            for (int i = 0, depth = 0; i < src.length(); i++) {
+                char c = src.charAt(i);
 
-            if (c == opener) {
-                int index = StringUtils.indexOfCurrentClosingBracket(src, i, opener, closer);
-                if (index == -1) throw new IllegalArgumentException("Unclosed bracket: index " + i + " of " + src);
+                if (c == opener) {
+                    int index = StringUtils.indexOfCurrentClosingBracket(src, i, opener, closer);
+                    if (index == -1) throw new IllegalArgumentException("Unclosed bracket: index " + i + " of " + src);
 
-                depth++;
+                    depth++;
 
-                // Skips characters of nested array.
-                if (depth > 1) {
-                    list.add(src.substring(i, index + 1));
-                    i = index - 1;
-                }
-
-                continue;
-            }
-
-            if (c == closer) {
-                depth--;
-                continue;
-            }
-
-            if (depth == 1) {
-                if (isDelimiterByChar(src, i, delimiter)) {
-                    // '], '
-                    if (src.charAt(i - 1) != closer) {
-                        list.add(sb.toString());
-                        sb.setLength(0);
+                    // Skips characters of nested array.
+                    if (depth > 1) {
+                        list.add(src.substring(i, index + 1));
+                        i = index - 1;
                     }
 
-                    // Skips characters of delimiter.
-                    i = i + delimiter.length() - 1;
-                } else {
-                    sb.append(c);
+                    continue;
+                }
+
+                if (c == closer) {
+                    depth--;
+                    continue;
+                }
+
+                if (depth == 1) {
+                    if (isDelimiterByChar(src, i, delimiter)) {
+                        // '], '
+                        if (src.charAt(i - 1) != closer) {
+                            list.add(sb.toString());
+                            sb.setLength(0);
+                        }
+
+                        // Skips characters of delimiter.
+                        i = i + delimiter.length() - 1;
+                    } else {
+                        sb.append(c);
+                    }
                 }
             }
+
+            // Adds not flushed string as the last element.
+            if (sb.length() > 0) list.add(sb.toString());
+
+            // Adds empty string as the last element.
+            if (src.endsWith(delimiter + closer)) list.add("");
+
+            return list.toArray(new String[0]);
         }
 
-        // Adds not flushed string as the last element.
-        if (sb.length() > 0) list.add(sb.toString());
+        public static int getShallowLength(String str) {
+            int length = 0;
+            boolean isEmpty = false;
+            char opener = '[';
+            char closer = ']';
 
-        // Adds empty string as the last element.
-        if (src.endsWith(delimiter + closer)) list.add("");
+            for (int i = 0, depth = 0; i < str.length(); i++) {
+                char c = str.charAt(i);
 
-        return list.toArray(new String[0]);
-    }
+                if (c == opener) {
+                    int index = StringUtils.indexOfCurrentClosingBracket(str, i, opener, closer);
+                    if (index == -1) throw new IllegalArgumentException("Unclosed bracket: index " + i + " of " + str);
 
-    public static int getShallowLength(String str) {
-        int length = 0;
-        boolean isEmpty = false;
-        char opener = '[';
-        char closer = ']';
+                    depth++;
 
-        for (int i = 0, depth = 0; i < str.length(); i++) {
-            char c = str.charAt(i);
+                    // Checks if str is '[]'.
+                    if (depth == 1 && str.charAt(i + 1) == closer) isEmpty = true;
 
-            if (c == opener) {
-                int index = StringUtils.indexOfCurrentClosingBracket(str, i, opener, closer);
-                if (index == -1) throw new IllegalArgumentException("Unclosed bracket: index " + i + " of " + str);
+                    // Skips characters until inner closer.
+                    if (depth > 1) i = index - 1;
+                }
 
-                depth++;
-
-                // Checks if str is '[]'.
-                if (depth == 1 && str.charAt(i + 1) == closer) isEmpty = true;
-
-                // Skips characters until inner closer.
-                if (depth > 1) i = index - 1;
+                if (c == closer) depth--;
+                if (depth == 1 && c == ',' && str.charAt(i + 1) == ' ') length++;
             }
 
-            if (c == closer) depth--;
-            if (depth == 1 && c == ',' && str.charAt(i + 1) == ' ') length++;
+            if (!isEmpty) length++;
+
+            return length;
         }
 
-        if (!isEmpty) length++;
+        public static boolean isDelimiterByChar(String src, int pos, String delimiter) {
+            if (src == null || src.isEmpty() || delimiter == null || delimiter.isEmpty()) return false;
+            if (src.length() < delimiter.length()) return false;
 
-        return length;
-    }
+            for (int i = 0; i < delimiter.length(); i++) {
+                char c0 = delimiter.charAt(i);
+                char c1 = src.charAt(pos + i);
 
-    public static boolean isDelimiterByChar(String src, int pos, String delimiter) {
-        if (src == null || src.isEmpty() || delimiter == null || delimiter.isEmpty()) return false;
-        if (src.length() < delimiter.length()) return false;
+                if (c0 != c1) return false;
+            }
 
-        for (int i = 0; i < delimiter.length(); i++) {
-            char c0 = delimiter.charAt(i);
-            char c1 = src.charAt(pos + i);
-
-            if (c0 != c1) return false;
+            return true;
         }
 
-        return true;
     }
 
 }
