@@ -16,12 +16,24 @@
 
 package com.github.javaxcel.internal
 
+import io.github.imsejin.common.assertion.Asserts
+
 class Array1D {
 
-    Array1D(Object array) {
-        if (array == null || !array.class.isArray()) return
+    def static DIMENSION = 1
 
-        def componentType = array.class.componentType
+    Array1D(Object array) {
+        if (array == null) return
+        Asserts.that(array.class).isArray()
+
+        def componentType = array.class
+        for (i in 1..DIMENSION) {
+            componentType = componentType.componentType
+        }
+
+        Asserts.that(componentType)
+                .isNotNull().predicate({ !it.isArray() })
+
         if (!componentType.isPrimitive()) {
             this.localeArray = array as Locale[]
             return

@@ -18,11 +18,11 @@ package com.github.javaxcel.internal
 
 import io.github.imsejin.common.assertion.Asserts
 
-class Array2D {
+class Array3D {
 
-    def static DIMENSION = 2
+    def static DIMENSION = 3
 
-    Array2D(Object array) {
+    Array3D(Object array) {
         if (array == null) return
         Asserts.that(array.class).isArray()
 
@@ -35,28 +35,28 @@ class Array2D {
                 .isNotNull().predicate({ !it.isArray() })
 
         if (!componentType.isPrimitive()) {
-            this.localeArray = array as Locale[][]
+            this.localeArray = array as Locale[][][]
             return
         }
 
-        if (componentType == boolean) this.booleanArray = array as boolean[][]
-        if (componentType == byte) this.byteArray = array as byte[][]
-        if (componentType == short) this.shortArray = array as short[][]
-        if (componentType == char) this.charArray = array as char[][]
-        if (componentType == int) this.intArray = array as int[][]
-        if (componentType == long) this.longArray = array as long[][]
-        if (componentType == float) this.floatArray = array as float[][]
-        if (componentType == double) this.doubleArray = array as double[][]
+        if (componentType == boolean) this.booleanArray = array as boolean[][][]
+        if (componentType == byte) this.byteArray = array as byte[][][]
+        if (componentType == short) this.shortArray = array as short[][][]
+        if (componentType == char) this.charArray = array as char[][][]
+        if (componentType == int) this.intArray = array as int[][][]
+        if (componentType == long) this.longArray = array as long[][][]
+        if (componentType == float) this.floatArray = array as float[][][]
+        if (componentType == double) this.doubleArray = array as double[][][]
     }
 
-    boolean[][] booleanArray
-    byte[][] byteArray
-    short[][] shortArray
-    char[][] charArray
-    int[][] intArray
-    long[][] longArray
-    float[][] floatArray
-    double[][] doubleArray
-    Locale[][] localeArray
+    boolean[][][] booleanArray
+    byte[][][] byteArray
+    short[][][] shortArray
+    char[][][] charArray
+    int[][][] intArray
+    long[][][] longArray
+    float[][][] floatArray
+    double[][][] doubleArray
+    Locale[][][] localeArray
 
 }
