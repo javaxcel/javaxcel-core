@@ -47,6 +47,9 @@ public class LocaleTypeHandler extends AbstractExcelTypeHandler<Locale> {
 
     @Override
     public Locale read(String value, Object... args) {
+        // Uses the cached locale instance with empty language, country and variant.
+        if (value.isEmpty()) return Locale.ROOT;
+
         String language;
         String country;
         String variant;
