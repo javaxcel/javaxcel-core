@@ -154,9 +154,9 @@ class SpELTest {
     void parseVariable() {
         // given
         EducationToy toy = new EducationToy();
-        toy.setTargetAges(new int[]{2, 3, 4, 5, 6});
+        toy.setTargetAges(new int[][]{{2, 3, 4, 5, 6}});
         String fieldName = "targetAges";
-        String exp = String.format("T(java.util.Arrays).stream(#%s)" +
+        String exp = String.format("T(java.util.Arrays).stream(#%s[0])" +
                 ".boxed()" +
                 ".collect(T(java.util.stream.Collectors).toList())" +
                 ".toString()" +
@@ -179,9 +179,7 @@ class SpELTest {
     void parseVariables() {
         // given
         List<Integer> primes = Arrays.asList(2, 3, 5, 7, 11, 13, 17);
-        Map<String, Object> map = new HashMap<String, Object>() {{
-            put("primes", primes);
-        }};
+        Map<String, Object> map = Collections.singletonMap("primes", primes);
 
         // when
         StandardEvaluationContext context = new StandardEvaluationContext();
@@ -195,14 +193,17 @@ class SpELTest {
                 .isGreaterThan(7));
     }
 
+    /**
+     * @see #convert(IntStream)
+     */
     @Test
     void parseVariableWithMethod() throws NoSuchMethodException {
         // given
         EducationToy toy = new EducationToy();
-        toy.setTargetAges(new int[]{2, 3, 4, 5, 6});
+        toy.setTargetAges(new int[][]{{2, 3, 4, 5, 6}});
         String fieldName = "targetAges";
         String converterName = "convert";
-        String exp = "#" + converterName + "(T(java.util.Arrays).stream(#" + fieldName + "))";
+        String exp = "#" + converterName + "(T(java.util.Arrays).stream(#" + fieldName + "[0]))";
 
         // when
         StandardEvaluationContext context = new StandardEvaluationContext(toy);

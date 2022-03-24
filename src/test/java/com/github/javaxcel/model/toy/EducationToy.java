@@ -33,10 +33,4 @@ public class EducationToy extends Toy {
 
     private LocalDateTime dateTime = LocalDateTime.now().withNano(0);
 
-    public EducationToy(String name, ToyType toyType, Double weight, int[] targetAges, String goals) {
-        super(name, toyType, weight);
-        this.targetAges = targetAges;
-        this.goals = goals;
-    }
-
 }
