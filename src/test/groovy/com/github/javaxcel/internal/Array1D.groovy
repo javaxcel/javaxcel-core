@@ -16,6 +16,7 @@
 
 package com.github.javaxcel.internal
 
+import com.github.javaxcel.annotation.ExcelColumn
 import io.github.imsejin.common.assertion.Asserts
 
 class Array1D {
@@ -57,6 +58,8 @@ class Array1D {
     long[] longArray
     float[] floatArray
     double[] doubleArray
+
+    @ExcelColumn(defaultValue = "[]")
     Locale[] localeArray
 
 }

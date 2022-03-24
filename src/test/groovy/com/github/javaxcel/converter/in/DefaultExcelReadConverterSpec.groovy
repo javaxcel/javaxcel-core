@@ -17,6 +17,7 @@
 package com.github.javaxcel.converter.in
 
 import com.github.javaxcel.converter.handler.registry.impl.ExcelTypeHandlerRegistryImpl
+import com.github.javaxcel.converter.in.DefaultExcelReadConverter.Utils
 import com.github.javaxcel.internal.Array1D
 import com.github.javaxcel.internal.Array2D
 import com.github.javaxcel.internal.Array3D
@@ -27,7 +28,7 @@ class DefaultExcelReadConverterSpec extends Specification {
     def "Converts to 1D Array"() {
         given:
         def converter = new DefaultExcelReadConverter(new ExcelTypeHandlerRegistryImpl())
-        def fieldName = expected == null ? "localeArray" : new Array1D(null).properties.keySet().stream()
+        def fieldName = new Array1D(null).properties.keySet().stream()
                 .filter({ it.startsWith(expected.class.componentType.simpleName.toLowerCase()) }).find() as String
         def field = Array1D.getDeclaredField fieldName
         def variables = [(fieldName): value]
@@ -40,7 +41,7 @@ class DefaultExcelReadConverterSpec extends Specification {
 
         where:
         value                      | expected
-        null                       | null
+        null                       | [] as Locale[] // @ExcelColumn.defaultValue = "[]"
         "[false, true]"            | [false, true] as boolean[]
         "[-128, 0, 127]"           | [-128, 0, 127] as byte[]
         "[-32768, 0, 32767]"       | [-32768, 0, 32767] as short[]
