@@ -3,6 +3,7 @@ package com.github.javaxcel.in;
 import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.annotation.ExcelModel;
+import com.github.javaxcel.annotation.ExcelReadExpression;
 import com.github.javaxcel.in.strategy.ExcelReadStrategy.Limit;
 import com.github.javaxcel.in.strategy.ExcelReadStrategy.Parallel;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
@@ -201,10 +202,10 @@ class ModelReaderTest {
 
     /**
      * @see ExcelModel#includeSuper()
-     * @see com.github.javaxcel.annotation.ExcelReaderExpression
+     * @see ExcelReadExpression
      */
     @Test
-    @DisplayName("@ExcelModel(includeSuper = true) + @ExcelReaderExpression")
+    @DisplayName("@ExcelModel(includeSuper = true) + @ExcelReadExpression")
     @SneakyThrows
     void readPeople(@TempDir Path path, Stopwatch stopwatch) {
         String filename = "people.xlsx";

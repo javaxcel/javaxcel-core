@@ -16,8 +16,8 @@
 
 package com.github.javaxcel.constant;
 
-import com.github.javaxcel.annotation.ExcelReaderExpression;
-import com.github.javaxcel.annotation.ExcelWriterExpression;
+import com.github.javaxcel.annotation.ExcelReadExpression;
+import com.github.javaxcel.annotation.ExcelWriteExpression;
 import com.github.javaxcel.converter.in.DefaultExcelReadConverter;
 import com.github.javaxcel.converter.in.ExpressionExcelReadConverter;
 import com.github.javaxcel.converter.out.DefaultExcelWriteConverter;
@@ -47,10 +47,10 @@ public enum ConversionType {
         Annotation annotation;
         switch (converterType) {
             case IN:
-                annotation = field.getAnnotation(ExcelReaderExpression.class);
+                annotation = field.getAnnotation(ExcelReadExpression.class);
                 break;
             case OUT:
-                annotation = field.getAnnotation(ExcelWriterExpression.class);
+                annotation = field.getAnnotation(ExcelWriteExpression.class);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown converter type: " + converterType);

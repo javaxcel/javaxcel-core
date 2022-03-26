@@ -326,7 +326,7 @@ Specify `ExcelColumn#defaultValue()` with care.
 It might not occur exception, when you write, though the default value doesn't match type of that field.
 It must occur exception, when you read, if the default value doesn't.
 
-If the field that is annotated by `@ExcelReaderExpression`, its default value doesn't work.
+If the field that is annotated by `@ExcelReadExpression`, its default value doesn't work.
 
 <br><br>
 
@@ -619,30 +619,30 @@ Look [here](https://github.com/javaxcel/javaxcel-styler) for how to configure st
 
 ```java
 class Product {
-    @ExcelWriterExpression("T(io.github.imsejin.common.util.StringUtils).formatComma(#serialNumber)")
+    @ExcelWriteExpression("T(io.github.imsejin.common.util.StringUtils).formatComma(#serialNumber)")
     private long serialNumber;
 
-    @ExcelWriterExpression("#name.toUpperCase()")
+    @ExcelWriteExpression("#name.toUpperCase()")
     private String name;
 
-    @ExcelWriterExpression("#accessId.replaceAll('\\d+', '')")
+    @ExcelWriteExpression("#accessId.replaceAll('\\d+', '')")
     private String accessId;
 
-    @ExcelWriterExpression("T(String).valueOf(#width).replaceAll('\\.0+$', '')")
+    @ExcelWriteExpression("T(String).valueOf(#width).replaceAll('\\.0+$', '')")
     private Double width;
 
-    @ExcelWriterExpression("#depth + 'cm'")
+    @ExcelWriteExpression("#depth + 'cm'")
     private double depth;
 
     private double height;
 
-    @ExcelWriterExpression("T(Math).ceil(#weight)")
+    @ExcelWriteExpression("T(Math).ceil(#weight)")
     private Double weight;
 }
 
 @ExcelModel(includeSuper = true)
 class EducationalProduct extends Product {
-    @ExcelWriterExpression("T(java.util.Arrays).stream(#targetAges)" +
+    @ExcelWriteExpression("T(java.util.Arrays).stream(#targetAges)" +
             ".boxed()" +
             ".collect(T(java.util.stream.Collectors).toList())" +
             ".toString()" +
@@ -650,13 +650,13 @@ class EducationalProduct extends Product {
     private int[] targetAges;
 
     // Fixed value
-    @ExcelWriterExpression("'none'")
+    @ExcelWriteExpression("'none'")
     private String goals;
 
     private Product related;
 
     // Refers other field
-    @ExcelWriterExpression("T(java.time.LocalDateTime).of(#date, #time)")
+    @ExcelWriteExpression("T(java.time.LocalDateTime).of(#date, #time)")
     private LocalDate date;
 
     private LocalTime time;
@@ -669,7 +669,7 @@ class EducationalProduct extends Product {
 | ------------ | -------------------------------- | -------- | ----- | ----- | ------ | ------ | ---------------- | ----- | ----------------------------------- | ----------------------- | -------- | ------------------- |
 | 10,001       | MATHEMATICS PUZZLE TOYS FOR KIDS | a--ab-e  | 18    | 6.0cm | 20.0   | 341.0  | 4, 5, 6, 7, 8, 9 | none  | com.github.javaxcel.Product@b1a58a3 | 2020-09-13T11:54:26.176 | 11:54:26 | 2020-09-13 11:54:26 |
 
-You can pre-process field value with `@ExcelWriterExpression` before set value into a cell.
+You can pre-process field value with `@ExcelWriteExpression` before set value into a cell.
 
 The expression language is `SpEL(Spring Expression Language)`.
 
@@ -695,41 +695,41 @@ If type of expression result is not `String`, the converter will invoke `Object#
 
 ```java
 class Product {
-    @ExcelReaderExpression("T(Long).parseLong(#serialNumber.replace(',', ''))")
+    @ExcelReadExpression("T(Long).parseLong(#serialNumber.replace(',', ''))")
     private long serialNumber;
 
-    @ExcelReaderExpression("#name.charAt(0) + #name.substring(1).toLowerCase()")
+    @ExcelReadExpression("#name.charAt(0) + #name.substring(1).toLowerCase()")
     private String name;
 
-    @ExcelReaderExpression("#accessId.replaceAll('-', '0')")
+    @ExcelReadExpression("#accessId.replaceAll('-', '0')")
     private String accessId;
 
     private Double width;
 
     // This string will be parsed as double.
-    @ExcelReaderExpression("#depth.replace('cm', '')")
+    @ExcelReadExpression("#depth.replace('cm', '')")
     private double depth;
 
     private double height;
 
-    @ExcelReaderExpression("T(Double).parseDouble(#weight) - 0.93")
+    @ExcelReadExpression("T(Double).parseDouble(#weight) - 0.93")
     private Double weight;
 }
 
 @ExcelModel(includeSuper = true)
 class EducationalProduct extends Product {
     // Custom converter method
-    @ExcelReaderExpression("T(com.github.javaxcel.Converter).toPowerIntArray(#targetAges.split(', ')")
+    @ExcelReadExpression("T(com.github.javaxcel.Converter).toPowerIntArray(#targetAges.split(', ')")
     private int[] targetAges;
 
     // Fixed value
-    @ExcelReaderExpression("'Develop intelligence'")
+    @ExcelReadExpression("'Develop intelligence'")
     private String goals;
 
-    @ExcelReaderExpression("new com.github.javaxcel.Product()")
+    @ExcelReadExpression("new com.github.javaxcel.Product()")
     private Product related;
 
-    @ExcelReaderExpression("T(java.time.LocalDate).parse(#date.substring(0, 10))")
+    @ExcelReadExpression("T(java.time.LocalDate).parse(#date.substring(0, 10))")
     private LocalDate date;
 
     private LocalTime time;
@@ -773,7 +773,7 @@ public class Converter {
 ]
 ```
 
-You can support not basic supported type with `@ExcelReaderExpression`.
+You can support not basic supported type with `@ExcelReadExpression`.
 
 The type of `variable` is `String`. It is value in cell.
 

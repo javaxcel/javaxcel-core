@@ -25,53 +25,53 @@ public class Human extends Creature {
 
     @ExcelColumn(name = "Birthday")
     @ExcelDateTimeFormat(pattern = "yyyy/MM/dd")
-    @ExcelReaderExpression("T(java.time.LocalDate).parse(#birthday, T(java.time.format.DateTimeFormatter).ofPattern('yyyy/MM/dd'))")
+    @ExcelReadExpression("T(java.time.LocalDate).parse(#birthday, T(java.time.format.DateTimeFormatter).ofPattern('yyyy/MM/dd'))")
     private LocalDate birthday;
 
     @ExcelColumn(name = "Birth Time")
     @ExcelDateTimeFormat(pattern = "HH/mm/ss.SSS")
-    @ExcelReaderExpression("T(java.time.LocalTime).parse(#birthTime, T(java.time.format.DateTimeFormatter).ofPattern('HH/mm/ss.SSS'))")
+    @ExcelReadExpression("T(java.time.LocalTime).parse(#birthTime, T(java.time.format.DateTimeFormatter).ofPattern('HH/mm/ss.SSS'))")
     private LocalTime birthTime;
 
     @ExcelColumn(name = "Place of Birth")
-    @ExcelWriterExpression("T(com.github.javaxcel.Converter).capitalize(#placeOfBirth, '-')")
-    @ExcelReaderExpression("#placeOfBirth?.toLowerCase()") // null-safe operator '?.'
+    @ExcelWriteExpression("T(com.github.javaxcel.Converter).capitalize(#placeOfBirth, '-')")
+    @ExcelReadExpression("#placeOfBirth?.toLowerCase()") // null-safe operator '?.'
     private UUID placeOfBirth;
 
     @ExcelColumn(name = "Rest Seconds of Life")
-    @ExcelWriterExpression("#restSecondsOfLife + ' sec'")
-    @ExcelReaderExpression("new java.math.BigDecimal(#restSecondsOfLife.replace(' sec', ''))") // constructor
+    @ExcelWriteExpression("#restSecondsOfLife + ' sec'")
+    @ExcelReadExpression("new java.math.BigDecimal(#restSecondsOfLife.replace(' sec', ''))") // constructor
     private BigDecimal restSecondsOfLife;
 
     @ExcelColumn(name = "Number of Cells")
-    @ExcelWriterExpression("#numOfCells + ' cells/kg'")
-    @ExcelReaderExpression("new java.math.BigInteger(#numOfCells.replace(' cells/kg', ''))") // constructor
+    @ExcelWriteExpression("#numOfCells + ' cells/kg'")
+    @ExcelReadExpression("new java.math.BigInteger(#numOfCells.replace(' cells/kg', ''))") // constructor
     private BigInteger numOfCells;
 
     @ExcelColumn(name = "Height")
-    @ExcelWriterExpression("#height + ' cm'")
-    @ExcelReaderExpression("T(Float).parseFloat(#height.replace(' cm', ''))")
+    @ExcelWriteExpression("#height + ' cm'")
+    @ExcelReadExpression("T(Float).parseFloat(#height.replace(' cm', ''))")
     private float height;
 
     @ExcelColumn(name = "Weight")
-    @ExcelWriterExpression("#weight + ' kg'")
-    @ExcelReaderExpression("#weight.replace(' kg', '')") // This string will be parsed as float.
+    @ExcelWriteExpression("#weight + ' kg'")
+    @ExcelReadExpression("#weight.replace(' kg', '')") // This string will be parsed as float.
     private float weight;
 
     @ExcelColumn(name = "Ages from Birth to Puberty")
-    @ExcelWriterExpression("T(java.util.Arrays).stream(#agesFromBirthToPuberty).boxed()" +
+    @ExcelWriteExpression("T(java.util.Arrays).stream(#agesFromBirthToPuberty).boxed()" +
             ".collect(T(java.util.stream.Collectors).toList()).toString().replaceAll('[\\[\\]]', '')")
-    @ExcelReaderExpression("#agesFromBirthToPuberty == null || #agesFromBirthToPuberty.equals('') ? null" +
+    @ExcelReadExpression("#agesFromBirthToPuberty == null || #agesFromBirthToPuberty.equals('') ? null" +
             ": T(com.github.javaxcel.Converter).toIntArray(#agesFromBirthToPuberty.split(', '))")
     private int[] agesFromBirthToPuberty;
 
     @ExcelColumn(name = "Ages from Twilight to Death")
-    @ExcelReaderExpression("new int[] {}")
+    @ExcelReadExpression("new int[] {}")
     private int[] agesFromTwilightToDeath;
 
     @ExcelColumn(name = "Whether Disabled or Not")
-    @ExcelWriterExpression("#disabled ? 'yes' : 'no'")
-    @ExcelReaderExpression("#disabled eq 'yes' ? true : false")
+    @ExcelWriteExpression("#disabled ? 'yes' : 'no'")
+    @ExcelReadExpression("#disabled eq 'yes' ? true : false")
     private boolean disabled;
 
     public Human(Kingdom kingdom, Sex sex, int lifespan, String name, LocalDate birthday, LocalTime birthTime,

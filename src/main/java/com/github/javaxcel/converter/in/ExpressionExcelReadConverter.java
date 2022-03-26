@@ -16,7 +16,7 @@
 
 package com.github.javaxcel.converter.in;
 
-import com.github.javaxcel.annotation.ExcelReaderExpression;
+import com.github.javaxcel.annotation.ExcelReadExpression;
 import io.github.imsejin.common.util.CollectionUtils;
 import io.github.imsejin.expression.Expression;
 import io.github.imsejin.expression.ExpressionParser;
@@ -55,7 +55,7 @@ public class ExpressionExcelReadConverter implements ExcelReadConverter {
         Map<Field, Expression> cache = new HashMap<>();
 
         for (Field field : fields) {
-            ExcelReaderExpression annotation = field.getAnnotation(ExcelReaderExpression.class);
+            ExcelReadExpression annotation = field.getAnnotation(ExcelReadExpression.class);
             if (annotation == null) continue;
 
             Expression expression = parser.parseExpression(annotation.value());
@@ -71,7 +71,7 @@ public class ExpressionExcelReadConverter implements ExcelReadConverter {
      * <p> If expressions are already parsed, uses it or parses an expression at that time.
      * This assigns the parsed value to field.
      *
-     * @see ExcelReaderExpression#value()
+     * @see ExcelReadExpression#value()
      */
     @Override
     @Nullable
@@ -79,7 +79,7 @@ public class ExpressionExcelReadConverter implements ExcelReadConverter {
         Expression expression;
         if (CollectionUtils.isNullOrEmpty(this.cache) || !this.cache.containsKey(field)) {
             // When this instantiated without cache.
-            ExcelReaderExpression annotation = field.getAnnotation(ExcelReaderExpression.class);
+            ExcelReadExpression annotation = field.getAnnotation(ExcelReadExpression.class);
             expression = parser.parseExpression(annotation.value());
 
         } else {
@@ -88,7 +88,7 @@ public class ExpressionExcelReadConverter implements ExcelReadConverter {
         }
 
         // To read in parallel, instantiates on each call.
-        // Enables to use value of the field as "#FIELD_NAME" in 'ExcelReaderExpression'.
+        // Enables to use value of the field as "#FIELD_NAME" in 'ExcelReadExpression'.
         StandardEvaluationContext context = new StandardEvaluationContext();
         context.setVariables(variables);
 

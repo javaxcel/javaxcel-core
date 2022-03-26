@@ -16,7 +16,7 @@
 
 package com.github.javaxcel.converter.out;
 
-import com.github.javaxcel.annotation.ExcelWriterExpression;
+import com.github.javaxcel.annotation.ExcelWriteExpression;
 import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.util.CollectionUtils;
 import io.github.imsejin.expression.Expression;
@@ -88,7 +88,7 @@ public class ExpressionExcelWriteConverter<T> implements ExcelWriteConverter<T> 
         Map<Field, Expression> cache = new HashMap<>();
 
         for (Field field : fields) {
-            ExcelWriterExpression annotation = field.getAnnotation(ExcelWriterExpression.class);
+            ExcelWriteExpression annotation = field.getAnnotation(ExcelWriteExpression.class);
             if (annotation == null) continue;
 
             Expression expression = parser.parseExpression(annotation.value());
@@ -106,7 +106,7 @@ public class ExpressionExcelWriteConverter<T> implements ExcelWriteConverter<T> 
      * @param model element in list
      * @param field field of model
      * @return computed string
-     * @see ExcelWriterExpression#value()
+     * @see ExcelWriteExpression#value()
      */
     @Nullable
     @Override
@@ -116,7 +116,7 @@ public class ExpressionExcelWriteConverter<T> implements ExcelWriteConverter<T> 
 
         if (CollectionUtils.isNullOrEmpty(this.fields) || CollectionUtils.isNullOrEmpty(this.cache)) {
             // When this instantiated by constructor without argument.
-            ExcelWriterExpression annotation = field.getAnnotation(ExcelWriterExpression.class);
+            ExcelWriteExpression annotation = field.getAnnotation(ExcelWriteExpression.class);
             expression = parser.parseExpression(annotation.value());
             variables = FieldUtils.toMap(model);
 
@@ -126,7 +126,7 @@ public class ExpressionExcelWriteConverter<T> implements ExcelWriteConverter<T> 
             variables = FieldUtils.toMap(model, this.fields);
         }
 
-        // Enables to use value of the field as "#FIELD_NAME" in 'ExcelWriterExpression'.
+        // Enables to use value of the field as "#FIELD_NAME" in 'ExcelWriteExpression'.
         this.context.setVariables(variables);
 
         return expression.getValue(this.context, String.class);

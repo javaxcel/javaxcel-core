@@ -30,7 +30,7 @@ import java.lang.annotation.*;
 @Documented
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ExcelWriterExpression {
+public @interface ExcelWriteExpression {
 
     /**
      * Expression to be written as cell value.

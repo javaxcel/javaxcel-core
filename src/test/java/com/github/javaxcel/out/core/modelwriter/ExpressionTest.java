@@ -19,7 +19,7 @@ package com.github.javaxcel.out.core.modelwriter;
 import com.github.javaxcel.Converter;
 import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.annotation.ExcelModel;
-import com.github.javaxcel.annotation.ExcelWriterExpression;
+import com.github.javaxcel.annotation.ExcelWriteExpression;
 import com.github.javaxcel.in.strategy.ExcelReadStrategy.KeyNames;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.model.creature.Human;
@@ -49,7 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @see ExcelModel#includeSuper()
- * @see ExcelWriterExpression#value()
+ * @see ExcelWriteExpression#value()
  */
 @StopwatchProvider
 class ExpressionTest extends ModelWriterTester {
