@@ -57,7 +57,7 @@ class DefaultExcelTypeHandlerRegistrySpec extends Specification {
         then:
         allTypes != null
         allTypes.stream().noneMatch(Objects::isNull)
-        def handlerMap = ReflectionUtils.getFieldValue(registry, registry.class.getDeclaredField("handlerMap")) as Map
+        def handlerMap = ReflectionUtils.getFieldValue(registry, registry.class.superclass.getDeclaredField("handlerMap")) as Map
         allTypes == handlerMap.keySet()
     }
 
