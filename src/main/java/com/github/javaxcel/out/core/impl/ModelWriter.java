@@ -120,7 +120,7 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
         ExcelWriteStrategy strategy = context.getStrategyMap().get(DefaultValue.class);
         if (strategy == null) return;
 
-        this.converter.setDefaultValue((String) strategy.execute(context));
+        this.converter.setAllDefaultValues((String) strategy.execute(context));
     }
 
     private void resolveHeaderStyles(ExcelWriteContext<T> context) {

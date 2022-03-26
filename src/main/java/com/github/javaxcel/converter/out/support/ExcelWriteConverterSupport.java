@@ -55,7 +55,7 @@ public class ExcelWriteConverterSupport<T> implements ExcelWriteConverter<T> {
         this.expressionConverter = new ExpressionExcelWriteConverter<>(fields);
     }
 
-    public void setDefaultValue(String defaultValue) {
+    public void setAllDefaultValues(String defaultValue) {
         this.columnMap.values().forEach(it -> it.setDefaultValue(defaultValue));
     }
 
