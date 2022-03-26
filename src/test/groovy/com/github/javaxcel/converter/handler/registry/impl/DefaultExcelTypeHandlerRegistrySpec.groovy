@@ -21,15 +21,14 @@ import com.github.javaxcel.converter.handler.impl.DateTypeHandler
 import com.github.javaxcel.converter.handler.impl.FileTypeHandler
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry
 import com.github.javaxcel.internal.ObjectTypeHandler
-import com.github.javaxcel.internal.TempExcelTypeHandlerRegistry
 import io.github.imsejin.common.util.ReflectionUtils
 import spock.lang.Specification
 
-class ExcelTypeHandlerRegistryImplSpec extends Specification {
+class DefaultExcelTypeHandlerRegistrySpec extends Specification {
 
     def "Gets a handler by type"() {
         given:
-        def registry = new ExcelTypeHandlerRegistryImpl() as ExcelTypeHandlerRegistry
+        def registry = new DefaultExcelTypeHandlerRegistry() as ExcelTypeHandlerRegistry
         def allTypes = registry.allTypes as List<Class<?>>
 
         when:
@@ -50,7 +49,7 @@ class ExcelTypeHandlerRegistryImplSpec extends Specification {
 
     def "Gets all the added type"() {
         given:
-        def registry = new ExcelTypeHandlerRegistryImpl() as ExcelTypeHandlerRegistry
+        def registry = new DefaultExcelTypeHandlerRegistry() as ExcelTypeHandlerRegistry
 
         when:
         def allTypes = registry.allTypes
@@ -64,7 +63,7 @@ class ExcelTypeHandlerRegistryImplSpec extends Specification {
 
     def "Adds a type handler"() {
         given:
-        def registry = new ExcelTypeHandlerRegistryImpl() as ExcelTypeHandlerRegistry
+        def registry = new DefaultExcelTypeHandlerRegistry() as ExcelTypeHandlerRegistry
 
         when: "Add new type handler on class java.lang.Object"
         def added = registry.add(Object, new ObjectTypeHandler())
@@ -81,8 +80,8 @@ class ExcelTypeHandlerRegistryImplSpec extends Specification {
 
     def "Adds a registry"() {
         given:
-        def registry = new ExcelTypeHandlerRegistryImpl() as ExcelTypeHandlerRegistry
-        def newRegistry = new TempExcelTypeHandlerRegistry()
+        def registry = new DefaultExcelTypeHandlerRegistry() as ExcelTypeHandlerRegistry
+        def newRegistry = new ExcelTypeHandlerRegistryImpl()
 
         when: "Add empty registry to the other"
         def addedNone = !registry.addAll(registry)
@@ -98,7 +97,7 @@ class ExcelTypeHandlerRegistryImplSpec extends Specification {
         addedNew
 
         when: "Override type handlers with the same registry"
-        def overridden = !registry.addAll(new ExcelTypeHandlerRegistryImpl())
+        def overridden = !registry.addAll(new DefaultExcelTypeHandlerRegistry())
 
         then:
         overridden

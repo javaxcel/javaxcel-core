@@ -16,7 +16,7 @@
 
 package com.github.javaxcel.converter.out
 
-import com.github.javaxcel.converter.handler.registry.impl.ExcelTypeHandlerRegistryImpl
+import com.github.javaxcel.converter.handler.registry.impl.DefaultExcelTypeHandlerRegistry
 import com.github.javaxcel.internal.Array1D
 import com.github.javaxcel.internal.Array2D
 import com.github.javaxcel.internal.Array3D
@@ -26,7 +26,7 @@ class DefaultExcelWriteConverterSpec extends Specification {
 
     def "Converts 1D array"() {
         given:
-        def converter = new DefaultExcelWriteConverter<>(new ExcelTypeHandlerRegistryImpl())
+        def converter = new DefaultExcelWriteConverter<>(new DefaultExcelTypeHandlerRegistry())
         def array1D = new Array1D(array)
         def fieldName = array == null ? "localeArray" : array1D.properties.keySet().stream()
                 .filter({ it.startsWith(array.class.componentType.simpleName.toLowerCase()) }).find() as String
@@ -57,7 +57,7 @@ class DefaultExcelWriteConverterSpec extends Specification {
 
     def "Converts 2D array"() {
         given:
-        def converter = new DefaultExcelWriteConverter<>(new ExcelTypeHandlerRegistryImpl())
+        def converter = new DefaultExcelWriteConverter<>(new DefaultExcelTypeHandlerRegistry())
         def array2D = new Array2D(array)
         def fieldName = array == null ? "localeArray" : array2D.properties.keySet().stream()
                 .filter({ it.startsWith(array.class.componentType.componentType.simpleName.toLowerCase()) }).find() as String
@@ -92,7 +92,7 @@ class DefaultExcelWriteConverterSpec extends Specification {
 
     def "Converts 3D array"() {
         given:
-        def converter = new DefaultExcelWriteConverter<>(new ExcelTypeHandlerRegistryImpl())
+        def converter = new DefaultExcelWriteConverter<>(new DefaultExcelTypeHandlerRegistry())
         def array3D = new Array3D(array)
         def fieldName = array == null ? "localeArray" : array3D.properties.keySet().stream()
                 .filter({ it.startsWith(array.class.componentType.componentType.componentType.simpleName.toLowerCase()) }).find() as String

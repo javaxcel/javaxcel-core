@@ -16,7 +16,7 @@
 
 package com.github.javaxcel.converter.in
 
-import com.github.javaxcel.converter.handler.registry.impl.ExcelTypeHandlerRegistryImpl
+import com.github.javaxcel.converter.handler.registry.impl.DefaultExcelTypeHandlerRegistry
 import com.github.javaxcel.converter.in.DefaultExcelReadConverter.Utils
 import com.github.javaxcel.internal.Array1D
 import com.github.javaxcel.internal.Array2D
@@ -27,7 +27,7 @@ class DefaultExcelReadConverterSpec extends Specification {
 
     def "Converts to 1D Array"() {
         given:
-        def converter = new DefaultExcelReadConverter(new ExcelTypeHandlerRegistryImpl())
+        def converter = new DefaultExcelReadConverter(new DefaultExcelTypeHandlerRegistry())
         def fieldName = new Array1D(null).properties.keySet().stream()
                 .filter({ it.startsWith(expected.class.componentType.simpleName.toLowerCase()) }).find() as String
         def field = Array1D.getDeclaredField fieldName
@@ -58,7 +58,7 @@ class DefaultExcelReadConverterSpec extends Specification {
 
     def "Converts to 2D Array"() {
         given:
-        def converter = new DefaultExcelReadConverter(new ExcelTypeHandlerRegistryImpl())
+        def converter = new DefaultExcelReadConverter(new DefaultExcelTypeHandlerRegistry())
         def fieldName = expected == null ? "localeArray" : new Array2D(null).properties.keySet().stream()
                 .filter({ it.startsWith(expected.class.componentType.componentType.simpleName.toLowerCase()) }).find() as String
         def field = Array2D.getDeclaredField fieldName
@@ -93,7 +93,7 @@ class DefaultExcelReadConverterSpec extends Specification {
 
     def "Converts to 3D Array"() {
         given:
-        def converter = new DefaultExcelReadConverter(new ExcelTypeHandlerRegistryImpl())
+        def converter = new DefaultExcelReadConverter(new DefaultExcelTypeHandlerRegistry())
         def fieldName = expected == null ? "localeArray" : new Array3D(null).properties.keySet().stream()
                 .filter({ it.startsWith(expected.class.componentType.componentType.componentType.simpleName.toLowerCase()) }).find() as String
         def field = Array3D.getDeclaredField fieldName

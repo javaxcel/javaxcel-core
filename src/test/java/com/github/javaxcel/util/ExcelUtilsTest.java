@@ -2,7 +2,7 @@ package com.github.javaxcel.util;
 
 import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
-import com.github.javaxcel.converter.handler.registry.impl.ExcelTypeHandlerRegistryImpl;
+import com.github.javaxcel.converter.handler.registry.impl.DefaultExcelTypeHandlerRegistry;
 import com.github.javaxcel.converter.out.DefaultExcelWriteConverter;
 import com.github.javaxcel.converter.out.ExcelWriteConverter;
 import com.github.javaxcel.exception.NoTargetedConstructorException;
@@ -78,7 +78,7 @@ class ExcelUtilsTest {
     @SneakyThrows
     void stringifyValue(String fieldName) {
         // given
-        ExcelTypeHandlerRegistry registry = new ExcelTypeHandlerRegistryImpl();
+        ExcelTypeHandlerRegistry registry = new DefaultExcelTypeHandlerRegistry();
         ExcelWriteConverter<EducationToy> converter = new DefaultExcelWriteConverter<>(registry);
 
         for (EducationToy toy : TestUtils.getMocks(EducationToy.class, 10)) {
@@ -141,7 +141,7 @@ class ExcelUtilsTest {
 
         stopwatch.start("instantiate");
         Class<?>[] paramTypes = {Workbook.class, Class.class, ExcelTypeHandlerRegistry.class};
-        Object[] initArgs = {new XSSFWorkbook(), Product.class, new ExcelTypeHandlerRegistryImpl()};
+        Object[] initArgs = {new XSSFWorkbook(), Product.class, new DefaultExcelTypeHandlerRegistry()};
         ExcelWriter<Product> instance = (ExcelWriter<Product>) ReflectionUtils.instantiate(clazz, paramTypes, initArgs);
         stopwatch.stop();
 
