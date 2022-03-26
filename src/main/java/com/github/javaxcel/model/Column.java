@@ -21,7 +21,6 @@ import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.constant.ConversionType;
 import com.github.javaxcel.constant.ConverterType;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 
@@ -57,7 +56,6 @@ public class Column {
         return defaultValue;
     }
 
-    @Nonnull
     public ConversionType getConversionType() {
         return this.conversionType;
     }
