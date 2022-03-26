@@ -296,7 +296,7 @@ It's ineffective to assign default value to primitive type, because the field of
 <br>
 
 If you want to override `ExcelColumn#defaultValue()` (use another default value on this moment),
-invoke `ExcelWriter#options(ExcelWriteStrategy...)` with `ExcelWriteStrategy.DefaultValue`.
+invoke `ExcelWriter#options(ExcelWriteStrategy...)` with option `ExcelWriteStrategy.DefaultValue`.
 
 ```java
 Product product = new Product(); // Empty product.
@@ -320,9 +320,13 @@ The result is
 
 ### reader:
 
-Not affected,
+If cell value is null or empty string, `DefaultExcelReadConverter` parse `ExcelColumn#defaultValue()` and set it to field.
 
-but if you set `ExcelColumn#defaultValue()` that doesn't match type of its field, the exception for type casting may occur.
+Specify `ExcelColumn#defaultValue()` with care.
+It might not occur exception, when you write, though the default value doesn't match type of that field.
+It must occur exception, when you read, if the default value doesn't.
+
+If the field that is annotated by `@ExcelReaderExpression`, its default value doesn't work.
 
 <br><br>
 
@@ -517,7 +521,7 @@ They are supported types.
 }
 ```
 
-`ExcelReader` parses them with `ExcelDateTimeFormat#pattern()`.
+`ExcelReader` parses them with option `ExcelDateTimeFormat#pattern()`.
 
 <br><br>
 
@@ -561,13 +565,13 @@ Javaxcel.newInstance()
         .write(out, products);
 ```
 
-You can adjust all sheets with `ExcelWriteStrategy.AutoResizedColumns`, `ExcelWriteStrategy.HiddenExtraRows` and `ExcelWriteStrategyHiddenExtraColumns`.
+You can adjust all sheets with option `ExcelWriteStrategy.AutoResizedColumns`, `ExcelWriteStrategy.HiddenExtraRows` and `ExcelWriteStrategyHiddenExtraColumns`.
 
 <br>
 
-You can decorate the header with `ExcelWriteStrategy.HeaderStyles`
+You can decorate the header with option `ExcelWriteStrategy.HeaderStyles`
 
-and also decorate the body with `ExcelWriteStrategy.BodyStyles`.
+and also decorate the body with option `ExcelWriteStrategy.BodyStyles`.
 
 <br>
 
