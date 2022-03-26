@@ -115,12 +115,12 @@ class Product {
 /* ... */
 
 Product product = Product.builder()
-    .serialNumber(10000)
-    .name("Choco cereal")
-    .accessId("2a60-4973-aec0-685e")
-    .height(20.5)
-    .weight(580.5)
-    .build();
+        .serialNumber(10000)
+        .name("Choco cereal")
+        .accessId("2a60-4973-aec0-685e")
+        .height(20.5)
+        .weight(580.5)
+        .build();
 List<Product> products = Collections.singletonList(product);
 ```
 
@@ -303,9 +303,9 @@ Product product = new Product(); // Empty product.
 List<Product> products = Collections.singletonList(product);
 
 Javaxcel.newInstance()
-      .writer(workbook, Product.class)
-      .options(new DefaultValue("(empty)"))
-      .write(out, products);
+        .writer(workbook, Product.class)
+        .options(new DefaultValue("(empty)"))
+        .write(out, products);
 ```
 
 The result is
@@ -385,20 +385,20 @@ class EducationalProduct extends Product {
 /* ... */
 
 EducationalProduct eduProduct = EducationalProduct.builder()
-    .serialNumber(10001)
-    .name("Mathematics puzzle toys for kids")
-    .accessId("1a57-4055-a75b-98e4")
-    .width(18.0)
-    .depth(6)
-    .height(20)
-    .weight(340.07)
-    .targetAges(4,5,6,7,8,9)
-    .goals("Develop intelligence")
-    .related(new Product())
-    .date(LocalDate.now())
-    .time(LocalTime.now())
-    .dateTime(LocalDateTime.now())
-    .build();
+        .serialNumber(10001)
+        .name("Mathematics puzzle toys for kids")
+        .accessId("1a57-4055-a75b-98e4")
+        .width(18.0)
+        .depth(6)
+        .height(20)
+        .weight(340.07)
+        .targetAges(4,5,6,7,8,9)
+        .goals("Develop intelligence")
+        .related(new Product())
+        .date(LocalDate.now())
+        .time(LocalTime.now())
+        .dateTime(LocalDateTime.now())
+        .build();
 List<EducationalProduct> eduProducts = Collections.singletonList(eduProduct);
 ```
 
