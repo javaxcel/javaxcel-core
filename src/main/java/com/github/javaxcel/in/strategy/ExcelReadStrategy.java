@@ -120,12 +120,13 @@ public interface ExcelReadStrategy {
          * <p> To change the column names, place the keys in the order you want like this.
          *
          * <pre>{@code
-         *     List<String> keyNames = Arrays.asList(
+         *     List<String> newKeyNames = Arrays.asList(
          *             "WIDTH" "DEPTH", "HEIGHT", "WEIGHT", "SERIAL_NUMBER", "NAME", "API_ID");
          *
-         *     ExcelReaderFactory.create(new SXSSFWorkbook())
-         *             .options(new KeyNames(keyNames))
-         *             .write(new FileOutputStream(file), list);
+         *     Javaxcel.newInstance()
+         *             .reader(new SXSSFWorkbook())
+         *             .options(new KeyNames(newKeyNames))
+         *             .read();
          * }</pre>
          *
          * <p> Then the column names will be changed to the order you want.
@@ -153,21 +154,21 @@ public interface ExcelReadStrategy {
          * ]
          * </code></pre>
          *
-         * @param keyNames keys ordered as you want
-         * @throws IllegalArgumentException if keyNames is invalid
+         * @param newKeyNames header names in key order to be changed
+         * @throws IllegalArgumentException if newKeyNames is invalid
          */
-        public KeyNames(List<String> keyNames) {
-            Asserts.that(keyNames)
-                    .as("keyNames is not allowed to be null or empty: {0}", keyNames)
+        public KeyNames(List<String> newKeyNames) {
+            Asserts.that(newKeyNames)
+                    .as("newKeyNames is not allowed to be null or empty: {0}", newKeyNames)
                     .isNotNull().hasElement()
-                    .as("keyNames cannot have null element: {0}", keyNames)
+                    .as("newKeyNames cannot have null element: {0}", newKeyNames)
                     .doesNotContainNull()
-                    .as("keyNames must be an implementation of java.util.List: {0}", keyNames)
+                    .as("newKeyNames must be an implementation of java.util.List: {0}", newKeyNames)
                     .isInstanceOf(List.class)
-                    .as("keyNames cannot have duplicated elements: {0}", keyNames)
+                    .as("newKeyNames cannot have duplicated elements: {0}", newKeyNames)
                     .predicate(them -> them.stream().noneMatch(it -> Collections.frequency(them, it) > 1));
 
-            this.headerNames = Collections.unmodifiableList(keyNames);
+            this.headerNames = Collections.unmodifiableList(newKeyNames);
         }
 
         @Override

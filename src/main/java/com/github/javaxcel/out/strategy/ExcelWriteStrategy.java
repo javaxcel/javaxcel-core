@@ -166,7 +166,8 @@ public interface ExcelWriteStrategy {
          *     List<String> keyOrders = Arrays.asList(
          *             "width" "depth", "height", "weight", "serialNumber", "name", "apiId");
          *
-         *     ExcelWriterFactory.create(new SXSSFWorkbook())
+         *     Javaxcel.newInstance()
+         *             .writer(new SXSSFWorkbook())
          *             .options(new KeyNames(keyOrders))
          *             .write(new FileOutputStream(file), list);
          * }</pre>
@@ -246,7 +247,8 @@ public interface ExcelWriteStrategy {
          *     List<String> newKeyNames = Arrays.asList(
          *             "WIDTH" "DEPTH", "HEIGHT", "WEIGHT", "SERIAL_NUMBER", "NAME", "API_ID");
          *
-         *     ExcelWriterFactory.create(new SXSSFWorkbook())
+         *     Javaxcel.newInstance()
+         *             .writer(new SXSSFWorkbook())
          *             .options(new KeyNames(keyOrders, newKeyNames))
          *             .write(new FileOutputStream(file), list);
          * }</pre>
@@ -349,6 +351,9 @@ public interface ExcelWriteStrategy {
 
     ///////////////////////////////////// Decoration //////////////////////////////////////
 
+    /**
+     * Makes all columns fit their content.
+     */
     class AutoResizedColumns extends AbstractExcelWriteStrategy {
         @Override
         public boolean isSupported(ExcelWriteContext<?> context) {
