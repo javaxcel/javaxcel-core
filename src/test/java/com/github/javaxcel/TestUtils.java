@@ -128,6 +128,9 @@ public class TestUtils {
                 .mapToObj(i -> randomMap(numOfEntries)).collect(toList());
     }
 
+    /**
+     * Excludes the field depending on given percentage.
+     */
     @Target(FIELD)
     @Retention(RUNTIME)
     public @interface ExcludeOnPercentage {
@@ -139,14 +142,14 @@ public class TestUtils {
 
         @Override
         public boolean test(Field field) {
-            // Excludes the field in target.
+            // Excludes.
             if (field.isAnnotationPresent(ExcelIgnore.class)) return true;
 
             // Includes.
             ExcludeOnPercentage annotation = field.getAnnotation(ExcludeOnPercentage.class);
             if (annotation == null) return false;
 
-            // Excludes the field depending on percentage.
+            // Excludes it depending on percentage.
             double percentage = annotation.value();
             Asserts.that(percentage)
                     .as("ConditionalOnPercentage.value must be between 0.0 and 1.0")
