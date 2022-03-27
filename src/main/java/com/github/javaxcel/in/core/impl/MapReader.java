@@ -35,8 +35,6 @@ public class MapReader extends AbstractExcelReader<Map<String, Object>> {
 
     private static final Class<Map<String, Object>> MAP_TYPE;
 
-    private final List<String> headerNames = new ArrayList<>();
-
     static {
         try {
             // Compiler doesn't allow instance of the class java.util.Map to generic variable
