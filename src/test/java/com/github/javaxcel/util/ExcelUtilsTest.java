@@ -30,12 +30,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.lang.reflect.Constructor;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.concurrent.TimeUnit;
@@ -74,7 +68,7 @@ class ExcelUtilsTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"targetAges", "goals", "date", "time", "dateTime"})
+    @ValueSource(strings = {"localTime", "localDate", "localDateTime", "zonedDateTime", "offsetTime", "offsetDateTime"})
     @SneakyThrows
     void stringifyValue(String fieldName) {
         // given
@@ -83,46 +77,11 @@ class ExcelUtilsTest {
 
         for (EducationToy toy : TestUtils.getMocks(EducationToy.class, 10)) {
             // when
-            String stringifyValue = converter.convert(toy, toy.getClass().getDeclaredField(fieldName));
+            String stringified = converter.convert(toy, toy.getClass().getDeclaredField(fieldName));
 
             // then
-            System.out.println(stringifyValue);
+            assertThat(stringified).isNotNull().isNotBlank();
         }
-    }
-
-    @Test
-    @Disabled
-    void formatDateTime() {
-        // given
-        LocalDate date = LocalDate.now();
-        LocalTime time = LocalTime.now();
-        LocalDateTime dateTime = LocalDateTime.now();
-
-        // when
-        String formattedDate = date.format(DateTimeFormatter.ofPattern("yy/M/dd"));
-        String formattedTime = time.format(DateTimeFormatter.ofPattern("HH:mm:ss.SSS"));
-        String formattedDateTime = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
-        // then
-        System.out.println(formattedDate);
-        System.out.println(formattedTime);
-        System.out.println(formattedDateTime);
-    }
-
-    @Test
-    @Disabled
-    void stringifyBigNumbers() {
-        // given
-        String strBigInt = Long.valueOf(Long.MAX_VALUE).toString();
-        String strBigDec = "123456789123456789123456789123456789123456.07890";
-
-        // when
-        String bigInteger = String.valueOf(BigInteger.valueOf(Long.parseLong(strBigInt)));
-        String bigDecimal = String.valueOf(new BigDecimal(strBigDec));
-
-        // then
-        assertThat(strBigInt).isEqualTo(bigInteger);
-        assertThat(strBigDec).isEqualTo(bigDecimal);
     }
 
     @Test
