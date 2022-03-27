@@ -108,7 +108,8 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
             // Converts string to the type of field.
             return handler.read(value, field);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            String message = String.format("Failed to convert %s(String) to %s", value, type.getSimpleName());
+            throw new RuntimeException(message, e);
         }
     }
 

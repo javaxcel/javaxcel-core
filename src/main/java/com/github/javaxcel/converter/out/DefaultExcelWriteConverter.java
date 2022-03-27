@@ -101,7 +101,8 @@ public class DefaultExcelWriteConverter<T> implements ExcelWriteConverter<T> {
             // Converts value to string with the handler.
             return handler.write(value, field);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            String message = String.format("Failed to convert %s(%s) to string", value, type.getSimpleName());
+            throw new RuntimeException(message, e);
         }
     }
 
