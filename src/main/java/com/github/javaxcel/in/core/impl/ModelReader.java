@@ -139,13 +139,7 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
      * @return real model
      */
     private T toRealModel(Map<String, Object> imitation) {
-        T model;
-        try {
-            model = this.constructor.newInstance();
-        } catch (ReflectiveOperationException e) {
-            String message = String.format("Failed to instantiate by constructor: %s(%s)", type, Arrays.toString(this.constructor.getParameterTypes()).replaceAll("[\\[\\]]", ""));
-            throw new RuntimeException(message, e);
-        }
+        T model = instantiate();
 
         for (Field field : this.fields) {
             // To prevent ModelReader from changing value of final field by reflection API.
@@ -156,6 +150,16 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
         }
 
         return model;
+    }
+
+    private T instantiate() {
+        try {
+            return this.constructor.newInstance();
+        } catch (ReflectiveOperationException e) {
+            String message = String.format("Failed to instantiate by constructor: %s(%s)",
+                    type, Arrays.toString(this.constructor.getParameterTypes()).replaceAll("[\\[\\]]", ""));
+            throw new RuntimeException(message, e);
+        }
     }
 
 }
