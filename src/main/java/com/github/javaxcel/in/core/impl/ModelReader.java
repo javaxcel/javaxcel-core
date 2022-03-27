@@ -29,6 +29,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -147,6 +148,9 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
         }
 
         for (Field field : this.fields) {
+            // To prevent ModelReader from changing value of final field by reflection API.
+            if (Modifier.isFinal(field.getModifiers())) continue;
+
             Object fieldValue = this.converter.convert(imitation, field);
             ReflectionUtils.setFieldValue(model, field, fieldValue);
         }
