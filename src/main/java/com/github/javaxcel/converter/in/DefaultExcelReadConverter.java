@@ -66,15 +66,10 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
             }
         }
 
-        if (type.isArray()) {
-            // Supports multi-dimensional array type.
-            return handleArray(field, type, value);
-        } else if (ClassUtils.isEnumOrEnumConstant(type)) {
-            // Supports enum type.
-            return handleEnum(field, value);
-        } else {
-            return handleNonArray(field, type, value);
-        }
+        // Supports multi-dimensional array type.
+        if (type.isArray()) return handleArray(field, type, value);
+
+        return handleNonArray(field, type, value);
     }
 
     private Object handleArray(Field field, Class<?> type, String value) {
@@ -91,9 +86,6 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
             Object element;
             if (componentType.isArray()) {
                 element = string.isEmpty() ? null : handleArray(field, componentType, string);
-            } else if (ClassUtils.isEnumOrEnumConstant(componentType)) {
-                // Allows empty string to handler for enum type.
-                element = handleEnum(field, string);
             } else {
                 // Allows empty string to handler for non-array type.
                 element = handleNonArray(field, componentType, string);
@@ -105,16 +97,18 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
         return array;
     }
 
-    private Object handleEnum(Field field, String value) {
-        return handleNonArray(field, Enum.class, value);
-    }
-
     private Object handleNonArray(Field field, Class<?> type, String value) {
         // Resolves a handler of the type.
         ExcelTypeHandler<?> handler = this.registry.getHandler(type);
 
-        // When there is no handler matched with the type.
-        if (handler == null) return ClassUtils.initialValueOf(type);
+        if (handler == null) {
+            // When there is no handler for the type.
+            if (!ClassUtils.isEnumOrEnumConstant(type)) return ClassUtils.initialValueOf(type);
+
+            // When there is no handler for the specific enum type,
+            // use EnumTypeHandler as default.
+            handler = this.registry.getHandler(Enum.class);
+        }
 
         try {
             // Converts string to the type of field.
