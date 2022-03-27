@@ -27,9 +27,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * Notice that {@link SimpleDateFormat} is not thread-safe.
+ */
 public class DateTypeHandler extends AbstractExcelTypeHandler<Date> {
 
-    private static final SimpleDateFormat DEFAULT_FORMATTER = new SimpleDateFormat(DateType.F_DATE_TIME.getPattern());
+    private static final String DEFAULT_PATTERN = DateType.F_DATE_TIME.getPattern();
 
     public DateTypeHandler() {
         super(Date.class);
@@ -39,11 +42,11 @@ public class DateTypeHandler extends AbstractExcelTypeHandler<Date> {
     protected String writeInternal(Date value, Object... args) {
         // Resolve field from arguments.
         Field field = FieldUtils.resolveFirst(Field.class, args);
-        if (field == null) return DEFAULT_FORMATTER.format(value);
+        if (field == null) return new SimpleDateFormat(DEFAULT_PATTERN).format(value);
 
         ExcelDateTimeFormat annotation = field.getAnnotation(ExcelDateTimeFormat.class);
         if (annotation == null || StringUtils.isNullOrEmpty(annotation.pattern())) {
-            return DEFAULT_FORMATTER.format(value);
+            return new SimpleDateFormat(DEFAULT_PATTERN).format(value);
         } else {
             return new SimpleDateFormat(annotation.pattern()).format(value);
         }
@@ -53,11 +56,11 @@ public class DateTypeHandler extends AbstractExcelTypeHandler<Date> {
     public Date read(String value, Object... args) throws ParseException {
         // Resolve field from arguments.
         Field field = FieldUtils.resolveFirst(Field.class, args);
-        if (field == null) return DEFAULT_FORMATTER.parse(value);
+        if (field == null) return new SimpleDateFormat(DEFAULT_PATTERN).parse(value);
 
         ExcelDateTimeFormat annotation = field.getAnnotation(ExcelDateTimeFormat.class);
         if (annotation == null || StringUtils.isNullOrEmpty(annotation.pattern())) {
-            return DEFAULT_FORMATTER.parse(value);
+            return new SimpleDateFormat(DEFAULT_PATTERN).parse(value);
         } else {
             return new SimpleDateFormat(annotation.pattern()).parse(value);
         }
