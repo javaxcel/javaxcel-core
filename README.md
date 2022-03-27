@@ -506,8 +506,8 @@ They are supported types.
 * `java.time.LocalDate`
 * `java.time.LocalDateTime`
 * `java.time.ZonedDateTime`
-* `java.time.OffsetDateTime`
 * `java.time.OffsetTime`
+* `java.time.OffsetDateTime`
 
 <br>
 

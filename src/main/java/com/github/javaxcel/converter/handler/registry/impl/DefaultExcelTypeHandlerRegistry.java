@@ -63,8 +63,8 @@ public class DefaultExcelTypeHandlerRegistry extends ExcelTypeHandlerRegistryImp
         add(LocalDate.class, new LocalDateTypeHandler());
         add(LocalDateTime.class, new LocalDateTimeTypeHandler());
         add(ZonedDateTime.class, new ZonedDateTimeTypeHandler());
-        add(OffsetDateTime.class, new OffsetDateTimeTypeHandler());
         add(OffsetTime.class, new OffsetTimeTypeHandler());
+        add(OffsetDateTime.class, new OffsetDateTimeTypeHandler());
         // java.net
         add(URI.class, new URITypeHandler());
         add(URL.class, new URLTypeHandler());
