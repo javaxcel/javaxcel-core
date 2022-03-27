@@ -532,19 +532,13 @@ They are supported types.
 ```java
 Javaxcel.newInstance()
         .writer(workbook, Product.class)
-        .sheetName("Products")
+        .options(new SheetName("Products"))
         .write(out, products);
 ```
 
-If you want to name a sheet, invoke `AbstractExcelWriter#sheetName(String)`.
+If you want to name a sheet, add option `ExcelWriteStrategy.SheetName`.
 
-If you don't, the name is `Sheet`.
-
-<br>
-
-### reader:
-
-Not affected.
+If you don't, the default name is `Sheet`.
 
 <br><br>
 
