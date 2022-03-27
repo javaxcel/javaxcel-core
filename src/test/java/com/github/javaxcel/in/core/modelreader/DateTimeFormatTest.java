@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @see ExcelModel#includeSuper()
  * @see ExcelDateTimeFormat#pattern()
+ * @see com.github.javaxcel.converter.handler.impl.EnumTypeHandler
  */
 @StopwatchProvider
 class DateTimeFormatTest extends ModelReaderTester {

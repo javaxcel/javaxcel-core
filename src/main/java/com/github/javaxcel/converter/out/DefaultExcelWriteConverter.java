@@ -19,6 +19,7 @@ package com.github.javaxcel.converter.out;
 import com.github.javaxcel.converter.handler.ExcelTypeHandler;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
 import io.github.imsejin.common.assertion.Asserts;
+import io.github.imsejin.common.util.ClassUtils;
 import io.github.imsejin.common.util.ReflectionUtils;
 
 import javax.annotation.Nullable;
@@ -50,10 +51,15 @@ public class DefaultExcelWriteConverter<T> implements ExcelWriteConverter<T> {
 
         Class<?> type = field.getType();
 
-        // Supports multi-dimensional array type.
-        if (type.isArray()) return handleArray(field, value);
-
-        return handleNonArray(field, type, value);
+        if (type.isArray()) {
+            // Supports multi-dimensional array type.
+            return handleArray(field, value);
+        } else if (ClassUtils.isEnumOrEnumConstant(type)) {
+            // Supports enum type.
+            return handleEnum(field, value);
+        } else {
+            return handleNonArray(field, type, value);
+        }
     }
 
     private String handleArray(Field field, Object value) {
@@ -76,6 +82,8 @@ public class DefaultExcelWriteConverter<T> implements ExcelWriteConverter<T> {
                 String string;
                 if (elementType.isArray()) {
                     string = handleArray(field, element);
+                } else if (ClassUtils.isEnumOrEnumConstant(elementType)) {
+                    string = handleEnum(field, element);
                 } else {
                     string = handleNonArray(field, elementType, element);
                 }
@@ -89,6 +97,10 @@ public class DefaultExcelWriteConverter<T> implements ExcelWriteConverter<T> {
         }
 
         return sb.append(']').toString();
+    }
+
+    private String handleEnum(Field field, Object value) {
+        return handleNonArray(field, Enum.class, value);
     }
 
     private String handleNonArray(Field field, Class<?> type, Object value) {

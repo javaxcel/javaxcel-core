@@ -6,7 +6,7 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode(exclude = "toyType")
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 public class Toy {

@@ -66,10 +66,15 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
             }
         }
 
-        // Supports multi-dimensional array type.
-        if (type.isArray()) return handleArray(field, type, value);
-
-        return handleNonArray(field, type, value);
+        if (type.isArray()) {
+            // Supports multi-dimensional array type.
+            return handleArray(field, type, value);
+        } else if (ClassUtils.isEnumOrEnumConstant(type)) {
+            // Supports enum type.
+            return handleEnum(field, value);
+        } else {
+            return handleNonArray(field, type, value);
+        }
     }
 
     private Object handleArray(Field field, Class<?> type, String value) {
@@ -86,6 +91,9 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
             Object element;
             if (componentType.isArray()) {
                 element = string.isEmpty() ? null : handleArray(field, componentType, string);
+            } else if (ClassUtils.isEnumOrEnumConstant(componentType)) {
+                // Allows empty string to handler for enum type.
+                element = handleEnum(field, string);
             } else {
                 // Allows empty string to handler for non-array type.
                 element = handleNonArray(field, componentType, string);
@@ -95,6 +103,10 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
         }
 
         return array;
+    }
+
+    private Object handleEnum(Field field, String value) {
+        return handleNonArray(field, Enum.class, value);
     }
 
     private Object handleNonArray(Field field, Class<?> type, String value) {

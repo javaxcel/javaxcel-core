@@ -51,6 +51,7 @@ public class DefaultExcelTypeHandlerRegistry extends ExcelTypeHandlerRegistryImp
         add(Float.class, new FloatTypeHandler());
         add(Double.class, new DoubleTypeHandler());
         add(String.class, new StringTypeHandler());
+        add(Enum.class, new EnumTypeHandler());
         // java.math
         add(BigInteger.class, new BigIntegerTypeHandler());
         add(BigDecimal.class, new BigDecimalTypeHandler());
