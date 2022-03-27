@@ -45,9 +45,9 @@ import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * @see ExcelModel#defaultValue()
- * @see ExcelColumn#defaultValue()
  * @see DefaultValue
+ * @see ExcelColumn#defaultValue()
+ * @see ExcelModel#defaultValue()
  */
 @StopwatchProvider
 class DefaultValueTest extends ModelWriterTester {
@@ -75,7 +75,7 @@ class DefaultValueTest extends ModelWriterTester {
         Class<?> type = givenModel.getType();
 
         ExcelWriter<?> writer = TestUtils.JAVAXCEL.writer(whenModel.getWorkbook(), type);
-        if (getDefaultValueFromType(type).equals(DIRECT_DEFAULT_VALUE)) {
+        if (resolveDefaultValue(type).equals(DIRECT_DEFAULT_VALUE)) {
             writer.options(new DefaultValue(DIRECT_DEFAULT_VALUE));
         }
 
@@ -98,14 +98,14 @@ class DefaultValueTest extends ModelWriterTester {
         for (Map<String, Object> model : models) {
             String title = (String) model.get("title");
 
-            String defaultValue = getDefaultValueFromType(type);
+            String defaultValue = resolveDefaultValue(type);
             assertThat(title)
                     .as("#2 Empty value must be converted '%s' as default value", defaultValue)
                     .isNotNull().isEqualTo(defaultValue);
         }
     }
 
-    private static String getDefaultValueFromType(Class<?> type) {
+    private static String resolveDefaultValue(Class<?> type) {
         if (type == WithModel.class) return MODEL_DEFAULT_VALUE;
         else if (type == WithColumn.class || type == WithModelAndColumn.class) return COLUMN_DEFAULT_VALUE;
         else return DIRECT_DEFAULT_VALUE;

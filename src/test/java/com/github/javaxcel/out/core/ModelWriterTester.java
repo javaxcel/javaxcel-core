@@ -17,8 +17,11 @@
 package com.github.javaxcel.out.core;
 
 import com.github.javaxcel.TestUtils;
+import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
+import io.github.imsejin.common.util.FilenameUtils;
 import lombok.*;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
@@ -30,9 +33,7 @@ import java.util.List;
 
 public abstract class ModelWriterTester {
 
-    /*
-     Template method.
-     */
+    // Template method.
     protected final void run(File file, Class<?> type, Stopwatch stopwatch) throws Exception {
         GivenModel givenModel = new GivenModel(file, type);
 
@@ -61,7 +62,19 @@ public abstract class ModelWriterTester {
 
     protected WhenModel given(GivenModel givenModel) throws Exception {
         OutputStream out = new FileOutputStream(givenModel.file);
-        Workbook workbook = new SXSSFWorkbook();
+
+        String extension = FilenameUtils.getExtension(givenModel.file.getName());
+        Workbook workbook;
+        switch (extension) {
+            case ExcelUtils.EXCEL_97_EXTENSION:
+                workbook = new HSSFWorkbook();
+                break;
+            case ExcelUtils.EXCEL_2007_EXTENSION:
+                workbook = new SXSSFWorkbook();
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid extension of Excel file: " + extension);
+        }
 
         return new WhenModel(out, workbook, 8192);
     }
@@ -78,6 +91,8 @@ public abstract class ModelWriterTester {
     }
 
     protected abstract void then(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) throws Exception;
+
+    ///////////////////////////////////////////////////////////////////////////////////////
 
     @Getter
     @RequiredArgsConstructor

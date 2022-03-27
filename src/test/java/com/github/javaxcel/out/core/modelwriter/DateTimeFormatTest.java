@@ -21,6 +21,7 @@ import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.core.ModelWriterTester;
 import com.github.javaxcel.util.ExcelUtils;
+import io.github.imsejin.common.constant.DateType;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -32,6 +33,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.*;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +44,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @see ExcelDateTimeFormat#pattern()
+ * @see com.github.javaxcel.converter.handler.impl.DateTypeHandler
+ * @see com.github.javaxcel.converter.handler.impl.LocalDateTypeHandler
+ * @see com.github.javaxcel.converter.handler.impl.LocalTimeTypeHandler
+ * @see com.github.javaxcel.converter.handler.impl.LocalDateTimeTypeHandler
+ * @see com.github.javaxcel.converter.handler.impl.ZonedDateTimeTypeHandler
+ * @see com.github.javaxcel.converter.handler.impl.OffsetTimeTypeHandler
+ * @see com.github.javaxcel.converter.handler.impl.OffsetDateTimeTypeHandler
  */
 @StopwatchProvider
 class DateTimeFormatTest extends ModelWriterTester {
@@ -50,7 +59,7 @@ class DateTimeFormatTest extends ModelWriterTester {
     void test(@TempDir Path path, Stopwatch stopwatch) throws Exception {
         Class<ChronoModel> type = ChronoModel.class;
         String filename = type.getSimpleName().toLowerCase() + '.' + ExcelUtils.EXCEL_2007_EXTENSION;
-        File file = new File(path.toFile(), filename);
+        File file = path.resolve(filename).toFile();
 
         run(file, type, stopwatch);
     }
@@ -84,43 +93,56 @@ class DateTimeFormatTest extends ModelWriterTester {
                         "[0-5]\\d:" + // "mm:"
                         "[0-5]\\d\\." + // "ss."
                         "\\d{3}")); // "SSS"
+        patternMap.put(DateType.F_DATE_TIME.getPattern(),
+                Pattern.compile("[1-9]\\d{3}-" + // "yyyy-"
+                        "(0[1-9]|1[0-2])-" + // "MM-"
+                        "(0[1-9]|1\\d|2\\d|3[0-1]) " + // "dd "
+                        "(0\\d|1\\d|2[0-3]):" + // "HH:"
+                        "[0-5]\\d:" + // "mm:"
+                        "[0-5]\\d")); // "ss"
 
         List<Map<String, Object>> models = TestUtils.JAVAXCEL.reader(workbook).read();
         for (Map<String, Object> model : models) {
             String date = (String) model.get("date");
-            String time = (String) model.get("time");
-            String dateTime = (String) model.get("dateTime");
+            String localDate = (String) model.get("localDate");
+            String localTime = (String) model.get("localTime");
+            String localDateTime = (String) model.get("localDateTime");
             String zonedDateTime = (String) model.get("zonedDateTime");
             String offsetTime = (String) model.get("offsetTime");
             String offsetDateTime = (String) model.get("offsetDateTime");
 
             assertThat(date)
-                    .as("#2 Pattern of LocalDate field is equal to '%s'", ChronoModel.DATE_PATTERN)
+                    .as("#2 Pattern of Date field is equal to '%s'", DateType.F_DATE_TIME.getPattern())
+                    .isNotBlank()
+                    .hasSameSizeAs(DateType.F_DATE_TIME.getPattern())
+                    .matches(patternMap.get(DateType.F_DATE_TIME.getPattern()));
+            assertThat(localDate)
+                    .as("#3 Pattern of LocalDate field is equal to '%s'", ChronoModel.DATE_PATTERN)
                     .isNotBlank()
                     .hasSameSizeAs(ChronoModel.DATE_PATTERN)
                     .matches(patternMap.get(ChronoModel.DATE_PATTERN));
-            assertThat(time)
-                    .as("#3 Pattern of LocalTime field is equal to '%s'", ChronoModel.TIME_PATTERN)
+            assertThat(localTime)
+                    .as("#4 Pattern of LocalTime field is equal to '%s'", ChronoModel.TIME_PATTERN)
                     .isNotBlank()
                     .hasSameSizeAs(ChronoModel.TIME_PATTERN)
                     .matches(patternMap.get(ChronoModel.TIME_PATTERN));
-            assertThat(dateTime)
-                    .as("#4 Pattern of LocalDateTime field is equal to '%s'", ChronoModel.DATE_TIME_PATTERN)
+            assertThat(localDateTime)
+                    .as("#5 Pattern of LocalDateTime field is equal to '%s'", ChronoModel.DATE_TIME_PATTERN)
                     .isNotBlank()
                     .hasSize(ChronoModel.DATE_TIME_PATTERN.length())
                     .matches(patternMap.get(ChronoModel.DATE_TIME_PATTERN));
             assertThat(zonedDateTime)
-                    .as("#5 Pattern of ZonedDateTime field is equal to '%s'", ChronoModel.DATE_TIME_PATTERN)
+                    .as("#6 Pattern of ZonedDateTime field is equal to '%s'", ChronoModel.DATE_TIME_PATTERN)
                     .isNotBlank()
                     .hasSize(ChronoModel.DATE_TIME_PATTERN.length())
                     .matches(patternMap.get(ChronoModel.DATE_TIME_PATTERN));
             assertThat(offsetTime)
-                    .as("#6 Pattern of OffsetTime field is equal to '%s'", ChronoModel.TIME_PATTERN)
+                    .as("#7 Pattern of OffsetTime field is equal to '%s'", ChronoModel.TIME_PATTERN)
                     .isNotBlank()
                     .hasSameSizeAs(ChronoModel.TIME_PATTERN)
                     .matches(patternMap.get(ChronoModel.TIME_PATTERN));
             assertThat(offsetDateTime)
-                    .as("#7 Pattern of OffsetDateTime field is equal to '%s'", ChronoModel.DATE_TIME_PATTERN)
+                    .as("#8 Pattern of OffsetDateTime field is equal to '%s'", ChronoModel.DATE_TIME_PATTERN)
                     .isNotBlank()
                     .hasSize(ChronoModel.DATE_TIME_PATTERN.length())
                     .matches(patternMap.get(ChronoModel.DATE_TIME_PATTERN));
@@ -134,13 +156,14 @@ class DateTimeFormatTest extends ModelWriterTester {
         static final String TIME_PATTERN = "HH/mm/ss/SSS";
         static final String DATE_TIME_PATTERN = "yyyy/MM/dd | HH:mm:ss.SSS";
 
-        private long id;
+        // Default pattern is "yyyy-MM-dd HH:mm:ss"
+        private Date date;
         @ExcelDateTimeFormat(pattern = DATE_PATTERN)
-        private LocalDate date;
+        private LocalDate localDate;
         @ExcelDateTimeFormat(pattern = TIME_PATTERN)
-        private LocalTime time;
+        private LocalTime localTime;
         @ExcelDateTimeFormat(pattern = DATE_TIME_PATTERN)
-        private LocalDateTime dateTime;
+        private LocalDateTime localDateTime;
         @ExcelDateTimeFormat(pattern = DATE_TIME_PATTERN)
         private ZonedDateTime zonedDateTime;
         @ExcelDateTimeFormat(pattern = TIME_PATTERN)
