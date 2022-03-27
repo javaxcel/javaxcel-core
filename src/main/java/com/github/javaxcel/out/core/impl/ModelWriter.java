@@ -61,15 +61,16 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
         super(workbook, type);
 
         // Finds targeted fields.
-        this.fields = FieldUtils.getTargetedFields(type);
-        Asserts.that(this.fields)
+        List<Field> fields = FieldUtils.getTargetedFields(type);
+        Asserts.that(fields)
                 .as("ModelWriter.fields cannot find the targeted fields in the class: {0}", type.getName())
                 .exception(desc -> new NoTargetedFieldException(type, desc))
                 .hasElement()
-                .as("ModelWriter.fields cannot have null element: {0}", this.fields)
+                .as("ModelWriter.fields cannot have null element: {0}", fields)
                 .doesNotContainNull();
+        this.fields = fields;
 
-        this.converter = new ExcelWriteConverterSupport<>(fields, registry);
+        this.converter = new ExcelWriteConverterSupport<>(this.fields, registry);
     }
 
     @Override

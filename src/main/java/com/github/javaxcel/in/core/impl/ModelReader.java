@@ -61,11 +61,14 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
         this.type = type;
 
         // Finds targeted fields.
-        this.fields = FieldUtils.getTargetedFields(this.type);
-        Asserts.that(this.fields)
-                .as("Cannot find the targeted fields in the class({0})", this.type.getName())
+        List<Field> fields = FieldUtils.getTargetedFields(this.type);
+        Asserts.that(fields)
+                .as("ModelReader.fields cannot find the targeted fields in the class: {0}", this.type.getName())
                 .exception(desc -> new NoTargetedFieldException(this.type, desc))
-                .hasElement();
+                .hasElement()
+                .as("ModelReader.fields cannot have null element: {0}", fields)
+                .doesNotContainNull();
+        this.fields = fields;
 
         this.converter = new ExcelReadConverterSupport(this.fields, registry);
     }
