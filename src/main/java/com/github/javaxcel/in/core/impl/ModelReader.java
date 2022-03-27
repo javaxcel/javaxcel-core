@@ -27,7 +27,9 @@ import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.ReflectionUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -42,6 +44,41 @@ import static java.util.stream.Collectors.toList;
 public class ModelReader<T> extends AbstractExcelReader<T> {
 
     private final Class<T> type;
+
+    /**
+     * For cache
+     *
+     * <p> The following table is a benchmark with 100,000 rows.
+     *
+     * <pre>
+     *     +-----+-----------+-----------+
+     *     | try | cached    | no cache  |
+     *     +-----+-----------+-----------+
+     *     | 1   | 3.809887s | 3.978322s |
+     *     +-----+-----------+-----------+
+     *     | 2   | 2.732647s | 2.751642s |
+     *     +-----+-----------+-----------+
+     *     | 3   | 2.661144s | 2.760901s |
+     *     +-----+-----------+-----------+
+     *     | 4   | 2.745241s | 2.801942s |
+     *     +-----+-----------+-----------+
+     *     | 5   | 2.526665s | 2.596132s |
+     *     +-----+-----------+-----------+
+     *     | 6   | 2.713802s | 2.622913s |
+     *     +-----+-----------+-----------+
+     *     | 7   | 2.505731s | 2.594136s |
+     *     +-----+-----------+-----------+
+     *     | 8   | 2.51782s  | 2.634646s |
+     *     +-----+-----------+-----------+
+     *     | 9   | 2.506474s | 2.703751s |
+     *     +-----+-----------+-----------+
+     *     | 10  | 2.532037s | 2.604461s |
+     *     +-----+-----------+-----------+
+     * </pre>
+     *
+     * <p> Each average is 2.725144s and 2.804884s. More efficient about 2.8%.
+     */
+    private final Constructor<T> constructor;
 
     /**
      * The fields of the type that will is actually read from Excel file.
@@ -59,6 +96,10 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
     public ModelReader(Workbook workbook, Class<T> type, ExcelTypeHandlerRegistry registry) {
         super(workbook, type);
         this.type = type;
+
+        Constructor<T> constructor = ReflectionUtils.getDeclaredConstructor(this.type);
+        if (!constructor.isAccessible()) constructor.setAccessible(true);
+        this.constructor = constructor;
 
         // Finds targeted fields.
         List<Field> fields = FieldUtils.getTargetedFields(this.type);
@@ -95,7 +136,13 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
      * @return real model
      */
     private T toRealModel(Map<String, Object> imitation) {
-        T model = ReflectionUtils.instantiate(this.type);
+        T model;
+        try {
+            model = this.constructor.newInstance();
+        } catch (ReflectiveOperationException e) {
+            String message = String.format("Failed to instantiate by constructor: %s(%s)", type, Arrays.toString(this.constructor.getParameterTypes()).replaceAll("[\\[\\]]", ""));
+            throw new RuntimeException(message, e);
+        }
 
         for (Field field : this.fields) {
             Object fieldValue = this.converter.convert(imitation, field);
