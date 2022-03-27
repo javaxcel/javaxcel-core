@@ -14,7 +14,7 @@ public class Toy {
     @ConditionalOnPercentage(0.75)
     private String name;
 
-    @ConditionalOnPercentage(0.99)
+    @ConditionalOnPercentage(0.9)
     private ToyType toyType;
 
     @ConditionalOnPercentage(0.5)

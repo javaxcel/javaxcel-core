@@ -33,6 +33,7 @@ class ExcelTypeHandlerSpec extends Specification {
 
         where:
         impl                           || origin                                                  | written
+        // primitive
         new BooleanTypeHandler(true)   || false                                                   | "false"
         new ByteTypeHandler(true)      || 2 as byte                                               | "2"
         new ShortTypeHandler(true)     || -56 as short                                            | "-56"
@@ -41,6 +42,7 @@ class ExcelTypeHandlerSpec extends Specification {
         new LongTypeHandler(true)      || -789456L                                                | "-789456"
         new FloatTypeHandler(true)     || 3.14F                                                   | "3.14"
         new DoubleTypeHandler(true)    || -1.141414D                                              | "-1.141414"
+        // java.lang
         new BooleanTypeHandler()       || Boolean.TRUE                                            | "true"
         new ByteTypeHandler()          || new Byte("-2")                                          | "-2"
         new ShortTypeHandler()         || new Short("56")                                         | "56"
@@ -49,8 +51,11 @@ class ExcelTypeHandlerSpec extends Specification {
         new LongTypeHandler()          || new Long("789456")                                      | "789456"
         new FloatTypeHandler()         || new Float("-3.14")                                      | "-3.14"
         new DoubleTypeHandler()        || new Double("1.141414")                                  | "1.141414"
+        new StringTypeHandler()        || "alpha-beta"                                            | "alpha-beta"
+        // java.math
         new BigIntegerTypeHandler()    || new BigInteger("82487158456540")                        | "82487158456540"
         new BigDecimalTypeHandler()    || new BigDecimal("3.141592653580")                        | "3.14159265358"
+        // java.util
         new DateTypeHandler()          || new Date(2022 - 1900, 12 - 1, 31, 23, 59, 59)           | "2022-12-31 23:59:59"
         new UUIDTypeHandler()          || UUID.fromString("d7930b58-f7b0-43c0-af15-08c0f99e33df") | "d7930b58-f7b0-43c0-af15-08c0f99e33df"
         new LocaleTypeHandler()        || Locale.ROOT                                             | ""
