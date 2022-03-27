@@ -130,7 +130,7 @@ public class TestUtils {
 
     @Target(FIELD)
     @Retention(RUNTIME)
-    public @interface ConditionalOnPercentage {
+    public @interface ExcludeOnPercentage {
         double value();
     }
 
@@ -143,7 +143,7 @@ public class TestUtils {
             if (field.isAnnotationPresent(ExcelIgnore.class)) return true;
 
             // Includes.
-            ConditionalOnPercentage annotation = field.getAnnotation(ConditionalOnPercentage.class);
+            ExcludeOnPercentage annotation = field.getAnnotation(ExcludeOnPercentage.class);
             if (annotation == null) return false;
 
             // Excludes the field depending on percentage.

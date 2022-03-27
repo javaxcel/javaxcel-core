@@ -1,6 +1,6 @@
 package com.github.javaxcel.model.computer;
 
-import com.github.javaxcel.TestUtils.ConditionalOnPercentage;
+import com.github.javaxcel.TestUtils.ExcludeOnPercentage;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.style.DefaultBodyStyleConfig;
@@ -19,29 +19,29 @@ import java.math.BigInteger;
 @ExcelModel(explicit = true, headerStyle = DefaultHeaderStyleConfig.class, bodyStyle = DefaultBodyStyleConfig.class)
 public class Computer {
 
-    @ConditionalOnPercentage(0.9)
+    @ExcludeOnPercentage(0.1)
     @ExcelColumn(name = "CPU_CLOCK")
     private BigInteger cpu;
 
-    @ConditionalOnPercentage(0.85)
+    @ExcludeOnPercentage(0.15)
     private Double ram;
 
-    @ConditionalOnPercentage(0.8)
+    @ExcludeOnPercentage(0.2)
     @ExcelColumn(name = "DISK_SIZE")
     private Long disk;
 
-    @ConditionalOnPercentage(0.3)
+    @ExcludeOnPercentage(0.7)
     private String inputDevice;
 
-    @ConditionalOnPercentage(0.33)
+    @ExcludeOnPercentage(0.67)
     private String outputDevice;
 
     @ExcelColumn
-    @ConditionalOnPercentage(0.75)
+    @ExcludeOnPercentage(0.25)
     private String manufacturer;
 
     @ExcelColumn
-    @ConditionalOnPercentage(0.5)
+    @ExcludeOnPercentage(0.5)
     private int price;
 
 }

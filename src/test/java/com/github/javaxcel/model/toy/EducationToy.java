@@ -1,6 +1,6 @@
 package com.github.javaxcel.model.toy;
 
-import com.github.javaxcel.TestUtils.ConditionalOnPercentage;
+import com.github.javaxcel.TestUtils.ExcludeOnPercentage;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.annotation.ExcelModel;
@@ -18,11 +18,11 @@ import java.util.Date;
 @ExcelModel(includeSuper = true, enumDropdown = true)
 public class EducationToy extends Toy {
 
-    @ConditionalOnPercentage(0.5)
+    @ExcludeOnPercentage(0.5)
     @ExcelColumn(defaultValue = "[]")
     private int[][] targetAges;
 
-    @ConditionalOnPercentage(0.75)
+    @ExcludeOnPercentage(0.25)
     private String goals;
 
     @ExcelDateTimeFormat(pattern = "yyyy_MM_dd/HH_mm_ss")
