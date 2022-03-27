@@ -39,7 +39,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Excel reader for model.
  *
- * @param <T> type of model
+ * @param <T> model type
  */
 public class ModelReader<T> extends AbstractExcelReader<T> {
 
@@ -90,6 +90,8 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
     private final ExcelReadConverterSupport converter;
 
     /**
+     * Creates a reader for model.
+     *
      * @param workbook Excel workbook
      * @param type     type of model
      */

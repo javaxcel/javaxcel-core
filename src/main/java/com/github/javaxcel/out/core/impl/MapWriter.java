@@ -37,6 +37,9 @@ import java.util.logging.Filter;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
 
+/**
+ * Excel writer for {@link Map}.
+ */
 @SuppressWarnings("unchecked")
 public class MapWriter extends AbstractExcelWriter<Map<String, Object>> {
 
@@ -62,6 +65,11 @@ public class MapWriter extends AbstractExcelWriter<Map<String, Object>> {
         }
     }
 
+    /**
+     * Create a writer for {@link Map}.
+     *
+     * @param workbook Excel workbook
+     */
     public MapWriter(Workbook workbook) {
         super(workbook, MAP_TYPE);
     }

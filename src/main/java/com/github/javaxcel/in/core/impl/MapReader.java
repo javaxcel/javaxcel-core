@@ -48,6 +48,8 @@ public class MapReader extends AbstractExcelReader<Map<String, Object>> {
     }
 
     /**
+     * Create a reader for {@link Map}.
+     *
      * @param workbook Excel workbook
      */
     public MapReader(Workbook workbook) {

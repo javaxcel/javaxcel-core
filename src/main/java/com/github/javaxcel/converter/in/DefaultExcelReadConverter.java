@@ -44,9 +44,6 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
         this.registry = registry;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Nullable
     @Override
     public Object convert(Map<String, Object> variables, Field field) {
@@ -122,12 +119,19 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
 
         private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
+        /**
+         * Splits the string from only elements in one-dimensional array.
+         *
+         * @param src       array-like string
+         * @param delimiter delimiter of array
+         * @return separated strings
+         */
         public static String[] shallowSplit(String src, String delimiter) {
             Asserts.that(src)
                     .as("src must be array-like string, but it isn't: '{0}'", src)
                     .isNotNull().startsWith("[").endsWith("]");
             Asserts.that(delimiter)
-                    .as("Delimiter is not allowed to be null or empty: '{0}'", delimiter)
+                    .as("delimiter is not allowed to be null or empty: '{0}'", delimiter)
                     .isNotNull().isNotEmpty();
 
             // Fast return.
@@ -187,6 +191,12 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
             return list.toArray(new String[0]);
         }
 
+        /**
+         * Returns length of one-dimensional array.
+         *
+         * @param str array-like string
+         * @return array length
+         */
         public static int getShallowLength(String str) {
             int length = 0;
             boolean isEmpty = false;

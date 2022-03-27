@@ -41,7 +41,7 @@ import java.util.logging.Filter;
 import java.util.stream.IntStream;
 
 /**
- * Excel writer with model
+ * Excel writer for model.
  *
  * @param <T> model type
  */
@@ -57,6 +57,13 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
 
     private Map<Integer, String[]> enumDropdownMap;
 
+    /**
+     * Creates a writer for model.
+     *
+     * @param workbook Excel workbook
+     * @param type     model type
+     * @param registry registry of handlers for field type
+     */
     public ModelWriter(Workbook workbook, Class<T> type, ExcelTypeHandlerRegistry registry) {
         super(workbook, type);
 
