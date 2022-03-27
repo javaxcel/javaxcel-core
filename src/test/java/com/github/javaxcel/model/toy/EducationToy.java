@@ -25,7 +25,7 @@ public class EducationToy extends Toy {
     @ConditionalOnPercentage(0.75)
     private String goals;
 
-    @ExcelDateTimeFormat(pattern = "yyyy/MM/dd//HH.mm.ss")
+    @ExcelDateTimeFormat(pattern = "yyyy_MM_dd/HH_mm_ss")
     private Date formattedDate = Date.from(Instant.now().with(ChronoField.MILLI_OF_SECOND, 0));
     private Date date = Date.from(Instant.now().with(ChronoField.MILLI_OF_SECOND, 0));
 
