@@ -74,7 +74,7 @@ class DefaultValueTest extends MapWriterTester {
         assertDefaultValue(file, thenModel.getModels());
     }
 
-    private void assertDefaultValue(File file, List<Map<String, Object>> models) throws IOException {
+    private static void assertDefaultValue(File file, List<Map<String, Object>> models) throws IOException {
         @Cleanup Workbook workbook = ExcelUtils.getWorkbook(file);
         List<Map<String, Object>> written = TestUtils.JAVAXCEL.reader(workbook).read();
 

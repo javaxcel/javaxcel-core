@@ -31,9 +31,7 @@ import java.util.Map;
 
 public abstract class MapWriterTester {
 
-    /*
-     Template method.
-     */
+    // Template method.
     protected final void run(File file, Stopwatch stopwatch, Object... args) throws Exception {
         GivenModel givenModel = new GivenModel(file, args);
 

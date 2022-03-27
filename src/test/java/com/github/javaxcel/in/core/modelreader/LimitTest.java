@@ -74,7 +74,7 @@ class LimitTest extends ModelReaderTester {
                 .isEqualTo(fetchSize);
         assertThat(computers)
                 .as("#2 Each loaded model is equal to each mock")
-                .containsExactly(mocks.stream().limit(fetchSize).toArray(Computer[]::new));
+                .containsExactlyElementsOf(mocks.size() == fetchSize ? mocks : mocks.subList(0, fetchSize));
     }
 
 }

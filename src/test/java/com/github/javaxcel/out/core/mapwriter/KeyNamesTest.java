@@ -52,7 +52,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * @see KeyNames
  */
 @StopwatchProvider
-class HeaderNamesTest extends MapWriterTester {
+class KeyNamesTest extends MapWriterTester {
 
     private static final int NUM_OF_COLUMNS = 10;
 
@@ -110,10 +110,8 @@ class HeaderNamesTest extends MapWriterTester {
         OutputStream out = new FileOutputStream(givenModel.getFile());
         Workbook workbook = new HSSFWorkbook();
 
-        /*
-        To create multiple sheets, generates models as many
-        as the amount exceeds the maximum number of rows per sheet.
-         */
+        // To create multiple sheets, generates models as many
+        // as the amount exceeds the maximum number of rows per sheet.
         return new WhenModel(out, workbook, (int) (ExcelUtils.getMaxRows(workbook) * 1.1));
     }
 

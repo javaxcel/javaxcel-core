@@ -58,7 +58,7 @@ class DefaultValueTest extends ModelReaderTester {
                 .as("#1 The number of loaded models is %,d", mocks.size())
                 .hasSameSizeAs(mocks)
                 .as("#2 Each loaded model is equal to each mock")
-                .containsExactly(mocks.toArray(new Product[0]))
+                .containsExactlyElementsOf(mocks)
                 .as("#3 Each loaded model has default value")
                 .flatMap(it -> Arrays.asList(it.getDates()))
                 .isNotNull()
