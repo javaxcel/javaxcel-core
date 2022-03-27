@@ -17,8 +17,11 @@
 package com.github.javaxcel.out.core;
 
 import com.github.javaxcel.TestUtils;
+import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
+import io.github.imsejin.common.util.FilenameUtils;
 import lombok.*;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
@@ -28,6 +31,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract class MapWriterTester {
 
@@ -60,9 +64,31 @@ public abstract class MapWriterTester {
 
     protected WhenModel given(GivenModel givenModel) throws Exception {
         OutputStream out = new FileOutputStream(givenModel.file);
-        Workbook workbook = new SXSSFWorkbook();
 
-        return new WhenModel(out, workbook, 8192);
+        String extension = FilenameUtils.getExtension(givenModel.file.getName());
+        Workbook workbook;
+        switch (extension) {
+            case ExcelUtils.EXCEL_97_EXTENSION:
+                workbook = new HSSFWorkbook();
+                break;
+            case ExcelUtils.EXCEL_2007_EXTENSION:
+                workbook = new SXSSFWorkbook();
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid extension of Excel file: " + extension);
+        }
+
+        int numOfMocks = 0;
+        for (Object arg : Objects.requireNonNull(givenModel.args)) {
+            if (arg == null || arg.getClass() != Integer.class) continue;
+
+            numOfMocks = (int) arg;
+            break;
+        }
+
+        if (numOfMocks <= 0) numOfMocks = 8192;
+
+        return new WhenModel(out, workbook, numOfMocks);
     }
 
     protected ThenModel whenCreateModels(GivenModel givenModel, WhenModel whenModel) {

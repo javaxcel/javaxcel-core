@@ -25,7 +25,6 @@ import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import io.github.imsejin.common.util.StreamUtils;
 import lombok.Cleanup;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -35,8 +34,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -107,12 +104,14 @@ class KeyNamesTest extends MapWriterTester {
 
     @Override
     protected WhenModel given(GivenModel givenModel) throws Exception {
-        OutputStream out = new FileOutputStream(givenModel.getFile());
-        Workbook workbook = new HSSFWorkbook();
+        WhenModel whenModel = super.given(givenModel);
 
         // To create multiple sheets, generates models as many
         // as the amount exceeds the maximum number of rows per sheet.
-        return new WhenModel(out, workbook, (int) (ExcelUtils.getMaxRows(workbook) * 1.1));
+        int numOfMocks = (int) (ExcelUtils.getMaxRows(whenModel.getWorkbook()) * 1.1);
+        whenModel.setNumOfMocks(numOfMocks);
+
+        return whenModel;
     }
 
     @Override
