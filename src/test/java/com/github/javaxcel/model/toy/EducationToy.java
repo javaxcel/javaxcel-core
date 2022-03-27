@@ -7,6 +7,8 @@ import com.github.javaxcel.annotation.ExcelModel;
 import lombok.*;
 
 import java.time.*;
+import java.time.temporal.ChronoField;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -22,6 +24,10 @@ public class EducationToy extends Toy {
 
     @ConditionalOnPercentage(0.75)
     private String goals;
+
+    @ExcelDateTimeFormat(pattern = "yyyy/MM/dd//HH.mm.ss")
+    private Date formattedDate = Date.from(Instant.now().with(ChronoField.MILLI_OF_SECOND, 0));
+    private Date date = Date.from(Instant.now().with(ChronoField.MILLI_OF_SECOND, 0));
 
     @ExcelDateTimeFormat(pattern = "HH/mm/ss/SSS")
     private LocalTime formattedLocalTime = LocalTime.now().withNano(123_000_000); // with 123 ms

@@ -18,6 +18,7 @@ package com.github.javaxcel.out.core;
 
 import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.util.ExcelUtils;
+import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import io.github.imsejin.common.util.FilenameUtils;
 import lombok.*;
@@ -78,15 +79,8 @@ public abstract class MapWriterTester {
                 throw new IllegalArgumentException("Invalid extension of Excel file: " + extension);
         }
 
-        int numOfMocks = 0;
-        for (Object arg : Objects.requireNonNull(givenModel.args)) {
-            if (arg == null || arg.getClass() != Integer.class) continue;
-
-            numOfMocks = (int) arg;
-            break;
-        }
-
-        if (numOfMocks <= 0) numOfMocks = 8192;
+        Integer number = FieldUtils.resolveFirst(Integer.class, Objects.requireNonNull(givenModel.args));
+        int numOfMocks = number == null ? 8192 : number;
 
         return new WhenModel(out, workbook, numOfMocks);
     }

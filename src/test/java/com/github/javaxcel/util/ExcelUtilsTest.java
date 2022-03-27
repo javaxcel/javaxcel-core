@@ -30,6 +30,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.concurrent.TimeUnit;
@@ -68,16 +69,20 @@ class ExcelUtilsTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"localTime", "localDate", "localDateTime", "zonedDateTime", "offsetTime", "offsetDateTime"})
+    @ValueSource(strings = {
+            "date", "localTime", "localDate", "localDateTime",
+            "zonedDateTime", "offsetTime", "offsetDateTime",
+    })
     @SneakyThrows
     void stringifyValue(String fieldName) {
         // given
         ExcelTypeHandlerRegistry registry = new DefaultExcelTypeHandlerRegistry();
         ExcelWriteConverter<EducationToy> converter = new DefaultExcelWriteConverter<>(registry);
+        Field field = EducationToy.class.getDeclaredField(fieldName);
 
         for (EducationToy toy : TestUtils.getMocks(EducationToy.class, 10)) {
             // when
-            String stringified = converter.convert(toy, toy.getClass().getDeclaredField(fieldName));
+            String stringified = converter.convert(toy, field);
 
             // then
             assertThat(stringified).isNotNull().isNotBlank();
