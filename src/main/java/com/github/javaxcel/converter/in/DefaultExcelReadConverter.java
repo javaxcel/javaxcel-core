@@ -220,7 +220,7 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
                 }
 
                 if (c == closer) depth--;
-                if (depth == 1 && c == ',' && str.charAt(i + 1) == ' ') length++;
+                if (depth == 1 && isDelimiterByChar(str, i, ", ")) length++;
             }
 
             if (!isEmpty) length++;
@@ -228,7 +228,7 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
             return length;
         }
 
-        public static boolean isDelimiterByChar(String src, int pos, String delimiter) {
+        private static boolean isDelimiterByChar(String src, int pos, String delimiter) {
             if (src == null || src.isEmpty() || delimiter == null || delimiter.isEmpty()) return false;
             if (src.length() < delimiter.length()) return false;
 
