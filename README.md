@@ -13,7 +13,7 @@
     </a>
     -->
     <a href="https://github.com/javaxcel/javaxcel-core/actions/workflows/maven-build.yml">
-        <img alt="Github Workflows" src="https://img.shields.io/github/workflow/status/javaxcel/javaxcel-core/Java%20CI%20with%20Maven?label=build&style=flat-square">
+        <img alt="Github Workflow" src="https://img.shields.io/github/workflow/status/javaxcel/javaxcel-core/Java%20CI%20with%20Maven/release?style=flat-square">
     </a>
     <a href="https://codecov.io/gh/javaxcel/javaxcel-core">
         <img alt="Codecov branch" src="https://img.shields.io/codecov/c/github/javaxcel/javaxcel-core/release?label=code%20coverage&style=flat-square&token=X7ZO535W9K"/>
