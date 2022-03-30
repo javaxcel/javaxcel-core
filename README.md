@@ -49,7 +49,7 @@
   11. [Enum value constraint](#enum-value-constraint)
   12. [Limitation of reading rows](#limitation-of-reading-rows)
   13. [Parallel reading](#parallel-reading)
-  14. [Support java.util.Map](#support-java.util.Map)
+  14. [Support java.util.Map](#support-javautilmap)
 
 <br><br>
 
@@ -892,7 +892,7 @@ List<String> newKeyNames = Arrays.asList("SERIAL_NUMBER", "PRODUCT_NAME");
 
 Javaxcel.newInstance()
         .writer(workbook)
-        .options(new KeyNames(keyOrders))
+        .options(new KeyNames(keyOrders, newKeyNames))
         .write(out, maps);
 ```
 
