@@ -91,7 +91,7 @@ public interface ExcelReadStrategy {
 
         @Override
         public Object execute(ExcelReadContext<?> context) {
-            return null; // Not used.
+            throw new UnsupportedOperationException("ExcelReadStrategy." + getClass().getSimpleName() + " is not supported");
         }
     }
 

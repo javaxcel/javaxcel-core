@@ -330,7 +330,7 @@ public interface ExcelWriteStrategy {
 
         @Override
         public Object execute(ExcelWriteContext<?> context) {
-            return null; // Not used.
+            throw new UnsupportedOperationException("ExcelWriteStrategy." + getClass().getSimpleName() + " is not supported");
         }
     }
 
@@ -345,7 +345,7 @@ public interface ExcelWriteStrategy {
 
         @Override
         public Object execute(ExcelWriteContext<?> context) {
-            return null; // Not used.
+            throw new UnsupportedOperationException("ExcelWriteStrategy." + getClass().getSimpleName() + " is not supported");
         }
     }
 
@@ -363,7 +363,7 @@ public interface ExcelWriteStrategy {
 
         @Override
         public Object execute(ExcelWriteContext<?> context) {
-            return null; // Not used.
+            throw new UnsupportedOperationException("ExcelWriteStrategy." + getClass().getSimpleName() + " is not supported");
         }
     }
 
@@ -383,7 +383,7 @@ public interface ExcelWriteStrategy {
 
         @Override
         public Object execute(ExcelWriteContext<?> context) {
-            return null; // Not used.
+            throw new UnsupportedOperationException("ExcelWriteStrategy." + getClass().getSimpleName() + " is not supported");
         }
     }
 
@@ -397,7 +397,7 @@ public interface ExcelWriteStrategy {
 
         @Override
         public Object execute(ExcelWriteContext<?> context) {
-            return null; // Not used.
+            throw new UnsupportedOperationException("ExcelWriteStrategy." + getClass().getSimpleName() + " is not supported");
         }
     }
 

@@ -124,10 +124,10 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
 
     @Override
     protected List<T> readBody(ExcelReadContext<T> context) {
-        List<Map<String, Object>> imitations = super.readBodyAsMaps(context.getSheet());
+        List<Map<String, Object>> maps = super.readBodyAsMaps(context.getSheet());
 
         Stream<Map<String, Object>> stream = context.getStrategyMap().containsKey(Parallel.class)
-                ? imitations.parallelStream() : imitations.stream();
+                ? maps.parallelStream() : maps.stream();
 
         return stream.map(this::toRealModel).collect(toList());
     }
