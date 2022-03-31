@@ -24,80 +24,35 @@ import static org.assertj.core.api.Assertions.assertThat;
 class NoTargetedConstructorExceptionTest {
 
     @Test
-    @DisplayName("NoTargetedConstructorException(Class)")
+    @DisplayName("NoTargetedConstructorException(String, Object...)")
     void test0() {
         // given
-        Class<TestModel> type = TestModel.class;
+        String message = "Failed to find the targeted constructor";
 
         // when
-        NoTargetedConstructorException exception = new NoTargetedConstructorException(type);
+        NoTargetedConstructorException exception = new NoTargetedConstructorException(message);
 
         // then
         assertThat(exception)
                 .isExactlyInstanceOf(NoTargetedConstructorException.class)
-                .hasMessage("Cannot find a default constructor in the class(%s)", type.getName());
-        assertThat(exception.getType()).isEqualTo(type);
+                .hasMessage(message);
     }
 
     @Test
-    @DisplayName("NoTargetedConstructorException(Class, String, Object...)")
+    @DisplayName("NoTargetedConstructorException(Throwable, String, Object...)")
     void test1() {
         // given
-        String message = "Exception of failure of finding constructor";
-        Class<TestModel> type = TestModel.class;
+        String message = "NoTargetedConstructorException: ";
+        Throwable cause = new RuntimeException("Failed to find the targeted constructor");
 
         // when
-        NoTargetedConstructorException exception = new NoTargetedConstructorException(type, message);
-
-        // then
-        assertThat(exception)
-                .isExactlyInstanceOf(NoTargetedConstructorException.class)
-                .hasMessage(message);
-        assertThat(exception.getType()).isEqualTo(type);
-    }
-
-    @Test
-    @DisplayName("NoTargetedConstructorException(Class, Throwable)")
-    void test2() {
-        // given
-        Throwable cause = new RuntimeException("Exception of failure of finding constructor");
-        Class<TestModel> type = TestModel.class;
-
-        // when
-        NoTargetedConstructorException exception = new NoTargetedConstructorException(type, cause);
+        NoTargetedConstructorException exception = new NoTargetedConstructorException(cause, message, Object.class);
 
         // then
         assertThat(exception)
                 .isExactlyInstanceOf(NoTargetedConstructorException.class)
                 .hasCause(cause)
-                .hasMessage("Cannot find a default constructor in the class(%s)", type.getName());
-        assertThat(exception.getType()).isEqualTo(type);
-    }
-
-    @Test
-    @DisplayName("NoTargetedConstructorException(Class, Throwable, String, Object...)")
-    void test3() {
-        // given
-        String message = "Exception of failure of finding constructor";
-        Throwable cause = new RuntimeException(message);
-        Class<TestModel> type = TestModel.class;
-
-        // when
-        NoTargetedConstructorException exception = new NoTargetedConstructorException(type, cause, message);
-
-        // then
-        assertThat(exception)
-                .isExactlyInstanceOf(NoTargetedConstructorException.class)
-                .hasCause(cause)
-                .hasMessage(message);
-        assertThat(exception.getType()).isEqualTo(type);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////////////
-
-    private static class TestModel {
-        private Long id;
-        private String name;
+                .hasMessageStartingWith(message);
     }
 
 }

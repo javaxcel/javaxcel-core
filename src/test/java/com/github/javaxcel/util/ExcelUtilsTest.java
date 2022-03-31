@@ -57,7 +57,7 @@ class ExcelUtilsTest {
         }
         Constructor<?> constructor = Arrays.stream(declaredConstructors)
                 .min(Comparator.comparingInt(Constructor::getParameterCount))
-                .orElseThrow(() -> new NoTargetedConstructorException(clazz));
+                .orElseThrow(() -> new NoTargetedConstructorException("Failed to find the targeted constructor"));
         if (!constructor.isAccessible()) constructor.setAccessible(true);
         stopwatch.stop();
 
