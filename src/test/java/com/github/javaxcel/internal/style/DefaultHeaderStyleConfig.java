@@ -1,4 +1,4 @@
-package com.github.javaxcel.style;
+package com.github.javaxcel.internal.style;
 
 import com.github.javaxcel.styler.config.Configurer;
 import com.github.javaxcel.styler.ExcelStyleConfig;
