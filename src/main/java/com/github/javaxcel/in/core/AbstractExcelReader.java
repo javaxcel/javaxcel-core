@@ -177,7 +177,7 @@ public abstract class AbstractExcelReader<T> implements ExcelReader<T>, ExcelRea
             maps.add(readRow(row));
         }
 
-        return maps;
+        return Collections.unmodifiableList(maps);
     }
 
     /**
@@ -219,7 +219,8 @@ public abstract class AbstractExcelReader<T> implements ExcelReader<T>, ExcelRea
                 cellValue = dataFormatter.formatCellValue(cell, this.formulaEvaluator);
             }
 
-            // Converts empty string to null because when CellType is BLANK, DataFormatter returns empty string.
+            // Converts empty string to null because when CellType is BLANK,
+            // DataFormatter returns empty string.
             String headerName = this.context.getHeaderNames().get(i);
             map.put(headerName, StringUtils.ifNullOrEmpty(cellValue, (String) null));
         }
@@ -227,7 +228,7 @@ public abstract class AbstractExcelReader<T> implements ExcelReader<T>, ExcelRea
         // Increases read count of row.
         this.context.increaseReadCount();
 
-        return map;
+        return Collections.unmodifiableMap(map);
     }
 
     ///////////////////////////////////// Overridable /////////////////////////////////////

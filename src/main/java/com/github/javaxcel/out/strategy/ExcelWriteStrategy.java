@@ -204,7 +204,7 @@ public interface ExcelWriteStrategy {
                 orders.put(keyOrders.get(i), i);
             }
 
-            this.keyMap = Collections.singletonMap("orders", orders);
+            this.keyMap = Collections.singletonMap("orders", Collections.unmodifiableMap(orders));
         }
 
         /**
@@ -301,8 +301,8 @@ public interface ExcelWriteStrategy {
                 orders.put(keyOrders.get(i), i);
             }
 
-            keyMap.put("orders", orders);
-            keyMap.put("names", newKeyNames);
+            keyMap.put("orders", Collections.unmodifiableMap(orders));
+            keyMap.put("names", Collections.unmodifiableList(newKeyNames));
 
             this.keyMap = Collections.unmodifiableMap(keyMap);
         }

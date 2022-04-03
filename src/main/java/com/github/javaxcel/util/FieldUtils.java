@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 
 /**
- * Utilities for reflection.
+ * Utilities for reflection on {@link Field}.
  */
 public final class FieldUtils {
 
@@ -67,16 +67,15 @@ public final class FieldUtils {
                 ? Arrays.stream(type.getDeclaredFields())
                 : ReflectionUtils.getInheritedFields(type).stream();
 
-        // Excludes internal groovy fields.
-        Predicate<Field> filter = field -> !Modifier.isTransient(field.getModifiers()) ||
-                !field.getType().getName().equals("groovy.lang.MetaClass");
-        // Excludes the fields to be ignored.
-        filter = filter.and(field -> field.getAnnotation(ExcelIgnore.class) == null);
+        // Excludes the synthetic fields
+        Predicate<Field> filter = it -> !it.isSynthetic();
         // Excludes the static fields.
-        filter = filter.and(field -> !Modifier.isStatic(field.getModifiers()));
+        filter = filter.and(it -> !Modifier.isStatic(it.getModifiers()));
+        // Excludes the fields to be ignored.
+        filter = filter.and(it -> !it.isAnnotationPresent(ExcelIgnore.class));
         // Excludes the implicit fields.
         if (excelModel != null && excelModel.explicit()) {
-            filter = filter.and(field -> field.getAnnotation(ExcelColumn.class) != null);
+            filter = filter.and(it -> it.isAnnotationPresent(ExcelColumn.class));
         }
 
         return stream.filter(filter).collect(toList());
