@@ -17,6 +17,7 @@
 package com.github.javaxcel.in.core.modelreader;
 
 import com.github.javaxcel.TestUtils;
+import com.github.javaxcel.annotation.ExcelModelCreator;
 import com.github.javaxcel.in.core.ModelReaderTester;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.util.ExcelUtils;
@@ -43,7 +44,7 @@ class FinalFieldTest extends ModelReaderTester {
         String filename = type.getSimpleName().toLowerCase() + '.' + ExcelUtils.EXCEL_97_EXTENSION;
         File file = path.resolve(filename).toFile();
 
-        run(file, type, stopwatch, 512);
+        run(file, type, stopwatch);
     }
 
     @Override
@@ -87,6 +88,7 @@ class FinalFieldTest extends ModelReaderTester {
 
         private final String text;
 
+        @ExcelModelCreator
         public FinalFieldModel() {
             this.number = DEFAULT_NUMBER;
             this.text = DEFAULT_TEXT;

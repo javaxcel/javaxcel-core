@@ -46,7 +46,7 @@ class DateTimeFormatTest extends ModelReaderTester {
         String filename = type.getSimpleName().toLowerCase() + '.' + ExcelUtils.EXCEL_2007_EXTENSION;
         File file = path.resolve(filename).toFile();
 
-        run(file, type, stopwatch);
+        run(file, type, stopwatch, 3072);
     }
 
     @Override

@@ -17,10 +17,10 @@
 package com.github.javaxcel.in.core;
 
 import com.github.javaxcel.TestUtils;
+import com.github.javaxcel.in.strategy.ExcelReadStrategy.Parallel;
 import com.github.javaxcel.util.ExcelUtils;
 import com.monitorjbl.xlsx.StreamingReader;
 import io.github.imsejin.common.tool.Stopwatch;
-import io.github.imsejin.common.util.FileUtils;
 import io.github.imsejin.common.util.FilenameUtils;
 import lombok.Getter;
 import lombok.NonNull;
@@ -123,7 +123,8 @@ public abstract class ModelReaderTester {
     }
 
     protected ThenModel whenReadModels(GivenModel givenModel, WhenModel whenModel) {
-        List<?> models = TestUtils.JAVAXCEL.reader(whenModel.workbook, givenModel.type).read();
+        List<?> models = TestUtils.JAVAXCEL.reader(whenModel.workbook, givenModel.type)
+                .options(new Parallel()).read();
         return new ThenModel(models);
     }
 

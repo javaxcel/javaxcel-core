@@ -3,9 +3,10 @@ package com.github.javaxcel.model.computer;
 import com.github.javaxcel.TestUtils.ExcludeOnPercentage;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
-import com.github.javaxcel.style.DefaultBodyStyleConfig;
-import com.github.javaxcel.style.DefaultHeaderStyleConfig;
-import lombok.AllArgsConstructor;
+import com.github.javaxcel.annotation.ExcelModelCreator;
+import com.github.javaxcel.annotation.ExcelModelCreator.FieldName;
+import com.github.javaxcel.internal.style.DefaultBodyStyleConfig;
+import com.github.javaxcel.internal.style.DefaultHeaderStyleConfig;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,6 @@ import java.math.BigInteger;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(of = {"cpu", "disk", "manufacturer", "price"})
 @ExcelModel(explicit = true, headerStyle = DefaultHeaderStyleConfig.class, bodyStyle = DefaultBodyStyleConfig.class)
 public class Computer {
@@ -43,5 +43,14 @@ public class Computer {
     @ExcelColumn
     @ExcludeOnPercentage(0.5)
     private int price;
+
+    @ExcelModelCreator
+    Computer(@FieldName("cpu") BigInteger cpu, @FieldName("disk") Long disk,
+             @FieldName("manufacturer") String manufacturer, @FieldName("price") int price) {
+        this.cpu = cpu;
+        this.disk = disk;
+        this.manufacturer = manufacturer;
+        this.price = price;
+    }
 
 }

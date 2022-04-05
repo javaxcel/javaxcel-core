@@ -3,6 +3,7 @@ package com.github.javaxcel.model.product;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.annotation.ExcelIgnore;
+import com.github.javaxcel.annotation.ExcelModelCreator;
 import lombok.*;
 import org.jeasy.random.annotation.Exclude;
 
@@ -12,8 +13,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor(onConstructor_ = @ExcelModelCreator)
 @EqualsAndHashCode(exclude = {"width", "weight", "dates"})
 public class Product {
 

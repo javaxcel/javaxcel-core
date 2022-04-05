@@ -2,8 +2,8 @@ package com.github.javaxcel.model.creature;
 
 import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.annotation.*;
-import com.github.javaxcel.style.DefaultBodyStyleConfig;
-import com.github.javaxcel.style.DefaultHeaderStyleConfig;
+import com.github.javaxcel.internal.style.DefaultBodyStyleConfig;
+import com.github.javaxcel.internal.style.DefaultHeaderStyleConfig;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -19,7 +19,7 @@ import java.util.UUID;
 @Setter
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true, exclude = "agesFromTwilightToDeath")
-@NoArgsConstructor
+@NoArgsConstructor(onConstructor_ = @ExcelModelCreator)
 @ExcelModel(includeSuper = true, headerStyle = DefaultHeaderStyleConfig.class, bodyStyle = DefaultBodyStyleConfig.class)
 public class Human extends Creature {
 

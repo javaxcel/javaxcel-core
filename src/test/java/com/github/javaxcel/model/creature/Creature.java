@@ -3,8 +3,8 @@ package com.github.javaxcel.model.creature;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelReadExpression;
 import com.github.javaxcel.annotation.ExcelWriteExpression;
-import com.github.javaxcel.style.DefaultBodyStyleConfig;
-import com.github.javaxcel.style.DefaultHeaderStyleConfig;
+import com.github.javaxcel.internal.style.DefaultBodyStyleConfig;
+import com.github.javaxcel.internal.style.DefaultHeaderStyleConfig;
 import lombok.*;
 
 @Getter
