@@ -87,16 +87,17 @@ public class MapWriter extends AbstractExcelWriter<Map<String, Object>> {
         List<Map<String, Object>> list = context.getList();
 
         // Gets the keys of all maps.
-        this.keys = list.stream().flatMap(it -> it.keySet().stream()).distinct().collect(toList());
+        List<String> keys = list.stream().flatMap(it -> it.keySet().stream()).distinct().collect(toList());
 
         // To write a header, this doesn't allow accepting invalid keys.
-        Asserts.that(this.keys)
+        Asserts.that(keys)
                 .as("MapWriter.keys is not allowed to be empty")
                 .hasElement()
-                .as("MapWriter.keys cannot have null or blank element: {0}", this.keys)
+                .as("MapWriter.keys cannot have null or blank element: {0}", keys)
                 .predicate(them -> them.stream().noneMatch(StringUtils::isNullOrBlank))
-                .as("MapWriter.keys cannot have duplicated elements: {0}", this.keys)
+                .as("MapWriter.keys cannot have duplicated elements: {0}", keys)
                 .predicate(them -> them.stream().noneMatch(it -> Collections.frequency(them, it) > 1));
+        this.keys = keys;
     }
 
     private void changeKeys(ExcelWriteContext<Map<String, Object>> context) {

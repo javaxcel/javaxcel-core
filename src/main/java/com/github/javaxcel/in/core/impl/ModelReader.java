@@ -44,8 +44,6 @@ import static java.util.stream.Collectors.toList;
  */
 public class ModelReader<T> extends AbstractExcelReader<T> {
 
-    private final Class<T> type;
-
     /**
      * For cache
      *
@@ -98,7 +96,6 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
      */
     public ModelReader(Workbook workbook, Class<T> type, ExcelTypeHandlerRegistry registry) {
         super(workbook, type);
-        this.type = type;
 
         Executable executable = AbstractExcelModelExecutableResolver.resolve(type);
 
@@ -126,6 +123,7 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
 
     @Override
     protected List<String> readHeader(ExcelReadContext<T> context) {
+        // To convert Map to the actual model, ignores @ExcelColumn.name().
         return FieldUtils.toHeaderNames(this.fields, true);
     }
 

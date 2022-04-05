@@ -67,7 +67,7 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
     public ModelWriter(Workbook workbook, Class<T> type, ExcelTypeHandlerRegistry registry) {
         super(workbook, type);
 
-        // Finds targeted fields.
+        // Finds the targeted fields.
         List<Field> fields = FieldUtils.getTargetedFields(type);
         Asserts.that(fields)
                 .as("ModelWriter.fields cannot find the targeted fields in the class: {0}", type.getName())
