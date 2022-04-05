@@ -75,6 +75,10 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
                 .hasElement()
                 .as("ModelWriter.fields cannot have null element: {0}", fields)
                 .doesNotContainNull();
+
+        // To prevent exception from occurring on multi-threaded environment,
+        // Permits access to the fields that are not accessible. (ExcelReadStrategy.Parallel)
+        fields.stream().filter(it -> !it.isAccessible()).forEach(it -> it.setAccessible(true));
         this.fields = fields;
 
         this.converter = new ExcelWriteConverterSupport<>(this.fields, registry);
