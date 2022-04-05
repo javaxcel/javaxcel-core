@@ -16,9 +16,8 @@
 
 package com.github.javaxcel.internal.model;
 
-import com.github.javaxcel.annotation.ExcelModelConstructor;
-import com.github.javaxcel.annotation.ExcelModelConstructor.FieldName;
-import com.github.javaxcel.util.ConstructorUtilsSpec;
+import com.github.javaxcel.annotation.ExcelModelCreator;
+import com.github.javaxcel.annotation.ExcelModelCreator.FieldName;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -26,10 +25,7 @@ import lombok.NoArgsConstructor;
 import java.nio.file.AccessMode;
 import java.util.List;
 
-/**
- * @see ConstructorUtilsSpec
- */
-public class ExcelModelConstructorTester {
+public class ExcelModelCreatorTester {
 
     public static class PublicNoArgs {
     }
@@ -42,8 +38,8 @@ public class ExcelModelConstructorTester {
         private AccessMode accessMode;
     }
 
-    @NoArgsConstructor(access = AccessLevel.PRIVATE, onConstructor_ = @ExcelModelConstructor)
-    @AllArgsConstructor(access = AccessLevel.PRIVATE, onConstructor_ = @ExcelModelConstructor)
+    @NoArgsConstructor(access = AccessLevel.PRIVATE, onConstructor_ = @ExcelModelCreator)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE, onConstructor_ = @ExcelModelCreator)
     public static class AnnotatedConstructors {
         private Object object;
         private List<String> strings;

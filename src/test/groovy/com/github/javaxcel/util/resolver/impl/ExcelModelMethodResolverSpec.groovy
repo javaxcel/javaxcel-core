@@ -14,20 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.annotation;
+package com.github.javaxcel.util.resolver.impl
 
-import java.lang.annotation.*;
+import spock.lang.Specification
 
-@Documented
-@Target(ElementType.CONSTRUCTOR)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface ExcelModelConstructor {
-
-    @Documented
-    @Target(ElementType.PARAMETER)
-    @Retention(RetentionPolicy.RUNTIME)
-    @interface FieldName {
-        String value();
-    }
-
+class ExcelModelMethodResolverSpec extends Specification {
 }
