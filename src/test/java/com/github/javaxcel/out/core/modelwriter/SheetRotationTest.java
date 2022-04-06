@@ -23,6 +23,8 @@ import com.github.javaxcel.out.strategy.ExcelWriteStrategy.SheetName;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -35,12 +37,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static com.github.javaxcel.TestUtils.assertEqualsNumOfModels;
-import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
+import static com.github.javaxcel.TestUtils.*;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -96,14 +99,20 @@ class SheetRotationTest extends ModelWriterTester {
                 .map(Sheet::getSheetName).collect(toList()))
                 .as("#3 Each sheet name matches the pattern")
                 .allMatch(name -> pattern.matcher(name).matches());
+        assertThat(models)
+                .isNotNull()
+                .isNotEmpty()
+                .isEqualTo(JAVAXCEL.reader(workbook, SimpleModel.class).read());
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
+    @ToString
+    @EqualsAndHashCode
     private static class SimpleModel {
         private Long id;
         private String name;
-        private LocalDateTime createdAt;
+        private LocalDateTime createdAt = LocalDateTime.of(LocalDate.now(), TestUtils.randomize(LocalTime.class).withNano(0));
     }
 
 }
