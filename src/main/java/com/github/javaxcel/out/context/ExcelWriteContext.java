@@ -145,6 +145,10 @@ public class ExcelWriteContext<T> {
     }
 
     public void setSheet(Sheet sheet) {
+        Asserts.that(chunk)
+                .as("ExcelWriteContext.sheet is not allowed to be null")
+                .isNotNull();
+
         this.sheet = sheet;
     }
 

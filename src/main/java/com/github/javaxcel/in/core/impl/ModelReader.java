@@ -33,7 +33,6 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -131,10 +130,19 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
     protected List<T> readBody(ExcelReadContext<T> context) {
         List<Map<String, Object>> maps = super.readBodyAsMaps(context.getSheet());
 
-        Stream<Map<String, Object>> stream = context.getStrategyMap().containsKey(Parallel.class)
-                ? maps.parallelStream() : maps.stream();
+        if (context.getStrategyMap().containsKey(Parallel.class)) {
+            return maps.parallelStream().map(this::toActualModel).collect(toList());
+        } else {
+            // Makes sure not to grow length of internal array.
+            List<T> models = new ArrayList<>(maps.size());
 
-        return stream.map(this::toActualModel).collect(toList());
+            for (Map<String, Object> map : maps) {
+                T model = toActualModel(map);
+                models.add(model);
+            }
+
+            return models;
+        }
     }
 
     /**

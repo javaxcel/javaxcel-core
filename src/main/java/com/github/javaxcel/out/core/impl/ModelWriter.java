@@ -308,13 +308,13 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
         // Creates constraint for columns of enum.
         if (this.enumDropdownMap != null) createDropdowns(sheet);
 
-        List<T> list = context.getChunk();
+        List<T> chunk = context.getChunk();
         List<CellStyle> bodyStyles = context.getBodyStyles();
-        final int numOfModels = list.size();
+        final int chunkSize = chunk.size();
         final int numOfFields = this.fields.size();
 
-        for (int i = 0; i < numOfModels; i++) {
-            T model = list.get(i);
+        for (int i = 0; i < chunkSize; i++) {
+            T model = chunk.get(i);
 
             // Skips the first row that is header.
             Row row = sheet.createRow(i + 1);

@@ -30,7 +30,6 @@ import io.github.imsejin.common.util.NumberUtils;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
@@ -157,7 +156,6 @@ public abstract class AbstractExcelWriter<T> implements ExcelWriter<T>, ExcelWri
      * @return sheet names
      * @throws IllegalArgumentException if sheet names is null or empty
      */
-    @Nonnull
     protected List<String> createSheetNames(ExcelWriteContext<T> context, int numOfSheets) {
         ExcelWriteStrategy strategy = context.getStrategyMap().get(ExcelWriteStrategy.SheetName.class);
         String sheetName = strategy == null ? "Sheet" : (String) strategy.execute(context);
@@ -169,7 +167,7 @@ public abstract class AbstractExcelWriter<T> implements ExcelWriter<T>, ExcelWri
             sheetNames.add(sheetName + i);
         }
 
-        return sheetNames;
+        return Collections.unmodifiableList(sheetNames);
     }
 
     /**

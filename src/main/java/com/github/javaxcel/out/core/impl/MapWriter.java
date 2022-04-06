@@ -202,14 +202,14 @@ public class MapWriter extends AbstractExcelWriter<Map<String, Object>> {
     @Override
     protected void createBody(ExcelWriteContext<Map<String, Object>> context) {
         Sheet sheet = context.getSheet();
-        List<Map<String, Object>> list = context.getChunk();
+        List<Map<String, Object>> chunk = context.getChunk();
         List<CellStyle> bodyStyles = context.getBodyStyles();
 
-        final int numOfMaps = list.size();
+        final int chunkSize = chunk.size();
         final int numOfKeys = this.keys.size();
 
-        for (int i = 0; i < numOfMaps; i++) {
-            Map<String, Object> map = list.get(i);
+        for (int i = 0; i < chunkSize; i++) {
+            Map<String, Object> map = chunk.get(i);
 
             // Skips the first row that is header.
             Row row = sheet.createRow(i + 1);
