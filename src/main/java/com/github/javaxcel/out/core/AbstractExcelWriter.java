@@ -96,7 +96,7 @@ public abstract class AbstractExcelWriter<T> implements ExcelWriter<T>, ExcelWri
                 .as("sheetNames is not allowed to contain null: {0}", sheetNames)
                 .doesNotContainNull()
                 .as("sheetNames cannot have duplicated elements: {0}", sheetNames)
-                .predicate(them -> them.stream().noneMatch(it -> Collections.frequency(them, it) > 1))
+                .doesNotHaveDuplicates()
                 .asSize().as("sheetNames.size is not equal to numOfSheets: (sheetName.size: {0}, numOfSheets: {1})",
                         sheetNames.size(), numOfSheets)
                 .isEqualTo(numOfSheets);

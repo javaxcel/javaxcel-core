@@ -77,7 +77,7 @@ public interface ExcelWriteStrategy {
                     .as("sheetName is not allowed to be null or blank, but it is: {0}", sheetName)
                     .isNotNull().hasText()
                     .as("sheetName is not allowed to contain invalid character: {0}", sheetName)
-                    .predicate(it -> WorkbookUtil.createSafeSheetName(sheetName).equals(sheetName));
+                    .predicate(it -> WorkbookUtil.createSafeSheetName(it).equals(it));
 
             this.sheetName = sheetName;
         }
@@ -108,7 +108,7 @@ public interface ExcelWriteStrategy {
                     .as("headerNames must be an implementation of java.util.List: {0}", headerNames)
                     .isInstanceOf(List.class)
                     .as("headerNames cannot have duplicated elements: {0}", headerNames)
-                    .predicate(them -> them.stream().noneMatch(it -> Collections.frequency(them, it) > 1));
+                    .doesNotHaveDuplicates();
 
             this.headerNames = Collections.unmodifiableList(headerNames);
         }
@@ -196,7 +196,7 @@ public interface ExcelWriteStrategy {
                     .as("keyOrders must be an implementation of java.util.List: {0}", keyOrders)
                     .isInstanceOf(List.class)
                     .as("keyOrders cannot have duplicated elements: {0}", keyOrders)
-                    .predicate(them -> them.stream().noneMatch(it -> Collections.frequency(them, it) > 1));
+                    .doesNotHaveDuplicates();
 
             // Creates a map of which key is element in keys and value is column index.
             Map<String, Integer> orders = new HashMap<>();
@@ -279,7 +279,7 @@ public interface ExcelWriteStrategy {
                     .as("keyOrders must be an implementation of java.util.List: {0}", keyOrders)
                     .isInstanceOf(List.class)
                     .as("keyOrders cannot have duplicated elements: {0}", keyOrders)
-                    .predicate(them -> them.stream().noneMatch(it -> Collections.frequency(them, it) > 1));
+                    .doesNotHaveDuplicates();
 
             Asserts.that(newKeyNames)
                     .as("newKeyNames is not allowed to be null or empty: {0}", newKeyNames)
@@ -292,7 +292,7 @@ public interface ExcelWriteStrategy {
                     .as("newKeyNames must be an implementation of java.util.List: {0}", newKeyNames)
                     .isInstanceOf(List.class)
                     .as("newKeyNames cannot have duplicated elements: {0}", newKeyNames)
-                    .predicate(them -> them.stream().noneMatch(it -> Collections.frequency(them, it) > 1));
+                    .doesNotHaveDuplicates();
 
             // Creates a map of which key is element in keys and value is column index.
             Map<String, Object> keyMap = new HashMap<>();

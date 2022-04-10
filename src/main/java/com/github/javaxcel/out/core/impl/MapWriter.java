@@ -29,7 +29,6 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Filter;
@@ -94,9 +93,9 @@ public class MapWriter extends AbstractExcelWriter<Map<String, Object>> {
                 .as("MapWriter.keys is not allowed to be empty")
                 .hasElement()
                 .as("MapWriter.keys cannot have null or blank element: {0}", keys)
-                .predicate(them -> them.stream().noneMatch(StringUtils::isNullOrBlank))
+                .noneMatch(StringUtils::isNullOrBlank)
                 .as("MapWriter.keys cannot have duplicated elements: {0}", keys)
-                .predicate(them -> them.stream().noneMatch(it -> Collections.frequency(them, it) > 1));
+                .doesNotHaveDuplicates();
         this.keys = keys;
     }
 

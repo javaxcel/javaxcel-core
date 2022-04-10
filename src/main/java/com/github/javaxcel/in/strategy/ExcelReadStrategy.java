@@ -22,7 +22,10 @@ import com.github.javaxcel.in.core.impl.MapReader;
 import com.github.javaxcel.in.core.impl.ModelReader;
 import io.github.imsejin.common.assertion.Asserts;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public interface ExcelReadStrategy {
 
@@ -166,7 +169,7 @@ public interface ExcelReadStrategy {
                     .as("newKeyNames must be an implementation of java.util.List: {0}", newKeyNames)
                     .isInstanceOf(List.class)
                     .as("newKeyNames cannot have duplicated elements: {0}", newKeyNames)
-                    .predicate(them -> them.stream().noneMatch(it -> Collections.frequency(them, it) > 1));
+                    .doesNotHaveDuplicates();
 
             this.headerNames = Collections.unmodifiableList(newKeyNames);
         }
