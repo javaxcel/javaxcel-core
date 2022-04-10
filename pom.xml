@@ -57,7 +57,7 @@
         <apache-poi.version>4.1.2</apache-poi.version>
         <spel.version>5.2.9</spel.version>
         <javaxcel-styler.version>0.2.1</javaxcel-styler.version>
-        <common-utils.version>0.7.1</common-utils.version>
+        <common-utils.version>0.8.0</common-utils.version>
 
         <!-- Test dependency versions -->
         <junit5.version>5.8.2</junit5.version>
