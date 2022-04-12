@@ -68,10 +68,8 @@ class SheetRotationTest extends ModelWriterTester {
         OutputStream out = new FileOutputStream(givenModel.getFile());
         Workbook workbook = new HSSFWorkbook();
 
-        /*
-        To create multiple sheets, generates models as many
-        as the amount exceeds the maximum number of rows per sheet.
-        */
+        // To create multiple sheets, generates models as many
+        // as the amount exceeds the maximum number of rows per sheet.
         final int numOfMocks = (int) (ExcelUtils.getMaxRows(workbook) * 1.1);
 
         return new WhenModel(out, workbook, numOfMocks);
