@@ -4,31 +4,32 @@ import com.github.javaxcel.TestUtils.ExcludeOnPercentage;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.annotation.ExcelModelCreator;
-import com.github.javaxcel.annotation.ExcelModelCreator.FieldName;
 import com.github.javaxcel.internal.style.DefaultBodyStyleConfig;
 import com.github.javaxcel.internal.style.DefaultHeaderStyleConfig;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigInteger;
 
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@ToString
 @EqualsAndHashCode(of = {"cpu", "disk", "manufacturer", "price"})
 @ExcelModel(explicit = true, headerStyle = DefaultHeaderStyleConfig.class, bodyStyle = DefaultBodyStyleConfig.class)
 public class Computer {
 
     @ExcludeOnPercentage(0.1)
     @ExcelColumn(name = "CPU_CLOCK")
-    private BigInteger cpu;
+    private final BigInteger cpu;
 
     @ExcludeOnPercentage(0.15)
     private Double ram;
 
     @ExcludeOnPercentage(0.2)
     @ExcelColumn(name = "DISK_SIZE")
-    private Long disk;
+    private final Long disk;
 
     @ExcludeOnPercentage(0.7)
     private String inputDevice;
@@ -38,19 +39,18 @@ public class Computer {
 
     @ExcelColumn
     @ExcludeOnPercentage(0.25)
-    private String manufacturer;
+    private final String manufacturer;
 
     @ExcelColumn
     @ExcludeOnPercentage(0.5)
-    private int price;
+    private final int price;
 
     @ExcelModelCreator
-    Computer(@FieldName("cpu") BigInteger cpu, @FieldName("disk") Long disk,
-             @FieldName("manufacturer") String manufacturer, @FieldName("price") int price) {
+    Computer(BigInteger cpu, String manufacturerName, Long diskSize, int cost) {
         this.cpu = cpu;
-        this.disk = disk;
-        this.manufacturer = manufacturer;
-        this.price = price;
+        this.disk = diskSize;
+        this.manufacturer = manufacturerName;
+        this.price = cost;
     }
 
 }

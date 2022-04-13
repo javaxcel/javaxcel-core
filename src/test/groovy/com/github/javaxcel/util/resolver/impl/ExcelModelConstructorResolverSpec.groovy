@@ -17,11 +17,19 @@
 package com.github.javaxcel.util.resolver.impl
 
 import com.github.javaxcel.exception.NoTargetedConstructorException
-import com.github.javaxcel.internal.model.ExcelModelCreatorTester.AnnotatedConstructors
+import com.github.javaxcel.internal.model.ExcelModelCreatorTester.ConstructorsAreAnnotated
 import com.github.javaxcel.internal.model.ExcelModelCreatorTester.InvalidFieldName
-import com.github.javaxcel.internal.model.ExcelModelCreatorTester.NotAnnotatedAllConstructors
-import com.github.javaxcel.internal.model.ExcelModelCreatorTester.PublicNoArgs
+import com.github.javaxcel.internal.model.ExcelModelCreatorTester.AllConstructorsAreNotAnnotated
+import com.github.javaxcel.internal.model.ExcelModelCreatorTester.PackagePrivateConstructor
+import com.github.javaxcel.internal.model.ExcelModelCreatorTester.ParamNameDoesNotMatchFieldNameButBothTypeIsUnique
+import com.github.javaxcel.internal.model.ExcelModelCreatorTester.PrivateConstructor
+import com.github.javaxcel.internal.model.ExcelModelCreatorTester.ProtectedConstructor
+import com.github.javaxcel.internal.model.ExcelModelCreatorTester.ConstructorArgsWithoutOrder
+import com.github.javaxcel.internal.model.ExcelModelCreatorTester.PublicConstructor
+import com.github.javaxcel.internal.model.ExcelModelCreatorTester.PublicNoArgsConstructor
 import spock.lang.Specification
+
+import java.lang.reflect.Constructor
 
 class ExcelModelConstructorResolverSpec extends Specification {
 
@@ -34,10 +42,13 @@ class ExcelModelConstructorResolverSpec extends Specification {
 
         then:
         noExceptionThrown()
-        constructor != null
+        constructor instanceof Constructor
 
         where:
-        type << [PublicNoArgs]
+        type << [
+                PublicNoArgsConstructor, PublicConstructor, ProtectedConstructor, PackagePrivateConstructor,
+                PrivateConstructor, ConstructorArgsWithoutOrder, ParamNameDoesNotMatchFieldNameButBothTypeIsUnique,
+        ]
     }
 
     def "Failed to resolve the constructor of type"() {
@@ -52,10 +63,10 @@ class ExcelModelConstructorResolverSpec extends Specification {
         e.message.matches message
 
         where:
-        type                        || excecptionType                 | message
-        NotAnnotatedAllConstructors || NoTargetedConstructorException | "Ambiguous constructors\\[.+] to resolve; Annotate constructor you want with @ExcelModelCreator"
-        AnnotatedConstructors       || NoTargetedConstructorException | "Ambiguous constructors\\[.+] to resolve; Remove @ExcelModelCreator from other constructors except the one"
-        InvalidFieldName            || IllegalArgumentException       | "@FieldName.value must have text, but it isn't: '.*'"
+        type                           || excecptionType                 | message
+        AllConstructorsAreNotAnnotated || NoTargetedConstructorException | "Ambiguous constructors\\[.+] to resolve; Annotate constructor you want with @ExcelModelCreator"
+        ConstructorsAreAnnotated       || NoTargetedConstructorException | "Ambiguous constructors\\[.+] to resolve; Remove @ExcelModelCreator from other constructors except the one"
+        InvalidFieldName               || IllegalArgumentException       | "ResolvedParameter.name must have text, but it isn't: '.*'"
     }
 
 }
