@@ -55,7 +55,7 @@
 
         <!-- Dependency versions -->
         <apache-poi.version>4.1.2</apache-poi.version>
-        <spel.version>5.2.9</spel.version>
+        <spring-expression.version>5.3.18</spring-expression.version>
         <javaxcel-styler.version>0.2.1</javaxcel-styler.version>
         <common-utils.version>0.8.0</common-utils.version>
 
@@ -118,9 +118,10 @@
 
         <!-- SpEL(Spring Expression Language) -->
         <dependency>
-            <groupId>io.github.imsejin</groupId>
-            <artifactId>spel</artifactId>
-            <version>${spel.version}</version>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-expression</artifactId>
+            <version>${spring-expression.version}</version>
+            <optional>true</optional>
         </dependency>
 
         <!-- Javaxcel Styler -->
@@ -368,6 +369,49 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <minimizeJar>true</minimizeJar>
+                            <keepDependenciesWithProvidedScope>false</keepDependenciesWithProvidedScope>
+                            <!--
+                                Specifies artifacts to be repackaged.
+                                Other dependencies will be exposed to outside.
+                            -->
+                            <artifactSet>
+                                <includes>
+                                    <include>org.springframework:spring-expression</include>
+                                    <include>org.springframework:spring-core</include>
+                                    <include>org.springframework:spring-jcl</include>
+                                </includes>
+                            </artifactSet>
+
+                            <!-- Repackaging -->
+                            <relocations>
+                                <!-- spring-core, spring-expression -->
+                                <relocation>
+                                    <pattern>org.springframework</pattern>
+                                    <shadedPattern>${project.groupId}.internal.springframework</shadedPattern>
+                                </relocation>
+                                <!-- spring-jcl -->
+                                <relocation>
+                                    <pattern>org.apache.commons.logging</pattern>
+                                    <shadedPattern>${project.groupId}.internal.springframework.jcl</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
