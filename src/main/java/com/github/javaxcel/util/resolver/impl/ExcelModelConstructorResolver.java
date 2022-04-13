@@ -66,14 +66,12 @@ public class ExcelModelConstructorResolver<T> extends AbstractExcelModelExecutab
         if (elected.isEmpty()) {
             // There are two or more candidates that aren't annotated with that.
             throw new NoTargetedConstructorException("Ambiguous constructors%s to resolve; " +
-                    "Annotate constructor you want with @%s",
-                    candidates, ExcelModelCreator.class.getSimpleName());
+                    "Annotate constructor you want with @ExcelModelCreator", candidates);
 
         } else if (elected.size() > 1) {
             // There are two or more candidates that are annotated with that.
             throw new NoTargetedConstructorException("Ambiguous constructors%s to resolve; " +
-                    "Remove @%s from other constructors except the one",
-                    elected, ExcelModelCreator.class.getSimpleName());
+                    "Remove @ExcelModelCreator from other constructors except the one", elected);
         }
 
         // Elected candidate.

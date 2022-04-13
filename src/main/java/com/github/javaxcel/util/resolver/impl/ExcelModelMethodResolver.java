@@ -50,16 +50,15 @@ public class ExcelModelMethodResolver<T> extends AbstractExcelModelExecutableRes
 
             // Are candidate's modifiers static?
             if (!Modifier.isStatic(candidate.getModifiers())) {
-                throw new NoTargetedConstructorException("@%s is not allowed to be annotated " +
-                        "on instance method; Remove the annotation from the method[%s]",
-                        ExcelModelCreator.class.getSimpleName(), candidate);
+                throw new NoTargetedConstructorException("@ExcelModelCreator is not allowed to be annotated " +
+                        "on instance method; Remove the annotation from the method[%s]", candidate);
             }
 
             // Is return type of candidate assignable to model type?
             if (!super.modelType.isAssignableFrom(candidate.getReturnType())) {
-                throw new NoTargetedConstructorException("@%s is not allowed to be annotated on method " +
+                throw new NoTargetedConstructorException("@ExcelModelCreator is not allowed to be annotated on method " +
                         "whose return type is assignable to model type[%s]; Remove the annotation from the method[%s]",
-                        ExcelModelCreator.class.getSimpleName(), super.modelType, candidate);
+                        super.modelType, candidate);
             }
 
             candidates.add(candidate);
@@ -73,15 +72,13 @@ public class ExcelModelMethodResolver<T> extends AbstractExcelModelExecutableRes
         // Unlike constructor, there may be no method as a candidate.
         if (candidates.isEmpty()) {
             throw new NoResolvedMethodException("Not found method of type[%s] to resolve; " +
-                    "Annotate static method you want with @%s",
-                    super.modelType, ExcelModelCreator.class.getSimpleName());
+                    "Annotate static method you want with @ExcelModelCreator", super.modelType);
         }
 
         // Many candidates.
         if (candidates.size() > 1) {
             throw new NoTargetedConstructorException("Ambiguous methods%s to resolve; " +
-                    "Remove @%s from other methods except the one",
-                    candidates, ExcelModelCreator.class.getSimpleName());
+                    "Remove @ExcelModelCreator from other methods except the one", candidates);
         }
 
         // Sole candidate.
