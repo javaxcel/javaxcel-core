@@ -16,7 +16,6 @@
 
 package com.github.javaxcel.in.core.impl;
 
-import com.github.javaxcel.annotation.ExcelModelCreator.FieldName;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
 import com.github.javaxcel.converter.in.support.ExcelReadConverterSupport;
 import com.github.javaxcel.exception.NoTargetedFieldException;
@@ -25,6 +24,8 @@ import com.github.javaxcel.in.core.AbstractExcelReader;
 import com.github.javaxcel.in.strategy.ExcelReadStrategy.Parallel;
 import com.github.javaxcel.util.FieldUtils;
 import com.github.javaxcel.util.resolver.AbstractExcelModelExecutableResolver;
+import com.github.javaxcel.util.resolver.ExcelModelExecutableParameterNameResolver;
+import com.github.javaxcel.util.resolver.ExcelModelExecutableParameterNameResolver.ResolvedParameter;
 import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.ReflectionUtils;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -32,7 +33,10 @@ import org.apache.poi.ss.usermodel.Workbook;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 
@@ -157,13 +161,27 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
         Map<String, Object> mock = this.fields.stream().collect(HashMap::new,
                 (map, it) -> map.put(it.getName(), this.converter.convert(variables, it)), Map::putAll);
 
-        List<String> paramNames = Arrays.stream(this.executable.getParameters())
-                .map(it -> it.getAnnotation(FieldName.class))
-                .filter(Objects::nonNull).map(FieldName::value)
-                .collect(toList());
+        List<ResolvedParameter> resolvedParams = new ExcelModelExecutableParameterNameResolver(this.executable).resolve();
+        List<String> paramNames = resolvedParams.stream().map(ResolvedParameter::getName).collect(toList());
+
+        // Maps a mock model to initial arguments for @ExcelModelCreator.
+        Object[] arguments = new Object[resolvedParams.size()];
+        for (int i = 0; i < resolvedParams.size(); i++) {
+            ResolvedParameter resolvedParam = resolvedParams.get(i);
+            String paramName = resolvedParam.getName();
+
+            if (mock.containsKey(paramName)) {
+                arguments[i] = mock.get(paramName);
+                continue;
+            }
+
+            // Both names of parameter and field are different,
+            // but their type is unique, so the parameter can be resolved.
+            Field field = this.fields.stream().filter(it -> it.getType() == resolvedParam.getType()).findFirst().get();
+            arguments[i] = mock.get(field.getName());
+        }
 
         // Instantiates the actual model.
-        Object[] arguments = paramNames.stream().map(mock::get).toArray();
         T model = (T) ReflectionUtils.execute(this.executable, null, arguments);
 
         for (Field field : this.fields) {

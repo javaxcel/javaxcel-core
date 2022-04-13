@@ -17,17 +17,23 @@
 package com.github.javaxcel.util.resolver;
 
 import com.github.javaxcel.annotation.ExcelModelCreator;
-import com.github.javaxcel.annotation.ExcelModelCreator.FieldName;
 import com.github.javaxcel.exception.JavaxcelException;
 import com.github.javaxcel.exception.NoResolvedMethodException;
 import com.github.javaxcel.exception.NoTargetedConstructorException;
 import com.github.javaxcel.util.FieldUtils;
+import com.github.javaxcel.util.resolver.ExcelModelExecutableParameterNameResolver.ResolvedParameter;
 import com.github.javaxcel.util.resolver.impl.ExcelModelConstructorResolver;
 import com.github.javaxcel.util.resolver.impl.ExcelModelMethodResolver;
 import io.github.imsejin.common.assertion.Asserts;
 
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.*;
@@ -77,6 +83,7 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
         if (method == null) {
             executable = Objects.requireNonNull(constructor, "NEVER HAPPENED");
         } else {
+            // Duplicated ExcelModelCreator.
             if (constructor != null && constructor.isAnnotationPresent(ExcelModelCreator.class)) {
                 throw new RuntimeException();
             }
@@ -90,6 +97,8 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
 
         return executable;
     }
+
+    ///////////////////////////////////////////////////////////////////////////////////////
 
     public final E resolve() {
         List<E> candidates = getCandidates();
@@ -115,36 +124,19 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
     protected abstract E elect(List<E> candidates);
 
     protected void verify(E candidate) {
-        // Does candidate have parameter?
+        // Does candidate have no parameter?
         if (candidate.getParameterCount() == 0) return;
 
-        List<Parameter> params = Arrays.asList(candidate.getParameters());
-        List<String> mappedFieldNames = params.stream()
-                .map(it -> it.getAnnotation(FieldName.class))
-                .filter(Objects::nonNull).map(FieldName::value)
-                .collect(toList());
+        List<ResolvedParameter> resolvedParams = new ExcelModelExecutableParameterNameResolver(candidate).resolve();
+        List<String> paramNames = resolvedParams.stream().map(ResolvedParameter::getName).collect(toList());
 
-        if (!mappedFieldNames.isEmpty()) {
-            Map<String, Field> fieldNameMap = this.fields.stream().collect(toMap(Field::getName, Function.identity()));
-
-            for (String fieldName : mappedFieldNames) {
-                Asserts.that(fieldName)
-                        .as("@{0}.value must have text, but it isn't: '{1}'", FieldName.class.getSimpleName(), fieldName)
-                        .isNotNull().hasText()
-                        .as("@{0}.value must match name of the targeted fields, but it isn't: (actual: '{1}', allowed: {2})",
-                                FieldName.class.getSimpleName(), fieldName, fieldNameMap.keySet())
-                        .predicate(fieldNameMap::containsKey)
-                        .as("@{0}.value on each parameter must be unique, but it isn't: '{1}'",
-                                FieldName.class.getSimpleName(), fieldName)
-                        .predicate(it -> Collections.frequency(mappedFieldNames, it) == 1);
-            }
-        }
-
+        Map<String, Field> fieldNameMap = this.fields.stream().collect(toMap(Field::getName, Function.identity()));
         Map<Class<?>, Long> fieldTypeCountMap = this.fields.stream().collect(groupingBy(Field::getType, counting()));
-        Map<Class<?>, Long> paramTypeCountMap = params.stream().collect(groupingBy(Parameter::getType, counting()));
+        Map<Class<?>, Long> paramTypeCountMap = resolvedParams.stream().collect(groupingBy(ResolvedParameter::getType, counting()));
 
-        for (Parameter param : params) {
-            Class<?> paramType = param.getType();
+        for (ResolvedParameter resolvedParam : resolvedParams) {
+            String paramName = resolvedParam.getName();
+            Class<?> paramType = resolvedParam.getType();
             Long fieldTypeCount = fieldTypeCountMap.get(paramType);
 
             // Do types of the targeted fields contain all parameter types of the candidate?
@@ -155,34 +147,25 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
                         paramType.getName(), this.executableName, candidate, this.executableName, fieldTypeNames);
             }
 
+            // Both names of parameter and field are different,
+            // but their type is unique, so the parameter can be resolved.
             Long paramTypeCount = paramTypeCountMap.get(paramType);
-
-            // Does candidate have the known parameter types, but more than type of the targeted fields?
-            if (fieldTypeCount > paramTypeCount) {
-                List<String> fieldTypeNames = fieldTypeCountMap.keySet().stream().map(Class::getName).collect(toList());
-                throw new NoTargetedConstructorException("Unable to resolve parameter type[%s] of the %s[%s]; " +
-                        "%s has that type more than type of the targeted fields%s",
-                        paramType.getName(), this.executableName, candidate, this.executableName, fieldTypeNames);
-            }
-
             if (fieldTypeCount == 1 && paramTypeCount == 1) continue;
 
-            FieldName annotation = param.getAnnotation(FieldName.class);
-            if (annotation == null) {
-                throw new NoTargetedConstructorException("Ambiguous parameter[%s] of the %s[%s] to resolve the field; " +
-                        "Annotate the parameter with @%s",
-                        param, this.executableName, candidate, FieldName.class.getSimpleName());
+            Asserts.that(paramName)
+                    .as("ResolvedParameter.name must have text, but it isn't: '{0}'", paramName)
+                    .isNotNull().hasText()
+                    .as("ResolvedParameter.name must match name of the targeted fields, but it isn't: (actual: '{0}', allowed: {1})",
+                            paramName, fieldNameMap.keySet())
+                    .predicate(fieldNameMap::containsKey)
+                    .as("Each ResolvedParameter.name must be unique, but it isn't: (duplicated: '{0}', names: {1})", paramName, paramNames)
+                    .predicate(it -> Collections.frequency(paramNames, it) == 1);
+
+            if (this.fields.stream().filter(it -> it.getType() == paramType && it.getName().equals(paramName)).count() != 1) {
+                throw new NoTargetedConstructorException("Not found field[%s %s] to map parameter[%s] with; " +
+                        "Check if the parameter of the %s[%s] matches its type and name with that fields",
+                        paramType, paramName, resolvedParam, this.executableName, candidate);
             }
-
-            String fieldName = annotation.value();
-
-            if (this.fields.stream().filter(it -> it.getType() == paramType && it.getName().equals(fieldName)).count() == 1) {
-                continue;
-            }
-
-            throw new NoTargetedConstructorException("Not found field[%s %s] to map parameter[%s] with; " +
-                    "Check if the parameter of the %s[%s] matches its type and name with that fields",
-                    paramType, fieldName, param, this.executableName, candidate);
         }
     }
 
