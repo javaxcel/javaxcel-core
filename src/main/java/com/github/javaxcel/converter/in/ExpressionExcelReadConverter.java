@@ -18,10 +18,10 @@ package com.github.javaxcel.converter.in;
 
 import com.github.javaxcel.annotation.ExcelReadExpression;
 import io.github.imsejin.common.util.CollectionUtils;
-import io.github.imsejin.expression.Expression;
-import io.github.imsejin.expression.ExpressionParser;
-import io.github.imsejin.expression.spel.standard.SpelExpressionParser;
-import io.github.imsejin.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.Expression;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
