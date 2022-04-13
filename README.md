@@ -476,7 +476,7 @@ To know what types are basically supported, see `DefaultExcelTypeHandlerRegistry
 
 <br>
 
-Others are not supported, so that the field value will be null (if primitive, will be initial value of that type).
+Others are not supported by default, so that the field value will be null (if primitive, will be initial value of that type).
 You can register handler for unknown types.
 1. Create an instance of `ExcelTypeHandlerRegistryImpl`.
 2. Make implementations of `AbstractExcelTypeHandler`.
@@ -861,7 +861,7 @@ The result is
 | Alpha       | 10010        |
 | Beta        | 10011        |
 
-The column order is not guaranteed except for `LinkedHashMap`.  There is option for this issue.
+The column order is not guaranteed except for `java.util.LinkedHashMap`.  There is option for this issue.
 
 <br>
 
