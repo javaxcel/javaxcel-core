@@ -174,11 +174,11 @@
         </dependency>
 
         <!--
-           Spock Framework
+            Spock Framework
 
-           Mandatory dependencies for using Spock.
-           This starts to support 'maven-surefire' since 2.0.
-       -->
+            Mandatory dependencies for using Spock.
+            This starts to support 'maven-surefire' since 2.0.
+        -->
         <dependency>
             <groupId>org.spockframework</groupId>
             <artifactId>spock-core</artifactId>
@@ -370,6 +370,7 @@
                         </goals>
                         <configuration>
                             <minimizeJar>true</minimizeJar>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
                             <keepDependenciesWithProvidedScope>false</keepDependenciesWithProvidedScope>
                             <!--
                                 Specifies artifacts to be repackaged.
