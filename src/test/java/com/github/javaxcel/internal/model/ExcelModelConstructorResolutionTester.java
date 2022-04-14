@@ -16,6 +16,9 @@
 
 package com.github.javaxcel.internal.model;
 
+import com.github.javaxcel.annotation.ExcelColumn;
+import com.github.javaxcel.annotation.ExcelIgnore;
+import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.annotation.ExcelModelCreator;
 import com.github.javaxcel.annotation.ExcelModelCreator.FieldName;
 import lombok.AccessLevel;
@@ -23,15 +26,18 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
 import java.nio.file.AccessMode;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-public class ExcelModelCreatorTester {
+public class ExcelModelConstructorResolutionTester {
 
     public static class PublicNoArgsConstructor {
     }
@@ -59,26 +65,57 @@ public class ExcelModelCreatorTester {
     }
 
     public static class ConstructorArgsWithoutOrder {
+        private final String numeric;
+        private final String name;
+        private final String path;
+
+        public ConstructorArgsWithoutOrder(String name, String path, String numeric) {
+            this.numeric = numeric;
+            this.name = name;
+            this.path = path;
+        }
+    }
+
+    public static class LackOfConstructorArgsWithoutOrder {
         private final long number;
         private final String name;
         private final Path path;
 
-        public ConstructorArgsWithoutOrder(String name, Path path, long number) {
-            this.number = number;
+        public LackOfConstructorArgsWithoutOrder(String name) throws IOException {
+            this.number = new Random().nextLong();
             this.name = name;
-            this.path = path;
+            this.path = Paths.get(".").toRealPath();
         }
     }
 
     public static class ParamNameDoesNotMatchFieldNameButBothTypeIsUnique {
         private final BigInteger bigInteger;
         private final BigDecimal bigDecimal;
-        private int integer0;
-        private int integer1;
 
         private ParamNameDoesNotMatchFieldNameButBothTypeIsUnique(BigInteger bigInt, BigDecimal decimal) {
             this.bigInteger = bigInt;
             this.bigDecimal = decimal;
+        }
+    }
+
+    public static class NoMatchFieldNameButOtherFieldIsIgnored {
+        private String[] strings;
+        @ExcelIgnore
+        private String[] dummies;
+
+        public NoMatchFieldNameButOtherFieldIsIgnored(@FieldName("dummy") String[] strings) {
+            this.strings = strings;
+        }
+    }
+
+    @ExcelModel(explicit = true)
+    public static class NoMatchFieldNameButFieldIsExplicit {
+        @ExcelColumn
+        private String[] strings;
+        private String[] dummies;
+
+        public NoMatchFieldNameButFieldIsExplicit(@FieldName("dummy") String[] strings) {
+            this.strings = strings;
         }
     }
 
@@ -107,7 +144,7 @@ public class ExcelModelCreatorTester {
 
     public static class EmptyFieldName {
         private byte[] bytes;
-        private byte[] dummies;
+        private byte[] dummies; // If this field doesn't exist, will be passes on test.
 
         public EmptyFieldName(@FieldName("") byte[] bytes) {
             this.bytes = bytes;
@@ -116,7 +153,7 @@ public class ExcelModelCreatorTester {
 
     public static class NoMatchFieldName {
         private String[] strings;
-        private String[] dummies;
+        private String[] dummies; // If this field doesn't exist, will be passes on test.
 
         public NoMatchFieldName(@FieldName("dummy") String[] strings) {
             this.strings = strings;
@@ -130,6 +167,27 @@ public class ExcelModelCreatorTester {
         public DuplicatedFieldName(@FieldName("chars") char[] chars, @FieldName("chars") char[] characters) {
             this.chars = chars;
             this.characters = characters;
+        }
+    }
+
+    public static class NoMatchFieldTypeAndName {
+        private final AccessMode accessMode;
+        private TimeUnit minute;
+        private TimeUnit second;
+
+        public NoMatchFieldTypeAndName(TimeUnit accessMode, AccessMode minute) {
+            this.accessMode = AccessMode.EXECUTE;
+        }
+    }
+
+    public static class NoMatchFieldTypeAndNameWithAnnotation {
+        private AccessMode read;
+        private AccessMode write;
+        private TimeUnit timeUnit;
+
+        public NoMatchFieldTypeAndNameWithAnnotation(AccessMode read, @FieldName("timeUnit") AccessMode write) {
+            this.read = read;
+            this.write = write;
         }
     }
 
