@@ -17,8 +17,9 @@
 package com.github.javaxcel.util.resolver.impl;
 
 import com.github.javaxcel.annotation.ExcelModelCreator;
-import com.github.javaxcel.exception.NoResolvedMethodException;
-import com.github.javaxcel.exception.NoTargetedConstructorException;
+import com.github.javaxcel.exception.AmbiguousExcelModelCreatorException;
+import com.github.javaxcel.exception.InvalidExcelModelCreatorException;
+import com.github.javaxcel.exception.NoResolvedExcelModelCreatorException;
 import com.github.javaxcel.util.resolver.AbstractExcelModelExecutableResolver;
 
 import java.lang.reflect.Method;
@@ -36,7 +37,7 @@ public class ExcelModelMethodResolver<T> extends AbstractExcelModelExecutableRes
     /**
      * Returns methods as candidates.
      *
-     * <p> Only searching for method that is annotated with
+     * <p> Only searching for public methods that are annotated with
      * {@link ExcelModelCreator}, has static modifier and
      * whose return type is assignable to {@code super.modelType}.
      *
@@ -50,13 +51,13 @@ public class ExcelModelMethodResolver<T> extends AbstractExcelModelExecutableRes
 
             // Are candidate's modifiers static?
             if (!Modifier.isStatic(candidate.getModifiers())) {
-                throw new NoTargetedConstructorException("@ExcelModelCreator is not allowed to be annotated " +
+                throw new InvalidExcelModelCreatorException("@ExcelModelCreator is not allowed to be annotated " +
                         "on instance method; Remove the annotation from the method[%s]", candidate);
             }
 
             // Is return type of candidate assignable to model type?
             if (!super.modelType.isAssignableFrom(candidate.getReturnType())) {
-                throw new NoTargetedConstructorException("@ExcelModelCreator is not allowed to be annotated on method " +
+                throw new InvalidExcelModelCreatorException("@ExcelModelCreator is not allowed to be annotated on method " +
                         "whose return type is assignable to model type[%s]; Remove the annotation from the method[%s]",
                         super.modelType, candidate);
             }
@@ -71,13 +72,13 @@ public class ExcelModelMethodResolver<T> extends AbstractExcelModelExecutableRes
     protected Method elect(List<Method> candidates) {
         // Unlike constructor, there may be no method as a candidate.
         if (candidates.isEmpty()) {
-            throw new NoResolvedMethodException("Not found method of type[%s] to resolve; " +
+            throw new NoResolvedExcelModelCreatorException("Not found method of type[%s] to resolve; " +
                     "Annotate static method you want with @ExcelModelCreator", super.modelType);
         }
 
         // Many candidates.
         if (candidates.size() > 1) {
-            throw new NoTargetedConstructorException("Ambiguous methods%s to resolve; " +
+            throw new AmbiguousExcelModelCreatorException("Ambiguous methods%s to resolve; " +
                     "Remove @ExcelModelCreator from other methods except the one", candidates);
         }
 

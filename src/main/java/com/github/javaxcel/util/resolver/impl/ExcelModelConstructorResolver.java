@@ -17,7 +17,7 @@
 package com.github.javaxcel.util.resolver.impl;
 
 import com.github.javaxcel.annotation.ExcelModelCreator;
-import com.github.javaxcel.exception.NoTargetedConstructorException;
+import com.github.javaxcel.exception.AmbiguousExcelModelCreatorException;
 import com.github.javaxcel.util.resolver.AbstractExcelModelExecutableResolver;
 
 import java.lang.reflect.Constructor;
@@ -65,12 +65,12 @@ public class ExcelModelConstructorResolver<T> extends AbstractExcelModelExecutab
 
         if (elected.isEmpty()) {
             // There are two or more candidates that aren't annotated with that.
-            throw new NoTargetedConstructorException("Ambiguous constructors%s to resolve; " +
+            throw new AmbiguousExcelModelCreatorException("Ambiguous constructors%s to resolve; " +
                     "Annotate constructor you want with @ExcelModelCreator", candidates);
 
         } else if (elected.size() > 1) {
             // There are two or more candidates that are annotated with that.
-            throw new NoTargetedConstructorException("Ambiguous constructors%s to resolve; " +
+            throw new AmbiguousExcelModelCreatorException("Ambiguous constructors%s to resolve; " +
                     "Remove @ExcelModelCreator from other constructors except the one", elected);
         }
 

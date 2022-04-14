@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Javaxcel
+ * Copyright 2020 Javaxcel
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,13 @@
 
 package com.github.javaxcel.exception;
 
-public class NoResolvedMethodException extends JavaxcelException {
+public class AmbiguousExcelModelCreatorException extends JavaxcelException {
 
-    public NoResolvedMethodException(String format, Object... args) {
+    public AmbiguousExcelModelCreatorException(String format, Object... args) {
         super(format, args);
     }
 
-    public NoResolvedMethodException(Throwable cause, String format, Object... args) {
+    public AmbiguousExcelModelCreatorException(Throwable cause, String format, Object... args) {
         super(cause, format, args);
     }
 

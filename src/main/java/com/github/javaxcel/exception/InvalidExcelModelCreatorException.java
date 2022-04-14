@@ -16,13 +16,13 @@
 
 package com.github.javaxcel.exception;
 
-public class NoTargetedConstructorException extends JavaxcelException {
+public class InvalidExcelModelCreatorException extends JavaxcelException {
 
-    public NoTargetedConstructorException(String format, Object... args) {
+    public InvalidExcelModelCreatorException(String format, Object... args) {
         super(format, args);
     }
 
-    public NoTargetedConstructorException(Throwable cause, String format, Object... args) {
+    public InvalidExcelModelCreatorException(Throwable cause, String format, Object... args) {
         super(cause, format, args);
     }
 

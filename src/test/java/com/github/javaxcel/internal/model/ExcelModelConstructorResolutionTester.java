@@ -29,6 +29,7 @@ import java.net.URL;
 import java.nio.file.AccessMode;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class ExcelModelCreatorTester {
 
@@ -72,7 +73,8 @@ public class ExcelModelCreatorTester {
     public static class ParamNameDoesNotMatchFieldNameButBothTypeIsUnique {
         private final BigInteger bigInteger;
         private final BigDecimal bigDecimal;
-        private Object[] arguments;
+        private int integer0;
+        private int integer1;
 
         private ParamNameDoesNotMatchFieldNameButBothTypeIsUnique(BigInteger bigInt, BigDecimal decimal) {
             this.bigInteger = bigInt;
@@ -95,13 +97,38 @@ public class ExcelModelCreatorTester {
         private List<String> strings;
     }
 
-    public static class InvalidFieldName {
+    public static class NoMatchFieldType {
+        private final AccessMode accessMode;
+
+        public NoMatchFieldType(TimeUnit accessMode) {
+            this.accessMode = AccessMode.READ;
+        }
+    }
+
+    public static class EmptyFieldName {
         private byte[] bytes;
         private byte[] dummies;
-        private char[] characters;
 
-        public InvalidFieldName(@FieldName("") byte[] bytes, char[] characters) {
+        public EmptyFieldName(@FieldName("") byte[] bytes) {
             this.bytes = bytes;
+        }
+    }
+
+    public static class NoMatchFieldName {
+        private String[] strings;
+        private String[] dummies;
+
+        public NoMatchFieldName(@FieldName("dummy") String[] strings) {
+            this.strings = strings;
+        }
+    }
+
+    public static class DuplicatedFieldName {
+        private final char[] chars;
+        private final char[] characters;
+
+        public DuplicatedFieldName(@FieldName("chars") char[] chars, @FieldName("chars") char[] characters) {
+            this.chars = chars;
             this.characters = characters;
         }
     }

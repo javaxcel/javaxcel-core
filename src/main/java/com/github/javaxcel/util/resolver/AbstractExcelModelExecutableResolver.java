@@ -17,9 +17,10 @@
 package com.github.javaxcel.util.resolver;
 
 import com.github.javaxcel.annotation.ExcelModelCreator;
+import com.github.javaxcel.exception.AmbiguousExcelModelCreatorException;
+import com.github.javaxcel.exception.InvalidExcelModelCreatorException;
 import com.github.javaxcel.exception.JavaxcelException;
-import com.github.javaxcel.exception.NoResolvedMethodException;
-import com.github.javaxcel.exception.NoTargetedConstructorException;
+import com.github.javaxcel.exception.NoResolvedExcelModelCreatorException;
 import com.github.javaxcel.util.FieldUtils;
 import com.github.javaxcel.util.resolver.ExcelModelExecutableParameterNameResolver.ResolvedParameter;
 import com.github.javaxcel.util.resolver.impl.ExcelModelConstructorResolver;
@@ -66,7 +67,7 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
             method = new ExcelModelMethodResolver<>(type).resolve();
         } catch (JavaxcelException e) {
             // If method to be resolved doesn't exist, tries to resolve constructor.
-            if (!(e instanceof NoResolvedMethodException)) throw e;
+            if (!(e instanceof NoResolvedExcelModelCreatorException)) throw e;
         }
 
         // Resolves constructor to prevent @ExcelModelCreator from being annotating
@@ -85,7 +86,9 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
         } else {
             // Duplicated ExcelModelCreator.
             if (constructor != null && constructor.isAnnotationPresent(ExcelModelCreator.class)) {
-                throw new RuntimeException();
+                throw new AmbiguousExcelModelCreatorException("Ambiguous method[%s] and constructor[%s] to resolve; " +
+                        "Remove one of the annotations[@ExcelModelCreator] annotated to the method and constructor",
+                        method, constructor);
             }
 
             executable = method;
@@ -142,7 +145,7 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
             // Do types of the targeted fields contain all parameter types of the candidate?
             if (fieldTypeCount == null) {
                 List<String> fieldTypeNames = fieldTypeCountMap.keySet().stream().map(Class::getName).collect(toList());
-                throw new NoTargetedConstructorException("Unable to resolve parameter type[%s] of the %s[%s]; " +
+                throw new InvalidExcelModelCreatorException("Unable to resolve parameter type[%s] of the %s[%s]; " +
                         "%s has parameter type that is not contained in types of the targeted fields%s",
                         paramType.getName(), this.executableName, candidate, this.executableName, fieldTypeNames);
             }
@@ -153,6 +156,7 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
             if (fieldTypeCount == 1 && paramTypeCount == 1) continue;
 
             Asserts.that(paramName)
+                    .exception(InvalidExcelModelCreatorException::new)
                     .as("ResolvedParameter.name must have text, but it isn't: '{0}'", paramName)
                     .isNotNull().hasText()
                     .as("ResolvedParameter.name must match name of the targeted fields, but it isn't: (actual: '{0}', allowed: {1})",
@@ -162,7 +166,7 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
                     .predicate(it -> Collections.frequency(paramNames, it) == 1);
 
             if (this.fields.stream().filter(it -> it.getType() == paramType && it.getName().equals(paramName)).count() != 1) {
-                throw new NoTargetedConstructorException("Not found field[%s %s] to map parameter[%s] with; " +
+                throw new InvalidExcelModelCreatorException("Not found field[%s %s] to map parameter[%s] with; " +
                         "Check if the parameter of the %s[%s] matches its type and name with that fields",
                         paramType, paramName, resolvedParam, this.executableName, candidate);
             }
