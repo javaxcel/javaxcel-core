@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class NoTargetedConstructorExceptionTest {
+class AmbiguousExcelModelCreatorExceptionTest {
 
     @Test
     @DisplayName("NoTargetedConstructorException(String, Object...)")
@@ -30,11 +30,11 @@ class NoTargetedConstructorExceptionTest {
         String message = "Failed to find the targeted constructor";
 
         // when
-        NoTargetedConstructorException exception = new NoTargetedConstructorException(message);
+        AmbiguousExcelModelCreatorException exception = new AmbiguousExcelModelCreatorException(message);
 
         // then
         assertThat(exception)
-                .isExactlyInstanceOf(NoTargetedConstructorException.class)
+                .isExactlyInstanceOf(AmbiguousExcelModelCreatorException.class)
                 .hasMessage(message);
     }
 
@@ -46,11 +46,11 @@ class NoTargetedConstructorExceptionTest {
         Throwable cause = new RuntimeException("Failed to find the targeted constructor");
 
         // when
-        NoTargetedConstructorException exception = new NoTargetedConstructorException(cause, message, Object.class);
+        AmbiguousExcelModelCreatorException exception = new AmbiguousExcelModelCreatorException(cause, message, Object.class);
 
         // then
         assertThat(exception)
-                .isExactlyInstanceOf(NoTargetedConstructorException.class)
+                .isExactlyInstanceOf(AmbiguousExcelModelCreatorException.class)
                 .hasCause(cause)
                 .hasMessageStartingWith(message);
     }

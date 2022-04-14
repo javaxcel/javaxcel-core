@@ -16,17 +16,19 @@
 
 package com.github.javaxcel.out.core.modelwriter;
 
-import com.github.javaxcel.out.core.ModelWriterTester;
+import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelIgnore;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
+import com.github.javaxcel.out.core.ModelWriterTester;
+import com.github.javaxcel.out.strategy.ExcelWriteStrategy.AutoResizedColumns;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -40,13 +42,13 @@ import static com.github.javaxcel.TestUtils.*;
 /**
  * @see ExcelIgnore
  * @see ExcelModel#explicit()
+ * @see ExcelUtils#autoResizeColumns(Sheet, int)
  */
 @StopwatchProvider
 class IgnoreTest extends ModelWriterTester {
 
     @ParameterizedTest
     @ValueSource(classes = {IgnoredModel.class, ExplicitModel.class})
-    @DisplayName("@ExcelIgnore")
     void test(Class<?> type, @TempDir Path path, Stopwatch stopwatch) throws Exception {
         String filename = type.getSimpleName().toLowerCase() + '.' + ExcelUtils.EXCEL_2007_EXTENSION;
         File file = new File(path.toFile(), filename);
@@ -61,6 +63,14 @@ class IgnoreTest extends ModelWriterTester {
         whenModel.setNumOfMocks(numOfMocks);
 
         return whenModel;
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    protected void whenWriteWorkbook(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) {
+        TestUtils.JAVAXCEL.writer(whenModel.getWorkbook(), givenModel.getType())
+                .options(new AutoResizedColumns())
+                .write(whenModel.getOutputStream(), (List) thenModel.getModels());
     }
 
     @Override

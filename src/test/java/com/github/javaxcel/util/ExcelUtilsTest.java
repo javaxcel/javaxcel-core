@@ -1,6 +1,6 @@
 package com.github.javaxcel.util;
 
-import com.github.javaxcel.exception.NoTargetedConstructorException;
+import com.github.javaxcel.exception.AmbiguousExcelModelCreatorException;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.model.product.Product;
 import io.github.imsejin.common.tool.Stopwatch;
@@ -8,7 +8,6 @@ import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFPalette;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.usermodel.HSSFWorkbookFactory;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.*;
 import org.junit.jupiter.api.Disabled;
@@ -43,7 +42,7 @@ class ExcelUtilsTest {
         }
         Constructor<?> constructor = Arrays.stream(declaredConstructors)
                 .min(Comparator.comparingInt(Constructor::getParameterCount))
-                .orElseThrow(() -> new NoTargetedConstructorException("Failed to find the targeted constructor"));
+                .orElseThrow(() -> new AmbiguousExcelModelCreatorException("Failed to find the targeted constructor"));
         if (!constructor.isAccessible()) constructor.setAccessible(true);
         stopwatch.stop();
 
@@ -60,7 +59,7 @@ class ExcelUtilsTest {
     void test() {
         // given
         File file = new File("/data/hssf-rgb.xls");
-        HSSFWorkbook workbook = HSSFWorkbookFactory.createWorkbook();
+        HSSFWorkbook workbook = (HSSFWorkbook) WorkbookFactory.create(false);
         Sheet sheet = workbook.createSheet();
         Row row = sheet.createRow(0);
         Cell cell = row.createCell(0);

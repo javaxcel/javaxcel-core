@@ -18,7 +18,7 @@ package com.github.javaxcel.in.core;
 
 import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.util.ExcelUtils;
-import com.monitorjbl.xlsx.StreamingReader;
+import com.github.pjfanning.xlsx.StreamingReader;
 import io.github.imsejin.common.tool.Stopwatch;
 import io.github.imsejin.common.util.FilenameUtils;
 import lombok.Getter;
