@@ -42,8 +42,8 @@ public class EducationToy extends Toy {
     private LocalDateTime localDateTime = LocalDateTime.now().withNano(0);
 
     @ExcelDateTimeFormat(pattern = "yyyyMMddHHmmssz")
-    private ZonedDateTime formattedZonedDateTime = ZonedDateTime.now().withNano(0);
-    private ZonedDateTime zonedDateTime = ZonedDateTime.now().withNano(0);
+    private ZonedDateTime formattedZonedDateTime = ZonedDateTime.now(ZoneOffset.UTC).withNano(0);
+    private ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneOffset.UTC).withNano(0);
 
     @ExcelDateTimeFormat(pattern = "HH-mm-ss-SSS-Z")
     private OffsetTime formattedOffsetTime = OffsetTime.now().withNano(456_000_000); // with 456 ms

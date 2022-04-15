@@ -23,7 +23,6 @@ import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.model.toy.EducationToy;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -41,13 +40,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @StopwatchProvider
 class DateTimeFormatTest extends ModelReaderTester {
 
-    @RepeatedTest(5)
+    @Test
     void test(@TempDir Path path, Stopwatch stopwatch) throws Exception {
         Class<EducationToy> type = EducationToy.class;
         String filename = type.getSimpleName().toLowerCase() + '.' + ExcelUtils.EXCEL_2007_EXTENSION;
         File file = path.resolve(filename).toFile();
 
-        run(file, type, stopwatch, 5);
+        run(file, type, stopwatch, 3072);
     }
 
     @Override
