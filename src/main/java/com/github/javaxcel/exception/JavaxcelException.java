@@ -16,14 +16,16 @@
 
 package com.github.javaxcel.exception;
 
+import io.github.imsejin.common.util.ArrayUtils;
+
 public abstract class JavaxcelException extends RuntimeException {
 
     protected JavaxcelException(String format, Object... args) {
-        super(String.format(format, args));
+        super(ArrayUtils.isNullOrEmpty(args) ? format : String.format(format, args));
     }
 
     protected JavaxcelException(Throwable cause, String format, Object... args) {
-        super(String.format(format, args), cause);
+        super(ArrayUtils.isNullOrEmpty(args) ? format : String.format(format, args), cause);
     }
 
 }

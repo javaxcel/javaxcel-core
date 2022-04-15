@@ -16,8 +16,6 @@
 
 package com.github.javaxcel.annotation;
 
-import io.github.imsejin.common.tool.TypeClassifier;
-
 import java.lang.annotation.*;
 
 @Documented
@@ -29,7 +27,7 @@ public @interface ExcelDateTimeFormat {
      * Pattern for formatting datetime.
      *
      * @return pattern for formatting datetime
-     * @see TypeClassifier#isTemporal(Class)
+     * @see java.text.SimpleDateFormat
      * @see java.time.format.DateTimeFormatter
      */
     String pattern();

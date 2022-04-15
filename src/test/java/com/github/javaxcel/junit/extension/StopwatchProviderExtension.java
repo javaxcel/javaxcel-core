@@ -50,7 +50,7 @@ public class StopwatchProviderExtension implements BeforeTestExecutionCallback, 
         /*
         If test method is annotated with @ParameterizedTest or @RepeatedTest
         or test class is annotated with @StopwatchProvider,
-        a instance of this extension is reused.
+        an instance of this extension is reused.
         It seems that the test cases are in a group.
         */
         if (!this.stopwatch.hasNeverBeenStopped()) this.stopwatch.clear();

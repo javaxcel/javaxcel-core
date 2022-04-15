@@ -6,11 +6,11 @@
 
     <groupId>com.github.javaxcel</groupId>
     <artifactId>javaxcel-core</artifactId>
-    <version>0.7.5</version>
+    <version>0.8.0</version>
     <packaging>jar</packaging>
 
     <name>Javaxcel Core</name>
-    <description>Supporter for export and import of excel file</description>
+    <description>Supporter for export and import of Excel file</description>
     <url>https://github.com/javaxcel/javaxcel-core</url>
 
     <licenses>
@@ -53,14 +53,31 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+        <!-- Provided dependency version -->
+        <apache-poi.version>5.2.2</apache-poi.version>
+<!--        <apache-poi.version>4.1.2</apache-poi.version>-->
+
         <!-- Dependency versions -->
-        <apache-poi.version>4.1.2</apache-poi.version>
-        <javaxcel.styler.version>0.2.1</javaxcel.styler.version>
-        <spel.version>5.2.9</spel.version>
-        <common-utils.version>0.7.0</common-utils.version>
-        <junit5.version>5.8.1</junit5.version>
-        <assertj.version>3.21.0</assertj.version>
+        <spring-expression.version>5.3.18</spring-expression.version>
+        <javaxcel-styler.version>0.2.1</javaxcel-styler.version>
+        <common-utils.version>0.8.0</common-utils.version>
+
+        <!-- Test dependency versions -->
+        <junit5.version>5.8.2</junit5.version>
+        <assertj.version>3.22.0</assertj.version>
+        <spock.version>2.1-groovy-3.0</spock.version>
+        <lombok.version>1.18.22</lombok.version>
+        <byte-buddy.version>1.12.9</byte-buddy.version>
+        <easy-random.version>4.3.0</easy-random.version>
+        <excel-streaming-reader.version>3.6.1</excel-streaming-reader.version>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <!-- Common Utils -->
@@ -83,37 +100,24 @@
         <!-- Apache POI -->
         <dependency>
             <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-            <version>${apache-poi.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>${apache-poi.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml-schemas</artifactId>
-            <version>${apache-poi.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-scratchpad</artifactId>
-            <version>${apache-poi.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- SpEL(Spring Expression Language) -->
         <dependency>
-            <groupId>io.github.imsejin</groupId>
-            <artifactId>spel</artifactId>
-            <version>${spel.version}</version>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-expression</artifactId>
+            <version>${spring-expression.version}</version>
+            <optional>true</optional>
         </dependency>
 
         <!-- Javaxcel Styler -->
         <dependency>
             <groupId>com.github.javaxcel</groupId>
             <artifactId>javaxcel-styler</artifactId>
-            <version>${javaxcel.styler.version}</version>
+            <version>${javaxcel-styler.version}</version>
         </dependency>
 
         <!--
@@ -125,7 +129,7 @@
         <dependency>
             <groupId>org.jeasy</groupId>
             <artifactId>easy-random-core</artifactId>
-            <version>4.3.0</version>
+            <version>${easy-random.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -133,7 +137,15 @@
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
-            <version>1.11.22</version>
+            <version>${byte-buddy.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Excel Streaming Reader -->
+        <dependency>
+            <groupId>com.github.pjfanning</groupId>
+            <artifactId>excel-streaming-reader</artifactId>
+            <version>${excel-streaming-reader.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -165,11 +177,24 @@
             <scope>test</scope>
         </dependency>
 
+        <!--
+            Spock Framework
+
+            Mandatory dependencies for using Spock.
+            This starts to support 'maven-surefire' since 2.0.
+        -->
+        <dependency>
+            <groupId>org.spockframework</groupId>
+            <artifactId>spock-core</artifactId>
+            <version>${spock.version}</version>
+            <scope>test</scope>
+        </dependency>
+
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.20</version>
+            <version>${lombok.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -231,7 +256,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
+                        <version>3.0.1</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -253,11 +278,34 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.10.1</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
+            </plugin>
+
+            <!--
+                Mandatory plugin for using Spock.
+                It enables you to check test cases using Spock automatically.
+
+                The gmavenplus plugin is used to compile Groovy code.
+                To learn more about this plugin,
+                visit https://github.com/groovy/GMavenPlus/wiki
+            -->
+            <plugin>
+                <groupId>org.codehaus.gmavenplus</groupId>
+                <artifactId>gmavenplus-plugin</artifactId>
+                <version>1.13.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>compileTests</goal>
+                            <goal>addTestSources</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
@@ -275,7 +323,17 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
                 <configuration>
-                    <testFailureIgnore>true</testFailureIgnore>
+                    <testFailureIgnore>false</testFailureIgnore>
+                    <!--
+                        Only required if names of test classes don't match default Surefire patterns('*Test').
+                        By default only files ending in 'Test' will be included,
+                        so also include support for Spock style naming convention.
+                        Oddly enough for Groovy files, '*Spec.groovy' does not work, but '*Spec.java'.
+                    -->
+                    <includes>
+                        <include>**/*Test.java</include>
+                        <include>**/*Spec.java</include>
+                    </includes>
                 </configuration>
             </plugin>
 
@@ -287,7 +345,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.7</version>
+                <version>0.8.8</version>
                 <executions>
                     <execution>
                         <goals>
@@ -300,6 +358,50 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <minimizeJar>true</minimizeJar>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <keepDependenciesWithProvidedScope>false</keepDependenciesWithProvidedScope>
+                            <!--
+                                Specifies artifacts to be repackaged.
+                                Other dependencies will be exposed to outside.
+                            -->
+                            <artifactSet>
+                                <includes>
+                                    <include>org.springframework:spring-expression</include>
+                                    <include>org.springframework:spring-core</include>
+                                    <include>org.springframework:spring-jcl</include>
+                                </includes>
+                            </artifactSet>
+
+                            <!-- Repackaging -->
+                            <relocations>
+                                <!-- spring-core, spring-expression -->
+                                <relocation>
+                                    <pattern>org.springframework</pattern>
+                                    <shadedPattern>${project.groupId}.internal.springframework</shadedPattern>
+                                </relocation>
+                                <!-- spring-jcl -->
+                                <relocation>
+                                    <pattern>org.apache.commons.logging</pattern>
+                                    <shadedPattern>${project.groupId}.internal.springframework.jcl</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

@@ -16,18 +16,21 @@
 
 package com.github.javaxcel.constant;
 
+import com.github.javaxcel.converter.in.ExcelReadConverter;
+import com.github.javaxcel.converter.out.ExcelWriteConverter;
+
 /**
  * Type of converter
  */
 public enum ConverterType {
 
     /**
-     * @see com.github.javaxcel.converter.in.InputConverter
+     * @see ExcelReadConverter
      */
     IN,
 
     /**
-     * @see com.github.javaxcel.converter.out.OutputConverter
+     * @see ExcelWriteConverter
      */
     OUT;
 

@@ -23,18 +23,17 @@ import io.github.imsejin.common.annotation.ExcludeFromGeneratedJacocoReport;
 import io.github.imsejin.common.util.ReflectionUtils;
 import io.github.imsejin.common.util.StringUtils;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
 /**
- * Utilities for reflection.
+ * Utilities for reflection on {@link Field}.
  */
 public final class FieldUtils {
 
@@ -62,22 +61,24 @@ public final class FieldUtils {
      * @see ExcelIgnore
      */
     public static List<Field> getTargetedFields(Class<?> type) {
-        // Gets fields depending on the policies.
+        // Gets the fields depending on the policies.
         ExcelModel excelModel = type.getAnnotation(ExcelModel.class);
         Stream<Field> stream = excelModel == null || !excelModel.includeSuper()
                 ? Arrays.stream(type.getDeclaredFields())
                 : ReflectionUtils.getInheritedFields(type).stream();
 
-        // Excludes the fields to be ignored.
-        stream = stream.filter(field -> field.getAnnotation(ExcelIgnore.class) == null);
+        // Excludes the synthetic fields
+        Predicate<Field> filter = it -> !it.isSynthetic();
         // Excludes the static fields.
-        stream = stream.filter(field -> !Modifier.isStatic(field.getModifiers()));
+        filter = filter.and(it -> !Modifier.isStatic(it.getModifiers()));
+        // Excludes the fields to be ignored.
+        filter = filter.and(it -> !it.isAnnotationPresent(ExcelIgnore.class));
         // Excludes the implicit fields.
         if (excelModel != null && excelModel.explicit()) {
-            stream = stream.filter(field -> field.getAnnotation(ExcelColumn.class) != null);
+            filter = filter.and(it -> it.isAnnotationPresent(ExcelColumn.class));
         }
 
-        return stream.collect(toList());
+        return stream.filter(filter).collect(toList());
     }
 
     /**
@@ -85,17 +86,51 @@ public final class FieldUtils {
      *
      * <p> This checks whether the field is annotated with {@link ExcelColumn} or not.
      * If {@link ExcelColumn#name()} is not null and not empty,
-     * this returns a header name defined in the field.
-     * Otherwise returns name of the field.
+     * this returns a header name defined in the field, otherwise returns name of the field.
      *
-     * @param fields targeted fields
+     * @param fields           targeted fields
+     * @param ignoreAnnotation whether {@link ExcelColumn#name()} is ignored
      * @return list of {@link ExcelColumn#name()} or {@link Field#getName()}
      */
-    public static List<String> toHeaderNames(List<Field> fields) {
-        return fields.stream().map(field -> {
-            ExcelColumn annotation = field.getAnnotation(ExcelColumn.class);
-            return annotation == null || StringUtils.isNullOrEmpty(annotation.name()) ? field.getName() : annotation.name();
-        }).collect(toList());
+    public static List<String> toHeaderNames(List<Field> fields, boolean ignoreAnnotation) {
+        List<String> headerNames = new ArrayList<>();
+        for (Field field : fields) {
+            headerNames.add(toHeaderName(field, ignoreAnnotation));
+        }
+
+        return headerNames;
+    }
+
+    /**
+     * Converts field to header name.
+     *
+     * <p> This checks whether the field is annotated with {@link ExcelColumn} or not.
+     * If {@link ExcelColumn#name()} is not null and not empty,
+     * this returns a header name defined in the field, otherwise returns name of the field.
+     *
+     * @param field            targeted field
+     * @param ignoreAnnotation whether {@link ExcelColumn#name()} is ignored
+     * @return {@link ExcelColumn#name()} or {@link Field#getName()}
+     */
+    public static String toHeaderName(Field field, boolean ignoreAnnotation) {
+        if (ignoreAnnotation) return field.getName();
+
+        ExcelColumn annotation = field.getAnnotation(ExcelColumn.class);
+        return annotation == null || StringUtils.isNullOrEmpty(annotation.name())
+                ? field.getName() : annotation.name();
+    }
+
+    /**
+     * Converts fields to a map.
+     *
+     * @param model model in list
+     * @param <T>   type of the object
+     * @return {@link Map} in which key is the model's field name and value is the model's field value
+     * @see Field#getName()
+     * @see ReflectionUtils#getFieldValue(Object, Field)
+     */
+    public static <T> Map<String, Object> toMap(T model) {
+        return toMap(model, getTargetedFields(model.getClass()));
     }
 
     /**
@@ -115,6 +150,29 @@ public final class FieldUtils {
         }
 
         return map;
+    }
+
+    @Nullable
+    @SuppressWarnings("unchecked")
+    public static <T> T resolveFirst(Class<T> type, Object... arguments) {
+        for (Object argument : arguments) {
+            if (argument == null || !type.isAssignableFrom(argument.getClass())) continue;
+            return (T) argument;
+        }
+
+        return null;
+    }
+
+    @Nullable
+    @SuppressWarnings("unchecked")
+    public static <T> T resolveLast(Class<T> type, Object... arguments) {
+        T t = null;
+        for (Object argument : arguments) {
+            if (argument == null || !type.isAssignableFrom(argument.getClass())) continue;
+            t = (T) argument;
+        }
+
+        return t;
     }
 
 }

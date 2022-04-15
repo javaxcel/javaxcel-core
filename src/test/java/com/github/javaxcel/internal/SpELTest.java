@@ -19,11 +19,11 @@ package com.github.javaxcel.internal;
 import com.github.javaxcel.model.product.Product;
 import com.github.javaxcel.model.toy.EducationToy;
 import io.github.imsejin.common.util.StringUtils;
-import io.github.imsejin.expression.Expression;
-import io.github.imsejin.expression.ExpressionParser;
-import io.github.imsejin.expression.ParserContext;
-import io.github.imsejin.expression.spel.standard.SpelExpressionParser;
-import io.github.imsejin.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.Expression;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.ParserContext;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -39,8 +39,7 @@ class SpELTest {
 
     private static String convert(IntStream stream) {
         return stream.mapToObj(String::valueOf)
-                .collect(() -> new StringJoiner(","), StringJoiner::add, (s1, s2) -> {
-                }).toString();
+                .collect(() -> new StringJoiner(","), StringJoiner::add, StringJoiner::merge).toString();
     }
 
     @Test
@@ -59,36 +58,36 @@ class SpELTest {
     }
 
     @Test
-    @DisplayName("SpEL: Product#apiId = Product#name")
+    @DisplayName("SpEL: Product#name = Product#apiId")
     void setApiIdWithName() {
         // given
-        String name = "Mint Chocolate";
+        UUID uuid = UUID.randomUUID();
         Product product = new Product();
-        product.setName(name);
+        product.setApiId(uuid);
 
         // when
-        Expression expression = parser.parseExpression("apiId = name.toUpperCase()");
+        Expression expression = parser.parseExpression("name = apiId.toString().toUpperCase()");
         String actual = expression.getValue(product, String.class);
 
         // then
-        assertThat(product.getApiId())
+        assertThat(product.getName())
                 .as("Product's name is change into the capitalized")
-                .isEqualTo(name.toUpperCase());
+                .isEqualTo(uuid.toString().toUpperCase());
         assertThat(actual)
-                .as("Expression result is equal to product's api id")
-                .isEqualTo(product.getApiId());
+                .as("Expression result is equal to product's name")
+                .isEqualTo(product.getName());
     }
 
     @Test
-    @DisplayName("SpEL: Product#apiId = UUID#randomUUID()#toString()")
+    @DisplayName("SpEL: Product#apiId = UUID#randomUUID()")
     void setValueIntoProperty() {
         // given
-        String initialUuid = UUID.randomUUID().toString();
+        UUID initialUuid = UUID.randomUUID();
         Product product = new Product();
         product.setApiId(initialUuid);
 
         // when
-        String newUuid = UUID.randomUUID().toString();
+        UUID newUuid = UUID.randomUUID();
         parser.parseExpression("apiId").setValue(product, newUuid);
 
         // then
@@ -146,7 +145,7 @@ class SpELTest {
                 .as("#{fieldName} is converted into field value")
                 .isEqualTo(exp.replaceAll("#\\{.+}", product.getName()));
         assertThat(expressionResult)
-                .as("Executes a expression as converted template")
+                .as("Executes an expression as converted template")
                 .isEqualTo("milk_tea");
     }
 
@@ -155,9 +154,9 @@ class SpELTest {
     void parseVariable() {
         // given
         EducationToy toy = new EducationToy();
-        toy.setTargetAges(new int[]{2, 3, 4, 5, 6});
+        toy.setTargetAges(new int[][]{{2, 3, 4, 5, 6}});
         String fieldName = "targetAges";
-        String exp = String.format("T(java.util.Arrays).stream(#%s)" +
+        String exp = String.format("T(java.util.Arrays).stream(#%s[0])" +
                 ".boxed()" +
                 ".collect(T(java.util.stream.Collectors).toList())" +
                 ".toString()" +
@@ -180,9 +179,7 @@ class SpELTest {
     void parseVariables() {
         // given
         List<Integer> primes = Arrays.asList(2, 3, 5, 7, 11, 13, 17);
-        Map<String, Object> map = new HashMap<String, Object>() {{
-            put("primes", primes);
-        }};
+        Map<String, Object> map = Collections.singletonMap("primes", primes);
 
         // when
         StandardEvaluationContext context = new StandardEvaluationContext();
@@ -196,14 +193,17 @@ class SpELTest {
                 .isGreaterThan(7));
     }
 
+    /**
+     * @see #convert(IntStream)
+     */
     @Test
     void parseVariableWithMethod() throws NoSuchMethodException {
         // given
         EducationToy toy = new EducationToy();
-        toy.setTargetAges(new int[]{2, 3, 4, 5, 6});
+        toy.setTargetAges(new int[][]{{2, 3, 4, 5, 6}});
         String fieldName = "targetAges";
         String converterName = "convert";
-        String exp = "#" + converterName + "(T(java.util.Arrays).stream(#" + fieldName + "))";
+        String exp = "#" + converterName + "(T(java.util.Arrays).stream(#" + fieldName + "[0]))";
 
         // when
         StandardEvaluationContext context = new StandardEvaluationContext(toy);

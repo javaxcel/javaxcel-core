@@ -40,15 +40,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.IntStream;
 
-import static java.util.stream.Collectors.toList;
-
 /**
- * Utilities for spreadsheet excel with Apache POI.
+ * Utilities for spreadsheet Excel with Apache POI.
  *
  * @see Workbook
  * @see Sheet
@@ -70,14 +66,14 @@ public final class ExcelUtils {
     /**
      * Returns the instance of {@link Workbook} by reading file.
      *
-     * @param file excel file
-     * @return excel workbook instance
+     * @param file Excel file
+     * @return Excel workbook instance
      * @throws IllegalArgumentException unless file extension is equal to 'xls' or 'xlsx'
      */
     public static Workbook getWorkbook(File file) {
         final String extension = FilenameUtils.getExtension(file.getName());
         Asserts.that(extension)
-                .as("Extension of excel file must be '{0}' or '{1}'",
+                .as("Extension of Excel file must be '{0}' or '{1}'",
                         EXCEL_97_EXTENSION, EXCEL_2007_EXTENSION)
                 .matches(EXCEL_97_EXTENSION + '|' + EXCEL_2007_EXTENSION);
 
@@ -97,27 +93,23 @@ public final class ExcelUtils {
     }
 
     /**
-     * Returns range of the sheets.
-     *
-     * @param workbook excel workbook
-     * @return range that from 0 to (the number of sheets - 1)
-     * @see Workbook#getNumberOfSheets()
-     */
-    public static int[] getSheetRange(Workbook workbook) {
-        return IntStream.range(0, workbook.getNumberOfSheets()).toArray();
-    }
-
-    /**
      * Returns all sheets in a workbook.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @return all sheets
      */
     public static List<Sheet> getSheets(Workbook workbook) {
-        return IntStream.range(0, workbook.getNumberOfSheets())
-                .filter(i -> !workbook.isSheetHidden(i))
-                .mapToObj(workbook::getSheetAt)
-                .collect(toList());
+        int numberOfSheets = workbook.getNumberOfSheets();
+
+        List<Sheet> sheets = new ArrayList<>(numberOfSheets);
+        for (int i = 0; i < numberOfSheets; i++) {
+            if (workbook.isSheetHidden(i)) continue;
+
+            Sheet sheet = workbook.getSheetAt(i);
+            sheets.add(sheet);
+        }
+
+        return sheets;
     }
 
     /**
@@ -128,10 +120,12 @@ public final class ExcelUtils {
      * @throws UnsupportedWorkbookException if instance of sheet is {@link SXSSFSheet}
      */
     public static int getNumOfRows(Sheet sheet) {
-        Asserts.that(SXSSFSheet.class)
+        Asserts.that(sheet)
+                .isNotNull()
                 .as("SXSSFWorkbook is not supported workbook when read")
                 .exception(UnsupportedWorkbookException::new)
-                .isNotTypeOf(sheet);
+                .asClass()
+                .isNotTypeOf(SXSSFSheet.class);
 
         return Math.max(0, sheet.getPhysicalNumberOfRows());
     }
@@ -139,28 +133,24 @@ public final class ExcelUtils {
     /**
      * Returns the number of rows in all sheets.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @return the number of rows
      * @throws UnsupportedWorkbookException if instance of workbook is {@link SXSSFWorkbook}
      */
     public static long getNumOfRows(Workbook workbook) {
-        Asserts.that(SXSSFWorkbook.class)
+        Asserts.that(workbook)
+                .isNotNull()
                 .as("SXSSFWorkbook is not supported workbook when read")
                 .exception(UnsupportedWorkbookException::new)
-                .isNotTypeOf(workbook);
+                .asClass()
+                .isNotTypeOf(SXSSFWorkbook.class);
 
-        return getSheets(workbook).stream().mapToInt(ExcelUtils::getNumOfRows).sum();
-    }
+        long numOfRows = 0;
+        for (Sheet sheet : getSheets(workbook)) {
+            numOfRows += getNumOfRows(sheet);
+        }
 
-    /**
-     * Returns the number of rows in all sheets.
-     *
-     * @param file excel file
-     * @return the number of rows
-     */
-    public static long getNumOfRows(File file) {
-        Workbook workbook = getWorkbook(file);
-        return getNumOfRows(workbook);
+        return numOfRows;
     }
 
     /**
@@ -174,10 +164,12 @@ public final class ExcelUtils {
      * @throws UnsupportedWorkbookException if instance of sheet is {@link SXSSFSheet}
      */
     public static int getNumOfModels(Sheet sheet) {
-        Asserts.that(SXSSFSheet.class)
+        Asserts.that(sheet)
+                .isNotNull()
                 .as("SXSSFWorkbook is not supported workbook when read")
                 .exception(UnsupportedWorkbookException::new)
-                .isNotTypeOf(sheet);
+                .asClass()
+                .isNotTypeOf(SXSSFSheet.class);
 
         return Math.max(0, sheet.getPhysicalNumberOfRows() - 1);
     }
@@ -188,17 +180,24 @@ public final class ExcelUtils {
      * <p> This excludes header row. In other words,
      * this returns the total number of rows minus number of all headers.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @return the number of models
      * @throws UnsupportedWorkbookException if instance of workbook is {@link SXSSFWorkbook}
      */
     public static long getNumOfModels(Workbook workbook) {
-        Asserts.that(SXSSFWorkbook.class)
+        Asserts.that(workbook)
+                .isNotNull()
                 .as("SXSSFWorkbook is not supported workbook when read")
                 .exception(UnsupportedWorkbookException::new)
-                .isNotTypeOf(workbook);
+                .asClass()
+                .isNotTypeOf(SXSSFWorkbook.class);
 
-        return getSheets(workbook).stream().mapToInt(ExcelUtils::getNumOfModels).sum();
+        long numOfModels = 0;
+        for (Sheet sheet : getSheets(workbook)) {
+            numOfModels += getNumOfModels(sheet);
+        }
+
+        return numOfModels;
     }
 
     /**
@@ -207,7 +206,7 @@ public final class ExcelUtils {
      * <p> This excludes header row. In other words,
      * this returns the total number of rows minus number of all headers.
      *
-     * @param file excel file
+     * @param file Excel file
      * @return the number of models
      */
     public static long getNumOfModels(File file) {
@@ -218,7 +217,7 @@ public final class ExcelUtils {
     /**
      * Returns maximum number of rows in a spreadsheet.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @return maximum number of rows in a spreadsheet
      */
     public static int getMaxRows(Workbook workbook) {
@@ -242,7 +241,7 @@ public final class ExcelUtils {
     /**
      * Returns maximum number of columns in a spreadsheet.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @return maximum number of columns in a spreadsheet
      */
     public static int getMaxColumns(Workbook workbook) {
@@ -266,7 +265,7 @@ public final class ExcelUtils {
     /**
      * Checks if spreadsheet's version is 97.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @return whether spreadsheet's version is 97 or not
      */
     public static boolean isExcel97(Workbook workbook) {
@@ -276,7 +275,7 @@ public final class ExcelUtils {
     /**
      * Checks if spreadsheet's version is 97.
      *
-     * @param sheet excel sheet
+     * @param sheet Excel sheet
      * @return whether spreadsheet's version is 97 or not
      */
     public static boolean isExcel97(Sheet sheet) {
@@ -308,12 +307,12 @@ public final class ExcelUtils {
      *
      * <p> This can be affected by font size and font family.
      * If you want this process well, set up the same font family into all cells.
-     * This process will be perform in parallel, but if {@link SXSSFSheet} is, in single.
+     * This process will be performed in parallel, but if {@link SXSSFSheet} is, in single.
      *
      * <p> If instance of sheet is {@link SXSSFSheet}, the columns may be
      * inaccurately auto-resized compared to {@link HSSFSheet} and {@link org.apache.poi.xssf.usermodel.XSSFSheet}.
      *
-     * @param sheet        excel sheet
+     * @param sheet        Excel sheet
      * @param numOfColumns number of the columns that wanted to make fit contents.
      * @see Sheet#autoSizeColumn(int)
      */
@@ -352,7 +351,7 @@ public final class ExcelUtils {
      * <p> This process will be performed in single-thread.
      * If change this code to be in parallel, this will throw {@link java.util.ConcurrentModificationException}.
      *
-     * @param sheet     excel sheet
+     * @param sheet     Excel sheet
      * @param numOfRows number of the rows that have contents.
      * @see Row#setZeroHeight(boolean)
      */
@@ -382,7 +381,7 @@ public final class ExcelUtils {
      *     +------------+----------+
      * </code></pre>
      *
-     * @param sheet        excel sheet
+     * @param sheet        Excel sheet
      * @param numOfColumns number of the columns that have contents.
      * @see Sheet#setColumnHidden(int, boolean)
      */
@@ -397,12 +396,14 @@ public final class ExcelUtils {
     /**
      * Converts configuration to cell style.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @param config   configuration of cell style
-     * @return cell style | null if instance type of config is {@link NoStyleConfig}
+     * @return cell style | null if config type is {@link NoStyleConfig}
      */
     @Nullable
     public static CellStyle toCellStyle(Workbook workbook, ExcelStyleConfig config) {
+        // To save memory and prevent the number of cell styles in a workbook from increasing,
+        // replaces redundant cell style with null.
         if (config.getClass() == NoStyleConfig.class) return null;
 
         CellStyle cellStyle = workbook.createCellStyle();
@@ -415,29 +416,35 @@ public final class ExcelUtils {
     /**
      * Converts configurations to cell styles.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @param configs  configurations of cell style
-     * @return cell styles | null if all instance types of configs are {@link NoStyleConfig}
-     * @throws IllegalArgumentException if configs is null or its length is zero.
+     * @return cell styles, or null if all instance types of configs are {@link NoStyleConfig}
+     * @throws IllegalArgumentException if configs are null, their length is 0, or they contain null
      */
-    @Nullable
     public static CellStyle[] toCellStyles(Workbook workbook, ExcelStyleConfig... configs) {
-        Asserts.that(configs)
-                .as("Configurations for style cannot be null or empty")
-                .isNotNull().hasElement();
+        Asserts.that(configs).exception(IllegalArgumentException::new)
+                .as("configs is not allowed to be null or empty: {0}", (Object) configs)
+                .isNotNull().hasElement()
+                .as("configs is not allowed to contain null: {0}", (Object) configs)
+                .doesNotContainNull();
 
-        /*
-            Prevents cell style from being instantiated to save memory
-            and not to increase the number of cell styles in a workbook.
-         */
-        if (Arrays.stream(configs).map(Object::getClass).allMatch(NoStyleConfig.class::equals)) {
-            return null;
-        }
+        // CellStyle is reusable class, so we use cache
+        // to restrain excessive instantiation of that class.
+        Map<Class<? extends ExcelStyleConfig>, CellStyle> cache = new HashMap<>();
 
         CellStyle[] cellStyles = new CellStyle[configs.length];
         for (int i = 0; i < configs.length; i++) {
             ExcelStyleConfig config = configs[i];
+            Class<? extends ExcelStyleConfig> configType = config.getClass();
+
+            // When cache hit.
+            if (cache.containsKey(configType)) {
+                cellStyles[i] = cache.get(configType);
+                continue;
+            }
+
             cellStyles[i] = toCellStyle(workbook, config);
+            cache.put(configType, cellStyles[i]);
         }
 
         return cellStyles;
@@ -454,7 +461,7 @@ public final class ExcelUtils {
      *     setRangeAlias(workbook, "MY_RANGE", ref);
      * </code></pre>
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @param alias    alias for cell range address
      * @param ref      reference for cell range address
      */
@@ -476,7 +483,7 @@ public final class ExcelUtils {
      *     toRangeReference(sheet, startCell, endCell); // mySheet!$A$1:$A$2
      * </code></pre>
      *
-     * @param sheet     excel sheet
+     * @param sheet     Excel sheet
      * @param startCell first cell in cell range address
      * @param endCell   last cell in cell range address
      * @return reference for cell range address
@@ -509,7 +516,7 @@ public final class ExcelUtils {
      *     toRangeReference(sheet, 2, 1, 5, 4); // mySheet!$C$2:$F$5
      * </code></pre>
      *
-     * @param sheet            excel sheet
+     * @param sheet            Excel sheet
      * @param startColumnIndex column index of first cell in cell range address
      * @param startRowIndex    row index of first cell in cell range address
      * @param endColumnIndex   column index of end cell in cell range address
@@ -546,7 +553,7 @@ public final class ExcelUtils {
      *     toRangeReference(xssfSheet, 2); // mySheet!$C$2:$A$1048576
      * </code></pre>
      *
-     * @param sheet       excel sheet
+     * @param sheet       Excel sheet
      * @param columnIndex column index for cell range address
      * @return reference for column range address except first row
      * @throws IllegalArgumentException if column index is greater than max column index of the sheet
@@ -573,7 +580,7 @@ public final class ExcelUtils {
      *     setValidation(sheet, helper, ref, "RED", "GREEN", "BLUE");
      * </code></pre>
      *
-     * @param sheet  excel sheet
+     * @param sheet  Excel sheet
      * @param helper data validation helper
      * @param ref    reference for cell range address
      * @param values constraint values
@@ -595,7 +602,7 @@ public final class ExcelUtils {
     /**
      * Returns the number of declared cell styles.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @return number of declared cell styles
      */
     public static int getNumOfDeclaredCellStyles(Workbook workbook) {
@@ -606,7 +613,7 @@ public final class ExcelUtils {
     /**
      * Returns the number of initial cell styles.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @return the number of initial cell styles
      */
     public static int getNumOfInitialCellStyles(Workbook workbook) {
@@ -616,21 +623,26 @@ public final class ExcelUtils {
     /**
      * Returns the declared cell styles.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @return the declared cell styles
      */
     public static List<CellStyle> getDeclaredCellStyles(Workbook workbook) {
         int initial = getNumOfInitialCellStyles(workbook);
         int declared = getNumOfDeclaredCellStyles(workbook);
 
-        return IntStream.range(initial, initial + declared)
-                .mapToObj(workbook::getCellStyleAt).collect(toList());
+        List<CellStyle> cellStyles = new ArrayList<>(declared);
+        for (int i = initial; i < initial + declared; i++) {
+            CellStyle cellStyle = workbook.getCellStyleAt(i);
+            cellStyles.add(cellStyle);
+        }
+
+        return cellStyles;
     }
 
     /**
      * Returns a font on cell style in workbook.
      *
-     * @param workbook excel workbook
+     * @param workbook Excel workbook
      * @param style    cell style
      * @return font on cell style
      */
@@ -645,9 +657,9 @@ public final class ExcelUtils {
     /**
      * Returns whether one cell style/font is equal to the other.
      *
-     * @param workbook      excel workbook
+     * @param workbook      Excel workbook
      * @param style         cell style
-     * @param otherWorkbook other excel workbook
+     * @param otherWorkbook other Excel workbook
      * @param otherStyle    other cell style
      * @return whether one cell style/font is equal to the other
      */
