@@ -53,8 +53,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+        <!-- Provided dependency version -->
+        <apache-poi.version>5.2.2</apache-poi.version>
+<!--        <apache-poi.version>4.1.2</apache-poi.version>-->
+
         <!-- Dependency versions -->
-        <apache-poi.version>4.1.2</apache-poi.version>
         <spring-expression.version>5.3.18</spring-expression.version>
         <javaxcel-styler.version>0.2.1</javaxcel-styler.version>
         <common-utils.version>0.8.0</common-utils.version>
@@ -99,6 +102,7 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>${apache-poi.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- SpEL(Spring Expression Language) -->
