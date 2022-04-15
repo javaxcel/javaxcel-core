@@ -71,12 +71,22 @@ Javaxcel is a supporter for exporting `java.util.List` to spreadsheets and impor
   <artifactId>javaxcel-core</artifactId>
   <version>${javaxcel-core.version}</version>
 </dependency>
+
+<!-- Provided dependency -->
+<dependency>
+  <groupId>org.apache.poi</groupId>
+  <artifactId>poi-ooxml</artifactId>
+  <version>${apache-poi.version}</version>
+</dependency>
 ```
 
 ### Gradle
 
 ```groovy
 implementation group: "com.github.javaxcel", name: "javaxcel-core", version: "$javaxcelCoreVersion"
+
+// Provided dependency
+implementation group: "org.apache.poi", name: "poi-ooxml", version: "$apachePoiVersion"
 ```
 
 <br>
