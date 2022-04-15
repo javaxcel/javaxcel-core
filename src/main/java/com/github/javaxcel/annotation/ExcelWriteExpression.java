@@ -23,9 +23,9 @@ import java.lang.annotation.*;
 /**
  * Expression for conversion of field value to cell value.
  *
- * @see io.github.imsejin.expression.spel.standard.SpelExpressionParser
- * @see io.github.imsejin.expression.spel.support.StandardEvaluationContext
- * @see io.github.imsejin.expression.Expression
+ * @see org.springframework.expression.spel.standard.SpelExpressionParser
+ * @see org.springframework.expression.spel.support.StandardEvaluationContext
+ * @see org.springframework.expression.Expression
  */
 @Documented
 @Target(ElementType.FIELD)
@@ -37,7 +37,7 @@ public @interface ExcelWriteExpression {
      *
      * @return expression to be parsed
      * @see ExpressionExcelWriteConverter
-     * @see io.github.imsejin.expression.Expression
+     * @see org.springframework.expression.Expression
      */
     String value();
 
