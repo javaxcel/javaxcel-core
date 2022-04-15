@@ -84,10 +84,10 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
         if (method == null) {
             executable = Objects.requireNonNull(constructor, "NEVER HAPPENED");
         } else {
-            // Duplicated ExcelModelCreator.
+            // Method and constructor are annotated with @ExcelModelCreator.
             if (constructor != null && constructor.isAnnotationPresent(ExcelModelCreator.class)) {
                 throw new AmbiguousExcelModelCreatorException("Ambiguous method[%s] and constructor[%s] to resolve; " +
-                        "Remove one of the annotations[@ExcelModelCreator] annotated to the method and constructor",
+                        "Remove one of the annotations[@ExcelModelCreator] from the method and constructor",
                         method, constructor);
             }
 
