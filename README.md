@@ -49,6 +49,8 @@
   11. [Enum value constraint](#enum-value-constraint)
   12. [Limitation of reading rows](#limitation-of-reading-rows)
   13. [Parallel reading](#parallel-reading)
+  13. [Resolution of constructor and method](#resolution-of-constructor-and-method)
+  13. [Add handler for custom type](#add-handler-for-custom-type)
   14. [Support java.util.Map](#support-javautilmap)
 
 <br><br>
@@ -505,7 +507,7 @@ private LocalDateTime dateTime = LocalDateTime.now();
 | 20200913 | 11/54/26 | 2020-09-13 11:54:26 |
 
 If you want to write formatted value, annotate `@ExcelDateTimeFormat` and assign `pattern()` you want.
-They are supported types.
+These are supported types by default.
 * `java.util.Date`
 * `java.time.LocalTime`
 * `java.time.LocalDate`
@@ -837,6 +839,155 @@ List<Product> products = Javaxcel.newInstance()
 ```
 
 With option `ExcelReadStrategy.Parallel`, you can read the Excel file faster than without the option.
+
+<br><br>
+
+## Resolution of constructor and method
+
+### reader:
+
+##### Default constructor:
+
+```java
+class Item {
+    private Long id;
+    private String title;
+    private LocalDateTime createdAt;
+}
+```
+
+`ModelReader` will resolve the constructor `public Item()`.
+
+##### Multiple constructors:
+
+```java
+class Item {
+    private Long id;
+    private String title;
+    private LocalDateTime createdAt;
+
+    @ExcelModelCreator
+    private Item(Long id, String title, LocalDateTime createdAt) {
+        this.id = id;
+        this.title = title;
+        this.createdAt = createdAt;
+    }
+
+    public Item(String title) {
+        this.id = new Random().nextLong();
+        this.title = title;
+        this.createdAt = LocalDateTime.now();
+    }
+}
+```
+
+`ModelReader` will resolve the constructor `private Item(Long, String, LocalDateTime)` annotated with `@ExcelModelCreator`.
+
+##### Method and constructor(s):
+
+```java
+class Item {
+    private Long id;
+    private String title;
+    private LocalDateTime createdAt;
+
+    private Item(Long id, String title, LocalDateTime createdAt) {
+        this.id = id;
+        this.title = title;
+        this.createdAt = createdAt;
+    }
+
+    @ExcelModelCreator
+    public static Item from(String title) {
+        return new Item(new Random().nextLong(), title, LocalDateTime.now());
+    }
+}
+```
+
+`ModelReader` will resolve the method `public static Item from(String)` annotated with `@ExcelModelCreator`.
+
+##### Parameter rules:
+
+```java
+class Item {
+    private String id;
+    private String title;
+    private LocalDateTime createdAt;
+
+    public Item(String $title, LocalDateTime $createdAt) {
+        this.id = String.valueOf(new Random().nextLong());
+        this.title = $title;
+        this.createdAt = $createdAt;
+    }
+}
+```
+
+If the class has multiple field types that are the same, resolver checks if field name and parameter name are the same.
+If not same, resolver fails to do. You can fix it with this solution when you can't change the parameter name(s).
+
+```java
+import com.github.javaxcel.annotation.ExcelModelCreator.FieldName;
+
+public Item(@FieldName("title") String $title, LocalDateTime $createdAt) {
+    this.id = String.valueOf(new Random().nextLong());
+    this.title = $title;
+    this.createdAt = $createdAt;
+}
+```
+
+Both names of parameter and field whose type is `LocalDateTime` are different,
+but their type is unique, so resolver can handle the parameter.
+The rule of method is also like this.
+
+<br>
+
+If you want to know more rules, see `AbstractExcelModelExecutableResolver`.
+
+<br><br>
+
+## Add handler for custom type
+
+```java
+class Item {
+    private UUID uuid;
+    private String name;
+    private Item[] items;
+}
+```
+
+`Item` is custom class and not basically supported type. You can add handler for the type.
+
+<br>
+
+```java
+public class ItemTypeHandler extends AbstractExcelTypeHandler<Item> {
+
+    public ItemTypeHandler() {
+        super(Item.class);
+    }
+
+    @Override
+    protected String writeInternal(Item value, Object... args) {
+        // Convert Item to String.
+    }
+
+    @Override
+    public Item read(String value, Object... args) {
+        // Convert String to Item.
+    }
+
+}
+
+/* ... */
+
+ExcelTypeHandlerRegistry registry = new ExcelTypeHandlerRegistryImpl();
+registry.add(Item.class, new ItemTypeHandler());
+
+Javaxcel javaxcel = Javaxcel.newInstance(registry);
+```
+
+If you want to override the supported type by default,
+just make a handler class for the type and add it to registry.  
 
 <br><br>
 
