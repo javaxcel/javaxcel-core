@@ -70,7 +70,7 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
             if (!(e instanceof NoResolvedExcelModelCreatorException)) throw e;
         }
 
-        // Resolves constructor to prevent @ExcelModelCreator from being annotating
+        // Resolves constructor to prevent @ExcelModelCreator from being annotated
         // to two executables, even though there is a resolved method.
         Constructor<?> constructor = null;
         try {
@@ -91,6 +91,7 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
                         method, constructor);
             }
 
+            // Resolution of method takes precedence over constructor.
             executable = method;
         }
 
