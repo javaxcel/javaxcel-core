@@ -72,6 +72,7 @@ class FieldUtilsSpec extends Specification {
     def "Converts java object to map"() {
         given:
         def model = ReflectionUtils.instantiate type
+        def fields = FieldUtils.getTargetedFields type
 
         // Set value to the field dynamically.
         def keyMap = model.properties.keySet().stream().collect toMap(Function.identity(), Function.identity())
@@ -79,7 +80,7 @@ class FieldUtilsSpec extends Specification {
         Optional.ofNullable(keyMap["f1"]).ifPresent { model["f1"] = f1 }
 
         when:
-        def map = FieldUtils.toMap model
+        def map = FieldUtils.toMap(model, fields)
 
         then:
         map == expected

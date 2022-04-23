@@ -123,19 +123,6 @@ public final class FieldUtils {
     /**
      * Converts fields to a map.
      *
-     * @param model model in list
-     * @param <T>   type of the object
-     * @return {@link Map} in which key is the model's field name and value is the model's field value
-     * @see Field#getName()
-     * @see ReflectionUtils#getFieldValue(Object, Field)
-     */
-    public static <T> Map<String, Object> toMap(T model) {
-        return toMap(model, getTargetedFields(model.getClass()));
-    }
-
-    /**
-     * Converts fields to a map.
-     *
      * @param model  model in list
      * @param fields targeted fields
      * @param <T>    type of the object

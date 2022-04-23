@@ -118,7 +118,8 @@ public class ExpressionExcelWriteConverter<T> implements ExcelWriteConverter<T> 
             // When this instantiated by constructor without argument.
             ExcelWriteExpression annotation = field.getAnnotation(ExcelWriteExpression.class);
             expression = parser.parseExpression(annotation.value());
-            variables = FieldUtils.toMap(model);
+            List<Field> fields = FieldUtils.getTargetedFields(model.getClass());
+            variables = FieldUtils.toMap(model, fields);
 
         } else {
             // When this instantiated by constructor with fields.
