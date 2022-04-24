@@ -20,7 +20,9 @@ import com.github.javaxcel.converter.handler.AbstractExcelTypeHandler;
 
 import java.util.Locale;
 
-import static sun.util.locale.LanguageTag.*;
+import static sun.util.locale.LanguageTag.isLanguage;
+import static sun.util.locale.LanguageTag.isRegion;
+import static sun.util.locale.LanguageTag.isVariant;
 
 public class LocaleTypeHandler extends AbstractExcelTypeHandler<Locale> {
 

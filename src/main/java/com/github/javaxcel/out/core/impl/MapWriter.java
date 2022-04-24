@@ -32,7 +32,11 @@ import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.CollectionUtils;
 import io.github.imsejin.common.util.StringUtils;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 
 import java.util.Arrays;
@@ -58,7 +62,7 @@ public class MapWriter extends AbstractExcelWriter<Map<String, Object>> {
     /**
      * Default column value when the value is null or empty.
      *
-     * @see ExcelWriteStrategy.DefaultValue
+     * @see DefaultValue
      */
     private String defaultValue;
 
