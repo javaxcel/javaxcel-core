@@ -20,6 +20,7 @@ import com.github.javaxcel.out.context.ExcelWriteContext;
 import com.github.javaxcel.out.core.ExcelWriter;
 import com.github.javaxcel.out.core.impl.ModelWriter;
 import com.github.javaxcel.out.strategy.AbstractExcelWriteStrategy;
+import io.github.imsejin.common.annotation.ExcludeFromGeneratedJacocoReport;
 
 public class EnumDropdown extends AbstractExcelWriteStrategy {
 
@@ -30,6 +31,7 @@ public class EnumDropdown extends AbstractExcelWriteStrategy {
     }
 
     @Override
+    @ExcludeFromGeneratedJacocoReport
     public Object execute(ExcelWriteContext<?> context) {
         throw new UnsupportedOperationException("ExcelWriteStrategy." + getClass().getSimpleName() + " is not supported");
     }

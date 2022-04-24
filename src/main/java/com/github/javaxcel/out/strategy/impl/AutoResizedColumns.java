@@ -21,6 +21,7 @@ import com.github.javaxcel.out.core.ExcelWriter;
 import com.github.javaxcel.out.core.impl.MapWriter;
 import com.github.javaxcel.out.core.impl.ModelWriter;
 import com.github.javaxcel.out.strategy.AbstractExcelWriteStrategy;
+import io.github.imsejin.common.annotation.ExcludeFromGeneratedJacocoReport;
 
 /**
  * Makes all columns fit their content.
@@ -34,6 +35,7 @@ public class AutoResizedColumns extends AbstractExcelWriteStrategy {
     }
 
     @Override
+    @ExcludeFromGeneratedJacocoReport
     public Object execute(ExcelWriteContext<?> context) {
         throw new UnsupportedOperationException("ExcelWriteStrategy." + getClass().getSimpleName() + " is not supported");
     }

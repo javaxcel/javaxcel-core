@@ -20,6 +20,7 @@ import com.github.javaxcel.in.context.ExcelReadContext;
 import com.github.javaxcel.in.core.ExcelReader;
 import com.github.javaxcel.in.core.impl.ModelReader;
 import com.github.javaxcel.in.strategy.AbstractExcelReadStrategy;
+import io.github.imsejin.common.annotation.ExcludeFromGeneratedJacocoReport;
 
 /**
  * Makes the conversion from imitated model into real model parallel.
@@ -50,6 +51,7 @@ public class Parallel extends AbstractExcelReadStrategy {
     }
 
     @Override
+    @ExcludeFromGeneratedJacocoReport
     public Object execute(ExcelReadContext<?> context) {
         throw new UnsupportedOperationException("ExcelReadStrategy." + getClass().getSimpleName() + " is not supported");
     }

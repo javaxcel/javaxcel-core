@@ -21,6 +21,7 @@ import com.github.javaxcel.out.core.ExcelWriter;
 import com.github.javaxcel.out.core.impl.MapWriter;
 import com.github.javaxcel.out.core.impl.ModelWriter;
 import com.github.javaxcel.out.strategy.AbstractExcelWriteStrategy;
+import io.github.imsejin.common.annotation.ExcludeFromGeneratedJacocoReport;
 
 /**
  * This will automatically create rows up to the maximum number of rows
@@ -36,6 +37,7 @@ public class HiddenExtraRows extends AbstractExcelWriteStrategy {
     }
 
     @Override
+    @ExcludeFromGeneratedJacocoReport
     public Object execute(ExcelWriteContext<?> context) {
         throw new UnsupportedOperationException("ExcelWriteStrategy." + getClass().getSimpleName() + " is not supported");
     }
