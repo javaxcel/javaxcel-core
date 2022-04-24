@@ -112,22 +112,22 @@ public class ExpressionExcelWriteConverter<T> implements ExcelWriteConverter<T> 
     @Override
     public String convert(T model, Field field) {
         Expression expression;
-        Map<String, Object> variables;
+        List<Field> fields;
 
         if (CollectionUtils.isNullOrEmpty(this.fields) || CollectionUtils.isNullOrEmpty(this.cache)) {
             // When this instantiated by constructor without argument.
             ExcelWriteExpression annotation = field.getAnnotation(ExcelWriteExpression.class);
             expression = parser.parseExpression(annotation.value());
-            List<Field> fields = FieldUtils.getTargetedFields(model.getClass());
-            variables = FieldUtils.toMap(model, fields);
+            fields = FieldUtils.getTargetedFields(model.getClass());
 
         } else {
             // When this instantiated by constructor with fields.
             expression = this.cache.get(field);
-            variables = FieldUtils.toMap(model, this.fields);
+            fields = this.fields;
         }
 
         // Enables to use value of the field as "#FIELD_NAME" in 'ExcelWriteExpression'.
+        Map<String, Object> variables = FieldUtils.toMap(model, fields);
         this.context.setVariables(variables);
 
         return expression.getValue(this.context, String.class);
