@@ -83,7 +83,7 @@ class HeaderNamesTest extends ModelWriterTester {
                 .options(new HeaderNames(headerNames)).write(null, Collections.emptyList()))
                 .as("Throws IllegalArgumentException")
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessageMatching("^(headerNames is not allowed to be null or empty|" +
+                .hasMessageMatching("^(ExcelWriteStrategy.HeaderNames.values is not allowed to be null or empty|" +
                         "headerNames\\.size is not equal to the number of targeted fields in the class).+$");
     }
 
