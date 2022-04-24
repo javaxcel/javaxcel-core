@@ -16,8 +16,8 @@
 
 package com.github.javaxcel.annotation;
 
-import com.github.javaxcel.out.strategy.ExcelWriteStrategy.DefaultValue;
-import com.github.javaxcel.out.strategy.ExcelWriteStrategy.EnumDropdown;
+import com.github.javaxcel.out.strategy.impl.DefaultValue;
+import com.github.javaxcel.out.strategy.impl.EnumDropdown;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.styler.NoStyleConfig;
 

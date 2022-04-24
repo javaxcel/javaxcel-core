@@ -22,7 +22,7 @@ import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.core.ExcelWriter;
 import com.github.javaxcel.out.core.ModelWriterTester;
 import com.github.javaxcel.out.core.impl.ModelWriter;
-import com.github.javaxcel.out.strategy.ExcelWriteStrategy.HeaderNames;
+import com.github.javaxcel.out.strategy.impl.HeaderNames;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.tool.Stopwatch;

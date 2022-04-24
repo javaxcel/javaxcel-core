@@ -25,7 +25,7 @@ import com.github.javaxcel.converter.out.DefaultExcelWriteConverter;
 import com.github.javaxcel.converter.out.ExcelWriteConverter;
 import com.github.javaxcel.converter.out.ExpressionExcelWriteConverter;
 import com.github.javaxcel.model.Column;
-import com.github.javaxcel.out.strategy.ExcelWriteStrategy.DefaultValue;
+import com.github.javaxcel.out.strategy.impl.DefaultValue;
 import io.github.imsejin.common.util.StringUtils;
 
 import java.lang.reflect.Field;

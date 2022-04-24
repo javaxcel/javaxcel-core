@@ -17,8 +17,8 @@
 package com.github.javaxcel.in.core.impl
 
 import com.github.javaxcel.TestUtils
-import com.github.javaxcel.out.strategy.ExcelWriteStrategy.HeaderNames
-import com.github.javaxcel.out.strategy.ExcelWriteStrategy.SheetName
+import com.github.javaxcel.out.strategy.impl.HeaderNames
+import com.github.javaxcel.out.strategy.impl.SheetName
 import com.github.javaxcel.util.ExcelUtils
 import io.github.imsejin.common.tool.Stopwatch
 import lombok.Cleanup

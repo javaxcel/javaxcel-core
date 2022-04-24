@@ -19,10 +19,10 @@ package com.github.javaxcel.out.strategy
 import com.github.javaxcel.out.context.ExcelWriteContext
 import com.github.javaxcel.out.core.impl.MapWriter
 import com.github.javaxcel.out.core.impl.ModelWriter
-import com.github.javaxcel.out.strategy.ExcelWriteStrategy.DefaultValue
-import com.github.javaxcel.out.strategy.ExcelWriteStrategy.HeaderNames
-import com.github.javaxcel.out.strategy.ExcelWriteStrategy.KeyNames
-import com.github.javaxcel.out.strategy.ExcelWriteStrategy.SheetName
+import com.github.javaxcel.out.strategy.impl.DefaultValue
+import com.github.javaxcel.out.strategy.impl.HeaderNames
+import com.github.javaxcel.out.strategy.impl.KeyNames
+import com.github.javaxcel.out.strategy.impl.SheetName
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import spock.lang.Specification
 
