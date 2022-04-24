@@ -18,6 +18,7 @@ package com.github.javaxcel.out.strategy
 
 import com.github.javaxcel.out.strategy.impl.AutoResizedColumns
 import com.github.javaxcel.out.strategy.impl.Filter
+import com.github.javaxcel.out.strategy.impl.SheetName
 import spock.lang.Specification
 
 class AbstractExcelWriteStrategySpec extends Specification {
@@ -25,20 +26,24 @@ class AbstractExcelWriteStrategySpec extends Specification {
     def "test"() {
         given:
         def set = [] as Set<AbstractExcelWriteStrategy>
+        def strategy = new Filter()
 
         when:
-        set.add new Filter()
+        set.add null
+        set.add strategy
         set.add new AutoResizedColumns()
 
         then:
-        set.size() == 2
+        set.size() == 3
 
         when:
-        set.add new Filter()
+        set.add null
+        set.add strategy
         set.add new AutoResizedColumns()
+        set.add new SheetName("a")
 
         then:
-        set.size() == 2
+        set.size() == 4
     }
 
 }

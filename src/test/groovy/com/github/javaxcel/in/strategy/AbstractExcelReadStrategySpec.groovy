@@ -16,6 +16,7 @@
 
 package com.github.javaxcel.in.strategy
 
+import com.github.javaxcel.in.strategy.impl.KeyNames
 import com.github.javaxcel.in.strategy.impl.Limit
 import com.github.javaxcel.in.strategy.impl.Parallel
 import spock.lang.Specification
@@ -25,20 +26,24 @@ class AbstractExcelReadStrategySpec extends Specification {
     def "test"() {
         given:
         def set = [] as Set<AbstractExcelReadStrategy>
+        def strategy = new Limit(100)
 
         when:
-        set.add new Limit(100)
+        set.add null
+        set.add strategy
         set.add new Parallel()
 
         then:
-        set.size() == 2
+        set.size() == 3
 
         when:
-        set.add new Limit(100)
+        set.add null
+        set.add strategy
         set.add new Parallel()
+        set.add new KeyNames(["a"])
 
         then:
-        set.size() == 2
+        set.size() == 4
     }
 
 }
