@@ -2,7 +2,7 @@ package com.github.javaxcel.in.strategy;
 
 import java.util.Objects;
 
-abstract class AbstractExcelReadStrategy implements ExcelReadStrategy {
+public abstract class AbstractExcelReadStrategy implements ExcelReadStrategy {
 
     @Override
     public int hashCode() {

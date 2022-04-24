@@ -2,7 +2,7 @@ package com.github.javaxcel.out.strategy;
 
 import java.util.Objects;
 
-abstract class AbstractExcelWriteStrategy implements ExcelWriteStrategy {
+public abstract class AbstractExcelWriteStrategy implements ExcelWriteStrategy {
 
     @Override
     public int hashCode() {
