@@ -21,7 +21,7 @@ import com.github.javaxcel.converter.in.support.ExcelReadConverterSupport;
 import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.in.context.ExcelReadContext;
 import com.github.javaxcel.in.core.AbstractExcelReader;
-import com.github.javaxcel.in.strategy.ExcelReadStrategy.Parallel;
+import com.github.javaxcel.in.strategy.impl.Parallel;
 import com.github.javaxcel.util.FieldUtils;
 import com.github.javaxcel.util.resolver.AbstractExcelModelExecutableResolver;
 import com.github.javaxcel.util.resolver.ExcelModelExecutableParameterNameResolver;

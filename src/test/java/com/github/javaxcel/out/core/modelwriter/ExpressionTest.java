@@ -20,7 +20,7 @@ import com.github.javaxcel.Converter;
 import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.annotation.ExcelWriteExpression;
-import com.github.javaxcel.in.strategy.ExcelReadStrategy.KeyNames;
+import com.github.javaxcel.in.strategy.impl.KeyNames;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.model.creature.Human;
 import com.github.javaxcel.out.core.ModelWriterTester;
