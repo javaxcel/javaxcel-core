@@ -79,7 +79,7 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
         // To prevent exception from occurring on multi-threaded environment,
         // Permits access to the fields that are not accessible. (ExcelReadStrategy.Parallel)
         fields.stream().filter(it -> !it.isAccessible()).forEach(it -> it.setAccessible(true));
-        this.fields = fields;
+        this.fields = Collections.unmodifiableList(fields);
 
         this.converter = new ExcelWriteConverterSupport<>(this.fields, registry);
     }

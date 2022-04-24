@@ -57,7 +57,7 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
 
         this.modelType = modelType;
         this.executableName = executableType.getSimpleName().toLowerCase();
-        this.fields = FieldUtils.getTargetedFields(this.modelType);
+        this.fields = Collections.unmodifiableList(FieldUtils.getTargetedFields(this.modelType));
     }
 
     public static Executable resolve(Class<?> type) {
