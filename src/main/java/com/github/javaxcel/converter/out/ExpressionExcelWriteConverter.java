@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ExpressionExcelWriteConverter<T> implements ExcelWriteConverter<T> {
+public class ExpressionExcelWriteConverter implements ExcelWriteConverter {
 
     private static final ExpressionParser parser = new SpelExpressionParser();
 
@@ -110,7 +110,7 @@ public class ExpressionExcelWriteConverter<T> implements ExcelWriteConverter<T> 
      */
     @Nullable
     @Override
-    public String convert(T model, Field field) {
+    public String convert(Object model, Field field) {
         Expression expression;
         List<Field> fields;
 

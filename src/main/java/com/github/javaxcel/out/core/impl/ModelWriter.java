@@ -71,7 +71,7 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
      */
     private final List<Field> fields;
 
-    private final ExcelWriteConverterSupport<T> converter;
+    private final ExcelWriteConverterSupport converter;
 
     private Map<Integer, String[]> enumDropdownMap;
 
@@ -99,7 +99,7 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
         fields.stream().filter(it -> !it.isAccessible()).forEach(it -> it.setAccessible(true));
         this.fields = Collections.unmodifiableList(fields);
 
-        this.converter = new ExcelWriteConverterSupport<>(this.fields, registry);
+        this.converter = new ExcelWriteConverterSupport(this.fields, registry);
     }
 
     @Override

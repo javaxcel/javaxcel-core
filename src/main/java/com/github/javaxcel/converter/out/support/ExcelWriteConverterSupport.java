@@ -37,22 +37,22 @@ import java.util.function.Function;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toMap;
 
-public class ExcelWriteConverterSupport<T> implements ExcelWriteConverter<T> {
+public class ExcelWriteConverterSupport implements ExcelWriteConverter {
 
     private final Map<Field, Column> columnMap;
 
-    private final ExcelWriteConverter<T> defaultConverter;
+    private final ExcelWriteConverter defaultConverter;
 
-    private final ExcelWriteConverter<T> expressionConverter;
+    private final ExcelWriteConverter expressionConverter;
 
     public ExcelWriteConverterSupport(List<Field> fields, ExcelTypeHandlerRegistry registry) {
         this.columnMap = fields.stream().collect(collectingAndThen(
                 toMap(Function.identity(), it -> new Column(it, ConverterType.OUT)),
                 Collections::unmodifiableMap));
 
-        this.defaultConverter = new DefaultExcelWriteConverter<>(registry);
+        this.defaultConverter = new DefaultExcelWriteConverter(registry);
         // Caches expressions for each field to improve performance.
-        this.expressionConverter = new ExpressionExcelWriteConverter<>(fields);
+        this.expressionConverter = new ExpressionExcelWriteConverter(fields);
     }
 
     public void setAllDefaultValues(String defaultValue) {
@@ -74,7 +74,7 @@ public class ExcelWriteConverterSupport<T> implements ExcelWriteConverter<T> {
      * @return origin value or default value
      */
     @Override
-    public String convert(T model, Field field) {
+    public String convert(Object model, Field field) {
         Column column = this.columnMap.get(field);
 
         String cellValue;
