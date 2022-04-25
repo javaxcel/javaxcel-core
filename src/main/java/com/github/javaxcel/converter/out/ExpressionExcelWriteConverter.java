@@ -24,7 +24,6 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.Collections;
@@ -36,6 +35,12 @@ public class ExpressionExcelWriteConverter implements ExcelWriteConverter {
 
     private static final ExpressionParser parser = new SpelExpressionParser();
 
+    /**
+     * Do not set root object to prevent user from assigning value
+     * to the field of model with the way we don't intend.
+     *
+     * @see StandardEvaluationContext#setRootObject(Object)
+     */
     private final StandardEvaluationContext context = new StandardEvaluationContext();
 
     private final List<Field> fields;
@@ -73,7 +78,7 @@ public class ExpressionExcelWriteConverter implements ExcelWriteConverter {
      *
      * @param fields fields of model
      */
-    public ExpressionExcelWriteConverter(@Nonnull List<Field> fields) {
+    public ExpressionExcelWriteConverter(List<Field> fields) {
         this.fields = fields;
         this.cache = createCache(fields);
     }
