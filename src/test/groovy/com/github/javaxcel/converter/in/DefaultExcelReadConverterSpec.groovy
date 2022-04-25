@@ -28,7 +28,7 @@ class DefaultExcelReadConverterSpec extends Specification {
     def "Converts to 1D Array"() {
         given:
         def converter = new DefaultExcelReadConverter(new DefaultExcelTypeHandlerRegistry())
-        def fieldName = new Array1D(null).properties.keySet().stream()
+        def fieldName = (new Array1D(null).properties.keySet() as Set<String>).stream()
                 .filter({ it.startsWith(expected.class.componentType.simpleName.toLowerCase()) }).find() as String
         def field = Array1D.getDeclaredField fieldName
         def variables = [(fieldName): value]
@@ -59,7 +59,7 @@ class DefaultExcelReadConverterSpec extends Specification {
     def "Converts to 2D Array"() {
         given:
         def converter = new DefaultExcelReadConverter(new DefaultExcelTypeHandlerRegistry())
-        def fieldName = expected == null ? "localeArray" : new Array2D(null).properties.keySet().stream()
+        def fieldName = expected == null ? "localeArray" : (new Array2D(null).properties.keySet() as Set<String>).stream()
                 .filter({ it.startsWith(expected.class.componentType.componentType.simpleName.toLowerCase()) }).find() as String
         def field = Array2D.getDeclaredField fieldName
         def variables = [(fieldName): value]
@@ -94,7 +94,7 @@ class DefaultExcelReadConverterSpec extends Specification {
     def "Converts to 3D Array"() {
         given:
         def converter = new DefaultExcelReadConverter(new DefaultExcelTypeHandlerRegistry())
-        def fieldName = expected == null ? "localeArray" : new Array3D(null).properties.keySet().stream()
+        def fieldName = expected == null ? "localeArray" : (new Array3D(null).properties.keySet() as Set<String>).stream()
                 .filter({ it.startsWith(expected.class.componentType.componentType.componentType.simpleName.toLowerCase()) }).find() as String
         def field = Array3D.getDeclaredField fieldName
         def variables = [(fieldName): value]

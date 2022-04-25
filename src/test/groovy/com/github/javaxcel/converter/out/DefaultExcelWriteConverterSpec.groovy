@@ -28,7 +28,7 @@ class DefaultExcelWriteConverterSpec extends Specification {
         given:
         def converter = new DefaultExcelWriteConverter(new DefaultExcelTypeHandlerRegistry())
         def array1D = new Array1D(array)
-        def fieldName = array == null ? "localeArray" : array1D.properties.keySet().stream()
+        def fieldName = array == null ? "localeArray" : (array1D.properties.keySet() as Set<String>).stream()
                 .filter({ it.startsWith(array.class.componentType.simpleName.toLowerCase()) }).find() as String
         def field = Array1D.getDeclaredField fieldName
 
@@ -59,7 +59,7 @@ class DefaultExcelWriteConverterSpec extends Specification {
         given:
         def converter = new DefaultExcelWriteConverter(new DefaultExcelTypeHandlerRegistry())
         def array2D = new Array2D(array)
-        def fieldName = array == null ? "localeArray" : array2D.properties.keySet().stream()
+        def fieldName = array == null ? "localeArray" : (array2D.properties.keySet() as Set<String>).stream()
                 .filter({ it.startsWith(array.class.componentType.componentType.simpleName.toLowerCase()) }).find() as String
         def field = Array2D.getDeclaredField fieldName
 
@@ -94,7 +94,7 @@ class DefaultExcelWriteConverterSpec extends Specification {
         given:
         def converter = new DefaultExcelWriteConverter(new DefaultExcelTypeHandlerRegistry())
         def array3D = new Array3D(array)
-        def fieldName = array == null ? "localeArray" : array3D.properties.keySet().stream()
+        def fieldName = array == null ? "localeArray" : (array3D.properties.keySet() as Set<String>).stream()
                 .filter({ it.startsWith(array.class.componentType.componentType.componentType.simpleName.toLowerCase()) }).find() as String
         def field = Array3D.getDeclaredField fieldName
 
