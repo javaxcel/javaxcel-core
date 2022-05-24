@@ -20,7 +20,7 @@ jobs:
       max-parallel: 3 # Maximum: Sum of matrices.
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        java: [8, 8.0.192, 11, 11.0.3, 17] # LTS versions.
+        java: [8, 8.0.192, 11, 11.0.3, 17] # LTS versions (latest and fixed).
         
     runs-on: ${{ matrix.os }}
          
