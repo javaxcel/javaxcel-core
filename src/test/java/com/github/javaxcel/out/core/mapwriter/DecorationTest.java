@@ -60,10 +60,10 @@ class DecorationTest extends MapWriterTester {
 
     @Test
     @StopwatchProvider(TimeUnit.MILLISECONDS)
-    void fail(Stopwatch stopwatch) {
+    void fail(Stopwatch stopwatch) throws Exception {
         // given
         stopwatch.start("create '%s' instance", SXSSFWorkbook.class.getSimpleName());
-        Workbook workbook = new SXSSFWorkbook();
+        @Cleanup Workbook workbook = new SXSSFWorkbook();
         stopwatch.stop();
 
         // when & then
