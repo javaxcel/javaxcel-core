@@ -123,7 +123,7 @@ public class MapWriter extends AbstractExcelWriter<Map<String, Object>> {
                 .hasSizeOf(orders.size())
                 .as("MapWriter.keys is at variance with keyMap.orders.keySet (keys: {0}, keyMap.orders.keySet: {1})",
                         this.keys, orders.keySet())
-                .containsAll(orders.keySet());
+                .containsOnly(orders.keySet().toArray(new String[0]));
 
         if (keyMap.containsKey("names")) this.headerNames = (List<String>) keyMap.get("names");
 
