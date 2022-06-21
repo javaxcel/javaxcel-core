@@ -98,8 +98,12 @@ public class LocaleTypeHandler extends AbstractExcelTypeHandler<Locale> {
         }
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////
+
     /**
-     * Since the module system has been introduced in Java 9,
+     * This is a clone of {@link sun.util.locale.LanguageTag}.
+     *
+     * <p> Since the module system has been introduced in Java 9,
      * internal packages(e.g. 'com.sun.*', 'sun.*', 'jdk.*', ...)
      * should not be used by third-party applications.
      *
@@ -127,21 +131,24 @@ public class LocaleTypeHandler extends AbstractExcelTypeHandler<Locale> {
             // variant       = 5*8alphanum         ; registered variants
             //               / (DIGIT 3alphanum)
             int len = s.length();
-            if (len >= 5 && len <= 8) {
-                return LocaleUtils.isAlphaNumericString(s);
-            }
+            if (len >= 5 && len <= 8) return LocaleUtils.isAlphaNumericString(s);
             if (len == 4) {
                 return LocaleUtils.isNumeric(s.charAt(0))
                         && LocaleUtils.isAlphaNumeric(s.charAt(1))
                         && LocaleUtils.isAlphaNumeric(s.charAt(2))
                         && LocaleUtils.isAlphaNumeric(s.charAt(3));
             }
+
             return false;
         }
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////
+
     /**
-     * Since the module system has been introduced in Java 9,
+     * This is a clone of {@link sun.util.locale.LocaleUtils}.
+     *
+     * <p> Since the module system has been introduced in Java 9,
      * internal packages(e.g. 'com.sun.*', 'sun.*', 'jdk.*', ...)
      * should not be used by third-party applications.
      *
