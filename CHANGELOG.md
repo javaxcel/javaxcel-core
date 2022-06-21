@@ -24,7 +24,7 @@
 
 # v0.8.2
 
-## Modification
+### Modification
 
 - 🔥 Remove: useless type variable in `ExcelWriteConverter`
 - 🔥 Remove: method `toMap(Object)` in `FieldUtils`
@@ -34,11 +34,11 @@
   to `com.github.javaxcel.in.strategy.impl.*`
 - ♻️ Increase: access privileges to `AbstractExcelWriteStrategy`, `AbstractExcelReadStrategy`
 
-## Dependencies
+### Dependencies
 
 - ⬆️ Upgrade: dependency `common-utils` from `0.8.0` to `0.9.0`
 
-## Troubleshooting
+### Troubleshooting
 
 - 🐞 Fix: wrong import (`java.util.logging.Filter` => `com.github.javaxcel.out.strategy.impl.Filter`) in `ModelWriter`
   , `MapWriter`
@@ -46,14 +46,14 @@
 
 # v0.8.1
 
-## Dependencies
+### Dependencies
 
 - ⬆️ Upgrade: dependency `javaxcel-styler` from `0.2.1` to `0.2.2` --- nested dependency `poi-ooxml` provided
 - ⬆️ Upgrade: test dependency `lombok` from `1.18.22` to `1.18.24`
 
 # v0.8.0
 
-## Modification
+### Modification
 
 - 🚚 Move: package of classes from `com.github.javaxcel.out` to `com.github.javaxcel.out.core`
 - 🚚 Move: subclasses `ExcelWriter` from `com.github.javaxcel.out` to `com.github.javaxcel.out.core.impl`
@@ -69,7 +69,7 @@
 - 🔥 Remove: exception `NoTargetedConstructorException`
 - 🔥 Remove: methods `getSheetRange(Workbook)`, `getNumOfRows(File)` in `ExcelUtils`
 
-## New features
+### New features
 
 - ✨ Add: entrypoint class `Javaxcel`
 - ✨ Add: domain model `Column`
@@ -80,7 +80,7 @@
   in `FieldUtils`
 - 🔊 Add: fluent exception messages
 
-## Dependencies
+### Dependencies
 
 - ♻️ Make: dependency `poi-ooxml` provided
 - ➕ Add: dependency `spring-expression` (shaded in `com.github.javaxcel.internal.springframework`)
@@ -99,19 +99,19 @@
 - ⬆️ Upgrade: build dependency `maven-compiler-plugin` from `3.8.1` to `3.10.1`
 - ⬆️ Upgrade: build dependency `jacoco-maven-plugin` from `0.8.7` to `0.8.8`
 
-## Troubleshooting
+### Troubleshooting
 
 - 🐞 Fix: wrong computation of targeted fields
 - 🐞 Fix: security problem for changing value of final field
 
 # v0.7.5
 
-## Modification
+### Modification
 
 - ♻️ Replace: internal utilities
 - 👷 Replace: travis CI with github actions due to a negative credit balance (10000 credits of free plan)
 
-## Dependencies
+### Dependencies
 
 - ⬆️ Upgrade: dependency `common-utils` from `0.4.7` to `0.7.0`
 - ⬆️ Upgrade: test dependency `junit5` `5.7.2` to `5.8.1`
@@ -121,25 +121,25 @@
 
 # v0.7.4
 
-## Dependencies
+### Dependencies
 
 - ⬆️ Upgrade: dependency `common-utils` --- `0.4.7`
 
 # v0.7.3
 
-## Dependencies
+### Dependencies
 
 - ⬆️ Upgrade: dependency `common-utils` --- `0.4.6`
 
 # v0.7.2
 
-## Dependencies
+### Dependencies
 
 - ⬆️ Upgrade: dependency `common-utils` --- `0.4.5`
 
 # v0.7.1
 
-## Modification
+### Modification
 
 - 🚚 Move: `initialValueOf(Class)` from `DefaultInputConverter` to `FieldUtils`
 - ⚡️ Change: fields to be non-null in `Expression*Converter`
@@ -148,7 +148,7 @@
 - ♻️ Refactor: exceptions
 - ♻️ Replace: converters in `ModelReader` with `InputConverterSupport`
 
-## Dependencies
+### Dependencies
 
 - ⬆️ Upgrade: dependency `common-utils` --- `0.4.4`
 - ⬆️ Upgrade: test dependency `junit5` --- `5.7.2`
@@ -156,7 +156,7 @@
 
 # v0.7.0
 
-## Modification
+### Modification
 
 - ♻️ **Change: static field to be excluded on target because of static field `$jacocoData`**
 - ♻️ Change: cache key type(`java.lang.String` => `java.lang.reflect.Field`)
@@ -175,7 +175,7 @@
 - 🚚 **Rename: method `hideExtraCols()` => `hideExtraColumns()` in `AbstractExcelWriter`**
 - 🚚 Move: defined methods in class `AbstractExcel*` to its interface
 
-## New features
+### New features
 
 - ✨ Add: feature `ExcelWriter#filter()`
 - ✨ Add: enum `ConversionType`, `ConverterType`
@@ -190,21 +190,21 @@
 - 🔧 Add: maven wrapper
 - 🔧 Add: configuration for Travis CI
 
-## Dependencies
+### Dependencies
 
 - ➕ Add: build plugin `Jacoco`
 - ➕ Add: test dependency `EasyRandom`
 - ➕ Add: test dependency `Byte Buddy`
 - ⬆️ Upgrade: test dependency `lombok` --- `1.18.20`
 
-## Troubleshooting
+### Troubleshooting
 
 - 🐞 Fix: mis-computation that `ExcelColumn#defaultValue()` doesn't override `ExcelModel#defaultValue()`
 - 🐞 Fix: omission of conversion from empty value to default value on `MapWriter`
 
 # v0.6.0
 
-## Modification
+### Modification
 
 - 🔥 Remove: `ExpressiveReadingConverter#convert(Map, Field, Expression)`
 - 🔥 Remove: redundant constructor of `ExpressiveReadingConverter(List, boolean)`
@@ -216,7 +216,7 @@
 - ⚡️ Make: cache of expression unmodifiable
 - 🚚 Rename: field `AbstractExcelReader#numOfRowsRead` => `AbstractExcelReader#numOfModelsRead`
 
-## New features
+### New features
 
 - ✨ Add: constructors of `ExpressiveWritingConverter`
 - ✨ Add: hook `beforeReadModels(Sheet)` in `AbstractExcelReader`
@@ -230,25 +230,25 @@
 - ✨ Add: `ExcelModel#enumDropdown()`, `ExcelColumn#enumDropdown()`, `ExcelColumn#dropdownItems()`
   , `ModelWriter#enumDropdown()`
 
-## Dependencies
+### Dependencies
 
 - ⬆️ Upgrade: dependencies for test
 - ⬆️ Upgrade: dependency `common-utils` --- `0.3.4`
 
-## Troubleshooting
+### Troubleshooting
 
 - 🐞 Fix: `NullPointerException` caused by approaching a non-existent row; When an empty row is in body, computation of
   the number of models by `ExcelUtils#getNumOfModels(Sheet)` is failed.
 
 # v0.5.3
 
-## Troubleshooting
+### Troubleshooting
 
 - 🐞 Prevent: `NullPointerException` with `SXSSFWorkbook` in `ExcelUtils#autoResizeColumns(Sheet, int)`
 
 # v0.5.2
 
-## Modification
+### Modification
 
 - 🚚 Rename: method in `TypeClassifier` --- `isPrimitiveAndNumeric` => `isNumericPrimitive`
 - 🔥 Remove: methods in `ExcelWriter` --- `defaultValue(String)`, `sheetName(String)`, `headerNames(List)`
@@ -256,7 +256,7 @@
 - 🔥 Remove: validation in `AbstractExcelWriter#headerNames(List)`
 - ♻️ Change: inner logic in `TypeClassifier` to be intuitive with `Types`
 
-## New features
+### New features
 
 - ⚡️ Support: types of `ZonedDateTime`, `OffsetDateTime`, `OffsetTime` in `Basic*Converter`
 - ⚡️ Support: `SXSSFWorkbook` to resize column width
@@ -265,17 +265,17 @@
 - ✨ Add: enum `Types` for `TypeClassifier`
 - 🔊 Provide: error message when `Excel*Factory#create`
 
-## Dependencies
+### Dependencies
 
 - ⬆️ Upgrade: dependency `common-utils` --- `0.3.3`
 
-## Troubleshooting
+### Troubleshooting
 
 - 🐞 Fix: custom header names in wrong position --- `MapWriter#headerNames(List)`
 
 # v0.5.1
 
-## Modification
+### Modification
 
 - ⚡️ Prevent: `ExcelReader` from reading other sheets when number of rows read reach limit
 - 🚚 Move: `*WritingConverter` to `com.github.javaxcel.converter.out`
@@ -284,17 +284,17 @@
 - ♻️ Refactor: `*WritingConverter`
 - ♻️ Refactor: `*ReadingConverter`
 
-## New features
+### New features
 
 - ✨ Add: detaching suffix from sheet name with `AbstractExcelWriter#disableRolling()`
 
-## Troubleshooting
+### Troubleshooting
 
 - 🐞 Fix: slicing list with over index --- `AbstractExcelWriter#disableRolling()`
 
 # v0.5.0
 
-## Modification
+### Modification
 
 - ♻️ Make: `ExcelWriter`, `ExcelReader` to be interface
 - ♻️ Change: `ExcelModel#policy()` to `ExcelModel#includeSuper()`
@@ -308,7 +308,7 @@
 - ⚡️ Use: `FieldUtils#convertIfFaulty`
 - 🗑 Deprecate: `ExcelDateTimeFormat#timezone()`
 
-## New features
+### New features
 
 - ✨ Add: `MapWriter`, `MapReader`
 - ✨ Add: `ExcelModel#headerStyle()`, `ExcelModel#bodyStyle()`, `ExcelColumn#headerStyle()`, `ExcelColumn#bodyStyle()`
@@ -318,45 +318,45 @@
 - ✨ Add: `ExcelModel#defaultValue()`
 - ✨ Add: `ExcelUtils#getMaxRows`, `ExcelUtils#getMaxColumns`, `ExcelUtils#getNumOfRows`
 
-## Dependencies
+### Dependencies
 
 - ➕ Use: dependency `common-utils` --- `0.3.2`
 - ⬆️ Upgrade: dependency `javaxcel-styler` --- `0.2.1`
 
-## Troubleshooting
+### Troubleshooting
 
 - 🐞 Fix: possibility that header name can be empty string
 - 🐞 Fix: possibility for allowing `ExcelReader` to access row that doesn't exist
 
 # v0.4.2
 
-## Modification
+### Modification
 
 - ⚡️ Improve: performance by pre-parsed expression as cache
 
-## New features
+### New features
 
 - ✨ Add: utilities `StringUtils`
 - ✨ Add: utilities to `ExcelUtils`
 - ✨ Add: exception case --- when read Excel file with `SXSSFWorkbook`
 
-## Dependencies
+### Dependencies
 
 - ➖ Reduce: dependency scope `common-utils` to test
 - ➖ Remove: dependency 'junit-platform-launcher'
 
 # v0.4.1
 
-## Modification
+### Modification
 
 - 🚚 Rename: `Excel*Conversion` => `Excel*Expression`
 - 🚚 Rename: `ExcelColumn#value()` => `ExcelColumn#name()`
 
-## New features
+### New features
 
 - ⚡️ Add: validation to `ExcelReader`
 
-## Dependencies
+### Dependencies
 
 - ♻️ Replace: dependency `spring-expression` with `spel`
 - ⬆️ Upgrade: dependency `common-utils` --- `0.3.1`
@@ -366,74 +366,74 @@
 
 *This release is deprecated.*
 
-## Modification
+### Modification
 
 - ♻️ Refactor: massive classes
 - ♻️ Separate: utilities
 - 🔥 Discard: messy utilities
 - ⚡️ Prevent: `ExcelReader` from getting empty string
 
-## New features
+### New features
 
 - ✨ Add: new features --- SpEL expression
 - ✨ Add: converters
 - ✨ Add: `ExcelReader#parallel()`
 
-## Dependencies
+### Dependencies
 
 - ➕ Add: dependency `common-utils` --- `0.1.2`
 - ➕ Add: dependency `spring-expression`
 
-## Troubleshooting
+### Troubleshooting
 
 - 🐞 Fix: bugs --- creating empty cell(not null) even through not define default value, so that excel recognize that the
   cell exists.
 
 # v0.3.1
 
-## Modification
+### Modification
 
 - ⚡️ Improve: `ExcelReader` to read not only cell values but formula
 - ♻️ Change: `ExcelWriter#headerStyle(BiFunction)` and `ExcelWriter#columnStyles(BiFunction)` to provide the font, not
   the workbook
 
-## New features
+### New features
 
 - ✨ Add: validating sheet name when it is empty string
 
 # v0.3.0
 
-## Modification
+### Modification
 
 ♻️ Change: checked exception into unchecked exception
 
-## New features
+### New features
 
 ✨ Add: unchecked exceptions
 
 # v0.2.1
 
-## Modification
+### Modification
 
 - 🚚 Rename: artifact id from `javaxcel` to `javaxcel-core`
 - ♻️ Change: receiving dependencies of Workbook, OutputStream => separation of duties
 - ⚡️ Update: `ExcelReader`
 
-## New features
+### New features
 
 - 🛠️ Add: excel utilities
 - ✨ Add: custom style in `ExcelWriter`
 
-## Dependencies
+### Dependencies
 
 ➖ Remove: dependency 'org.jetbrains:annotations'
 
-## Troubleshooting
+### Troubleshooting
 
 - 🐞 Fix: parsing string as long to convert it into big decimal
 
 # v0.1.0
 
-### New features
+#### New features
 
 - 🎉 Begin: first release
