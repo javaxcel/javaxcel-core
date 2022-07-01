@@ -44,7 +44,9 @@ import java.util.Map;
 import java.util.stream.IntStream;
 
 import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

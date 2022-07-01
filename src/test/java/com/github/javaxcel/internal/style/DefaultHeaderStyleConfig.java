@@ -1,8 +1,12 @@
 package com.github.javaxcel.internal.style;
 
-import com.github.javaxcel.styler.config.Configurer;
 import com.github.javaxcel.styler.ExcelStyleConfig;
-import org.apache.poi.ss.usermodel.*;
+import com.github.javaxcel.styler.config.Configurer;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 
 public class DefaultHeaderStyleConfig implements ExcelStyleConfig {
 

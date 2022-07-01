@@ -36,7 +36,9 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
 
-import static com.github.javaxcel.TestUtils.*;
+import static com.github.javaxcel.TestUtils.assertEqualsHeaderSize;
+import static com.github.javaxcel.TestUtils.assertEqualsNumOfModels;
+import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 
 @StopwatchProvider
 class DynamicTypeTest extends ModelWriterTester {

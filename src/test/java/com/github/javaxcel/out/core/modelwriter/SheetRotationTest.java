@@ -43,7 +43,9 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static com.github.javaxcel.TestUtils.*;
+import static com.github.javaxcel.TestUtils.JAVAXCEL;
+import static com.github.javaxcel.TestUtils.assertEqualsNumOfModels;
+import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 

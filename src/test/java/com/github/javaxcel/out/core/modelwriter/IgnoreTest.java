@@ -37,7 +37,9 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 
-import static com.github.javaxcel.TestUtils.*;
+import static com.github.javaxcel.TestUtils.assertEqualsHeaderSize;
+import static com.github.javaxcel.TestUtils.assertEqualsNumOfModels;
+import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 
 /**
  * @see ExcelIgnore
