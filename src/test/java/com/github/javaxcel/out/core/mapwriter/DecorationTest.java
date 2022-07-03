@@ -99,6 +99,7 @@ class DecorationTest extends MapWriterTester {
 
     @Override
     protected void whenWriteWorkbook(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) {
+        // java.lang.RuntimeException: Column info records are out of order
         TestUtils.JAVAXCEL.writer(whenModel.getWorkbook())
                 .options(new SheetName("Rainbow"),
                         new AutoResizedColumns(),
