@@ -19,7 +19,7 @@ package com.github.javaxcel.out.core.modelwriter;
 import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.core.ModelWriterTester;
-import com.github.javaxcel.out.strategy.ExcelWriteStrategy.SheetName;
+import com.github.javaxcel.out.strategy.impl.SheetName;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
@@ -43,7 +43,9 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static com.github.javaxcel.TestUtils.*;
+import static com.github.javaxcel.TestUtils.JAVAXCEL;
+import static com.github.javaxcel.TestUtils.assertEqualsNumOfModels;
+import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 

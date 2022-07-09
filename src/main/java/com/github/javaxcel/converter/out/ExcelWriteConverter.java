@@ -19,7 +19,7 @@ package com.github.javaxcel.converter.out;
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 
-public interface ExcelWriteConverter<T> {
+public interface ExcelWriteConverter {
 
     /**
      * Converts value of the field to the string.
@@ -32,6 +32,6 @@ public interface ExcelWriteConverter<T> {
      * @return stringified field's value
      */
     @Nullable
-    String convert(T model, Field field);
+    String convert(Object model, Field field);
 
 }

@@ -24,7 +24,6 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.Collections;
@@ -32,10 +31,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ExpressionExcelWriteConverter<T> implements ExcelWriteConverter<T> {
+public class ExpressionExcelWriteConverter implements ExcelWriteConverter {
 
     private static final ExpressionParser parser = new SpelExpressionParser();
 
+    /**
+     * Do not set root object to prevent user from assigning value
+     * to the field of model with the way we don't intend.
+     *
+     * @see StandardEvaluationContext#setRootObject(Object)
+     */
     private final StandardEvaluationContext context = new StandardEvaluationContext();
 
     private final List<Field> fields;
@@ -73,7 +78,7 @@ public class ExpressionExcelWriteConverter<T> implements ExcelWriteConverter<T> 
      *
      * @param fields fields of model
      */
-    public ExpressionExcelWriteConverter(@Nonnull List<Field> fields) {
+    public ExpressionExcelWriteConverter(List<Field> fields) {
         this.fields = fields;
         this.cache = createCache(fields);
     }
@@ -110,23 +115,24 @@ public class ExpressionExcelWriteConverter<T> implements ExcelWriteConverter<T> 
      */
     @Nullable
     @Override
-    public String convert(T model, Field field) {
+    public String convert(Object model, Field field) {
         Expression expression;
-        Map<String, Object> variables;
+        List<Field> fields;
 
         if (CollectionUtils.isNullOrEmpty(this.fields) || CollectionUtils.isNullOrEmpty(this.cache)) {
             // When this instantiated by constructor without argument.
             ExcelWriteExpression annotation = field.getAnnotation(ExcelWriteExpression.class);
             expression = parser.parseExpression(annotation.value());
-            variables = FieldUtils.toMap(model);
+            fields = FieldUtils.getTargetedFields(model.getClass());
 
         } else {
             // When this instantiated by constructor with fields.
             expression = this.cache.get(field);
-            variables = FieldUtils.toMap(model, this.fields);
+            fields = this.fields;
         }
 
         // Enables to use value of the field as "#FIELD_NAME" in 'ExcelWriteExpression'.
+        Map<String, Object> variables = FieldUtils.toMap(model, fields);
         this.context.setVariables(variables);
 
         return expression.getValue(this.context, String.class);

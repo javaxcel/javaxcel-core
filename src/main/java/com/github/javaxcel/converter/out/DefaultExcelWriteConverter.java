@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 
-public class DefaultExcelWriteConverter<T> implements ExcelWriteConverter<T> {
+public class DefaultExcelWriteConverter implements ExcelWriteConverter {
 
     private final ExcelTypeHandlerRegistry registry;
 
@@ -45,7 +45,7 @@ public class DefaultExcelWriteConverter<T> implements ExcelWriteConverter<T> {
      */
     @Nullable
     @Override
-    public String convert(T model, Field field) {
+    public String convert(Object model, Field field) {
         Object value = ReflectionUtils.getFieldValue(model, field);
         if (value == null) return null;
 

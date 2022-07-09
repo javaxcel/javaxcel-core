@@ -23,7 +23,6 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.Collections;
@@ -41,7 +40,7 @@ public class ExpressionExcelReadConverter implements ExcelReadConverter {
         this.cache = Collections.emptyMap();
     }
 
-    public ExpressionExcelReadConverter(@Nonnull List<Field> fields) {
+    public ExpressionExcelReadConverter(List<Field> fields) {
         this.cache = createCache(fields);
     }
 
@@ -89,6 +88,9 @@ public class ExpressionExcelReadConverter implements ExcelReadConverter {
 
         // To read in parallel, instantiates on each call.
         // Enables to use value of the field as "#FIELD_NAME" in 'ExcelReadExpression'.
+        //
+        // Do not set root object to prevent user from assigning value
+        // to the field of model with the way we don't intend.
         StandardEvaluationContext context = new StandardEvaluationContext();
         context.setVariables(variables);
 

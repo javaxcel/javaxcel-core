@@ -17,7 +17,7 @@
 package com.github.javaxcel.in.core;
 
 import com.github.javaxcel.TestUtils;
-import com.github.javaxcel.in.strategy.ExcelReadStrategy.Parallel;
+import com.github.javaxcel.in.strategy.impl.Parallel;
 import com.github.javaxcel.util.ExcelUtils;
 import com.github.pjfanning.xlsx.StreamingReader;
 import io.github.imsejin.common.tool.Stopwatch;

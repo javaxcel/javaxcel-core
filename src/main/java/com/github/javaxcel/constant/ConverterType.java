@@ -32,6 +32,6 @@ public enum ConverterType {
     /**
      * @see ExcelWriteConverter
      */
-    OUT;
+    OUT
 
 }

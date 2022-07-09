@@ -17,11 +17,15 @@
 package com.github.javaxcel.out.core.mapwriter;
 
 import com.github.javaxcel.TestUtils;
+import com.github.javaxcel.internal.style.DefaultHeaderStyleConfig;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.core.MapWriterTester;
-import com.github.javaxcel.out.strategy.ExcelWriteStrategy;
-import com.github.javaxcel.out.strategy.ExcelWriteStrategy.*;
-import com.github.javaxcel.internal.style.DefaultHeaderStyleConfig;
+import com.github.javaxcel.out.strategy.impl.AutoResizedColumns;
+import com.github.javaxcel.out.strategy.impl.BodyStyles;
+import com.github.javaxcel.out.strategy.impl.HeaderStyles;
+import com.github.javaxcel.out.strategy.impl.HiddenExtraColumns;
+import com.github.javaxcel.out.strategy.impl.HiddenExtraRows;
+import com.github.javaxcel.out.strategy.impl.SheetName;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
@@ -56,16 +60,16 @@ class DecorationTest extends MapWriterTester {
 
     @Test
     @StopwatchProvider(TimeUnit.MILLISECONDS)
-    void fail(Stopwatch stopwatch) {
+    void fail(Stopwatch stopwatch) throws Exception {
         // given
         stopwatch.start("create '%s' instance", SXSSFWorkbook.class.getSimpleName());
-        Workbook workbook = new SXSSFWorkbook();
+        @Cleanup Workbook workbook = new SXSSFWorkbook();
         stopwatch.stop();
 
         // when & then
         stopwatch.start("set unmatched header style");
         assertThatThrownBy(() -> TestUtils.JAVAXCEL.writer(workbook)
-                .options(new ExcelWriteStrategy.HeaderStyles(Arrays.asList(rainbowHeader)))
+                .options(new HeaderStyles(Arrays.asList(rainbowHeader)))
                 .write(null, TestUtils.getRandomMaps(10, rainbowHeader.length - 1)))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessageStartingWith("headerStyles.size must be 1 or equal to keys.size");
@@ -73,7 +77,7 @@ class DecorationTest extends MapWriterTester {
 
         stopwatch.start("set unmatched body style");
         assertThatThrownBy(() -> TestUtils.JAVAXCEL.writer(workbook)
-                .options(new ExcelWriteStrategy.BodyStyles(Arrays.asList(rainbowHeader)))
+                .options(new BodyStyles(Arrays.asList(rainbowHeader)))
                 .write(null, TestUtils.getRandomMaps(10, rainbowHeader.length + 1)))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessageStartingWith("bodyStyles.size must be 1 or equal to keys.size");
@@ -95,6 +99,7 @@ class DecorationTest extends MapWriterTester {
 
     @Override
     protected void whenWriteWorkbook(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) {
+        // java.lang.RuntimeException: Column info records are out of order
         TestUtils.JAVAXCEL.writer(whenModel.getWorkbook())
                 .options(new SheetName("Rainbow"),
                         new AutoResizedColumns(),

@@ -37,7 +37,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public abstract class AbstractExcelModelExecutableResolver<T, E extends Executable> {
 
@@ -57,7 +60,7 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
 
         this.modelType = modelType;
         this.executableName = executableType.getSimpleName().toLowerCase();
-        this.fields = FieldUtils.getTargetedFields(this.modelType);
+        this.fields = Collections.unmodifiableList(FieldUtils.getTargetedFields(this.modelType));
     }
 
     public static Executable resolve(Class<?> type) {

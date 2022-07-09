@@ -20,7 +20,7 @@ import com.github.javaxcel.Converter;
 import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.annotation.ExcelWriteExpression;
-import com.github.javaxcel.in.strategy.ExcelReadStrategy.KeyNames;
+import com.github.javaxcel.in.strategy.impl.KeyNames;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.model.creature.Human;
 import com.github.javaxcel.out.core.ModelWriterTester;
@@ -44,7 +44,9 @@ import java.util.Map;
 import java.util.stream.IntStream;
 
 import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

@@ -20,8 +20,6 @@ import com.github.javaxcel.converter.handler.AbstractExcelTypeHandler;
 
 import java.util.Locale;
 
-import static sun.util.locale.LanguageTag.*;
-
 public class LocaleTypeHandler extends AbstractExcelTypeHandler<Locale> {
 
     private static final String DELIMITER = "_";
@@ -65,7 +63,7 @@ public class LocaleTypeHandler extends AbstractExcelTypeHandler<Locale> {
                 language = segments[0];
 
                 // Uses the cached locale instance.
-                if (isLanguage(language)) {
+                if (LanguageTag.isLanguage(language)) {
                     return Locale.forLanguageTag(language);
                 }
 
@@ -77,7 +75,7 @@ public class LocaleTypeHandler extends AbstractExcelTypeHandler<Locale> {
                 country = segments[1];
 
                 // Uses the cached locale instance.
-                if (isLanguage(language) && isRegion(country)) {
+                if (LanguageTag.isLanguage(language) && LanguageTag.isRegion(country)) {
                     return new Locale.Builder().setLanguage(language).setRegion(country).build();
                 }
 
@@ -91,12 +89,109 @@ public class LocaleTypeHandler extends AbstractExcelTypeHandler<Locale> {
                 variant = segments[2];
 
                 // Uses the cached locale instance.
-                if (isLanguage(language) && isRegion(country) && isVariant(variant)) {
+                if (LanguageTag.isLanguage(language) && LanguageTag.isRegion(country) && LanguageTag.isVariant(variant)) {
                     return new Locale.Builder().setLanguage(language).setRegion(country).setVariant(variant).build();
                 }
 
                 // Creates a locale instance with brand-new language, country and variant.
                 return new Locale(language, country, variant);
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * This is a clone of {@link sun.util.locale.LanguageTag}.
+     *
+     * <p> Since the module system has been introduced in Java 9,
+     * internal packages(e.g. 'com.sun.*', 'sun.*', 'jdk.*', ...)
+     * should not be used by third-party applications.
+     *
+     * @see sun.util.locale.LanguageTag
+     */
+    private static final class LanguageTag {
+        public static boolean isLanguage(String s) {
+            // language      = 2*3ALPHA            ; shortest ISO 639 code
+            //                 ["-" extlang]       ; sometimes followed by
+            //                                     ;   extended language subtags
+            //               / 4ALPHA              ; or reserved for future use
+            //               / 5*8ALPHA            ; or registered language subtag
+            int len = s.length();
+            return (len >= 2) && (len <= 8) && LocaleUtils.isAlphaString(s);
+        }
+
+        public static boolean isRegion(String s) {
+            // region        = 2ALPHA              ; ISO 3166-1 code
+            //               / 3DIGIT              ; UN M.49 code
+            return ((s.length() == 2) && LocaleUtils.isAlphaString(s))
+                    || ((s.length() == 3) && LocaleUtils.isNumericString(s));
+        }
+
+        public static boolean isVariant(String s) {
+            // variant       = 5*8alphanum         ; registered variants
+            //               / (DIGIT 3alphanum)
+            int len = s.length();
+            if (len >= 5 && len <= 8) return LocaleUtils.isAlphaNumericString(s);
+            if (len == 4) {
+                return LocaleUtils.isNumeric(s.charAt(0))
+                        && LocaleUtils.isAlphaNumeric(s.charAt(1))
+                        && LocaleUtils.isAlphaNumeric(s.charAt(2))
+                        && LocaleUtils.isAlphaNumeric(s.charAt(3));
+            }
+
+            return false;
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * This is a clone of {@link sun.util.locale.LocaleUtils}.
+     *
+     * <p> Since the module system has been introduced in Java 9,
+     * internal packages(e.g. 'com.sun.*', 'sun.*', 'jdk.*', ...)
+     * should not be used by third-party applications.
+     *
+     * @see sun.util.locale.LocaleUtils
+     */
+    private static final class LocaleUtils {
+        public static boolean isAlpha(char c) {
+            return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+        }
+
+        public static boolean isAlphaString(String s) {
+            int len = s.length();
+            for (int i = 0; i < len; i++) {
+                if (!isAlpha(s.charAt(i))) return false;
+            }
+
+            return true;
+        }
+
+        public static boolean isNumeric(char c) {
+            return (c >= '0' && c <= '9');
+        }
+
+        public static boolean isNumericString(String s) {
+            int len = s.length();
+            for (int i = 0; i < len; i++) {
+                if (!isNumeric(s.charAt(i))) return false;
+            }
+
+            return true;
+        }
+
+        public static boolean isAlphaNumeric(char c) {
+            return isAlpha(c) || isNumeric(c);
+        }
+
+        public static boolean isAlphaNumericString(String s) {
+            int len = s.length();
+            for (int i = 0; i < len; i++) {
+                if (!isAlphaNumeric(s.charAt(i))) return false;
+            }
+
+            return true;
         }
     }
 

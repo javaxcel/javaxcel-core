@@ -25,8 +25,13 @@ import io.github.imsejin.common.util.StringUtils;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -118,19 +123,6 @@ public final class FieldUtils {
         ExcelColumn annotation = field.getAnnotation(ExcelColumn.class);
         return annotation == null || StringUtils.isNullOrEmpty(annotation.name())
                 ? field.getName() : annotation.name();
-    }
-
-    /**
-     * Converts fields to a map.
-     *
-     * @param model model in list
-     * @param <T>   type of the object
-     * @return {@link Map} in which key is the model's field name and value is the model's field value
-     * @see Field#getName()
-     * @see ReflectionUtils#getFieldValue(Object, Field)
-     */
-    public static <T> Map<String, Object> toMap(T model) {
-        return toMap(model, getTargetedFields(model.getClass()));
     }
 
     /**

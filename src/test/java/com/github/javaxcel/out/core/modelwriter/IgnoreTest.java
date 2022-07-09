@@ -22,7 +22,7 @@ import com.github.javaxcel.annotation.ExcelIgnore;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.core.ModelWriterTester;
-import com.github.javaxcel.out.strategy.ExcelWriteStrategy.AutoResizedColumns;
+import com.github.javaxcel.out.strategy.impl.AutoResizedColumns;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.Cleanup;
@@ -37,7 +37,9 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 
-import static com.github.javaxcel.TestUtils.*;
+import static com.github.javaxcel.TestUtils.assertEqualsHeaderSize;
+import static com.github.javaxcel.TestUtils.assertEqualsNumOfModels;
+import static com.github.javaxcel.TestUtils.assertNotEmptyFile;
 
 /**
  * @see ExcelIgnore

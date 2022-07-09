@@ -20,6 +20,7 @@ import com.github.javaxcel.exception.WritingExcelException;
 import com.github.javaxcel.out.context.ExcelWriteContext;
 import com.github.javaxcel.out.lifecycle.ExcelWriteLifecycle;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy;
+import com.github.javaxcel.out.strategy.impl.SheetName;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.styler.NoStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
@@ -32,7 +33,11 @@ import org.apache.poi.ss.usermodel.Workbook;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.toMap;
@@ -157,7 +162,7 @@ public abstract class AbstractExcelWriter<T> implements ExcelWriter<T>, ExcelWri
      * @throws IllegalArgumentException if sheet names is null or empty
      */
     protected List<String> createSheetNames(ExcelWriteContext<T> context, int numOfSheets) {
-        ExcelWriteStrategy strategy = context.getStrategyMap().get(ExcelWriteStrategy.SheetName.class);
+        ExcelWriteStrategy strategy = context.getStrategyMap().get(SheetName.class);
         String sheetName = strategy == null ? "Sheet" : (String) strategy.execute(context);
 
         if (numOfSheets < 2) return Collections.singletonList(sheetName);

@@ -21,7 +21,7 @@ import com.github.javaxcel.converter.in.support.ExcelReadConverterSupport;
 import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.in.context.ExcelReadContext;
 import com.github.javaxcel.in.core.AbstractExcelReader;
-import com.github.javaxcel.in.strategy.ExcelReadStrategy.Parallel;
+import com.github.javaxcel.in.strategy.impl.Parallel;
 import com.github.javaxcel.util.FieldUtils;
 import com.github.javaxcel.util.resolver.AbstractExcelModelExecutableResolver;
 import com.github.javaxcel.util.resolver.ExcelModelExecutableParameterNameResolver;
@@ -34,6 +34,7 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,7 +120,7 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
         // To prevent exception from occurring on multi-threaded environment,
         // Permits access to the fields that are not accessible. (ExcelReadStrategy.Parallel)
         fields.stream().filter(it -> !it.isAccessible()).forEach(it -> it.setAccessible(true));
-        this.fields = fields;
+        this.fields = Collections.unmodifiableList(fields);
 
         this.converter = new ExcelReadConverterSupport(this.fields, registry);
     }

@@ -19,19 +19,29 @@ package com.github.javaxcel.out.core.impl;
 import com.github.javaxcel.out.context.ExcelWriteContext;
 import com.github.javaxcel.out.core.AbstractExcelWriter;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy;
-import com.github.javaxcel.out.strategy.ExcelWriteStrategy.*;
+import com.github.javaxcel.out.strategy.impl.AutoResizedColumns;
+import com.github.javaxcel.out.strategy.impl.BodyStyles;
+import com.github.javaxcel.out.strategy.impl.DefaultValue;
+import com.github.javaxcel.out.strategy.impl.Filter;
+import com.github.javaxcel.out.strategy.impl.HeaderStyles;
+import com.github.javaxcel.out.strategy.impl.HiddenExtraColumns;
+import com.github.javaxcel.out.strategy.impl.HiddenExtraRows;
+import com.github.javaxcel.out.strategy.impl.KeyNames;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.CollectionUtils;
 import io.github.imsejin.common.util.StringUtils;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Filter;
 
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
@@ -51,7 +61,7 @@ public class MapWriter extends AbstractExcelWriter<Map<String, Object>> {
     /**
      * Default column value when the value is null or empty.
      *
-     * @see ExcelWriteStrategy.DefaultValue
+     * @see DefaultValue
      */
     private String defaultValue;
 
@@ -113,7 +123,7 @@ public class MapWriter extends AbstractExcelWriter<Map<String, Object>> {
                 .hasSizeOf(orders.size())
                 .as("MapWriter.keys is at variance with keyMap.orders.keySet (keys: {0}, keyMap.orders.keySet: {1})",
                         this.keys, orders.keySet())
-                .containsAll(orders.keySet());
+                .containsOnly(orders.keySet().toArray(new String[0]));
 
         if (keyMap.containsKey("names")) this.headerNames = (List<String>) keyMap.get("names");
 
@@ -168,6 +178,7 @@ public class MapWriter extends AbstractExcelWriter<Map<String, Object>> {
             Sheet sheet = context.getSheet();
             String ref = ExcelUtils.toRangeReference(sheet, 0, 0, this.keys.size() - 1, context.getChunk().size() - 1);
             sheet.setAutoFilter(CellRangeAddress.valueOf(ref));
+            sheet.createFreezePane(0, 1);
         }
     }
 

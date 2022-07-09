@@ -24,7 +24,15 @@ import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.out.context.ExcelWriteContext;
 import com.github.javaxcel.out.core.AbstractExcelWriter;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy;
-import com.github.javaxcel.out.strategy.ExcelWriteStrategy.*;
+import com.github.javaxcel.out.strategy.impl.AutoResizedColumns;
+import com.github.javaxcel.out.strategy.impl.BodyStyles;
+import com.github.javaxcel.out.strategy.impl.DefaultValue;
+import com.github.javaxcel.out.strategy.impl.EnumDropdown;
+import com.github.javaxcel.out.strategy.impl.Filter;
+import com.github.javaxcel.out.strategy.impl.HeaderNames;
+import com.github.javaxcel.out.strategy.impl.HeaderStyles;
+import com.github.javaxcel.out.strategy.impl.HiddenExtraColumns;
+import com.github.javaxcel.out.strategy.impl.HiddenExtraRows;
 import com.github.javaxcel.styler.ExcelStyleConfig;
 import com.github.javaxcel.styler.NoStyleConfig;
 import com.github.javaxcel.util.ExcelUtils;
@@ -32,12 +40,22 @@ import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.CollectionUtils;
 import io.github.imsejin.common.util.ReflectionUtils;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DataValidationHelper;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 
 import java.lang.reflect.Field;
-import java.util.*;
-import java.util.logging.Filter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 /**
@@ -53,7 +71,7 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
      */
     private final List<Field> fields;
 
-    private final ExcelWriteConverterSupport<T> converter;
+    private final ExcelWriteConverterSupport converter;
 
     private Map<Integer, String[]> enumDropdownMap;
 
@@ -79,9 +97,9 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
         // To prevent exception from occurring on multi-threaded environment,
         // Permits access to the fields that are not accessible. (ExcelReadStrategy.Parallel)
         fields.stream().filter(it -> !it.isAccessible()).forEach(it -> it.setAccessible(true));
-        this.fields = fields;
+        this.fields = Collections.unmodifiableList(fields);
 
-        this.converter = new ExcelWriteConverterSupport<>(this.fields, registry);
+        this.converter = new ExcelWriteConverterSupport(this.fields, registry);
     }
 
     @Override
@@ -260,6 +278,7 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
         Sheet sheet = context.getSheet();
         String ref = ExcelUtils.toRangeReference(sheet, 0, 0, this.fields.size() - 1, context.getChunk().size() - 1);
         sheet.setAutoFilter(CellRangeAddress.valueOf(ref));
+        sheet.createFreezePane(0, 1);
     }
 
     @Override

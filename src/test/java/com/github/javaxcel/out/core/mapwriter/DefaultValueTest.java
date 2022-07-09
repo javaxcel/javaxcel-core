@@ -19,7 +19,7 @@ package com.github.javaxcel.out.core.mapwriter;
 import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.core.MapWriterTester;
-import com.github.javaxcel.out.strategy.ExcelWriteStrategy.DefaultValue;
+import com.github.javaxcel.out.strategy.impl.DefaultValue;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import io.github.imsejin.common.util.StringUtils;

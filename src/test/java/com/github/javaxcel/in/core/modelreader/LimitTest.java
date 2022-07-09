@@ -18,7 +18,7 @@ package com.github.javaxcel.in.core.modelreader;
 
 import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.in.core.ModelReaderTester;
-import com.github.javaxcel.in.strategy.ExcelReadStrategy.Limit;
+import com.github.javaxcel.in.strategy.impl.Limit;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.model.computer.Computer;
 import com.github.javaxcel.util.ExcelUtils;
