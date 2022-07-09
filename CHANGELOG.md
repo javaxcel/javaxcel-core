@@ -1,6 +1,6 @@
 # Table of Contents
 
-- [v0.8.2](#v082):
+- [v0.8.2](#v082): 2022-07-10
 - [v0.8.1](#v081): 2022-04-19
 - [v0.8.0](#v080): 2022-04-15
 - [v0.7.5](#v075): 2021-11-06
@@ -33,6 +33,7 @@
 - 🚚 Move: package of classes from `com.github.javaxcel.in.strategy.ExcelWriteStrategy.*`
   to `com.github.javaxcel.in.strategy.impl.*`
 - ♻️ Increase: access privileges to `AbstractExcelWriteStrategy`, `AbstractExcelReadStrategy`
+- ⚡️ Modify: `com.github.javaxcel.out.strategy.impl.Filter` to freeze header
 
 ### Dependencies
 
