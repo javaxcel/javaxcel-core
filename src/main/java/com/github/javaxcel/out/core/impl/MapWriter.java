@@ -178,6 +178,7 @@ public class MapWriter extends AbstractExcelWriter<Map<String, Object>> {
             Sheet sheet = context.getSheet();
             String ref = ExcelUtils.toRangeReference(sheet, 0, 0, this.keys.size() - 1, context.getChunk().size() - 1);
             sheet.setAutoFilter(CellRangeAddress.valueOf(ref));
+            sheet.createFreezePane(0, 1);
         }
     }
 

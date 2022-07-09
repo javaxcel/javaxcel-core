@@ -278,6 +278,7 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
         Sheet sheet = context.getSheet();
         String ref = ExcelUtils.toRangeReference(sheet, 0, 0, this.fields.size() - 1, context.getChunk().size() - 1);
         sheet.setAutoFilter(CellRangeAddress.valueOf(ref));
+        sheet.createFreezePane(0, 1);
     }
 
     @Override
