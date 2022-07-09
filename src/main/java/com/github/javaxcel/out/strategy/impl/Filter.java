@@ -21,9 +21,19 @@ import com.github.javaxcel.out.core.ExcelWriter;
 import com.github.javaxcel.out.core.impl.MapWriter;
 import com.github.javaxcel.out.core.impl.ModelWriter;
 import com.github.javaxcel.out.strategy.AbstractExcelWriteStrategy;
-import io.github.imsejin.common.annotation.ExcludeFromGeneratedJacocoReport;
 
 public class Filter extends AbstractExcelWriteStrategy {
+
+    private final boolean frozenPane;
+
+    /**
+     * Strategy for filter on header.
+     *
+     * @param frozenPane if true, row and column on header is fixed
+     */
+    public Filter(boolean frozenPane) {
+        this.frozenPane = frozenPane;
+    }
 
     @Override
     public boolean isSupported(ExcelWriteContext<?> context) {
@@ -32,9 +42,8 @@ public class Filter extends AbstractExcelWriteStrategy {
     }
 
     @Override
-    @ExcludeFromGeneratedJacocoReport
     public Object execute(ExcelWriteContext<?> context) {
-        throw new UnsupportedOperationException("ExcelWriteStrategy." + getClass().getSimpleName() + " is not supported");
+        return this.frozenPane;
     }
 
 }

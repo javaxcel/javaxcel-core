@@ -26,7 +26,7 @@ class AbstractExcelWriteStrategySpec extends Specification {
     def "test"() {
         given:
         def set = [] as Set<AbstractExcelWriteStrategy>
-        def strategy = new Filter()
+        def strategy = new Filter(false)
 
         when:
         set.add null

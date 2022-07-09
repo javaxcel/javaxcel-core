@@ -275,10 +275,14 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
     private void resolveFilter(ExcelWriteContext<T> context) {
         if (!context.getStrategyMap().containsKey(Filter.class)) return;
 
+        ExcelWriteStrategy strategy = context.getStrategyMap().get(Filter.class);
+        boolean frozenPane = (boolean) strategy.execute(context);
+
         Sheet sheet = context.getSheet();
         String ref = ExcelUtils.toRangeReference(sheet, 0, 0, this.fields.size() - 1, context.getChunk().size() - 1);
         sheet.setAutoFilter(CellRangeAddress.valueOf(ref));
-        sheet.createFreezePane(0, 1);
+
+        if (frozenPane) sheet.createFreezePane(0, 1);
     }
 
     @Override
