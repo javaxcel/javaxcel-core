@@ -168,7 +168,7 @@ public abstract class AbstractExcelWriter<T> implements ExcelWriter<T>, ExcelWri
         if (numOfSheets < 2) return Collections.singletonList(sheetName);
 
         List<String> sheetNames = new ArrayList<>();
-        for (int i = 0; i < numOfSheets; i++) {
+        for (int i = 1; i <= numOfSheets; i++) {
             sheetNames.add(sheetName + i);
         }
 
