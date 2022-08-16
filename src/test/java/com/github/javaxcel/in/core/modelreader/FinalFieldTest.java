@@ -74,7 +74,7 @@ class FinalFieldTest extends ModelReaderTester {
                 .containsOnly(new FinalFieldModel());
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
+    // -------------------------------------------------------------------------------------------------
 
     @ToString
     @EqualsAndHashCode

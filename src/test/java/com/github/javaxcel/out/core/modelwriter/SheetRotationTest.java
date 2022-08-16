@@ -104,7 +104,7 @@ class SheetRotationTest extends ModelWriterTester {
                 .isEqualTo(JAVAXCEL.reader(workbook, SimpleModel.class).read());
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
+    // -------------------------------------------------------------------------------------------------
 
     @ToString
     @EqualsAndHashCode

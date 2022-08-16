@@ -242,7 +242,7 @@ public abstract class AbstractExcelReader<T> implements ExcelReader<T>, ExcelRea
         return Collections.unmodifiableMap(map);
     }
 
-    ///////////////////////////////////// Overridable /////////////////////////////////////
+    // Overridable -------------------------------------------------------------------------------------
 
     /**
      * Reads the first row as header for each sheet.

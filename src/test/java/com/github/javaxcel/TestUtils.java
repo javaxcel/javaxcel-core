@@ -59,9 +59,9 @@ public class TestUtils {
     private static final EasyRandom generator;
 
     private static final Class<?>[] classes = Stream.of(
-                    TypeClassifier.Types.NUMBER.getClasses(),
-                    TypeClassifier.Types.DATETIME.getClasses(),
-                    Arrays.asList(char.class, boolean.class, Character.class, Boolean.class, String.class))
+            TypeClassifier.Types.NUMBER.getClasses(),
+            TypeClassifier.Types.DATETIME.getClasses(),
+            Arrays.asList(char.class, boolean.class, Character.class, Boolean.class, String.class))
             .flatMap(Collection::stream).toArray(Class[]::new);
 
     static {
@@ -164,7 +164,7 @@ public class TestUtils {
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
+    // -------------------------------------------------------------------------------------------------
 
     public static void assertNotEmptyFile(File file) {
         assertNotEmptyFile(file, "File must be created and have content");

@@ -103,7 +103,7 @@ public abstract class AbstractExcelWriter<T> implements ExcelWriter<T>, ExcelWri
                 .as("sheetNames cannot have duplicated elements: {0}", sheetNames)
                 .doesNotHaveDuplicates()
                 .asSize().as("sheetNames.size is not equal to numOfSheets: (sheetName.size: {0}, numOfSheets: {1})",
-                        sheetNames.size(), numOfSheets)
+                sheetNames.size(), numOfSheets)
                 .isEqualTo(numOfSheets);
 
         for (int i = 0; i < numOfSheets; i++) {
@@ -144,7 +144,7 @@ public abstract class AbstractExcelWriter<T> implements ExcelWriter<T>, ExcelWri
         }
     }
 
-    ///////////////////////////////////// Overridable /////////////////////////////////////
+    // Overridable -------------------------------------------------------------------------------------
 
     /**
      * Creates sheet names following with the below instructions.

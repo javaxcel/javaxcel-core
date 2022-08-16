@@ -61,7 +61,7 @@ public class ExcelModelExecutableParameterNameResolver {
         return Collections.unmodifiableList(resolvedParameters);
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
+    // -------------------------------------------------------------------------------------------------
 
     public static class ResolvedParameter {
         private static final ParameterNameDiscoverer discoverer = new DefaultParameterNameDiscoverer();

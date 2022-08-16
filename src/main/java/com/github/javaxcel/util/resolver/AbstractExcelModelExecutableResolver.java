@@ -105,7 +105,7 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
         return executable;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
+    // -------------------------------------------------------------------------------------------------
 
     public final E resolve() {
         List<E> candidates = getCandidates();

@@ -119,7 +119,7 @@ public class ExcelModelConstructorResolutionTester {
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
+    // -------------------------------------------------------------------------------------------------
 
     @NoArgsConstructor(access = AccessLevel.PUBLIC)
     @AllArgsConstructor(access = AccessLevel.PROTECTED)

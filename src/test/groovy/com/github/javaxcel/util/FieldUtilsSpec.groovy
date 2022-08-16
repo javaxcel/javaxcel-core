@@ -96,7 +96,7 @@ class FieldUtilsSpec extends Specification {
         ExplicitIncludeSuperSample | 0      | "zeta"    || [f0: f0]
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
+    // -------------------------------------------------------------------------------------------------
 
     private static class NoFieldSample {
     }

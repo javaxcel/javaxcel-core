@@ -120,7 +120,7 @@ public class ExcelModelMethodResolutionTester {
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
+    // -------------------------------------------------------------------------------------------------
 
     @RequiredArgsConstructor(access = AccessLevel.PUBLIC)
     public static class ProtectedMethod {

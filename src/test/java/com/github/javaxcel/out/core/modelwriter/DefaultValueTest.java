@@ -111,7 +111,7 @@ class DefaultValueTest extends ModelWriterTester {
         else return DIRECT_DEFAULT_VALUE;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
+    // -------------------------------------------------------------------------------------------------
 
     @ToString
     @ExcelModel(defaultValue = MODEL_DEFAULT_VALUE)

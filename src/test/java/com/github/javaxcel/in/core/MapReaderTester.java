@@ -127,7 +127,7 @@ public abstract class MapReaderTester {
 
     protected abstract void then(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) throws Exception;
 
-    ///////////////////////////////////////////////////////////////////////////////////////
+    // -------------------------------------------------------------------------------------------------
 
     @Getter
     @RequiredArgsConstructor

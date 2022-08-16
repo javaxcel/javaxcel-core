@@ -104,7 +104,7 @@ class SheetNameTest extends ModelWriterTester {
                 .isEqualTo(SHEET_NAME);
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
+    // -------------------------------------------------------------------------------------------------
 
     private static class SuccessModel {
         private int integer;

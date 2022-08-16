@@ -98,7 +98,7 @@ public class LocaleTypeHandler extends AbstractExcelTypeHandler<Locale> {
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
+    // -------------------------------------------------------------------------------------------------
 
     /**
      * This is a clone of {@link sun.util.locale.LanguageTag}.
@@ -143,7 +143,7 @@ public class LocaleTypeHandler extends AbstractExcelTypeHandler<Locale> {
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
+    // -------------------------------------------------------------------------------------------------
 
     /**
      * This is a clone of {@link sun.util.locale.LocaleUtils}.

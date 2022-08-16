@@ -88,7 +88,7 @@ class IgnoreTest extends ModelWriterTester {
         assertEqualsHeaderSize(workbook, type, "#3 Header size is equal to the number of targeted fields in '%s'", type.getSimpleName());
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
+    // -------------------------------------------------------------------------------------------------
 
     private static class IgnoredModel {
         private long id;

@@ -90,7 +90,7 @@ class SheetManipulationTest extends ModelWriterTester {
                 .isEqualTo(maxModels);
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
+    // -------------------------------------------------------------------------------------------------
 
     @ToString
     @ExcelModel(headerStyle = DefaultHeaderStyleConfig.class, bodyStyle = DefaultBodyStyleConfig.class)

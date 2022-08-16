@@ -83,7 +83,7 @@ class IncludeSuperClassesTest extends ModelWriterTester {
                 .isEqualTo(list.size());
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
+    // -------------------------------------------------------------------------------------------------
 
     @ToString
     @AllArgsConstructor

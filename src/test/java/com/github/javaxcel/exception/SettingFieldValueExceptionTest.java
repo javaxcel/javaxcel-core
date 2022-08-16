@@ -103,7 +103,7 @@ class SettingFieldValueExceptionTest {
         assertThat(exception.getField()).isEqualTo(field);
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
+    // -------------------------------------------------------------------------------------------------
 
     private static class TestModel {
         private Long id;

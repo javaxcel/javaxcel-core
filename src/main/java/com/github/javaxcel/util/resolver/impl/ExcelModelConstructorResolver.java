@@ -78,7 +78,7 @@ public class ExcelModelConstructorResolver<T> extends AbstractExcelModelExecutab
         return elected.get(0);
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
+    // -------------------------------------------------------------------------------------------------
 
     public static class ModifierComparator implements Comparator<Integer> {
         private static int convert(Integer modifier) {

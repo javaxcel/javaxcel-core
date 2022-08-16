@@ -119,7 +119,7 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
+    // -------------------------------------------------------------------------------------------------
 
     // To access at test source, modifier should be package-private.
     static class Utils {

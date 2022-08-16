@@ -149,7 +149,7 @@ class HeaderNamesTest extends ModelWriterTester {
         );
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
+    // -------------------------------------------------------------------------------------------------
 
     @ToString
     private static class UpperSnakeCaseComputer {

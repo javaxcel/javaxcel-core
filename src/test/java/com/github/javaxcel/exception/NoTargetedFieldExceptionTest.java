@@ -93,7 +93,7 @@ class NoTargetedFieldExceptionTest {
         assertThat(exception.getType()).isEqualTo(type);
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
+    // -------------------------------------------------------------------------------------------------
 
     private static class TestModel {
         private Long id;

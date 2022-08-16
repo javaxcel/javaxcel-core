@@ -131,7 +131,7 @@ public abstract class ModelReaderTester {
 
     protected abstract void then(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) throws Exception;
 
-    ///////////////////////////////////////////////////////////////////////////////////////
+    // -------------------------------------------------------------------------------------------------
 
     @Getter
     @RequiredArgsConstructor

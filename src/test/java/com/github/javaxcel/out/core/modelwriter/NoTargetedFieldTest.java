@@ -52,7 +52,7 @@ class NoTargetedFieldTest {
                 .isExactlyInstanceOf(NoTargetedFieldException.class);
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
+    // -------------------------------------------------------------------------------------------------
 
     private static class NoFieldModel {
     }

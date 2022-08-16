@@ -154,7 +154,7 @@ class DateTimeFormatTest extends ModelWriterTester {
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
+    // -------------------------------------------------------------------------------------------------
 
     private static class ChronoModel {
         static final String DATE_PATTERN = "yyyyMMdd";
