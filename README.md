@@ -36,22 +36,22 @@
 - [What is Javaxcel?](#what-is-javaxcel)
 - [Getting started](#getting-started)
 - [Examples](#examples)
-  1. [No option](#no-option)
-  2. [Exclude field](#exclude-field)
-  3. [Name the header](#name-the-header)
-  4. [Set the default value](#set-the-default-value)
-  5. [Model without the targeted fields](#model-without-the-targeted-fields)
-  6. [Model that extends class](#model-that-extends-class)
-  7. [Format date/time](#format-datetime)
-  8. [Name a Sheet](#name-a-sheet)
-  9. [Decoration](#decoration)
-  10. [Expression](#expression)
-  11. [Enum value constraint](#enum-value-constraint)
-  12. [Limitation of reading rows](#limitation-of-reading-rows)
-  13. [Parallel reading](#parallel-reading)
-  13. [Resolution of constructor and method](#resolution-of-constructor-and-method)
-  13. [Add handler for custom type](#add-handler-for-custom-type)
-  14. [Support java.util.Map](#support-javautilmap)
+    1. [No option](#no-option)
+    2. [Exclude field](#exclude-field)
+    3. [Name the header](#name-the-header)
+    4. [Set the default value](#set-the-default-value)
+    5. [Model without the targeted fields](#model-without-the-targeted-fields)
+    6. [Model that extends class](#model-that-extends-class)
+    7. [Format date/time](#format-datetime)
+    8. [Name a Sheet](#name-a-sheet)
+    9. [Decoration](#decoration)
+    10. [Expression](#expression)
+    11. [Enum value constraint](#enum-value-constraint)
+    12. [Limitation of reading rows](#limitation-of-reading-rows)
+    13. [Parallel reading](#parallel-reading)
+    13. [Resolution of constructor and method](#resolution-of-constructor-and-method)
+    13. [Add handler for custom type](#add-handler-for-custom-type)
+    14. [Support java.util.Map](#support-javautilmap)
 
 <br><br>
 
@@ -67,26 +67,26 @@ Javaxcel is a supporter for exporting `java.util.List` to spreadsheets and impor
 
 ```xml
 <dependency>
-  <groupId>com.github.javaxcel</groupId>
-  <artifactId>javaxcel-core</artifactId>
-  <version>${javaxcel-core.version}</version>
+    <groupId>com.github.javaxcel</groupId>
+    <artifactId>javaxcel-core</artifactId>
+    <version>x.y.z</version>
 </dependency>
 
 <!-- Required dependency -->
 <dependency>
-  <groupId>org.apache.poi</groupId>
-  <artifactId>poi-ooxml</artifactId>
-  <version>${apache-poi.version}</version>
+    <groupId>org.apache.poi</groupId>
+    <artifactId>poi-ooxml</artifactId>
+    <version>a.b.c</version>
 </dependency>
 ```
 
 ### Gradle
 
 ```groovy
-implementation group: "com.github.javaxcel", name: "javaxcel-core", version: "$javaxcelCoreVersion"
+implementation 'com.github.javaxcel:javaxcel-core:x.y.z'
 
 // Required dependency
-implementation group: "org.apache.poi", name: "poi-ooxml", version: "$apachePoiVersion"
+implementation 'org.apache.poi:poi-ooxml:a.b.c'
 ```
 
 <br>
@@ -158,6 +158,7 @@ Javaxcel.newInstance()
         .writer(workbook, Product.class)
         .write(out, products);
 ```
+
 The result is
 
 | serialNumber | name         | accessId            | width | depth | height | weight |
@@ -437,7 +438,7 @@ Javaxcel.newInstance()
 
 It writes the declared own fields, not including the inherited fields.
 
-It's default.
+That's default.
 
 <br>
 
@@ -446,7 +447,7 @@ It's default.
 class EducationalProduct extends Product { /* ... */ }
 ```
 
-But if you annotate `@ExcelModel` and assign true into `includeSuper()`, it writes including the inherited fields.
+If you annotate `@ExcelModel` and assign true into `includeSuper()`, it writes including the inherited fields.
 
 The result is
 
@@ -488,8 +489,9 @@ To know what types are basically supported, see `DefaultExcelTypeHandlerRegistry
 
 <br>
 
-Others are not supported by default, so that the field value will be null (if primitive, will be initial value of that type).
-You can register handler for unknown types.
+Others are not supported by default, so that the field value will be null
+(if primitive, will be initial value of that type). You can register handler for unknown types.
+
 1. Create an instance of `ExcelTypeHandlerRegistryImpl`.
 2. Make implementations of `AbstractExcelTypeHandler`.
 3. Add handlers to registry.
@@ -516,8 +518,9 @@ private LocalDateTime dateTime = LocalDateTime.now();
 | -------- | -------- | ------------------- |
 | 20200913 | 11/54/26 | 2020-09-13 11:54:26 |
 
-If you want to write formatted value, annotate `@ExcelDateTimeFormat` and assign `pattern()` you want.
-These are supported types by default.
+If you want to write formatted value, annotate `@ExcelDateTimeFormat` and assign `pattern()` you want. These are
+supported types by default.
+
 * `java.util.Date`
 * `java.time.LocalTime`
 * `java.time.LocalDate`
@@ -555,7 +558,7 @@ Javaxcel.newInstance()
 
 If you want to name a sheet, add option `ExcelWriteStrategy.SheetName`.
 
-If you don't, the default name is `Sheet`.
+The default of sheet name is `Sheet` trailing sheet number according to rule of spreadsheet program.
 
 <br><br>
 
@@ -576,17 +579,17 @@ Javaxcel.newInstance()
         .write(out, products);
 ```
 
-You can adjust all sheets with option `ExcelWriteStrategy.AutoResizedColumns`, `ExcelWriteStrategy.HiddenExtraRows` and `ExcelWriteStrategyHiddenExtraColumns`.
+You can adjust all sheets with option `ExcelWriteStrategy.AutoResizedColumns`, `ExcelWriteStrategy.HiddenExtraRows`
+and `ExcelWriteStrategyHiddenExtraColumns`.
 
 <br>
 
-You can decorate the header with option `ExcelWriteStrategy.HeaderStyles`
-
-and also decorate the body with option `ExcelWriteStrategy.BodyStyles`.
+You can decorate the header with option `ExcelWriteStrategy.HeaderStyles` and also decorate the body with
+option `ExcelWriteStrategy.BodyStyles`.
 
 <br>
 
-If the number of arguments is not equal to 1 or the number of targeted fields, `ExcelWriter` throws exception.
+If the number of arguments is not equal to 1 nor the number of targeted fields, `ExcelWriter` throws exception.
 
 When you input single argument, `ExcelWriter` applies it to all columns.
 
@@ -688,9 +691,9 @@ Look [here](https://github.com/spring-projects/spring-framework/tree/master/spri
 
 <br>
 
-If you want to refer field in an expression, write `#` and the `field name`. (e.g. #targetAges)
+If you want to refer the field in an expression, write `#` and the `field name`. (e.g. #targetAges)
 
-Also you can refer other field. We call this as `variable`.
+You can also refer the other fields. We call this as `variable`.
 
 <br>
 
@@ -750,8 +753,8 @@ class EducationalProduct extends Product {
 
 // com.github.javaxcel.Converter
 public class Converter {
-    public static int[] toPowerIntArray(String[] strs) {
-        return Arrays.stream(strs).mapToInt(Integer::parseInt).map(i -> i + 1).toArray();
+    public static int[] toPowerIntArray(String[] str) {
+        return Arrays.stream(str).mapToInt(Integer::parseInt).map(i -> i + 1).toArray();
     }    
 }
 ```
@@ -802,11 +805,11 @@ private java.nio.file.AccessMode accessMode;
 private java.util.concurrent.TimeUnit timeUnit;
 ```
 
-If you specify enable `ExcelColumn#enumDropdown()` to field whose type is `Enum`,
-this column will have constraint. In other words, it will have dropdown items as `Enum#name()`.
+If you enable `ExcelColumn#enumDropdown()` annotated to enum field, this column will have constraint. In other words,
+this column will have dropdown items as `Enum#name()`.
 
-If also specify `ExcelColumn#dropdownItems()` to enum field,
-it wll have dropdown items as `ExcelColumn#dropdownItems()`.
+If you also specify `ExcelColumn#dropdownItems()` to enum field, this column wll have dropdown items
+as `ExcelColumn#dropdownItems()`.
 
 ```java
 Javaxcel.newInstance()
@@ -815,8 +818,8 @@ Javaxcel.newInstance()
         .write(out, products);
 ```
 
-Even if `enumDropdown()` is `false` in `ExcelModel` or `ExcelColumn`,
-you can enable it on this moment with option `ExcelWriteStrategy.EnumDropdown`.
+Even if `enumDropdown()` is `false` in `ExcelModel` or `ExcelColumn`, you can enable it on this moment with
+option `ExcelWriteStrategy.EnumDropdown`.
 
 <br><br>
 
@@ -891,7 +894,8 @@ class Item {
 }
 ```
 
-`ModelReader` will resolve the constructor `private Item(Long, String, LocalDateTime)` annotated with `@ExcelModelCreator`.
+`ModelReader` will resolve the constructor `private Item(Long, String, LocalDateTime)` annotated
+with `@ExcelModelCreator`.
 
 ##### Method and constructor(s):
 
@@ -945,9 +949,8 @@ public Item(@FieldName("title") String $title, LocalDateTime $createdAt) {
 }
 ```
 
-Both names of parameter and field whose type is `LocalDateTime` are different,
-but their type is unique, so resolver can handle the parameter.
-The rule of method is also like this.
+Both names of parameter and field whose type is `LocalDateTime` are different, but their type is unique, so resolver can
+handle the parameter. The rule of method is also like this.
 
 <br>
 
@@ -955,7 +958,7 @@ If you want to know more rules, see `AbstractExcelModelExecutableResolver`.
 
 <br><br>
 
-## Add handler for custom type
+## Add handler for custom types
 
 ```java
 class Item {
@@ -996,8 +999,7 @@ registry.add(Item.class, new ItemTypeHandler());
 Javaxcel javaxcel = Javaxcel.newInstance(registry);
 ```
 
-If you want to override the supported type by default,
-just make a handler class for the type and add it to registry.  
+If you want to override the supported type by default, just make a handler class for the type and add it to registry.
 
 <br><br>
 
@@ -1022,7 +1024,7 @@ The result is
 | Alpha       | 10010        |
 | Beta        | 10011        |
 
-The column order is not guaranteed except for `java.util.LinkedHashMap`.  There is option for this issue.
+The column order is not guaranteed except for `java.util.LinkedHashMap`. There is option for this issue.
 
 <br>
 
@@ -1042,8 +1044,8 @@ The result is
 | 10010        | Alpha       |
 | 10011        | Beta        |
 
-If you rearrange the column order of `Map`, use option `ExcelWriteStrategy.KeyNames`.
-If you want to rename the header names, use that option like this.
+If you rearrange the column order of `Map`, use option `ExcelWriteStrategy.KeyNames`. If you want to rename the header
+names, use that option like this.
 
 <br>
 
