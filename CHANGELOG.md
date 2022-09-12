@@ -32,7 +32,7 @@
 
 ### New features
 
-- ✨ Add:
+- ✨ Add: method `add(ExcelTypeHandler)` in `ExcelTypeHandlerRegistry`
 
 ### Dependencies
 
