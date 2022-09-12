@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [v0.9.0](#v090):
 - [v0.8.2](#v082): 2022-07-10
 - [v0.8.1](#v081): 2022-04-19
 - [v0.8.0](#v080): 2022-04-15
@@ -21,6 +22,28 @@
 - [v0.3.0](#v030): 2020-09-12
 - [v0.2.1](#v021): 2020-09-07
 - [v0.1.0](#v010): 2020-08-30
+
+# v0.9.0
+
+### Modification
+
+- ⚡️ Modify:  default policy of sheet name
+- ⚡️ Update: strategy `ExcelWriteStrategy.Filter` with new option
+
+### New features
+
+- ✨ Add:
+
+### Dependencies
+
+- ⬆️ Upgrade: dependency `common-utils` from `0.9.0` to `0.11.0`
+- ⬆️ Upgrade: test dependency `assertj-core` from `3.22.0` to `3.23.1`
+- ⬆️ Upgrade: test dependency `spock-core` from `2.1-groovy-3.0` to `2.2-groovy-3.0`
+- ⬆️ Upgrade: test dependency `byte-buddy` from `1.12.9` to `1.12.16`
+
+### Troubleshooting
+
+- 🐞 Fix:
 
 # v0.8.2
 
