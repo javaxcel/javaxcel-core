@@ -129,7 +129,7 @@ class Product {
     private Double weight;
 }
 
-/* ... */
+// ...
 
 Product product = Product.builder()
         .serialNumber(10000)
@@ -400,7 +400,7 @@ class EducationalProduct extends Product {
     private LocalDateTime dateTime;
 }
 
-/* ... */
+// ...
 
 EducationalProduct eduProduct = EducationalProduct.builder()
         .serialNumber(10001)
@@ -605,7 +605,7 @@ class Product {
     @ExcelColumn(bodyStyle = GrayColumnStyleConfig.class)
     private String name;
 
-    /* ... */
+    // ...
 }
 ```
 
@@ -968,7 +968,7 @@ class Item {
 }
 ```
 
-`Item` is custom class and not basically supported type. You can add handler for the type.
+`Item` is custom class and not supported type by default. You can add a handler for the type.
 
 <br>
 
@@ -981,20 +981,20 @@ public class ItemTypeHandler extends AbstractExcelTypeHandler<Item> {
 
     @Override
     protected String writeInternal(Item value, Object... args) {
-        // Convert Item to String.
+        // Convert Item into String.
     }
 
     @Override
     public Item read(String value, Object... args) {
-        // Convert String to Item.
+        // Convert String into Item.
     }
 
 }
 
-/* ... */
+// ...
 
-ExcelTypeHandlerRegistry registry = new ExcelTypeHandlerRegistryImpl();
-registry.add(Item.class, new ItemTypeHandler());
+ExcelTypeHandlerRegistry registry = new DefaultExcelTypeHandlerRegistry();
+registry.add(new ItemTypeHandler());
 
 Javaxcel javaxcel = Javaxcel.newInstance(registry);
 ```
