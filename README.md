@@ -50,7 +50,7 @@
     12. [Limitation of reading rows](#limitation-of-reading-rows)
     13. [Parallel reading](#parallel-reading)
     13. [Resolution of constructor and method](#resolution-of-constructor-and-method)
-    13. [Add handler for custom type](#add-handler-for-custom-type)
+    13. [Add a handler for custom type](#add-a-handler-for-custom-type)
     14. [Support java.util.Map](#support-javautilmap)
 
 <br><br>
@@ -958,7 +958,7 @@ If you want to know more rules, see `AbstractExcelModelExecutableResolver`.
 
 <br><br>
 
-## Add handler for custom types
+## Add a handler for custom type
 
 ```java
 class Item {
