@@ -158,7 +158,7 @@ public class TestUtils {
             // Excludes it depending on percentage.
             double percentage = annotation.value();
             Asserts.that(percentage)
-                    .as("ConditionalOnPercentage.value must be between 0.0 and 1.0")
+                    .describedAs("ConditionalOnPercentage.value must be between 0.0 and 1.0")
                     .isBetween(0.0, 1.0);
             return percentage > this.random.nextFloat();
         }

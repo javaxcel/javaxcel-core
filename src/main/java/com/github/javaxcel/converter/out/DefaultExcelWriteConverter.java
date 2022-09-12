@@ -32,9 +32,9 @@ public class DefaultExcelWriteConverter implements ExcelWriteConverter {
 
     public DefaultExcelWriteConverter(ExcelTypeHandlerRegistry registry) {
         Asserts.that(registry)
-                .as("DefaultExcelWriteConverter.registry is not allowed to be null")
+                .describedAs("DefaultExcelWriteConverter.registry is not allowed to be null")
                 .isNotNull()
-                .as("DefaultExcelWriteConverter.registry.allTypes is not allowed to be null")
+                .describedAs("DefaultExcelWriteConverter.registry.allTypes is not allowed to be null")
                 .predicate(it -> it.getAllTypes() != null);
 
         this.registry = registry;

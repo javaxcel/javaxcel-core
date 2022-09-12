@@ -33,11 +33,11 @@ public class BodyStyles extends AbstractExcelWriteStrategy {
 
     public BodyStyles(List<ExcelStyleConfig> styleConfigs) {
         Asserts.that(styleConfigs)
-                .as("ExcelWriteStrategy.BodyStyle.styleConfigs is not allowed to be null or empty: {0}", styleConfigs)
-                .isNotNull().hasElement()
-                .as("ExcelWriteStrategy.BodyStyle.styleConfigs cannot have null element: {0}", styleConfigs)
+                .describedAs("ExcelWriteStrategy.BodyStyle.styleConfigs is not allowed to be null or empty: {0}", styleConfigs)
+                .isNotNull().isNotEmpty()
+                .describedAs("ExcelWriteStrategy.BodyStyle.styleConfigs cannot have null element: {0}", styleConfigs)
                 .doesNotContainNull()
-                .as("ExcelWriteStrategy.BodyStyle.styleConfigs must be an implementation of java.util.List: {0}", styleConfigs)
+                .describedAs("ExcelWriteStrategy.BodyStyle.styleConfigs must be an implementation of java.util.List: {0}", styleConfigs)
                 .isInstanceOf(List.class);
 
         this.styleConfigs = Collections.unmodifiableList(styleConfigs);
@@ -45,7 +45,7 @@ public class BodyStyles extends AbstractExcelWriteStrategy {
 
     public BodyStyles(ExcelStyleConfig styleConfig) {
         Asserts.that(styleConfig)
-                .as("ExcelWriteStrategy.BodyStyle.styleConfigs cannot have null element")
+                .describedAs("ExcelWriteStrategy.BodyStyle.styleConfigs cannot have null element")
                 .isNotNull();
 
         this.styleConfigs = Collections.singletonList(styleConfig);

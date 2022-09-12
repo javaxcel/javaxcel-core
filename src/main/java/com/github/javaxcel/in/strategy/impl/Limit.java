@@ -34,7 +34,7 @@ public class Limit extends AbstractExcelReadStrategy {
      */
     public Limit(int value) {
         Asserts.that(value)
-                .as("ExcelReadStrategy.Limit.value is not allowed to be negative")
+                .describedAs("ExcelReadStrategy.Limit.value is not allowed to be negative")
                 .isZeroOrPositive();
 
         this.value = value;

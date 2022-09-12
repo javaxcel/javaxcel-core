@@ -52,10 +52,10 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
 
     protected AbstractExcelModelExecutableResolver(Class<T> modelType, Class<E> executableType) {
         Asserts.that(modelType)
-                .as("AbstractExecutableResolver.modelType is not allowed to be null")
+                .describedAs("AbstractExecutableResolver.modelType is not allowed to be null")
                 .isNotNull();
         Asserts.that(executableType)
-                .as("AbstractExecutableResolver.executableType is not allowed to be null")
+                .describedAs("AbstractExecutableResolver.executableType is not allowed to be null")
                 .isNotNull();
 
         this.modelType = modelType;
@@ -160,13 +160,13 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
             if (fieldTypeCount == 1 && paramTypeCount == 1) continue;
 
             Asserts.that(paramName)
-                    .exception(InvalidExcelModelCreatorException::new)
-                    .as("ResolvedParameter.name must have text, but it isn't: '{0}'", paramName)
+                    .thrownBy(InvalidExcelModelCreatorException::new)
+                    .describedAs("ResolvedParameter.name must have text, but it isn't: '{0}'", paramName)
                     .isNotNull().hasText()
-                    .as("ResolvedParameter.name must match name of the targeted fields, but it isn't: (actual: '{0}', allowed: {1})",
+                    .describedAs("ResolvedParameter.name must match name of the targeted fields, but it isn't: (actual: '{0}', allowed: {1})",
                             paramName, fieldNameMap.keySet())
                     .predicate(fieldNameMap::containsKey)
-                    .as("Each ResolvedParameter.name must be unique, but it isn't: (duplicated: '{0}', names: {1})", paramName, paramNames)
+                    .describedAs("Each ResolvedParameter.name must be unique, but it isn't: (duplicated: '{0}', names: {1})", paramName, paramNames)
                     .predicate(it -> Collections.frequency(paramNames, it) == 1);
 
             if (this.fields.stream().filter(it -> it.getType() == paramType && it.getName().equals(paramName)).count() != 1) {

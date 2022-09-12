@@ -95,9 +95,9 @@ public abstract class AbstractExcelReader<T> implements ExcelReader<T>, ExcelRea
     @Override
     public ExcelReader<T> options(ExcelReadStrategy... strategies) {
         Asserts.that(strategies)
-                .as("strategies is not allowed to be null")
+                .describedAs("strategies is not allowed to be null")
                 .isNotNull()
-                .as("strategies cannot have null element: {0}", ArrayUtils.toString(strategies))
+                .describedAs("strategies cannot have null element: {0}", ArrayUtils.toString(strategies))
                 .doesNotContainNull();
         if (strategies.length == 0) return this;
 

@@ -88,10 +88,10 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
         // Finds the targeted fields.
         List<Field> fields = FieldUtils.getTargetedFields(type);
         Asserts.that(fields)
-                .as("ModelWriter.fields cannot find the targeted fields in the class: {0}", type.getName())
-                .exception(desc -> new NoTargetedFieldException(type, desc))
-                .hasElement()
-                .as("ModelWriter.fields cannot have null element: {0}", fields)
+                .describedAs("ModelWriter.fields cannot find the targeted fields in the class: {0}", type.getName())
+                .thrownBy(desc -> new NoTargetedFieldException(type, desc))
+                .isNotEmpty()
+                .describedAs("ModelWriter.fields cannot have null element: {0}", fields)
                 .doesNotContainNull();
 
         // To prevent exception from occurring on multi-threaded environment,
@@ -163,7 +163,7 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
 
             // Validates header styles.
             Asserts.that(headerStyleConfigs)
-                    .as("headerStyles.size must be 1 or equal to fields.size (headerStyles.size: {0}, fields.size: {1})",
+                    .describedAs("headerStyles.size must be 1 or equal to fields.size (headerStyles.size: {0}, fields.size: {1})",
                             headerStyleConfigs.size(), this.fields.size())
                     .predicate(them -> them.size() == 1 || them.size() == this.fields.size());
 
@@ -220,7 +220,7 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
 
             // Validates body styles.
             Asserts.that(bodyStyleConfigs)
-                    .as("bodyStyles.size must be 1 or equal to fields.size (bodyStyles.size: {0}, fields.size: {1})",
+                    .describedAs("bodyStyles.size must be 1 or equal to fields.size (bodyStyles.size: {0}, fields.size: {1})",
                             bodyStyleConfigs.size(), this.fields.size())
                     .predicate(them -> them.size() == 1 || them.size() == this.fields.size());
 
@@ -292,11 +292,11 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
 
         List<String> headerNames = resolveHeaderNames(context);
         Asserts.that(headerNames)
-                .as("headerNames is not allowed to be null or empty: {0}", headerNames)
-                .isNotNull().hasElement()
-                .as("headerNames.size is not equal to the number of targeted fields in the class: {0}",
+                .describedAs("headerNames is not allowed to be null or empty: {0}", headerNames)
+                .isNotNull().isNotEmpty()
+                .describedAs("headerNames.size is not equal to the number of targeted fields in the class: {0}",
                         context.getModelType().getName())
-                .isSameSize(this.fields);
+                .hasSameSizeAs(this.fields);
 
         List<CellStyle> headerStyles = context.getHeaderStyles();
 

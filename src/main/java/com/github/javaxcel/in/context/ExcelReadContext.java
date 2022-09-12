@@ -66,15 +66,15 @@ public class ExcelReadContext<T> {
 
     public ExcelReadContext(Workbook workbook, Class<T> modelType, Class<? extends ExcelReader<T>> readerType) {
         Asserts.that(workbook)
-                .as("ExcelReadContext.workbook is not allowed to be null")
+                .describedAs("ExcelReadContext.workbook is not allowed to be null")
                 .isNotNull();
         Asserts.that(modelType)
-                .as("ExcelReadContext.modelType is not allowed to be null")
+                .describedAs("ExcelReadContext.modelType is not allowed to be null")
                 .isNotNull();
         Asserts.that(readerType)
-                .as("ExcelReadContext.readerType is not allowed to be null")
+                .describedAs("ExcelReadContext.readerType is not allowed to be null")
                 .isNotNull()
-                .as("ExcelReadContext.readerType is type of implementation of ExcelReader, but it isn't : '{0}'", readerType.getName())
+                .describedAs("ExcelReadContext.readerType is type of implementation of ExcelReader, but it isn't : '{0}'", readerType.getName())
                 .predicate(ExcelReader.class::isAssignableFrom);
 
         this.workbook = workbook;
@@ -104,9 +104,9 @@ public class ExcelReadContext<T> {
 
     public void setStrategyMap(Map<Class<? extends ExcelReadStrategy>, ExcelReadStrategy> strategyMap) {
         Asserts.that(strategyMap)
-                .as("ExcelReadContext.strategyMap is not allowed to be null")
+                .describedAs("ExcelReadContext.strategyMap is not allowed to be null")
                 .isNotNull()
-                .as("ExcelReadContext.strategyMap.values is not allowed to contain null: {0}", strategyMap)
+                .describedAs("ExcelReadContext.strategyMap.values is not allowed to contain null: {0}", strategyMap)
                 .asValues().doesNotContainNull();
 
         this.strategyMap = strategyMap;
@@ -119,7 +119,7 @@ public class ExcelReadContext<T> {
 
     public void setList(List<T> list) {
         Asserts.that(list)
-                .as("ExcelReadContext.list is not allowed to be null")
+                .describedAs("ExcelReadContext.list is not allowed to be null")
                 .isNotNull();
 
         this.list = list;
@@ -132,9 +132,9 @@ public class ExcelReadContext<T> {
 
     public void setHeaderNames(List<String> headerNames) {
         Asserts.that(headerNames)
-                .as("ExcelReadContext.headerNames is not allowed to be null or empty: {0}", headerNames)
-                .isNotNull().hasElement()
-                .as("ExcelReadContext.headerNames is not allowed to contain null: {0}", headerNames)
+                .describedAs("ExcelReadContext.headerNames is not allowed to be null or empty: {0}", headerNames)
+                .isNotNull().isNotEmpty()
+                .describedAs("ExcelReadContext.headerNames is not allowed to contain null: {0}", headerNames)
                 .doesNotContainNull();
 
         this.headerNames = headerNames;
@@ -155,9 +155,9 @@ public class ExcelReadContext<T> {
 
     public void setChunk(List<T> chunk) {
         Asserts.that(chunk)
-                .as("ExcelReadContext.chunk is not allowed to be null")
+                .describedAs("ExcelReadContext.chunk is not allowed to be null")
                 .isNotNull()
-                .as("ExcelReadContext.chunk is not allowed to contain null: {0}", chunk)
+                .describedAs("ExcelReadContext.chunk is not allowed to contain null: {0}", chunk)
                 .doesNotContainNull();
 
         this.chunk = chunk;

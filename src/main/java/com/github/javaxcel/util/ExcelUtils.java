@@ -90,7 +90,7 @@ public final class ExcelUtils {
     public static Workbook getWorkbook(File file) {
         final String extension = FilenameUtils.getExtension(file.getName());
         Asserts.that(extension)
-                .as("Extension of Excel file must be '{0}' or '{1}'",
+                .describedAs("Extension of Excel file must be '{0}' or '{1}'",
                         EXCEL_97_EXTENSION, EXCEL_2007_EXTENSION)
                 .matches(EXCEL_97_EXTENSION + '|' + EXCEL_2007_EXTENSION);
 
@@ -139,8 +139,8 @@ public final class ExcelUtils {
     public static int getNumOfRows(Sheet sheet) {
         Asserts.that(sheet)
                 .isNotNull()
-                .as("SXSSFWorkbook is not supported workbook when read")
-                .exception(UnsupportedWorkbookException::new)
+                .describedAs("SXSSFWorkbook is not supported workbook when read")
+                .thrownBy(UnsupportedWorkbookException::new)
                 .asClass()
                 .isNotTypeOf(SXSSFSheet.class);
 
@@ -157,8 +157,8 @@ public final class ExcelUtils {
     public static long getNumOfRows(Workbook workbook) {
         Asserts.that(workbook)
                 .isNotNull()
-                .as("SXSSFWorkbook is not supported workbook when read")
-                .exception(UnsupportedWorkbookException::new)
+                .describedAs("SXSSFWorkbook is not supported workbook when read")
+                .thrownBy(UnsupportedWorkbookException::new)
                 .asClass()
                 .isNotTypeOf(SXSSFWorkbook.class);
 
@@ -183,8 +183,8 @@ public final class ExcelUtils {
     public static int getNumOfModels(Sheet sheet) {
         Asserts.that(sheet)
                 .isNotNull()
-                .as("SXSSFWorkbook is not supported workbook when read")
-                .exception(UnsupportedWorkbookException::new)
+                .describedAs("SXSSFWorkbook is not supported workbook when read")
+                .thrownBy(UnsupportedWorkbookException::new)
                 .asClass()
                 .isNotTypeOf(SXSSFSheet.class);
 
@@ -204,8 +204,8 @@ public final class ExcelUtils {
     public static long getNumOfModels(Workbook workbook) {
         Asserts.that(workbook)
                 .isNotNull()
-                .as("SXSSFWorkbook is not supported workbook when read")
-                .exception(UnsupportedWorkbookException::new)
+                .describedAs("SXSSFWorkbook is not supported workbook when read")
+                .thrownBy(UnsupportedWorkbookException::new)
                 .asClass()
                 .isNotTypeOf(SXSSFWorkbook.class);
 
@@ -439,10 +439,10 @@ public final class ExcelUtils {
      * @throws IllegalArgumentException if configs are null, their length is 0, or they contain null
      */
     public static CellStyle[] toCellStyles(Workbook workbook, ExcelStyleConfig... configs) {
-        Asserts.that(configs).exception(IllegalArgumentException::new)
-                .as("configs is not allowed to be null or empty: {0}", (Object) configs)
-                .isNotNull().hasElement()
-                .as("configs is not allowed to contain null: {0}", (Object) configs)
+        Asserts.that(configs).thrownBy(IllegalArgumentException::new)
+                .describedAs("configs is not allowed to be null or empty: {0}", (Object) configs)
+                .isNotNull().isNotEmpty()
+                .describedAs("configs is not allowed to contain null: {0}", (Object) configs)
                 .doesNotContainNull();
 
         // CellStyle is reusable class, so we use cache

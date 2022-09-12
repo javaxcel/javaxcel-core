@@ -35,9 +35,9 @@ public class SheetName extends AbstractExcelWriteStrategy {
      */
     public SheetName(String value) {
         Asserts.that(value)
-                .as("ExcelWriteStrategy.SheetName.value is not allowed to be null or blank, but it is: {0}", value)
+                .describedAs("ExcelWriteStrategy.SheetName.value is not allowed to be null or blank, but it is: {0}", value)
                 .isNotNull().hasText()
-                .as("ExcelWriteStrategy.SheetName.value is not allowed to contain invalid character: {0}", value)
+                .describedAs("ExcelWriteStrategy.SheetName.value is not allowed to contain invalid character: {0}", value)
                 .predicate(it -> WorkbookUtil.createSafeSheetName(it).equals(it));
 
         this.value = value;

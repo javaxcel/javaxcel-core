@@ -100,11 +100,11 @@ public class MapWriter extends AbstractExcelWriter<Map<String, Object>> {
 
         // To write a header, this doesn't allow accepting invalid keys.
         Asserts.that(keys)
-                .as("MapWriter.keys is not allowed to be empty")
-                .hasElement()
-                .as("MapWriter.keys cannot have null or blank element: {0}", keys)
+                .describedAs("MapWriter.keys is not allowed to be empty")
+                .isNotEmpty()
+                .describedAs("MapWriter.keys cannot have null or blank element: {0}", keys)
                 .noneMatch(StringUtils::isNullOrBlank)
-                .as("MapWriter.keys cannot have duplicated elements: {0}", keys)
+                .describedAs("MapWriter.keys cannot have duplicated elements: {0}", keys)
                 .doesNotHaveDuplicates();
         this.keys = keys;
     }
@@ -118,10 +118,10 @@ public class MapWriter extends AbstractExcelWriter<Map<String, Object>> {
 
         // Validates the number of ordered keys and their each element.
         Asserts.that(this.keys)
-                .as("MapWriter.keys is not equal to keyMap.orders.size (keys.size: {0}, keyMap.orders.size: {1})",
+                .describedAs("MapWriter.keys is not equal to keyMap.orders.size (keys.size: {0}, keyMap.orders.size: {1})",
                         this.keys.size(), orders.size())
-                .hasSizeOf(orders.size())
-                .as("MapWriter.keys is at variance with keyMap.orders.keySet (keys: {0}, keyMap.orders.keySet: {1})",
+                .hasSize(orders.size())
+                .describedAs("MapWriter.keys is at variance with keyMap.orders.keySet (keys: {0}, keyMap.orders.keySet: {1})",
                         this.keys, orders.keySet())
                 .containsOnly(orders.keySet().toArray(new String[0]));
 
@@ -146,7 +146,7 @@ public class MapWriter extends AbstractExcelWriter<Map<String, Object>> {
 
         // Validates header styles.
         Asserts.that(headerStyleConfigs)
-                .as("headerStyles.size must be 1 or equal to keys.size (headerStyles.size: {0}, keys.size: {1})",
+                .describedAs("headerStyles.size must be 1 or equal to keys.size (headerStyles.size: {0}, keys.size: {1})",
                         headerStyleConfigs.size(), this.keys.size())
                 .predicate(them -> them.size() == 1 || them.size() == this.keys.size());
 
@@ -163,7 +163,7 @@ public class MapWriter extends AbstractExcelWriter<Map<String, Object>> {
 
         // Validates body styles.
         Asserts.that(bodyStyleConfigs)
-                .as("bodyStyles.size must be 1 or equal to keys.size (bodyStyles.size: {0}, keys.size: {1})",
+                .describedAs("bodyStyles.size must be 1 or equal to keys.size (bodyStyles.size: {0}, keys.size: {1})",
                         bodyStyleConfigs.size(), this.keys.size())
                 .predicate(them -> them.size() == 1 || them.size() == this.keys.size());
 

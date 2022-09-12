@@ -63,9 +63,9 @@ public abstract class AbstractExcelWriter<T> implements ExcelWriter<T>, ExcelWri
     @Override
     public final ExcelWriter<T> options(ExcelWriteStrategy... strategies) {
         Asserts.that(strategies)
-                .as("strategies is not allowed to be null")
+                .describedAs("strategies is not allowed to be null")
                 .isNotNull()
-                .as("strategies cannot have null element: {0}", ArrayUtils.toString(strategies))
+                .describedAs("strategies cannot have null element: {0}", ArrayUtils.toString(strategies))
                 .doesNotContainNull();
         if (strategies.length == 0) return this;
 
@@ -96,13 +96,13 @@ public abstract class AbstractExcelWriter<T> implements ExcelWriter<T>, ExcelWri
         // Creates sheet names by this or implementation.
         List<String> sheetNames = createSheetNames(this.context, numOfSheets);
         Asserts.that(sheetNames)
-                .as("sheetNames is not allowed to be null or empty: {0}", sheetNames)
-                .isNotNull().hasElement()
-                .as("sheetNames is not allowed to contain null: {0}", sheetNames)
+                .describedAs("sheetNames is not allowed to be null or empty: {0}", sheetNames)
+                .isNotNull().isNotEmpty()
+                .describedAs("sheetNames is not allowed to contain null: {0}", sheetNames)
                 .doesNotContainNull()
-                .as("sheetNames cannot have duplicated elements: {0}", sheetNames)
+                .describedAs("sheetNames cannot have duplicated elements: {0}", sheetNames)
                 .doesNotHaveDuplicates()
-                .asSize().as("sheetNames.size is not equal to numOfSheets: (sheetName.size: {0}, numOfSheets: {1})",
+                .asSize().describedAs("sheetNames.size is not equal to numOfSheets: (sheetName.size: {0}, numOfSheets: {1})",
                 sheetNames.size(), numOfSheets)
                 .isEqualTo(numOfSheets);
 

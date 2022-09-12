@@ -36,9 +36,9 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
 
     public DefaultExcelReadConverter(ExcelTypeHandlerRegistry registry) {
         Asserts.that(registry)
-                .as("DefaultExcelReadConverter.registry is not allowed to be null")
+                .describedAs("DefaultExcelReadConverter.registry is not allowed to be null")
                 .isNotNull()
-                .as("DefaultExcelReadConverter.registry.allTypes is not allowed to be null")
+                .describedAs("DefaultExcelReadConverter.registry.allTypes is not allowed to be null")
                 .predicate(it -> it.getAllTypes() != null);
 
         this.registry = registry;
@@ -135,10 +135,10 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
          */
         public static String[] shallowSplit(String src, String delimiter) {
             Asserts.that(src)
-                    .as("src must be array-like string, but it isn't: '{0}'", src)
+                    .describedAs("src must be array-like string, but it isn't: '{0}'", src)
                     .isNotNull().startsWith("[").endsWith("]");
             Asserts.that(delimiter)
-                    .as("delimiter is not allowed to be null or empty: '{0}'", delimiter)
+                    .describedAs("delimiter is not allowed to be null or empty: '{0}'", delimiter)
                     .isNotNull().isNotEmpty();
 
             // Fast return.

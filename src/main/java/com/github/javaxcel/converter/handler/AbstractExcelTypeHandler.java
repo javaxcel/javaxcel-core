@@ -24,7 +24,7 @@ public abstract class AbstractExcelTypeHandler<T> implements ExcelTypeHandler<T>
 
     protected AbstractExcelTypeHandler(Class<T> type) {
         Asserts.that(type)
-                .as("AbstractExcelTypeHandler.type is not allowed to be null")
+                .describedAs("AbstractExcelTypeHandler.type is not allowed to be null")
                 .isNotNull();
 
         this.type = type;

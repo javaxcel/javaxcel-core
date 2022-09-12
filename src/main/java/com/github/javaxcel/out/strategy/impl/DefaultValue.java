@@ -34,7 +34,7 @@ public class DefaultValue extends AbstractExcelWriteStrategy {
      */
     public DefaultValue(String value) {
         Asserts.that(value)
-                .as("ExcelWriteStrategy.DefaultValue.value is not allowed to be null or blank")
+                .describedAs("ExcelWriteStrategy.DefaultValue.value is not allowed to be null or blank")
                 .isNotNull().hasText();
 
         this.value = value;

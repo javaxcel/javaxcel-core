@@ -31,13 +31,13 @@ public class HeaderNames extends AbstractExcelWriteStrategy {
 
     public HeaderNames(List<String> values) {
         Asserts.that(values)
-                .as("ExcelWriteStrategy.HeaderNames.values is not allowed to be null or empty: {0}", values)
-                .isNotNull().hasElement()
-                .as("ExcelWriteStrategy.HeaderNames.values cannot have null element: {0}", values)
+                .describedAs("ExcelWriteStrategy.HeaderNames.values is not allowed to be null or empty: {0}", values)
+                .isNotNull().isNotEmpty()
+                .describedAs("ExcelWriteStrategy.HeaderNames.values cannot have null element: {0}", values)
                 .doesNotContainNull()
-                .as("ExcelWriteStrategy.HeaderNames.values must be an implementation of java.util.List: {0}", values)
+                .describedAs("ExcelWriteStrategy.HeaderNames.values must be an implementation of java.util.List: {0}", values)
                 .isInstanceOf(List.class)
-                .as("ExcelWriteStrategy.HeaderNames.values cannot have duplicated elements: {0}", values)
+                .describedAs("ExcelWriteStrategy.HeaderNames.values cannot have duplicated elements: {0}", values)
                 .doesNotHaveDuplicates();
 
         this.values = Collections.unmodifiableList(values);

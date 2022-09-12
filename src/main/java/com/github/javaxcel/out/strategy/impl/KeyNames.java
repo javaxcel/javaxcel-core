@@ -91,13 +91,13 @@ public class KeyNames extends AbstractExcelWriteStrategy {
      */
     public KeyNames(List<String> keyOrders) {
         Asserts.that(keyOrders)
-                .as("keyOrders is not allowed to be null or empty: {0}", keyOrders)
-                .isNotNull().hasElement()
-                .as("keyOrders cannot have null element: {0}", keyOrders)
+                .describedAs("keyOrders is not allowed to be null or empty: {0}", keyOrders)
+                .isNotNull().isNotEmpty()
+                .describedAs("keyOrders cannot have null element: {0}", keyOrders)
                 .doesNotContainNull()
-                .as("keyOrders must be an implementation of java.util.List: {0}", keyOrders)
+                .describedAs("keyOrders must be an implementation of java.util.List: {0}", keyOrders)
                 .isInstanceOf(List.class)
-                .as("keyOrders cannot have duplicated elements: {0}", keyOrders)
+                .describedAs("keyOrders cannot have duplicated elements: {0}", keyOrders)
                 .doesNotHaveDuplicates();
 
         // Creates a map of which key is element in keys and value is column index.
@@ -174,26 +174,26 @@ public class KeyNames extends AbstractExcelWriteStrategy {
      */
     public KeyNames(List<String> keyOrders, List<String> newKeyNames) {
         Asserts.that(keyOrders)
-                .as("keyOrders is not allowed to be null or empty: {0}", keyOrders)
-                .isNotNull().hasElement()
-                .as("keyOrders cannot have null element: {0}", keyOrders)
+                .describedAs("keyOrders is not allowed to be null or empty: {0}", keyOrders)
+                .isNotNull().isNotEmpty()
+                .describedAs("keyOrders cannot have null element: {0}", keyOrders)
                 .doesNotContainNull()
-                .as("keyOrders must be an implementation of java.util.List: {0}", keyOrders)
+                .describedAs("keyOrders must be an implementation of java.util.List: {0}", keyOrders)
                 .isInstanceOf(List.class)
-                .as("keyOrders cannot have duplicated elements: {0}", keyOrders)
+                .describedAs("keyOrders cannot have duplicated elements: {0}", keyOrders)
                 .doesNotHaveDuplicates();
 
         Asserts.that(newKeyNames)
-                .as("newKeyNames is not allowed to be null or empty: {0}", newKeyNames)
-                .isNotNull().hasElement()
-                .as("newKeyNames.size is not equal to keyOrders.size (newKeyNames.size: {0}, keyOrders.size: {1})",
+                .describedAs("newKeyNames is not allowed to be null or empty: {0}", newKeyNames)
+                .isNotNull().isNotEmpty()
+                .describedAs("newKeyNames.size is not equal to keyOrders.size (newKeyNames.size: {0}, keyOrders.size: {1})",
                         newKeyNames.size(), keyOrders.size())
-                .isSameSize(keyOrders)
-                .as("newKeyNames cannot have null element: {0}", newKeyNames)
+                .hasSameSizeAs(keyOrders)
+                .describedAs("newKeyNames cannot have null element: {0}", newKeyNames)
                 .doesNotContainNull()
-                .as("newKeyNames must be an implementation of java.util.List: {0}", newKeyNames)
+                .describedAs("newKeyNames must be an implementation of java.util.List: {0}", newKeyNames)
                 .isInstanceOf(List.class)
-                .as("newKeyNames cannot have duplicated elements: {0}", newKeyNames)
+                .describedAs("newKeyNames cannot have duplicated elements: {0}", newKeyNames)
                 .doesNotHaveDuplicates();
 
         // Creates a map of which key is element in keys and value is column index.

@@ -60,7 +60,8 @@
         <!-- Dependency versions -->
         <spring-expression.version>5.3.18</spring-expression.version>
         <javaxcel-styler.version>0.2.2</javaxcel-styler.version>
-        <common-utils.version>0.9.0</common-utils.version>
+        <common-utils.version>0.11.0</common-utils.version>
+        <jsr305.version>3.0.2</jsr305.version>
 
         <!-- Test dependency versions -->
         <junit5.version>5.8.2</junit5.version>
@@ -118,6 +119,14 @@
             <groupId>com.github.javaxcel</groupId>
             <artifactId>javaxcel-styler</artifactId>
             <version>${javaxcel-styler.version}</version>
+        </dependency>
+
+        <!-- JSR-305 -->
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>${jsr305.version}</version>
+            <optional>true</optional>
         </dependency>
 
         <!--

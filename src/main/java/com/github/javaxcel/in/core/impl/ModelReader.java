@@ -111,10 +111,10 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
         // Finds the targeted fields.
         List<Field> fields = FieldUtils.getTargetedFields(type);
         Asserts.that(fields)
-                .as("ModelReader.fields cannot find the targeted fields in the class: {0}", type.getName())
-                .exception(desc -> new NoTargetedFieldException(type, desc))
-                .hasElement()
-                .as("ModelReader.fields cannot have null element: {0}", fields)
+                .describedAs("ModelReader.fields cannot find the targeted fields in the class: {0}", type.getName())
+                .thrownBy(desc -> new NoTargetedFieldException(type, desc))
+                .isNotEmpty()
+                .describedAs("ModelReader.fields cannot have null element: {0}", fields)
                 .doesNotContainNull();
 
         // To prevent exception from occurring on multi-threaded environment,

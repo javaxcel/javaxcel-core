@@ -67,15 +67,15 @@ public class ExcelWriteContext<T> {
 
     public ExcelWriteContext(Workbook workbook, Class<T> modelType, Class<? extends ExcelWriter<T>> writerType) {
         Asserts.that(workbook)
-                .as("ExcelWriteContext.workbook is not allowed to be null")
+                .describedAs("ExcelWriteContext.workbook is not allowed to be null")
                 .isNotNull();
         Asserts.that(modelType)
-                .as("ExcelWriteContext.modelType is not allowed to be null")
+                .describedAs("ExcelWriteContext.modelType is not allowed to be null")
                 .isNotNull();
         Asserts.that(writerType)
-                .as("ExcelWriteContext.writerType is not allowed to be null")
+                .describedAs("ExcelWriteContext.writerType is not allowed to be null")
                 .isNotNull()
-                .as("ExcelWriteContext.writerType is type of implementation of ExcelWriter, but it isn't : '{0}'", writerType.getName())
+                .describedAs("ExcelWriteContext.writerType is type of implementation of ExcelWriter, but it isn't : '{0}'", writerType.getName())
                 .predicate(ExcelWriter.class::isAssignableFrom);
 
         this.workbook = workbook;
@@ -105,9 +105,9 @@ public class ExcelWriteContext<T> {
 
     public void setStrategyMap(Map<Class<? extends ExcelWriteStrategy>, ExcelWriteStrategy> strategyMap) {
         Asserts.that(strategyMap)
-                .as("ExcelWriteContext.strategyMap is not allowed to be null")
+                .describedAs("ExcelWriteContext.strategyMap is not allowed to be null")
                 .isNotNull()
-                .as("ExcelWriteContext.strategyMap.values is not allowed to contain null: {0}", strategyMap)
+                .describedAs("ExcelWriteContext.strategyMap.values is not allowed to contain null: {0}", strategyMap)
                 .asValues().doesNotContainNull();
 
         this.strategyMap = strategyMap;
@@ -120,7 +120,7 @@ public class ExcelWriteContext<T> {
 
     public void setList(List<T> list) {
         Asserts.that(list)
-                .as("ExcelWriteContext.list is not allowed to be null")
+                .describedAs("ExcelWriteContext.list is not allowed to be null")
                 .isNotNull();
 
         this.list = list;
@@ -133,7 +133,7 @@ public class ExcelWriteContext<T> {
 
     public void setChunk(List<T> chunk) {
         Asserts.that(chunk)
-                .as("ExcelWriteContext.chunk is not allowed to be null")
+                .describedAs("ExcelWriteContext.chunk is not allowed to be null")
                 .isNotNull();
 
         this.chunk = chunk;
@@ -146,7 +146,7 @@ public class ExcelWriteContext<T> {
 
     public void setSheet(Sheet sheet) {
         Asserts.that(chunk)
-                .as("ExcelWriteContext.sheet is not allowed to be null")
+                .describedAs("ExcelWriteContext.sheet is not allowed to be null")
                 .isNotNull();
 
         this.sheet = sheet;
@@ -158,8 +158,8 @@ public class ExcelWriteContext<T> {
 
     public void setHeaderStyles(List<CellStyle> headerStyles) {
         Asserts.that(headerStyles)
-                .as("ExcelWriteContext.headerStyles is not allowed to be null or empty: {0}", headerStyles)
-                .isNotNull().hasElement();
+                .describedAs("ExcelWriteContext.headerStyles is not allowed to be null or empty: {0}", headerStyles)
+                .isNotNull().isNotEmpty();
 
         this.headerStyles = headerStyles;
     }
@@ -170,8 +170,8 @@ public class ExcelWriteContext<T> {
 
     public void setBodyStyles(List<CellStyle> bodyStyles) {
         Asserts.that(bodyStyles)
-                .as("ExcelWriteContext.bodyStyles is not allowed to be null or empty: {0}", bodyStyles)
-                .isNotNull().hasElement();
+                .describedAs("ExcelWriteContext.bodyStyles is not allowed to be null or empty: {0}", bodyStyles)
+                .isNotNull().isNotEmpty();
 
         this.bodyStyles = bodyStyles;
     }
