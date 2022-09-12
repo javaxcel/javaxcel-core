@@ -23,8 +23,7 @@ import java.util.Set;
 /**
  * Registry of type handlers
  *
- * <p> This only allows the registration of type handler by
- * {@link #add(Class, ExcelTypeHandler)} and {@link #addAll(ExcelTypeHandlerRegistry)}.
+ * <p> This only allows the addition of handler, not modification and deletion of handler.
  */
 public interface ExcelTypeHandlerRegistry {
 
@@ -66,18 +65,18 @@ public interface ExcelTypeHandlerRegistry {
      * @param handler type handler
      * @param <T>     type
      * @return whether type has never been added this registry
-     * @throws IllegalArgumentException if a pair of type and handler is unmatched
+     * @throws IllegalStateException if a pair of type and handler is unmatched
      */
     <T> boolean add(Class<T> type, ExcelTypeHandler<T> handler);
 
     /**
-     * Adds all the matched types and handlers.
+     * Adds all the handlers in registry.
      *
-     * <p> If the type is already added, its handler will be overridden as new handler.
+     * <p> If the type of handler is already added, its handler will be overridden as new handler.
      *
      * @param registry registry of type handler
      * @return whether all types have never been added this registry
-     * @throws IllegalArgumentException if any pair of type and handler is unmatched
+     * @throws IllegalStateException if registry has any handler which has unmatched type with itself
      */
     boolean addAll(ExcelTypeHandlerRegistry registry);
 
