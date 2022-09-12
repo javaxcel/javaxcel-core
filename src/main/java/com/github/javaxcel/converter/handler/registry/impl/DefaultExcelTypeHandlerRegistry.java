@@ -42,66 +42,50 @@ import com.github.javaxcel.converter.handler.impl.URLTypeHandler;
 import com.github.javaxcel.converter.handler.impl.UUIDTypeHandler;
 import com.github.javaxcel.converter.handler.impl.ZonedDateTimeTypeHandler;
 
-import java.io.File;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.net.URI;
-import java.net.URL;
-import java.nio.file.Path;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.OffsetTime;
-import java.time.ZonedDateTime;
-import java.util.Date;
-import java.util.Locale;
-import java.util.UUID;
-
 public class DefaultExcelTypeHandlerRegistry extends ExcelTypeHandlerRegistryImpl {
 
     public DefaultExcelTypeHandlerRegistry() {
         // primitive
-        add(boolean.class, new BooleanTypeHandler(true));
-        add(byte.class, new ByteTypeHandler(true));
-        add(short.class, new ShortTypeHandler(true));
-        add(char.class, new CharacterTypeHandler(true));
-        add(int.class, new IntegerTypeHandler(true));
-        add(long.class, new LongTypeHandler(true));
-        add(float.class, new FloatTypeHandler(true));
-        add(double.class, new DoubleTypeHandler(true));
+        add(new BooleanTypeHandler(true));
+        add(new ByteTypeHandler(true));
+        add(new ShortTypeHandler(true));
+        add(new CharacterTypeHandler(true));
+        add(new IntegerTypeHandler(true));
+        add(new LongTypeHandler(true));
+        add(new FloatTypeHandler(true));
+        add(new DoubleTypeHandler(true));
         // java.lang
-        add(Boolean.class, new BooleanTypeHandler());
-        add(Byte.class, new ByteTypeHandler());
-        add(Short.class, new ShortTypeHandler());
-        add(Character.class, new CharacterTypeHandler());
-        add(Integer.class, new IntegerTypeHandler());
-        add(Long.class, new LongTypeHandler());
-        add(Float.class, new FloatTypeHandler());
-        add(Double.class, new DoubleTypeHandler());
-        add(String.class, new StringTypeHandler());
-        add(Enum.class, new EnumTypeHandler());
+        add(new BooleanTypeHandler());
+        add(new ByteTypeHandler());
+        add(new ShortTypeHandler());
+        add(new CharacterTypeHandler());
+        add(new IntegerTypeHandler());
+        add(new LongTypeHandler());
+        add(new FloatTypeHandler());
+        add(new DoubleTypeHandler());
+        add(new StringTypeHandler());
+        add(new EnumTypeHandler());
         // java.math
-        add(BigInteger.class, new BigIntegerTypeHandler());
-        add(BigDecimal.class, new BigDecimalTypeHandler());
+        add(new BigIntegerTypeHandler());
+        add(new BigDecimalTypeHandler());
         // java.util
-        add(Date.class, new DateTypeHandler());
-        add(UUID.class, new UUIDTypeHandler());
-        add(Locale.class, new LocaleTypeHandler());
+        add(new DateTypeHandler());
+        add(new UUIDTypeHandler());
+        add(new LocaleTypeHandler());
         // java.time
-        add(LocalTime.class, new LocalTimeTypeHandler());
-        add(LocalDate.class, new LocalDateTypeHandler());
-        add(LocalDateTime.class, new LocalDateTimeTypeHandler());
-        add(ZonedDateTime.class, new ZonedDateTimeTypeHandler());
-        add(OffsetTime.class, new OffsetTimeTypeHandler());
-        add(OffsetDateTime.class, new OffsetDateTimeTypeHandler());
+        add(new LocalTimeTypeHandler());
+        add(new LocalDateTypeHandler());
+        add(new LocalDateTimeTypeHandler());
+        add(new ZonedDateTimeTypeHandler());
+        add(new OffsetTimeTypeHandler());
+        add(new OffsetDateTimeTypeHandler());
         // java.net
-        add(URI.class, new URITypeHandler());
-        add(URL.class, new URLTypeHandler());
+        add(new URITypeHandler());
+        add(new URLTypeHandler());
         // java.io
-        add(File.class, new FileTypeHandler());
+        add(new FileTypeHandler());
         // java.nio.file
-        add(Path.class, new PathTypeHandler());
+        add(new PathTypeHandler());
     }
 
 }

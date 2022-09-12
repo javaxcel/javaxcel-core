@@ -41,6 +41,15 @@ public class ExcelTypeHandlerRegistryImpl implements ExcelTypeHandlerRegistry {
     }
 
     @Override
+    public <T> boolean add(ExcelTypeHandler<T> handler) {
+        Asserts.that(handler)
+                .describedAs("ExcelTypeHandlerRegistry doesn't allow the addition of null as a handler.")
+                .isNotNull();
+
+        return add(handler.getType(), handler);
+    }
+
+    @Override
     public <T> boolean add(Class<T> type, ExcelTypeHandler<T> handler) {
         Asserts.that(handler)
                 .isNotNull()

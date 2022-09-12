@@ -46,7 +46,19 @@ public interface ExcelTypeHandlerRegistry {
     Set<Class<?>> getAllTypes();
 
     /**
-     * Adds the matched type and handler as a pair.
+     * Adds a handler.
+     *
+     * <p> If the type is already added, its handler will be overridden as new handler.
+     *
+     * @param handler type handler
+     * @param <T>     type
+     * @return whether type has never been added this registry
+     * @throws IllegalStateException if handler and its handled type are unmatched
+     */
+    <T> boolean add(ExcelTypeHandler<T> handler);
+
+    /**
+     * Adds a handler and its matched type as a pair.
      *
      * <p> If the type is already added, its handler will be overridden as new handler.
      *
