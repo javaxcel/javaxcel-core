@@ -53,12 +53,16 @@ public class ExcelModelConstructorResolver<T> extends AbstractExcelModelExecutab
 
     protected Constructor<T> elect(List<Constructor<T>> candidates) {
         // Sole candidate.
-        if (candidates.size() == 1) return candidates.get(0);
+        if (candidates.size() == 1) {
+            return candidates.get(0);
+        }
 
         List<Constructor<T>> elected = new ArrayList<>();
         for (Constructor<T> candidate : candidates) {
             ExcelModelCreator annotation = candidate.getAnnotation(ExcelModelCreator.class);
-            if (annotation == null) continue;
+            if (annotation == null) {
+                continue;
+            }
 
             elected.add(candidate);
         }

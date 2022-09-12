@@ -47,9 +47,11 @@ public class ExcelModelMethodResolver<T> extends AbstractExcelModelExecutableRes
     protected List<Method> getCandidates() {
         List<Method> candidates = new ArrayList<>();
         for (Method candidate : super.modelType.getMethods()) {
-            if (!candidate.isAnnotationPresent(ExcelModelCreator.class)) continue;
+            if (!candidate.isAnnotationPresent(ExcelModelCreator.class)) {
+                continue;
+            }
 
-            // Are candidate's modifiers static?
+            // Are modifiers of candidate static?
             if (!Modifier.isStatic(candidate.getModifiers())) {
                 throw new InvalidExcelModelCreatorException("@ExcelModelCreator is not allowed to be annotated " +
                         "on instance method; Remove the annotation from the method[%s]", candidate);

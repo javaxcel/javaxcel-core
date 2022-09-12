@@ -70,7 +70,9 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
             method = new ExcelModelMethodResolver<>(type).resolve();
         } catch (JavaxcelException e) {
             // If method to be resolved doesn't exist, tries to resolve constructor.
-            if (!(e instanceof NoResolvedExcelModelCreatorException)) throw e;
+            if (!(e instanceof NoResolvedExcelModelCreatorException)) {
+                throw e;
+            }
         }
 
         // Resolves constructor to prevent @ExcelModelCreator from being annotated
@@ -80,7 +82,9 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
             constructor = new ExcelModelConstructorResolver<>(type).resolve();
         } catch (JavaxcelException e) {
             // There is no executable to be resolved.
-            if (method == null) throw e;
+            if (method == null) {
+                throw e;
+            }
         }
 
         Executable executable;
@@ -132,7 +136,9 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
 
     protected void verify(E candidate) {
         // Does candidate have no parameter?
-        if (candidate.getParameterCount() == 0) return;
+        if (candidate.getParameterCount() == 0) {
+            return;
+        }
 
         List<ResolvedParameter> resolvedParams = new ExcelModelExecutableParameterNameResolver(candidate).resolve();
         List<String> paramNames = resolvedParams.stream().map(ResolvedParameter::getName).collect(toList());

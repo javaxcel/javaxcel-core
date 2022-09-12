@@ -51,9 +51,14 @@ public class ExcelTypeHandlerRegistryImpl implements ExcelTypeHandlerRegistry {
 
     @Override
     public <T> boolean add(Class<T> type, ExcelTypeHandler<T> handler) {
+        Asserts.that(type)
+                .describedAs("ExcelTypeHandlerRegistry doesn't allow the addition of null as a type. (type: '{0}', handler: '{1}')", type, handler)
+                .isNotNull();
         Asserts.that(handler)
+                .describedAs("ExcelTypeHandlerRegistry doesn't allow the addition of null as a handler. (type: '{0}', handler: '{1}')", type, handler)
                 .isNotNull()
-                .describedAs("ExcelTypeHandlerRegistry doesn't allow the addition of unmatched type and handler as a pair. (type: '{0}', handler: '{1}')", type, handler)
+                .describedAs("ExcelTypeHandlerRegistry doesn't allow the addition of handler with unmatched type as a pair. (type: '{0}', handler: '{1}')", type, handler)
+                .thrownBy(IllegalStateException::new)
                 .predicate(it -> it.getType() == type);
 
         boolean added = !this.handlerMap.containsKey(type);
