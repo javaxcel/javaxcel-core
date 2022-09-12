@@ -68,7 +68,7 @@
         <assertj.version>3.23.1</assertj.version>
         <spock.version>2.2-groovy-3.0</spock.version>
         <lombok.version>1.18.24</lombok.version>
-        <byte-buddy.version>1.12.12</byte-buddy.version>
+        <byte-buddy.version>1.12.16</byte-buddy.version>
         <easy-random.version>4.3.0</easy-random.version>
         <excel-streaming-reader.version>3.6.1</excel-streaming-reader.version>
     </properties>
