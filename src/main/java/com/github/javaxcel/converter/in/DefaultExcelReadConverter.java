@@ -22,6 +22,7 @@ import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
 import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.ClassUtils;
 import io.github.imsejin.common.util.StringUtils;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Array;
@@ -67,7 +68,9 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
         }
 
         // Supports multi-dimensional array type.
-        if (type.isArray()) return handleArray(field, type, value);
+        if (type.isArray()) {
+            return handleArray(field, type, value);
+        }
 
         return handleNonArray(field, type, value);
     }
@@ -103,10 +106,11 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
 
         if (handler == null) {
             // When there is no handler for the type.
-            if (!ClassUtils.isEnumOrEnumConstant(type)) return ClassUtils.initialValueOf(type);
+            if (!ClassUtils.isEnumOrEnumConstant(type)) {
+                return ClassUtils.initialValueOf(type);
+            }
 
-            // When there is no handler for the specific enum type,
-            // use EnumTypeHandler as default.
+            // When there is no handler for the specific enum type, use EnumTypeHandler as default.
             handler = this.registry.getHandler(Enum.class);
         }
 
@@ -122,6 +126,7 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
     // -------------------------------------------------------------------------------------------------
 
     // To access at test source, modifier should be package-private.
+    @VisibleForTesting
     static class Utils {
 
         private static final String[] EMPTY_STRING_ARRAY = new String[0];

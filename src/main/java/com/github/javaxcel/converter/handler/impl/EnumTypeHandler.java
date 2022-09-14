@@ -38,14 +38,16 @@ public class EnumTypeHandler extends AbstractExcelTypeHandler<Enum> {
     public Enum read(String value, Object... args) {
         // Resolve field from arguments.
         Field field = FieldUtils.resolveFirst(Field.class, args);
-        if (field == null) return null;
+        if (field == null) {
+            return null;
+        }
 
         Class<? extends Enum> enumType = (Class<? extends Enum>) field.getType();
 
         try {
             return Enum.valueOf(enumType, value);
         } catch (IllegalArgumentException e) {
-            // When the specified enum type has no constant with the specified name.
+            // When the specified enum type has no constant matched the given name.
             return null;
         }
     }
