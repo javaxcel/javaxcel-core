@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="./src/main/resources/javaxcel-core-logo.png" alt="Javaxcel Core" width="20%">
+    <img src="./asset/javaxcel-core-logo.png" alt="Javaxcel Core" width="20%">
 </p>
 
 <h1 align="center">Javaxcel Core</h1>
