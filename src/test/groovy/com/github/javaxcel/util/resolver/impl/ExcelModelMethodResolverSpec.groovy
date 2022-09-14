@@ -74,7 +74,7 @@ class ExcelModelMethodResolverSpec extends Specification {
         then:
         def e = thrown excecptionType
         e.message.matches message
-        println """$modelType.simpleName: $excecptionType.simpleName("$e.message")"""
+//        println """$modelType.simpleName: $excecptionType.simpleName("$e.message")"""
 
         where:
         modelType                             || excecptionType                       | message

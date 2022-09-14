@@ -80,7 +80,7 @@ class ExcelTypeHandlerSpec extends Specification {
         new LocaleTypeHandler()         || Locale.ENGLISH                                                               | "en"
         new LocaleTypeHandler()         || Locale.US                                                                    | "en_US"
         new LocaleTypeHandler()         || new Locale("lang4", "cntry", "Var")                                          | "lang4_CNTRY_Var"
-        new LocaleTypeHandler()         || new Locale("lang4", "", "Var")                                               | "lang4__Var"
+        new LocaleTypeHandler()         || new Locale("LANG4", "", "Var")                                               | "lang4__Var"
         new LocaleTypeHandler()         || new Locale("", "cntry", "Var")                                               | "_CNTRY_Var"
         new LocaleTypeHandler()         || new Locale("", "", "Var")                                                    | "__Var"
         new LocaleTypeHandler()         || new Locale("", "cntry", "")                                                  | "_CNTRY"
