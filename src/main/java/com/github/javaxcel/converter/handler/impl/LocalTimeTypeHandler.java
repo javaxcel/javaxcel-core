@@ -16,50 +16,20 @@
 
 package com.github.javaxcel.converter.handler.impl;
 
-import com.github.javaxcel.annotation.ExcelDateTimeFormat;
-import com.github.javaxcel.converter.handler.AbstractExcelTypeHandler;
-import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.constant.DateType;
-import io.github.imsejin.common.util.StringUtils;
 
-import java.lang.reflect.Field;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalQuery;
 
-public class LocalTimeTypeHandler extends AbstractExcelTypeHandler<LocalTime> {
-
-    private static final DateTimeFormatter DEFAULT_FORMATTER = DateType.F_TIME.getFormatter();
+public class LocalTimeTypeHandler extends AbstractTemporalAccessorTypeHandler<LocalTime> {
 
     public LocalTimeTypeHandler() {
-        super(LocalTime.class);
+        super(LocalTime.class, DateType.F_TIME.getFormatter());
     }
 
     @Override
-    protected String writeInternal(LocalTime value, Object... args) {
-        // Resolve field from arguments.
-        Field field = FieldUtils.resolveFirst(Field.class, args);
-        if (field == null) return DEFAULT_FORMATTER.format(value);
-
-        ExcelDateTimeFormat annotation = field.getAnnotation(ExcelDateTimeFormat.class);
-        if (annotation == null || StringUtils.isNullOrEmpty(annotation.pattern())) {
-            return DEFAULT_FORMATTER.format(value);
-        } else {
-            return DateTimeFormatter.ofPattern(annotation.pattern()).format(value);
-        }
-    }
-
-    @Override
-    public LocalTime read(String value, Object... args) {
-        // Resolve field from arguments.
-        Field field = FieldUtils.resolveFirst(Field.class, args);
-        if (field == null) return LocalTime.parse(value, DEFAULT_FORMATTER);
-
-        ExcelDateTimeFormat annotation = field.getAnnotation(ExcelDateTimeFormat.class);
-        if (annotation == null || StringUtils.isNullOrEmpty(annotation.pattern())) {
-            return LocalTime.parse(value, DEFAULT_FORMATTER);
-        } else {
-            return LocalTime.parse(value, DateTimeFormatter.ofPattern(annotation.pattern()));
-        }
+    protected TemporalQuery<LocalTime> getTemporalQuery() {
+        return LocalTime::from;
     }
 
 }
