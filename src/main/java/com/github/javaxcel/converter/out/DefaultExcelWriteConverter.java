@@ -47,12 +47,16 @@ public class DefaultExcelWriteConverter implements ExcelWriteConverter {
     @Override
     public String convert(Object model, Field field) {
         Object value = ReflectionUtils.getFieldValue(model, field);
-        if (value == null) return null;
+        if (value == null) {
+            return null;
+        }
 
         Class<?> type = field.getType();
 
         // Supports multi-dimensional array type.
-        if (type.isArray()) return handleArray(field, value);
+        if (type.isArray()) {
+            return handleArray(field, value);
+        }
 
         return handleNonArray(field, type, value);
     }
@@ -60,7 +64,9 @@ public class DefaultExcelWriteConverter implements ExcelWriteConverter {
     private String handleArray(Field field, Object value) {
         // Fast return.
         int length = Array.getLength(value);
-        if (length == 0) return "[]";
+        if (length == 0) {
+            return "[]";
+        }
 
         StringBuilder sb = new StringBuilder("[");
 
@@ -82,11 +88,15 @@ public class DefaultExcelWriteConverter implements ExcelWriteConverter {
                 }
 
                 // Considers null as empty string.
-                if (string != null) sb.append(string);
+                if (string != null) {
+                    sb.append(string);
+                }
             }
 
             // Keeps element separator when element is null.
-            if (i < length - 1) sb.append(", ");
+            if (i < length - 1) {
+                sb.append(", ");
+            }
         }
 
         return sb.append(']').toString();
@@ -97,7 +107,9 @@ public class DefaultExcelWriteConverter implements ExcelWriteConverter {
 
         if (handler == null) {
             // When there is no handler for the type, just stringifies value.
-            if (!ClassUtils.isEnumOrEnumConstant(type)) return value.toString();
+            if (!ClassUtils.isEnumOrEnumConstant(type)) {
+                return value.toString();
+            }
 
             // When there is no handler for the specific enum type,
             // use EnumTypeHandler as default.
