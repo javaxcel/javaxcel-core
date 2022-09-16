@@ -67,12 +67,15 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
             }
         }
 
-        // Supports multi-dimensional array type.
         if (type.isArray()) {
+            // Supports multi-dimensional array type.
             return handleArray(field, type, value);
+        } else if (Iterable.class.isAssignableFrom(type)) {
+            // Supports nested iterable type.
+            return handleIterable(field, type, value);
+        } else {
+            return handleNonArray(field, type, value);
         }
-
-        return handleNonArray(field, type, value);
     }
 
     private Object handleArray(Field field, Class<?> type, String value) {
@@ -89,6 +92,8 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
             Object element;
             if (componentType.isArray()) {
                 element = string.isEmpty() ? null : handleArray(field, componentType, string);
+            } else if (Iterable.class.isAssignableFrom(componentType)) {
+                element = string.isEmpty() ? null : handleIterable(field, componentType, string);
             } else {
                 // Allows empty string to handler for non-array type.
                 element = handleNonArray(field, componentType, string);
@@ -98,6 +103,31 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
         }
 
         return array;
+    }
+
+    private Iterable<?> handleIterable(Field field, Class<?> type, String value) {
+        Class<?> componentType = type.getComponentType();
+        String[] strings = Utils.shallowSplit(value, ", ");
+
+        List<Object> list = new ArrayList<>(strings.length);
+
+        for (int i = 0; i < strings.length; i++) {
+            String string = strings[i];
+
+            Object element;
+            if (componentType.isArray()) {
+                element = string.isEmpty() ? null : handleArray(field, componentType, string);
+            } else if (Iterable.class.isAssignableFrom(componentType)) {
+                element = string.isEmpty() ? null : handleIterable(field, componentType, string);
+            } else {
+                // Allows empty string to handler for non-array type.
+                element = handleNonArray(field, componentType, string);
+            }
+
+            list.add(element);
+        }
+
+        return list;
     }
 
     private Object handleNonArray(Field field, Class<?> type, String value) {

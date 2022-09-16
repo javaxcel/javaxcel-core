@@ -25,6 +25,7 @@ import io.github.imsejin.common.util.ReflectionUtils;
 import javax.annotation.Nullable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.util.Iterator;
 
 public class DefaultExcelWriteConverter implements ExcelWriteConverter {
 
@@ -53,12 +54,16 @@ public class DefaultExcelWriteConverter implements ExcelWriteConverter {
 
         Class<?> type = field.getType();
 
-        // Supports multi-dimensional array type.
         if (type.isArray()) {
+            // Supports multi-dimensional array type.
             return handleArray(field, value);
+        } else if (Iterable.class.isAssignableFrom(type)) {
+            // Supports nested iterable type.
+            return handleIterable(field, (Iterable<?>) value);
+        } else {
+            return handleNonArray(field, type, value);
         }
 
-        return handleNonArray(field, type, value);
     }
 
     private String handleArray(Field field, Object value) {
@@ -83,6 +88,8 @@ public class DefaultExcelWriteConverter implements ExcelWriteConverter {
                 String string;
                 if (elementType.isArray()) {
                     string = handleArray(field, element);
+                } else if (Iterable.class.isAssignableFrom(elementType)) {
+                    string = handleIterable(field, (Iterable<?>) element);
                 } else {
                     string = handleNonArray(field, elementType, element);
                 }
@@ -95,6 +102,47 @@ public class DefaultExcelWriteConverter implements ExcelWriteConverter {
 
             // Keeps element separator when element is null.
             if (i < length - 1) {
+                sb.append(", ");
+            }
+        }
+
+        return sb.append(']').toString();
+    }
+
+    private String handleIterable(Field field, Iterable<?> value) {
+        // Fast return.
+        Iterator<?> iterator = value.iterator();
+        if (!iterator.hasNext()) {
+            return "[]";
+        }
+
+        StringBuilder sb = new StringBuilder("[");
+
+        while (iterator.hasNext()) {
+            Object element = iterator.next();
+
+            if (element != null) {
+                // Resolves type from each element, not from component type.
+                // Because one dimensional Object array can have array instance as an element.
+                Class<?> elementType = element.getClass();
+
+                String string;
+                if (elementType.isArray()) {
+                    string = handleArray(field, element);
+                } else if (Iterable.class.isAssignableFrom(elementType)) {
+                    string = handleIterable(field, (Iterable<?>) element);
+                } else {
+                    string = handleNonArray(field, elementType, element);
+                }
+
+                // Considers null as empty string.
+                if (string != null) {
+                    sb.append(string);
+                }
+            }
+
+            // Keeps element separator when element is null.
+            if (iterator.hasNext()) {
                 sb.append(", ");
             }
         }
