@@ -147,7 +147,7 @@ public final class FieldUtils {
     @SuppressWarnings("unchecked")
     public static <T> T resolveFirst(Class<T> type, Object... arguments) {
         for (Object argument : arguments) {
-            if (argument != null && type.isAssignableFrom(argument.getClass())) {
+            if (type.isInstance(argument)) {
                 return (T) argument;
             }
         }
@@ -161,7 +161,7 @@ public final class FieldUtils {
         for (int i = arguments.length - 1; i >= 0; i--) {
             Object argument = arguments[i];
 
-            if (argument != null && type.isAssignableFrom(argument.getClass())) {
+            if (type.isInstance(argument)) {
                 return (T) argument;
             }
         }
