@@ -18,6 +18,7 @@ package com.github.javaxcel.converter.in;
 
 import com.github.javaxcel.annotation.ExcelReadExpression;
 import io.github.imsejin.common.util.CollectionUtils;
+import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -91,8 +92,8 @@ public class ExpressionExcelReadConverter implements ExcelReadConverter {
         //
         // Do not set root object to prevent user from assigning value
         // to the field of model with the way we don't intend.
-        StandardEvaluationContext context = new StandardEvaluationContext();
-        context.setVariables(variables);
+        EvaluationContext context = new StandardEvaluationContext();
+        variables.forEach(context::setVariable);
 
         return expression.getValue(context, field.getType());
     }

@@ -19,6 +19,7 @@ package com.github.javaxcel.converter.out;
 import com.github.javaxcel.annotation.ExcelWriteExpression;
 import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.util.CollectionUtils;
+import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -41,7 +42,7 @@ public class ExpressionExcelWriteConverter implements ExcelWriteConverter {
      *
      * @see StandardEvaluationContext#setRootObject(Object)
      */
-    private final StandardEvaluationContext context = new StandardEvaluationContext();
+    private final EvaluationContext context = new StandardEvaluationContext();
 
     private final List<Field> fields;
 
@@ -133,7 +134,7 @@ public class ExpressionExcelWriteConverter implements ExcelWriteConverter {
 
         // Enables to use value of the field as "#FIELD_NAME" in 'ExcelWriteExpression'.
         Map<String, Object> variables = FieldUtils.toMap(model, fields);
-        this.context.setVariables(variables);
+        variables.forEach(this.context::setVariable);
 
         return expression.getValue(this.context, String.class);
     }
