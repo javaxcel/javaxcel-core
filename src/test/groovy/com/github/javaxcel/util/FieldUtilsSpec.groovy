@@ -21,24 +21,19 @@ import com.github.javaxcel.annotation.ExcelModel
 import io.github.imsejin.common.util.ReflectionUtils
 import spock.lang.Specification
 
-import java.lang.reflect.Field
 import java.util.function.Function
 
-import static java.util.stream.Collectors.toList
 import static java.util.stream.Collectors.toMap
 
 class FieldUtilsSpec extends Specification {
 
     def "Gets the targeted fields from the class"() {
-        given:
-        def toNames = { List<Field> fields -> fields.stream().map({ it.name }).collect toList() }
-
         when:
         def fields = FieldUtils.getTargetedFields type
 
         then:
         fields.size() == expected.size()
-        toNames(fields) == expected
+        fields*.name == expected
 
         where:
         type                       | expected
@@ -51,7 +46,7 @@ class FieldUtilsSpec extends Specification {
         ExplicitIncludeSuperSample | ["f0"]
     }
 
-    def "Converts the fields to their names"() {
+    def "Converts the fields into their names"() {
         given:
         def fields = FieldUtils.getTargetedFields type
 
@@ -69,7 +64,7 @@ class FieldUtilsSpec extends Specification {
         ExplicitSample    | ["f0"]
     }
 
-    def "Converts java object to map"() {
+    def "Converts java object into map"() {
         given:
         def model = ReflectionUtils.instantiate type
         def fields = FieldUtils.getTargetedFields type
