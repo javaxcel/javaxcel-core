@@ -21,6 +21,9 @@ import com.github.javaxcel.annotation.ExcelModel
 import io.github.imsejin.common.util.ReflectionUtils
 import spock.lang.Specification
 
+import javax.xml.bind.annotation.XmlAccessType
+import java.nio.file.AccessMode
+import java.util.concurrent.TimeUnit
 import java.util.function.Function
 
 import static java.util.stream.Collectors.toMap
@@ -99,12 +102,14 @@ class FieldUtilsSpec extends Specification {
         resolution == expected
 
         where:
-        type   | arguments                          || expected
-        Object | []                                 || null
-        Class  | [0, 1, 2, 3]                       || null
-        Object | [null, 1, 2, 3]                    || 1
-        Number | [new Object(), "alpha", 0.15, 10]  || 0.15
-        String | [2, null, "beta", String, "gamma"] || "beta"
+        type       | arguments                                                  || expected
+        Object     | []                                                         || null
+        Class      | [0, 1, 2, 3]                                               || null
+        Object     | [null, 1, 2, 3]                                            || 1
+        Number     | [new Object(), "alpha", 0.15, 10]                          || 0.15
+        String     | [2, null, "beta", String, "gamma"]                         || "beta"
+        Enum       | [AccessMode.READ, TimeUnit.DAYS, XmlAccessType.FIELD]      || AccessMode.READ
+        Comparable | [0, "delta", 128L, 3.14D, BigInteger.ZERO, BigDecimal.TEN] || 0
     }
 
     def "Resolves the last matched object in arguments"() {
@@ -115,12 +120,14 @@ class FieldUtilsSpec extends Specification {
         resolution == expected
 
         where:
-        type   | arguments                          || expected
-        Object | []                                 || null
-        Class  | [0, 1, 2, 3]                       || null
-        Object | [null, 1, 2, 3]                    || 3
-        Number | [new Object(), "alpha", 0.15, 10]  || 10
-        String | [2, null, "beta", String, "gamma"] || "gamma"
+        type       | arguments                                                  || expected
+        Object     | []                                                         || null
+        Class      | [0, 1, 2, 3]                                               || null
+        Object     | [null, 1, 2, 3]                                            || 3
+        Number     | [new Object(), "alpha", 0.15, 10]                          || 10
+        String     | [2, null, "beta", String, "gamma"]                         || "gamma"
+        Enum       | [AccessMode.READ, TimeUnit.DAYS, XmlAccessType.FIELD]      || XmlAccessType.FIELD
+        Comparable | [0, "delta", 128L, 3.14D, BigInteger.ZERO, BigDecimal.TEN] || BigDecimal.TEN
     }
 
     // -------------------------------------------------------------------------------------------------
