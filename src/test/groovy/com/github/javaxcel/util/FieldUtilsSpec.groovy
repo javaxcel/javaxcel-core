@@ -91,6 +91,38 @@ class FieldUtilsSpec extends Specification {
         ExplicitIncludeSuperSample | 0      | "zeta"    || [f0: f0]
     }
 
+    def "Resolves the first matched object in arguments"() {
+        when:
+        def resolution = FieldUtils.resolveFirst(type, arguments as Object[])
+
+        then:
+        resolution == expected
+
+        where:
+        type   | arguments                          || expected
+        Object | []                                 || null
+        Class  | [0, 1, 2, 3]                       || null
+        Object | [null, 1, 2, 3]                    || 1
+        Number | [new Object(), "alpha", 0.15, 10]  || 0.15
+        String | [2, null, "beta", String, "gamma"] || "beta"
+    }
+
+    def "Resolves the last matched object in arguments"() {
+        when:
+        def resolution = FieldUtils.resolveLast(type, arguments as Object[])
+
+        then:
+        resolution == expected
+
+        where:
+        type   | arguments                          || expected
+        Object | []                                 || null
+        Class  | [0, 1, 2, 3]                       || null
+        Object | [null, 1, 2, 3]                    || 3
+        Number | [new Object(), "alpha", 0.15, 10]  || 10
+        String | [2, null, "beta", String, "gamma"] || "gamma"
+    }
+
     // -------------------------------------------------------------------------------------------------
 
     private static class NoFieldSample {
