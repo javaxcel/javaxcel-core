@@ -27,6 +27,7 @@ import io.github.imsejin.common.util.StringUtils;
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -89,6 +90,44 @@ public final class FieldUtils {
         }
 
         return stream.filter(filter).collect(toList());
+    }
+
+    public static Method resolveGetter(Field field) {
+        String fieldName = field.getName();
+
+        String getterName = "get";
+        if (fieldName.length() > 1) {
+            getterName += Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
+        } else {
+            getterName += fieldName.toUpperCase();
+        }
+
+        Method getter = ReflectionUtils.getDeclaredMethod(field.getDeclaringClass(), getterName);
+        if (!Modifier.isPublic(getter.getModifiers())) {
+            throw new IllegalArgumentException(
+                    String.format("Getter for field[%s] is not public: %s", field, getter));
+        }
+
+        return getter;
+    }
+
+    public static Method resolveSetter(Field field) {
+        String fieldName = field.getName();
+
+        String setterName = "set";
+        if (fieldName.length() > 1) {
+            setterName += Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
+        } else {
+            setterName += fieldName.toUpperCase();
+        }
+
+        Method setter = ReflectionUtils.getDeclaredMethod(field.getDeclaringClass(), setterName, field.getType());
+        if (!Modifier.isPublic(setter.getModifiers())) {
+            throw new IllegalArgumentException(
+                    String.format("Setter for field[%s] is not public: %s", field, setter));
+        }
+
+        return setter;
     }
 
     /**
