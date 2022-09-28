@@ -147,8 +147,9 @@ public final class FieldUtils {
     @SuppressWarnings("unchecked")
     public static <T> T resolveFirst(Class<T> type, Object... arguments) {
         for (Object argument : arguments) {
-            if (argument == null || !type.isAssignableFrom(argument.getClass())) continue;
-            return (T) argument;
+            if (argument != null && type.isAssignableFrom(argument.getClass())) {
+                return (T) argument;
+            }
         }
 
         return null;
@@ -157,13 +158,15 @@ public final class FieldUtils {
     @Nullable
     @SuppressWarnings("unchecked")
     public static <T> T resolveLast(Class<T> type, Object... arguments) {
-        T t = null;
-        for (Object argument : arguments) {
-            if (argument == null || !type.isAssignableFrom(argument.getClass())) continue;
-            t = (T) argument;
+        for (int i = arguments.length - 1; i >= 0; i--) {
+            Object argument = arguments[i];
+
+            if (argument != null && type.isAssignableFrom(argument.getClass())) {
+                return (T) argument;
+            }
         }
 
-        return t;
+        return null;
     }
 
 }
