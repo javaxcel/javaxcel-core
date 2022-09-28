@@ -20,12 +20,18 @@ import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelIgnore;
 import com.github.javaxcel.annotation.ExcelModel;
 import io.github.imsejin.common.annotation.ExcludeFromGeneratedJacocoReport;
+import io.github.imsejin.common.util.ArrayUtils;
 import io.github.imsejin.common.util.ReflectionUtils;
 import io.github.imsejin.common.util.StringUtils;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -167,6 +173,111 @@ public final class FieldUtils {
         }
 
         return null;
+    }
+
+    public static Class<?> resolveActualType(Field field) {
+        Class<?> fieldType = field.getType();
+        Type genericType = field.getGenericType();
+
+        outer:
+        while (true) {
+            // When type is concrete type.
+            if (genericType instanceof Class) {
+                Class<?> c = (Class<?>) genericType;
+                if (Iterable.class.isAssignableFrom(c)) {
+                    return Object.class;
+                }
+
+                return c;
+            }
+
+            // When type is wildcard type:
+            // java.util.List<? super java.lang.String>
+            // java.util.List<? extends java.lang.String>
+            if (genericType instanceof WildcardType) {
+                WildcardType wildcardType = (WildcardType) genericType;
+                Type[] lowerBounds = wildcardType.getLowerBounds();
+                Type t = ArrayUtils.exists(lowerBounds) ? lowerBounds[0] : wildcardType.getUpperBounds()[0];
+
+                if (t instanceof Class) {
+                    genericType = t;
+                    continue;
+                }
+
+                // GenericArrayType: T[]
+                if (t instanceof GenericArrayType) {
+                    genericType = fieldType;
+                    continue;
+                }
+
+                // TypeVariable: T
+                genericType = Object.class;
+                continue;
+            }
+
+            if (genericType instanceof TypeVariable) {
+                genericType = fieldType;
+                continue;
+            }
+
+            if (!(genericType instanceof ParameterizedType)) {
+                genericType = Object.class;
+                continue;
+            }
+
+            ParameterizedType paramType = (ParameterizedType) genericType;
+            Class<?> rawType = (Class<?>) paramType.getRawType();
+            if (Iterable.class.isAssignableFrom(rawType)) {
+                for (Type t : paramType.getActualTypeArguments()) {
+                    genericType = t;
+                    continue outer;
+                }
+            } else {
+                genericType = rawType;
+            }
+        }
+    }
+
+    public static String getDeclaration(Type genericType) {
+        if(genericType instanceof ParameterizedType) {
+            // types with parameters
+            ParameterizedType parameterizedType = (ParameterizedType) genericType;
+            String declaration = parameterizedType.getRawType().getTypeName();
+            declaration += "<";
+
+            Type[] typeArgs = parameterizedType.getActualTypeArguments();
+
+            for(int i = 0; i < typeArgs.length; i++) {
+                Type typeArg = typeArgs[i];
+
+                if(i > 0) {
+                    declaration += ", ";
+                }
+
+                // note: recursive call
+                declaration += getDeclaration(typeArg);
+            }
+
+            declaration += ">";
+            declaration = declaration.replace('$', '.');
+            return declaration;
+        }
+        else if(genericType instanceof Class<?>) {
+            Class<?> clazz = (Class<?>) genericType;
+
+            if(clazz.isArray()) {
+                // arrays
+                return clazz.getComponentType().getCanonicalName() + "[]";
+            }
+            else {
+                // primitive and types without parameters (normal/standard types)
+                return clazz.getCanonicalName();
+            }
+        }
+        else {
+            // e.g. WildcardTypeImpl (Class<? extends Integer>)
+            return genericType.getTypeName();
+        }
     }
 
 }
