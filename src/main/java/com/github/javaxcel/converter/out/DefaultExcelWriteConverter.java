@@ -57,13 +57,12 @@ public class DefaultExcelWriteConverter implements ExcelWriteConverter {
         if (type.isArray()) {
             // Supports multi-dimensional array type.
             return handleArray(field, value);
-        } else if (Iterable.class.isAssignableFrom(type)) {
+        } else if (value instanceof Iterable) {
             // Supports nested iterable type.
             return handleIterable(field, (Iterable<?>) value);
         } else {
             return handleNonArray(field, type, value);
         }
-
     }
 
     private String handleArray(Field field, Object value) {
@@ -88,7 +87,7 @@ public class DefaultExcelWriteConverter implements ExcelWriteConverter {
                 String string;
                 if (elementType.isArray()) {
                     string = handleArray(field, element);
-                } else if (Iterable.class.isAssignableFrom(elementType)) {
+                } else if (element instanceof Iterable) {
                     string = handleIterable(field, (Iterable<?>) element);
                 } else {
                     string = handleNonArray(field, elementType, element);
@@ -129,7 +128,7 @@ public class DefaultExcelWriteConverter implements ExcelWriteConverter {
                 String string;
                 if (elementType.isArray()) {
                     string = handleArray(field, element);
-                } else if (Iterable.class.isAssignableFrom(elementType)) {
+                } else if (element instanceof Iterable) {
                     string = handleIterable(field, (Iterable<?>) element);
                 } else {
                     string = handleNonArray(field, elementType, element);

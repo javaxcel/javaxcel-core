@@ -39,14 +39,14 @@ class FieldUtilsSpec extends Specification {
         fields*.name == expected
 
         where:
-        type                       | expected
-        NoFieldSample              | []
-        PlainSample                | ["f0", "f1"]
-        ExcelColumnSample          | ["f0", "f1"]
-        ExplicitSample             | ["f0"]
-        ExcludeSuperSample         | ["f1"]
-        IncludeSuperSample         | ["f0", "f1"]
-        ExplicitIncludeSuperSample | ["f0"]
+        type                     | expected
+        NoField                  | []
+        Plain                    | ["f0", "f1"]
+        SpecifiedColumn          | ["f0", "f1"]
+        Explicit                 | ["f0"]
+        ExcludedSuper            | ["f1"]
+        IncludedSuper            | ["f0", "f1"]
+        ExplicitAndIncludedSuper | ["f0"]
     }
 
     def "Converts the fields into their names"() {
@@ -60,11 +60,11 @@ class FieldUtilsSpec extends Specification {
         headerNames == expected
 
         where:
-        type              | expected
-        NoFieldSample     | []
-        PlainSample       | ["f0", "f1"]
-        ExcelColumnSample | ["FIELD_0", "f1"]
-        ExplicitSample    | ["f0"]
+        type            | expected
+        NoField         | []
+        Plain           | ["f0", "f1"]
+        SpecifiedColumn | ["FIELD_0", "f1"]
+        Explicit        | ["f0"]
     }
 
     def "Converts java object into map"() {
@@ -84,14 +84,14 @@ class FieldUtilsSpec extends Specification {
         map == expected
 
         where:
-        type                       | f0     | f1        || expected
-        NoFieldSample              | 0.27   | "none"    || [:]
-        PlainSample                | 5.6    | "alpha"   || [f0: f0, f1: f1]
-        ExcelColumnSample          | 3.14   | "beta"    || [f0: f0, f1: f1]
-        ExplicitSample             | -1.141 | "gamma"   || [f0: f0]
-        ExcludeSuperSample         | 15.942 | "delta"   || [f1: f1]
-        IncludeSuperSample         | -0.1   | "epsilon" || [f0: f0, f1: f1]
-        ExplicitIncludeSuperSample | 0      | "zeta"    || [f0: f0]
+        type                     | f0     | f1        || expected
+        NoField                  | 0.27   | "none"    || [:]
+        Plain                    | 5.6    | "alpha"   || [f0: f0, f1: f1]
+        SpecifiedColumn          | 3.14   | "beta"    || [f0: f0, f1: f1]
+        Explicit                 | -1.141 | "gamma"   || [f0: f0]
+        ExcludedSuper            | 15.942 | "delta"   || [f1: f1]
+        IncludedSuper            | -0.1   | "epsilon" || [f0: f0, f1: f1]
+        ExplicitAndIncludedSuper | 0      | "zeta"    || [f0: f0]
     }
 
     def "Resolves the first matched object in arguments"() {
@@ -132,22 +132,22 @@ class FieldUtilsSpec extends Specification {
 
     // -------------------------------------------------------------------------------------------------
 
-    private static class NoFieldSample {
+    private static class NoField {
     }
 
-    private static class PlainSample {
+    private static class Plain {
         Double f0
         String f1
     }
 
-    private static class ExcelColumnSample {
+    private static class SpecifiedColumn {
         @ExcelColumn(name = "FIELD_0")
         Double f0
         String f1
     }
 
     @ExcelModel(explicit = true)
-    private static class ExplicitSample {
+    private static class Explicit {
         @ExcelColumn
         Double f0
         String f1
@@ -159,17 +159,17 @@ class FieldUtilsSpec extends Specification {
         Double f0
     }
 
-    private static class ExcludeSuperSample extends Parent {
+    private static class ExcludedSuper extends Parent {
         String f1
     }
 
     @ExcelModel(includeSuper = true)
-    private static class IncludeSuperSample extends Parent {
+    private static class IncludedSuper extends Parent {
         String f1
     }
 
     @ExcelModel(explicit = true, includeSuper = true)
-    private static class ExplicitIncludeSuperSample extends Parent {
+    private static class ExplicitAndIncludedSuper extends Parent {
         String f1
     }
 
