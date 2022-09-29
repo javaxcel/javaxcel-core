@@ -16,7 +16,7 @@
 
 package com.github.javaxcel.converter.out.analysis.impl;
 
-import com.github.javaxcel.converter.out.analysis.ExcelWriteColumnAnalysis;
+import com.github.javaxcel.converter.out.analysis.AbstractExcelWriteColumnAnalysis;
 import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.util.ReflectionUtils;
 import org.springframework.expression.EvaluationContext;
@@ -30,26 +30,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
-public class GetterAccessExpressionExcelWriteColumnAnalysis implements ExcelWriteColumnAnalysis {
+public final class GetterAccessExpressionExcelWriteColumnAnalysis extends AbstractExcelWriteColumnAnalysis {
 
-    private final Expression expression;
+    private Expression expression;
 
-    private final String defaultValue;
+    private Map<Field, Method> getterMap;
 
-    private final Map<String, Method> getterMap;
-
-    public GetterAccessExpressionExcelWriteColumnAnalysis(Expression expression, List<Field> fields, String defaultValue) {
-        this.expression = expression;
-        this.defaultValue = defaultValue;
-
-        Map<String, Method> getterMap = new HashMap<>();
-        for (Field field : fields) {
-            Method getter = FieldUtils.resolveGetter(field);
-            getterMap.put(field.getName(), getter);
-        }
-
-        this.getterMap = Collections.unmodifiableMap(getterMap);
+    public GetterAccessExpressionExcelWriteColumnAnalysis(Field field, String defaultValue) {
+        super(field, defaultValue);
     }
 
     @Override
@@ -63,9 +53,26 @@ public class GetterAccessExpressionExcelWriteColumnAnalysis implements ExcelWrit
         return this.expression.getValue(context);
     }
 
-    @Override
-    public String getDefaultValue() {
-        return this.defaultValue;
+    public void setExpression(Expression expression) {
+        this.expression = Objects.requireNonNull(expression, () -> getClass().getSimpleName() + ".expression cannot be null");
+    }
+
+    public void setGetters(List<Field> fields) {
+        Objects.requireNonNull(fields, () -> getClass().getSimpleName() + ".fields cannot be null");
+
+        Map<Field, Method> getterMap = new HashMap<>();
+        for (Field field : fields) {
+            Method getter;
+            try {
+                getter = FieldUtils.resolveGetter(field);
+            } catch (RuntimeException ignored) {
+                getter = null;
+            }
+
+            getterMap.put(field, getter);
+        }
+
+        this.getterMap = Collections.unmodifiableMap(getterMap);
     }
 
     // -------------------------------------------------------------------------------------------------
@@ -73,13 +80,18 @@ public class GetterAccessExpressionExcelWriteColumnAnalysis implements ExcelWrit
     private Map<String, Object> convertAsMap(Object model) {
         Map<String, Object> variables = new HashMap<>();
 
-        for (Entry<String, Method> entry : this.getterMap.entrySet()) {
-            String fieldName = entry.getKey();
+        for (Entry<Field, Method> entry : this.getterMap.entrySet()) {
+            Field field = entry.getKey();
             Method getter = entry.getValue();
 
-            Object value = ReflectionUtils.invoke(getter, model);
+            Object value;
+            if (getter == null) {
+                value = ReflectionUtils.getFieldValue(model, field);
+            } else {
+                value = ReflectionUtils.invoke(getter, model);
+            }
 
-            variables.put(fieldName, value);
+            variables.put(field.getName(), value);
         }
 
         return variables;

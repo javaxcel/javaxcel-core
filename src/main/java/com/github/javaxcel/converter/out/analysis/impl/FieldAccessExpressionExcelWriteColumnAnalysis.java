@@ -16,7 +16,7 @@
 
 package com.github.javaxcel.converter.out.analysis.impl;
 
-import com.github.javaxcel.converter.out.analysis.ExcelWriteColumnAnalysis;
+import com.github.javaxcel.converter.out.analysis.AbstractExcelWriteColumnAnalysis;
 import com.github.javaxcel.util.FieldUtils;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
@@ -25,19 +25,16 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-public class FieldAccessExpressionExcelWriteColumnAnalysis implements ExcelWriteColumnAnalysis {
+public final class FieldAccessExpressionExcelWriteColumnAnalysis extends AbstractExcelWriteColumnAnalysis {
 
-    private final Expression expression;
+    private Expression expression;
 
-    private final List<Field> fields;
+    private List<Field> fields;
 
-    private final String defaultValue;
-
-    public FieldAccessExpressionExcelWriteColumnAnalysis(Expression expression, List<Field> fields, String defaultValue) {
-        this.expression = expression;
-        this.fields = fields;
-        this.defaultValue = defaultValue;
+    public FieldAccessExpressionExcelWriteColumnAnalysis(Field field, String defaultValue) {
+        super(field, defaultValue);
     }
 
     @Override
@@ -51,9 +48,12 @@ public class FieldAccessExpressionExcelWriteColumnAnalysis implements ExcelWrite
         return this.expression.getValue(context);
     }
 
-    @Override
-    public String getDefaultValue() {
-        return this.defaultValue;
+    public void setExpression(Expression expression) {
+        this.expression = Objects.requireNonNull(expression, () -> getClass().getSimpleName() + ".expression cannot be null");
+    }
+
+    public void setFields(List<Field> fields) {
+        this.fields = Objects.requireNonNull(fields, () -> getClass().getSimpleName() + ".fields cannot be null");
     }
 
 }

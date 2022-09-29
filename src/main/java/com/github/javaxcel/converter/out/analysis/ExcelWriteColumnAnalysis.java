@@ -16,10 +16,24 @@
 
 package com.github.javaxcel.converter.out.analysis;
 
+import com.github.javaxcel.converter.handler.ExcelTypeHandler;
+import jakarta.validation.constraints.Null;
+
+import java.lang.reflect.Field;
+
 public interface ExcelWriteColumnAnalysis {
 
+    Field getField();
+
+    @Null
     Object getValue(Object model);
 
     String getDefaultValue();
+
+    ExcelTypeHandler<?> getHandler();
+
+    default boolean doesHandlerResolved() {
+        return getHandler() != null;
+    }
 
 }

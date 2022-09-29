@@ -16,30 +16,20 @@
 
 package com.github.javaxcel.converter.out.analysis.impl;
 
-import com.github.javaxcel.converter.out.analysis.ExcelWriteColumnAnalysis;
+import com.github.javaxcel.converter.out.analysis.AbstractExcelWriteColumnAnalysis;
 import io.github.imsejin.common.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 
-public class FieldAccessDefaultExcelWriteColumnAnalysis implements ExcelWriteColumnAnalysis {
-
-    private final Field field;
-
-    private final String defaultValue;
+public final class FieldAccessDefaultExcelWriteColumnAnalysis extends AbstractExcelWriteColumnAnalysis {
 
     public FieldAccessDefaultExcelWriteColumnAnalysis(Field field, String defaultValue) {
-        this.field = field;
-        this.defaultValue = defaultValue;
+        super(field, defaultValue);
     }
 
     @Override
     public Object getValue(Object model) {
-        return ReflectionUtils.getFieldValue(model, field);
-    }
-
-    @Override
-    public String getDefaultValue() {
-        return this.defaultValue;
+        return ReflectionUtils.getFieldValue(model, getField());
     }
 
 }

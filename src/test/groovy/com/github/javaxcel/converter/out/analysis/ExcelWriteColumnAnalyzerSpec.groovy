@@ -17,8 +17,9 @@
 package com.github.javaxcel.converter.out.analysis
 
 import com.github.javaxcel.TestUtils
-import com.github.javaxcel.annotation.ExcelColumn
-import com.github.javaxcel.annotation.ExcelModel
+import com.github.javaxcel.converter.handler.registry.impl.DefaultExcelTypeHandlerRegistry
+import com.github.javaxcel.model.sample.ModelSample
+import com.github.javaxcel.model.sample.PlainSample
 import com.github.javaxcel.out.strategy.impl.DefaultValue
 import com.github.javaxcel.out.strategy.impl.UseGetters
 import com.github.javaxcel.util.FieldUtils
@@ -31,9 +32,10 @@ class ExcelWriteColumnAnalyzerSpec extends Specification {
         def model = new Sample(values: ["sample", "item"])
         def analyzer = new ExcelWriteColumnAnalyzer(model.class)
         def fields = FieldUtils.getTargetedFields(model.class)
+        def arguments = [new DefaultExcelTypeHandlerRegistry()] as Object[]
 
         when: "Accesses value through field"
-        def analyses = analyzer.analyze(fields)
+        def analyses = analyzer.analyze(fields, arguments)
 
         then:
         analyses.size() == fields.size()
@@ -41,7 +43,8 @@ class ExcelWriteColumnAnalyzerSpec extends Specification {
         analyses[0].getValue(model) != model.values
 
         when: "Accesses value through getter"
-        analyses = analyzer.analyze(fields, new UseGetters())
+        arguments += new UseGetters()
+        analyses = analyzer.analyze(fields, arguments)
 
         then:
         analyses.size() == fields.size()
@@ -52,11 +55,12 @@ class ExcelWriteColumnAnalyzerSpec extends Specification {
     @SuppressWarnings("GroovyAssignabilityCheck")
     def "Analyzes"() {
         given:
-        def analyzer = new ExcelWriteColumnAnalyzer(type)
         def fields = FieldUtils.getTargetedFields(type)
         def model = TestUtils.randomize(type)
+        arguments += new DefaultExcelTypeHandlerRegistry()
 
         when:
+        def analyzer = new ExcelWriteColumnAnalyzer(type)
         def analyses = analyzer.analyze(fields, arguments as Object[])
 
         then:
@@ -64,16 +68,18 @@ class ExcelWriteColumnAnalyzerSpec extends Specification {
         analyses*.defaultValue == defaultValues
         (0..<analyses.size()).each {
             def analysis = analyses[it]
-            def fieldName = fields[it].name
-            assert analysis.getValue(model) == model[fieldName]
+            def field = fields[it]
+
+            assert analysis.field == field
+            assert analysis.getValue(model) == model[field.name]
         }
 
         where:
-        type  | arguments               || defaultValues
-        Plain | []                      || [null, null, "0.00", null]
-        Plain | [new DefaultValue("-")] || ["-", "-", "-", "-"]
-        Model | []                      || ["(empty)", "none", "(empty)", "[]"]
-        Model | [new DefaultValue("-")] || ["-", "-", "-", "-"]
+        type        | arguments               || defaultValues
+        PlainSample | []                      || [null, null, "0.00", null]
+        PlainSample | [new DefaultValue("-")] || ["-", "-", "-", "-"]
+        ModelSample | []                      || ["(empty)", "none", "(empty)", "[]"]
+        ModelSample | [new DefaultValue("-")] || ["-", "-", "-", "-"]
     }
 
     // -------------------------------------------------------------------------------------------------
@@ -84,24 +90,6 @@ class ExcelWriteColumnAnalyzerSpec extends Specification {
         Set<String> getValues() {
             values.collect { "#" + it }
         }
-    }
-
-    private static class Plain {
-        Long id
-        String name
-        @ExcelColumn(defaultValue = "0.00")
-        BigDecimal price
-        Set<String> tags
-    }
-
-    @ExcelModel(defaultValue = "(empty)")
-    private static class Model {
-        Long id
-        @ExcelColumn(defaultValue = "none")
-        String name
-        BigDecimal price
-        @ExcelColumn(defaultValue = "[]")
-        Set<String> tags
     }
 
 }
