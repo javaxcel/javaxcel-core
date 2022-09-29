@@ -19,8 +19,8 @@ package com.github.javaxcel.converter.handler.registry.impl;
 import com.github.javaxcel.converter.handler.ExcelTypeHandler;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
 import io.github.imsejin.common.assertion.Asserts;
+import jakarta.validation.constraints.Null;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -29,7 +29,7 @@ public class ExcelTypeHandlerRegistryImpl implements ExcelTypeHandlerRegistry {
 
     private final Map<Class<?>, ExcelTypeHandler<?>> handlerMap = new HashMap<>();
 
-    @Nullable
+    @Null
     @Override
     public ExcelTypeHandler<?> getHandler(Class<?> type) {
         return this.handlerMap.get(type);

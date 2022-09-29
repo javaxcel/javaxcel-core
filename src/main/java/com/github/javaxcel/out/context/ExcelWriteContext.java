@@ -21,11 +21,11 @@ import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.out.core.ExcelWriter;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy;
 import io.github.imsejin.common.assertion.Asserts;
+import jakarta.validation.constraints.NotNull;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -83,22 +83,22 @@ public class ExcelWriteContext<T> {
         this.writerType = writerType;
     }
 
-    @Nonnull
+    @NotNull
     public Workbook getWorkbook() {
         return this.workbook;
     }
 
-    @Nonnull
+    @NotNull
     public Class<T> getModelType() {
         return this.modelType;
     }
 
-    @Nonnull
+    @NotNull
     public Class<? extends ExcelWriter<?>> getWriterType() {
         return this.writerType;
     }
 
-    @Nonnull
+    @NotNull
     public Map<Class<? extends ExcelWriteStrategy>, ExcelWriteStrategy> getStrategyMap() {
         return this.strategyMap;
     }
@@ -113,7 +113,7 @@ public class ExcelWriteContext<T> {
         this.strategyMap = strategyMap;
     }
 
-    @Nonnull
+    @NotNull
     public List<T> getList() {
         return this.list;
     }
@@ -126,7 +126,7 @@ public class ExcelWriteContext<T> {
         this.list = list;
     }
 
-    @Nonnull
+    @NotNull
     public List<T> getChunk() {
         return this.chunk;
     }
@@ -139,7 +139,7 @@ public class ExcelWriteContext<T> {
         this.chunk = chunk;
     }
 
-    @Nonnull
+    @NotNull
     public Sheet getSheet() {
         return this.sheet;
     }

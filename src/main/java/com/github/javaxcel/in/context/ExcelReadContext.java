@@ -19,11 +19,11 @@ package com.github.javaxcel.in.context;
 import com.github.javaxcel.in.core.ExcelReader;
 import com.github.javaxcel.in.strategy.ExcelReadStrategy;
 import io.github.imsejin.common.assertion.Asserts;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -82,22 +82,22 @@ public class ExcelReadContext<T> {
         this.readerType = readerType;
     }
 
-    @Nonnull
+    @NotNull
     public Workbook getWorkbook() {
         return this.workbook;
     }
 
-    @Nonnull
+    @NotNull
     public Class<T> getModelType() {
         return this.modelType;
     }
 
-    @Nonnull
+    @NotNull
     public Class<? extends ExcelReader<?>> getReaderType() {
         return this.readerType;
     }
 
-    @Nonnull
+    @NotNull
     public Map<Class<? extends ExcelReadStrategy>, ExcelReadStrategy> getStrategyMap() {
         return this.strategyMap;
     }
@@ -112,7 +112,7 @@ public class ExcelReadContext<T> {
         this.strategyMap = strategyMap;
     }
 
-    @Nullable
+    @Null
     public List<T> getList() {
         return this.list;
     }
@@ -125,7 +125,7 @@ public class ExcelReadContext<T> {
         this.list = list;
     }
 
-    @Nonnull
+    @NotNull
     public List<String> getHeaderNames() {
         return this.headerNames;
     }
@@ -148,7 +148,7 @@ public class ExcelReadContext<T> {
         this.readCount++;
     }
 
-    @Nullable
+    @Null
     public List<T> getChunk() {
         return this.chunk;
     }
@@ -163,7 +163,7 @@ public class ExcelReadContext<T> {
         this.chunk = chunk;
     }
 
-    @Nonnull
+    @NotNull
     public Sheet getSheet() {
         return this.sheet;
     }

@@ -22,9 +22,9 @@ import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
 import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.ClassUtils;
 import io.github.imsejin.common.util.StringUtils;
+import jakarta.validation.constraints.Null;
 import org.jetbrains.annotations.VisibleForTesting;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
         this.registry = registry;
     }
 
-    @Nullable
+    @Null
     @Override
     public Object convert(Map<String, Object> variables, Field field) {
         Class<?> type = field.getType();

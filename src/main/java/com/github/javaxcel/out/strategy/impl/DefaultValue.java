@@ -22,7 +22,7 @@ import com.github.javaxcel.out.core.impl.MapWriter;
 import com.github.javaxcel.out.core.impl.ModelWriter;
 import com.github.javaxcel.out.strategy.AbstractExcelWriteStrategy;
 import io.github.imsejin.common.assertion.Asserts;
-import org.jetbrains.annotations.Nullable;
+import jakarta.validation.constraints.Null;
 
 public class DefaultValue extends AbstractExcelWriteStrategy {
 
@@ -48,7 +48,7 @@ public class DefaultValue extends AbstractExcelWriteStrategy {
     }
 
     @Override
-    public Object execute(@Nullable ExcelWriteContext<?> context) {
+    public Object execute(@Null ExcelWriteContext<?> context) {
         return this.value;
     }
 

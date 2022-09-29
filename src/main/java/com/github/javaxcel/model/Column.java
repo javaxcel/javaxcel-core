@@ -20,8 +20,8 @@ import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.constant.ConversionType;
 import com.github.javaxcel.constant.ConverterType;
+import jakarta.validation.constraints.Null;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 
 public class Column {
@@ -60,7 +60,7 @@ public class Column {
         return this.conversionType;
     }
 
-    @Nullable
+    @Null
     public String getDefaultValue() {
         return this.defaultValue;
     }

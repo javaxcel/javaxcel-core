@@ -26,6 +26,7 @@ import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.ArrayUtils;
 import io.github.imsejin.common.util.CollectionUtils;
 import io.github.imsejin.common.util.StringUtils;
+import jakarta.validation.constraints.Null;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -34,7 +35,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -80,7 +80,7 @@ public abstract class AbstractExcelReader<T> implements ExcelReader<T>, ExcelRea
         this.formulaEvaluator = resolveFormulaEvaluator(workbook);
     }
 
-    @Nullable
+    @Null
     private static FormulaEvaluator resolveFormulaEvaluator(Workbook workbook) {
         try {
             return workbook.getCreationHelper().createFormulaEvaluator();

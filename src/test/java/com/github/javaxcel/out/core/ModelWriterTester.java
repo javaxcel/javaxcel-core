@@ -20,16 +20,16 @@ import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.util.ExcelUtils;
 import io.github.imsejin.common.tool.Stopwatch;
 import io.github.imsejin.common.util.FilenameUtils;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -101,9 +101,9 @@ public abstract class ModelWriterTester {
     @Getter
     @RequiredArgsConstructor
     protected static class GivenModel {
-        @NonNull
+        @NotNull
         private final File file;
-        @Nullable
+        @Null
         private final Class<?> type;
     }
 
@@ -111,9 +111,9 @@ public abstract class ModelWriterTester {
     @Setter
     @AllArgsConstructor
     protected static class WhenModel {
-        @NonNull
+        @NotNull
         private final OutputStream outputStream;
-        @NonNull
+        @NotNull
         private final Workbook workbook;
         private int numOfMocks;
     }
@@ -121,7 +121,7 @@ public abstract class ModelWriterTester {
     @Getter
     @RequiredArgsConstructor
     protected static class ThenModel {
-        @NonNull
+        @NotNull
         private final List<?> models;
     }
 

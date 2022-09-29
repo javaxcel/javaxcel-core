@@ -21,8 +21,8 @@ import com.github.javaxcel.util.ExcelUtils;
 import com.github.pjfanning.xlsx.StreamingReader;
 import io.github.imsejin.common.tool.Stopwatch;
 import io.github.imsejin.common.util.FilenameUtils;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -132,7 +132,7 @@ public abstract class MapReaderTester {
     @Getter
     @RequiredArgsConstructor
     protected static class GivenModel {
-        @NonNull
+        @NotNull
         private final File file;
         private OutputStream outputStream;
         private Workbook workbook;
@@ -150,7 +150,7 @@ public abstract class MapReaderTester {
     @Getter
     @RequiredArgsConstructor
     protected static class ThenModel {
-        @NonNull
+        @NotNull
         private final List<Map<String, Object>> maps;
     }
 

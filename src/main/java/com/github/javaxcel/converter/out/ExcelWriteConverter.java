@@ -16,7 +16,8 @@
 
 package com.github.javaxcel.converter.out;
 
-import javax.annotation.Nullable;
+import jakarta.validation.constraints.Null;
+
 import java.lang.reflect.Field;
 
 public interface ExcelWriteConverter {
@@ -31,7 +32,7 @@ public interface ExcelWriteConverter {
      * @param field field of model
      * @return stringified field's value
      */
-    @Nullable
+    @Null
     String convert(Object model, Field field);
 
 }

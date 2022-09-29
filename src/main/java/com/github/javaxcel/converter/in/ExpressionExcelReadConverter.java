@@ -18,13 +18,13 @@ package com.github.javaxcel.converter.in;
 
 import com.github.javaxcel.annotation.ExcelReadExpression;
 import io.github.imsejin.common.util.CollectionUtils;
+import jakarta.validation.constraints.Null;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.HashMap;
@@ -74,7 +74,7 @@ public class ExpressionExcelReadConverter implements ExcelReadConverter {
      * @see ExcelReadExpression#value()
      */
     @Override
-    @Nullable
+    @Null
     public Object convert(Map<String, Object> variables, Field field) {
         Expression expression;
         if (CollectionUtils.isNullOrEmpty(this.cache) || !this.cache.containsKey(field)) {

@@ -23,8 +23,8 @@ import io.github.imsejin.common.annotation.ExcludeFromGeneratedJacocoReport;
 import io.github.imsejin.common.util.ArrayUtils;
 import io.github.imsejin.common.util.ReflectionUtils;
 import io.github.imsejin.common.util.StringUtils;
+import jakarta.validation.constraints.Null;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
@@ -188,7 +188,7 @@ public final class FieldUtils {
         return map;
     }
 
-    @Nullable
+    @Null
     @SuppressWarnings("unchecked")
     public static <T> T resolveFirst(Class<T> type, Object... arguments) {
         for (Object argument : arguments) {
@@ -200,7 +200,7 @@ public final class FieldUtils {
         return null;
     }
 
-    @Nullable
+    @Null
     @SuppressWarnings("unchecked")
     public static <T> T resolveLast(Class<T> type, Object... arguments) {
         for (int i = arguments.length - 1; i >= 0; i--) {
@@ -278,7 +278,7 @@ public final class FieldUtils {
     }
 
     public static String getDeclaration(Type genericType) {
-        if(genericType instanceof ParameterizedType) {
+        if (genericType instanceof ParameterizedType) {
             // types with parameters
             ParameterizedType parameterizedType = (ParameterizedType) genericType;
             String declaration = parameterizedType.getRawType().getTypeName();
@@ -286,10 +286,10 @@ public final class FieldUtils {
 
             Type[] typeArgs = parameterizedType.getActualTypeArguments();
 
-            for(int i = 0; i < typeArgs.length; i++) {
+            for (int i = 0; i < typeArgs.length; i++) {
                 Type typeArg = typeArgs[i];
 
-                if(i > 0) {
+                if (i > 0) {
                     declaration += ", ";
                 }
 
@@ -300,20 +300,17 @@ public final class FieldUtils {
             declaration += ">";
             declaration = declaration.replace('$', '.');
             return declaration;
-        }
-        else if(genericType instanceof Class<?>) {
+        } else if (genericType instanceof Class<?>) {
             Class<?> clazz = (Class<?>) genericType;
 
-            if(clazz.isArray()) {
+            if (clazz.isArray()) {
                 // arrays
                 return clazz.getComponentType().getCanonicalName() + "[]";
-            }
-            else {
+            } else {
                 // primitive and types without parameters (normal/standard types)
                 return clazz.getCanonicalName();
             }
-        }
-        else {
+        } else {
             // e.g. WildcardTypeImpl (Class<? extends Integer>)
             return genericType.getTypeName();
         }

@@ -21,8 +21,8 @@ import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
 import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.ClassUtils;
 import io.github.imsejin.common.util.ReflectionUtils;
+import jakarta.validation.constraints.Null;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.Iterator;
@@ -44,7 +44,7 @@ public class DefaultExcelWriteConverter implements ExcelWriteConverter {
     /**
      * {@inheritDoc}
      */
-    @Nullable
+    @Null
     @Override
     public String convert(Object model, Field field) {
         Object value = ReflectionUtils.getFieldValue(model, field);
