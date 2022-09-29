@@ -21,10 +21,10 @@ import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.annotation.ExcelWriteExpression;
 import com.github.javaxcel.converter.handler.ExcelTypeHandler;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
-import com.github.javaxcel.converter.out.analysis.impl.FieldAccessDefaultExcelWriteColumnAnalysis;
-import com.github.javaxcel.converter.out.analysis.impl.FieldAccessExpressionExcelWriteColumnAnalysis;
-import com.github.javaxcel.converter.out.analysis.impl.GetterAccessDefaultExcelWriteColumnAnalysis;
-import com.github.javaxcel.converter.out.analysis.impl.GetterAccessExpressionExcelWriteColumnAnalysis;
+import com.github.javaxcel.converter.out.analysis.impl.FieldAccessDefaultExcelWriteAnalysis;
+import com.github.javaxcel.converter.out.analysis.impl.FieldAccessExpressionExcelWriteAnalysis;
+import com.github.javaxcel.converter.out.analysis.impl.GetterAccessDefaultExcelWriteAnalysis;
+import com.github.javaxcel.converter.out.analysis.impl.GetterAccessExpressionExcelWriteAnalysis;
 import com.github.javaxcel.out.strategy.impl.DefaultValue;
 import com.github.javaxcel.out.strategy.impl.UseGetters;
 import com.github.javaxcel.util.FieldUtils;
@@ -43,7 +43,7 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
-public class ExcelWriteColumnAnalyzer {
+public class ExcelWriteAnalyzer {
 
     private static final ExpressionParser EXPRESSION_PARSER = new SpelExpressionParser();
     private static final int EXPRESSION_BIT = 0x01;
@@ -55,11 +55,11 @@ public class ExcelWriteColumnAnalyzer {
 
     private final Class<?> type;
 
-    public ExcelWriteColumnAnalyzer(Class<?> type) {
+    public ExcelWriteAnalyzer(Class<?> type) {
         this.type = type;
     }
 
-    public List<ExcelWriteColumnAnalysis> analyze(List<Field> fields, Object... arguments) {
+    public List<ExcelWriteAnalysis> analyze(List<Field> fields, Object... arguments) {
         Asserts.that(fields)
                 .isNotNull()
                 .isNotEmpty()
@@ -67,12 +67,12 @@ public class ExcelWriteColumnAnalyzer {
 
         ExcelTypeHandlerRegistry registry = FieldUtils.resolveFirst(ExcelTypeHandlerRegistry.class, arguments);
 
-        List<ExcelWriteColumnAnalysis> analyses = new ArrayList<>();
+        List<ExcelWriteAnalysis> analyses = new ArrayList<>();
         for (Field field : fields) {
             ExcelTypeHandler<?> handler = registry.getHandler(field.getType());
 
             Object[] args = ArrayUtils.prepend(arguments, field, handler);
-            ExcelWriteColumnAnalysis analysis = resolveAnalysis(field, args);
+            ExcelWriteAnalysis analysis = resolveAnalysis(field, args);
 
             analyses.add(analysis);
         }
@@ -82,7 +82,7 @@ public class ExcelWriteColumnAnalyzer {
 
     // -------------------------------------------------------------------------------------------------
 
-    private static ExcelWriteColumnAnalysis resolveAnalysis(Field field, Object... args) {
+    private static ExcelWriteAnalysis resolveAnalysis(Field field, Object... args) {
         UseGetters useGettersStrategy = FieldUtils.resolveFirst(UseGetters.class, args);
         ExcelWriteExpression annotation = field.getAnnotation(ExcelWriteExpression.class);
 
@@ -104,7 +104,7 @@ public class ExcelWriteColumnAnalyzer {
     private interface AnalysisResolver {
         int getBit();
 
-        ExcelWriteColumnAnalysis resolve(Object... args);
+        ExcelWriteAnalysis resolve(Object... args);
 
         static String resolveDefaultValue(Field field, DefaultValue strategy) {
             if (strategy != null) {
@@ -140,7 +140,7 @@ public class ExcelWriteColumnAnalyzer {
         }
 
         @Override
-        public ExcelWriteColumnAnalysis resolve(Object... args) {
+        public ExcelWriteAnalysis resolve(Object... args) {
             Field field = FieldUtils.resolveFirst(Field.class, args);
 
             DefaultValue strategy = FieldUtils.resolveFirst(DefaultValue.class, args);
@@ -148,7 +148,7 @@ public class ExcelWriteColumnAnalyzer {
 
             ExcelTypeHandler<?> handler = FieldUtils.resolveFirst(ExcelTypeHandler.class, args);
 
-            FieldAccessDefaultExcelWriteColumnAnalysis fad = new FieldAccessDefaultExcelWriteColumnAnalysis(field, defaultValue);
+            FieldAccessDefaultExcelWriteAnalysis fad = new FieldAccessDefaultExcelWriteAnalysis(field, defaultValue);
             if (handler != null) {
                 fad.setHandler(handler);
             }
@@ -167,7 +167,7 @@ public class ExcelWriteColumnAnalyzer {
 
         @Override
         @SuppressWarnings("unchecked")
-        public ExcelWriteColumnAnalysis resolve(Object... args) {
+        public ExcelWriteAnalysis resolve(Object... args) {
             Field field = FieldUtils.resolveFirst(Field.class, args);
 
             DefaultValue strategy = FieldUtils.resolveFirst(DefaultValue.class, args);
@@ -178,7 +178,7 @@ public class ExcelWriteColumnAnalyzer {
             List<Field> fields = (List<Field>) FieldUtils.resolveFirst(List.class, args);
 
             // Return type of the expression is determined on runtime, so analyzer can't resolve handler for this column.
-            FieldAccessExpressionExcelWriteColumnAnalysis fae = new FieldAccessExpressionExcelWriteColumnAnalysis(field, defaultValue);
+            FieldAccessExpressionExcelWriteAnalysis fae = new FieldAccessExpressionExcelWriteAnalysis(field, defaultValue);
             fae.setExpression(expression);
             fae.setFields(fields);
 
@@ -195,7 +195,7 @@ public class ExcelWriteColumnAnalyzer {
         }
 
         @Override
-        public ExcelWriteColumnAnalysis resolve(Object... args) {
+        public ExcelWriteAnalysis resolve(Object... args) {
             Field field = FieldUtils.resolveFirst(Field.class, args);
 
             DefaultValue strategy = FieldUtils.resolveFirst(DefaultValue.class, args);
@@ -203,7 +203,7 @@ public class ExcelWriteColumnAnalyzer {
 
             ExcelTypeHandler<?> handler = FieldUtils.resolveFirst(ExcelTypeHandler.class, args);
 
-            GetterAccessDefaultExcelWriteColumnAnalysis gad = new GetterAccessDefaultExcelWriteColumnAnalysis(field, defaultValue);
+            GetterAccessDefaultExcelWriteAnalysis gad = new GetterAccessDefaultExcelWriteAnalysis(field, defaultValue);
             if (handler != null) {
                 gad.setHandler(handler);
             }
@@ -222,7 +222,7 @@ public class ExcelWriteColumnAnalyzer {
 
         @Override
         @SuppressWarnings("unchecked")
-        public ExcelWriteColumnAnalysis resolve(Object... args) {
+        public ExcelWriteAnalysis resolve(Object... args) {
             Field field = FieldUtils.resolveFirst(Field.class, args);
 
             DefaultValue strategy = FieldUtils.resolveFirst(DefaultValue.class, args);
@@ -233,7 +233,7 @@ public class ExcelWriteColumnAnalyzer {
             List<Field> fields = (List<Field>) FieldUtils.resolveFirst(List.class, args);
 
             // Return type of the expression is determined on runtime, so analyzer can't resolve handler for this column.
-            GetterAccessExpressionExcelWriteColumnAnalysis gae = new GetterAccessExpressionExcelWriteColumnAnalysis(field, defaultValue);
+            GetterAccessExpressionExcelWriteAnalysis gae = new GetterAccessExpressionExcelWriteAnalysis(field, defaultValue);
             gae.setExpression(expression);
             gae.setGetters(fields);
 

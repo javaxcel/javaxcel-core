@@ -16,7 +16,7 @@
 
 package com.github.javaxcel.converter.out.analysis.impl;
 
-import com.github.javaxcel.converter.out.analysis.AbstractExcelWriteColumnAnalysis;
+import com.github.javaxcel.converter.out.analysis.AbstractExcelWriteAnalysis;
 import com.github.javaxcel.util.FieldUtils;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
@@ -27,13 +27,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public final class FieldAccessExpressionExcelWriteColumnAnalysis extends AbstractExcelWriteColumnAnalysis {
+public final class FieldAccessExpressionExcelWriteAnalysis extends AbstractExcelWriteAnalysis {
 
     private Expression expression;
 
     private List<Field> fields;
 
-    public FieldAccessExpressionExcelWriteColumnAnalysis(Field field, String defaultValue) {
+    public FieldAccessExpressionExcelWriteAnalysis(Field field, String defaultValue) {
         super(field, defaultValue);
     }
 

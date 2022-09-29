@@ -16,37 +16,20 @@
 
 package com.github.javaxcel.converter.out.analysis.impl;
 
-import com.github.javaxcel.converter.out.analysis.AbstractExcelWriteColumnAnalysis;
-import com.github.javaxcel.util.FieldUtils;
+import com.github.javaxcel.converter.out.analysis.AbstractExcelWriteAnalysis;
 import io.github.imsejin.common.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
-public final class GetterAccessDefaultExcelWriteColumnAnalysis extends AbstractExcelWriteColumnAnalysis {
+public final class FieldAccessDefaultExcelWriteAnalysis extends AbstractExcelWriteAnalysis {
 
-    private final Method getter;
-
-    public GetterAccessDefaultExcelWriteColumnAnalysis(Field field, String defaultValue) {
+    public FieldAccessDefaultExcelWriteAnalysis(Field field, String defaultValue) {
         super(field, defaultValue);
-
-        Method getter;
-        try {
-            getter = FieldUtils.resolveGetter(field);
-        } catch (RuntimeException ignored) {
-            getter = null;
-        }
-
-        this.getter = getter;
     }
 
     @Override
     public Object getValue(Object model) {
-        if (this.getter == null) {
-            return ReflectionUtils.getFieldValue(model, getField());
-        } else {
-            return ReflectionUtils.invoke(this.getter, model);
-        }
+        return ReflectionUtils.getFieldValue(model, getField());
     }
 
 }

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Null;
 import java.lang.reflect.Field;
 import java.util.Objects;
 
-public abstract class AbstractExcelWriteColumnAnalysis implements ExcelWriteColumnAnalysis {
+public abstract class AbstractExcelWriteAnalysis implements ExcelWriteAnalysis {
 
     private final Field field;
 
@@ -14,7 +14,7 @@ public abstract class AbstractExcelWriteColumnAnalysis implements ExcelWriteColu
 
     private ExcelTypeHandler<?> handler;
 
-    protected AbstractExcelWriteColumnAnalysis(Field field, @Null String defaultValue) {
+    protected AbstractExcelWriteAnalysis(Field field, @Null String defaultValue) {
         this.field = field;
         this.defaultValue = defaultValue;
     }

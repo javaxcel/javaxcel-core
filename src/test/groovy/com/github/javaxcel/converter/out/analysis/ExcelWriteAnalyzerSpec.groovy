@@ -25,12 +25,12 @@ import com.github.javaxcel.out.strategy.impl.UseGetters
 import com.github.javaxcel.util.FieldUtils
 import spock.lang.Specification
 
-class ExcelWriteColumnAnalyzerSpec extends Specification {
+class ExcelWriteAnalyzerSpec extends Specification {
 
     def "Analyzes with access option"() {
         given:
         def model = new Sample(values: ["sample", "item"])
-        def analyzer = new ExcelWriteColumnAnalyzer(model.class)
+        def analyzer = new ExcelWriteAnalyzer(model.class)
         def fields = FieldUtils.getTargetedFields(model.class)
         def arguments = [new DefaultExcelTypeHandlerRegistry()] as Object[]
 
@@ -60,7 +60,7 @@ class ExcelWriteColumnAnalyzerSpec extends Specification {
         arguments += new DefaultExcelTypeHandlerRegistry()
 
         when:
-        def analyzer = new ExcelWriteColumnAnalyzer(type)
+        def analyzer = new ExcelWriteAnalyzer(type)
         def analyses = analyzer.analyze(fields, arguments as Object[])
 
         then:

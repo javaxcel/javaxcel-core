@@ -14,22 +14,26 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.converter.out.analysis.impl;
+package com.github.javaxcel.converter.out.analysis;
 
-import com.github.javaxcel.converter.out.analysis.AbstractExcelWriteColumnAnalysis;
-import io.github.imsejin.common.util.ReflectionUtils;
+import com.github.javaxcel.converter.handler.ExcelTypeHandler;
+import jakarta.validation.constraints.Null;
 
 import java.lang.reflect.Field;
 
-public final class FieldAccessDefaultExcelWriteColumnAnalysis extends AbstractExcelWriteColumnAnalysis {
+public interface ExcelWriteAnalysis {
 
-    public FieldAccessDefaultExcelWriteColumnAnalysis(Field field, String defaultValue) {
-        super(field, defaultValue);
-    }
+    Field getField();
 
-    @Override
-    public Object getValue(Object model) {
-        return ReflectionUtils.getFieldValue(model, getField());
+    @Null
+    Object getValue(Object model);
+
+    String getDefaultValue();
+
+    ExcelTypeHandler<?> getHandler();
+
+    default boolean doesHandlerResolved() {
+        return getHandler() != null;
     }
 
 }
