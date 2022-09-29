@@ -64,7 +64,8 @@ public class ExcelModelExecutableParameterNameResolver {
     // -------------------------------------------------------------------------------------------------
 
     public static class ResolvedParameter {
-        private static final ParameterNameDiscoverer discoverer = new DefaultParameterNameDiscoverer();
+        private static final ParameterNameDiscoverer DISCOVERER = new DefaultParameterNameDiscoverer();
+
         private final String name;
         private final boolean annotated;
         private final MethodParameter methodParameter;
@@ -77,7 +78,7 @@ public class ExcelModelExecutableParameterNameResolver {
             if (annotated) {
                 name = annotation.value();
             } else {
-                methodParameter.initParameterNameDiscovery(discoverer);
+                methodParameter.initParameterNameDiscovery(DISCOVERER);
                 name = methodParameter.getParameterName();
             }
 
@@ -109,7 +110,7 @@ public class ExcelModelExecutableParameterNameResolver {
         @Override
         public String toString() {
             if (isAnnotated()) {
-                this.methodParameter.initParameterNameDiscovery(discoverer);
+                this.methodParameter.initParameterNameDiscovery(DISCOVERER);
                 String originalName = this.methodParameter.getParameterName();
                 return "@FieldName('" + this.name + "') " + getType().getName() + ' ' + originalName;
             } else {
