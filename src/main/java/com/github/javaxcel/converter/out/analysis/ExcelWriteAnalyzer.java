@@ -61,8 +61,13 @@ public class ExcelWriteAnalyzer {
 
     public List<ExcelWriteAnalysis> analyze(List<Field> fields, Object... arguments) {
         Asserts.that(fields)
+                .describedAs("ExcelWriteAnalyzer cannot analyze null as fields")
                 .isNotNull()
+                .describedAs("ExcelWriteAnalyzer cannot analyze empty fields")
                 .isNotEmpty()
+                .describedAs("One of fields ExcelWriteAnalyzer analyze are declared on different type from the given type. (declared: '{0}', given: '{1}')",
+                        fields.stream().filter(field -> field.getDeclaringClass() != this.type)
+                                .findFirst().map(Field::getDeclaringClass).orElse(null), this.type)
                 .allMatch(field -> field.getDeclaringClass() == this.type);
 
         ExcelTypeHandlerRegistry registry = FieldUtils.resolveFirst(ExcelTypeHandlerRegistry.class, arguments);
