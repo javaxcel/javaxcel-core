@@ -30,6 +30,7 @@ import com.github.javaxcel.out.strategy.impl.UseGetters;
 import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.ArrayUtils;
+import jakarta.validation.constraints.Null;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -38,6 +39,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.collectingAndThen;
@@ -46,6 +48,7 @@ import static java.util.stream.Collectors.toList;
 public class ExcelWriteAnalyzer {
 
     private static final ExpressionParser EXPRESSION_PARSER = new SpelExpressionParser();
+    private static final int VOID_BIT = 0x00;
     private static final int EXPRESSION_BIT = 0x01;
     private static final int USE_GETTERS_BIT = 0x02;
     private static final List<AnalysisResolver> ANALYSIS_RESOLVERS = Stream.of(
@@ -65,12 +68,14 @@ public class ExcelWriteAnalyzer {
                 .isNotNull()
                 .describedAs("ExcelWriteAnalyzer cannot analyze empty fields")
                 .isNotEmpty()
-                .describedAs("One of fields ExcelWriteAnalyzer analyze are declared on different type from the given type. (declared: '{0}', given: '{1}')",
+                .describedAs("One of fields ExcelWriteAnalyzer analyzes are declared on different type from the given type. (declared: '{0}', given: '{1}')",
                         fields.stream().filter(field -> field.getDeclaringClass() != this.type)
                                 .findFirst().map(Field::getDeclaringClass).orElse(null), this.type)
                 .allMatch(field -> field.getDeclaringClass() == this.type);
 
-        ExcelTypeHandlerRegistry registry = FieldUtils.resolveFirst(ExcelTypeHandlerRegistry.class, arguments);
+        ExcelTypeHandlerRegistry registry = Objects.requireNonNull(
+                FieldUtils.resolveFirst(ExcelTypeHandlerRegistry.class, arguments),
+                "Never throw; ExcelTypeHandlerRegistry is injected into arguments by caller");
 
         List<ExcelWriteAnalysis> analyses = new ArrayList<>();
         for (Field field : fields) {
@@ -91,9 +96,9 @@ public class ExcelWriteAnalyzer {
         UseGetters useGettersStrategy = FieldUtils.resolveFirst(UseGetters.class, args);
         ExcelWriteExpression annotation = field.getAnnotation(ExcelWriteExpression.class);
 
-        int bit = 0;
-        bit |= annotation == null ? 0 : EXPRESSION_BIT;
-        bit |= useGettersStrategy == null ? 0 : USE_GETTERS_BIT;
+        int bit = VOID_BIT;
+        bit |= annotation == null ? VOID_BIT : EXPRESSION_BIT;
+        bit |= useGettersStrategy == null ? VOID_BIT : USE_GETTERS_BIT;
 
         for (AnalysisResolver resolver : ANALYSIS_RESOLVERS) {
             if (resolver.getBit() == bit) {
@@ -101,7 +106,7 @@ public class ExcelWriteAnalyzer {
             }
         }
 
-        throw new RuntimeException("NEVER THROW");
+        throw new RuntimeException("Never throw; ExcelWriteAnalyzer.ANALYSIS_RESOLVERS can deal with a bit in every case");
     }
 
     // -------------------------------------------------------------------------------------------------
@@ -111,7 +116,7 @@ public class ExcelWriteAnalyzer {
 
         ExcelWriteAnalysis resolve(Object... args);
 
-        static String resolveDefaultValue(Field field, DefaultValue strategy) {
+        static String resolveDefaultValue(Field field, @Null DefaultValue strategy) {
             if (strategy != null) {
                 return (String) strategy.execute(null);
             }
@@ -141,7 +146,7 @@ public class ExcelWriteAnalyzer {
     private static class FieldAccessDefaultAnalysisResolver implements AnalysisResolver {
         @Override
         public int getBit() {
-            return 0x00;
+            return VOID_BIT;
         }
 
         @Override
@@ -173,7 +178,8 @@ public class ExcelWriteAnalyzer {
         @Override
         @SuppressWarnings("unchecked")
         public ExcelWriteAnalysis resolve(Object... args) {
-            Field field = FieldUtils.resolveFirst(Field.class, args);
+            Field field = Objects.requireNonNull(FieldUtils.resolveFirst(Field.class, args),
+                    "Never throw; Field is injected into arguments by ExcelWriteAnalyzer");
 
             DefaultValue strategy = FieldUtils.resolveFirst(DefaultValue.class, args);
             String defaultValue = AnalysisResolver.resolveDefaultValue(field, strategy);
@@ -228,7 +234,8 @@ public class ExcelWriteAnalyzer {
         @Override
         @SuppressWarnings("unchecked")
         public ExcelWriteAnalysis resolve(Object... args) {
-            Field field = FieldUtils.resolveFirst(Field.class, args);
+            Field field = Objects.requireNonNull(FieldUtils.resolveFirst(Field.class, args),
+                    "Never throw; Field is injected into arguments by ExcelWriteAnalyzer");
 
             DefaultValue strategy = FieldUtils.resolveFirst(DefaultValue.class, args);
             String defaultValue = AnalysisResolver.resolveDefaultValue(field, strategy);

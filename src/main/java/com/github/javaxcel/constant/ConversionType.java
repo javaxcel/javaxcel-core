@@ -53,7 +53,7 @@ public enum ConversionType {
                 annotation = field.getAnnotation(ExcelWriteExpression.class);
                 break;
             default:
-                throw new IllegalArgumentException("Unknown converter type: " + converterType);
+                throw new IllegalArgumentException("Unknown ConverterType: " + converterType);
         }
 
         return annotation == null ? DEFAULT : EXPRESSION;
