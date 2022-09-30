@@ -136,8 +136,9 @@ class FieldUtilsSpec extends Specification {
 
         when:
         println fieldName
-        println field.type
-        println field.genericType
+        println "field.genericType.class: $field.genericType.class.simpleName"
+        println "field.type: $field.type"
+        println "field.genericType: $field.genericType"
         println "--------------------------------"
 
         then:
@@ -226,27 +227,30 @@ class FieldUtilsSpec extends Specification {
 
     // -------------------------------------------------------------------------------------------------
 
-    private static class Sample<S extends Number, T> {
+    private static class Sample<S extends Number, T, C extends Iterable<S>> {
         Long concrete
         Sample raw
-        Sample<Long, String> generic
-        Sample<Long, String>[] generic_array
+        Sample<Long, String, List<Long>> generic
+        Sample<Integer, String, Set<Integer>>[] generic_array
         T type_variable
         T[] type_variable_array
         T[][] type_variable_2d_array
         S bounded_type_variable
         S[] bounded_type_variable_array
         S[][] bounded_type_variable_2d_array
+        C bounded_iterable_type_variable
+        C[] bounded_iterable_type_variable_array
+        C[][] bounded_iterable_type_variable_2d_array
         List iterable
         List<?> iterable_unknown
         List<Long> iterable_concrete
         List<Long>[] iterable_concrete_array
         List<Sample> iterable_raw
-        List<Sample<Integer, ?>> iterable_generic
+        List<Sample<Integer, ?, Collection<Integer>>> iterable_generic
         List<? extends Long> iterable_upper_wildcard_concrete
         List<? super Long> iterable_lower_wildcard_concrete
-        List<? extends Sample<Short, ?>> iterable_upper_wildcard_generic
-        List<? super Sample<Byte, ?>> iterable_lower_wildcard_generic
+        List<? extends Sample<Short, ?, Queue<Short>>> iterable_upper_wildcard_generic
+        List<? super Sample<Byte, ?, Deque<Byte>>> iterable_lower_wildcard_generic
         List<T> iterable_type_variable
         List<T[]> iterable_type_variable_array
         List<? extends T> iterable_upper_wildcard_type_variable
@@ -259,7 +263,7 @@ class FieldUtilsSpec extends Specification {
         List<? super S> iterable_lower_wildcard_bounded_type_variable
         List<? extends S[]> iterable_upper_wildcard_bounded_type_variable_array
         List<? super S[]> iterable_lower_wildcard_bounded_type_variable_array
-        List<List<Sample<BigInteger, String>>> iterable_iterable_generic
+        List<List<Sample<BigInteger, String, Iterable<BigInteger>>>> iterable_iterable_generic
     }
 
 }
