@@ -215,104 +215,73 @@ public final class FieldUtils {
     }
 
     public static Class<?> resolveActualType(Field field) {
-        Class<?> fieldType = field.getType();
-        Type genericType = field.getGenericType();
+        Type type = field.getGenericType();
 
-        outer:
-        while (true) {
-            // When type is concrete type.
-            if (genericType instanceof Class) {
-                Class<?> c = (Class<?>) genericType;
-                if (Iterable.class.isAssignableFrom(c)) {
-                    return Object.class;
+        while (!(type instanceof Class)) {
+            // class Sample<S, C extends Iterable<S>> {
+            //     private C c;
+            // } ... typeVariable.bounds == [Iterable<S>]
+            if (type instanceof TypeVariable) {
+                TypeVariable<?> typeVariable = (TypeVariable<?>) type;
+                type = typeVariable.getBounds()[0];
+                continue;
+            }
+
+            // class Sample<S extends Number> {
+            //     private S[][] s;
+            // } ... genericArrayType.genericComponentType == S[]
+            if (type instanceof GenericArrayType) {
+                GenericArrayType genericArrayType = (GenericArrayType) type;
+                type = genericArrayType.getGenericComponentType();
+                continue;
+            }
+
+
+            // class Sample<S extends Number> {
+            //     private Iterable<Sample<Long>> samples;
+            // } ... parameterizedType.rawType == Iterable.class
+            // ... parameterizedType.getActualTypeArguments == [Sample]
+            if (type instanceof ParameterizedType) {
+                ParameterizedType parameterizedType = (ParameterizedType) type;
+                Type rawType = parameterizedType.getRawType();
+
+                if (rawType instanceof Class && Iterable.class.isAssignableFrom((Class<?>) rawType)) {
+                    type = parameterizedType.getActualTypeArguments()[0];
+                } else {
+                    type = rawType;
                 }
 
-                return c;
+                continue;
             }
 
             // When type is wildcard type:
-            // java.util.List<? super java.lang.String>
-            // java.util.List<? extends java.lang.String>
-            if (genericType instanceof WildcardType) {
-                WildcardType wildcardType = (WildcardType) genericType;
+            // List<? super java.lang.String>
+            // List<? extends java.lang.String>
+            if (type instanceof WildcardType) {
+                WildcardType wildcardType = (WildcardType) type;
                 Type[] lowerBounds = wildcardType.getLowerBounds();
-                Type t = ArrayUtils.exists(lowerBounds) ? lowerBounds[0] : wildcardType.getUpperBounds()[0];
 
-                if (t instanceof Class) {
-                    genericType = t;
-                    continue;
+                Type boundedType;
+                if (ArrayUtils.exists(lowerBounds)) {
+                    boundedType = lowerBounds[0];
+                } else {
+                    boundedType = wildcardType.getUpperBounds()[0];
                 }
 
-                // GenericArrayType: T[]
-                if (t instanceof GenericArrayType) {
-                    genericType = fieldType;
-                    continue;
-                }
-
-                // TypeVariable: T
-                genericType = Object.class;
-                continue;
-            }
-
-            if (genericType instanceof TypeVariable) {
-                genericType = fieldType;
-                continue;
-            }
-
-            if (!(genericType instanceof ParameterizedType)) {
-                genericType = Object.class;
-                continue;
-            }
-
-            ParameterizedType paramType = (ParameterizedType) genericType;
-            Class<?> rawType = (Class<?>) paramType.getRawType();
-            if (Iterable.class.isAssignableFrom(rawType)) {
-                for (Type t : paramType.getActualTypeArguments()) {
-                    genericType = t;
-                    continue outer;
-                }
-            } else {
-                genericType = rawType;
+                type = boundedType;
             }
         }
-    }
 
-    public static String getDeclaration(Type genericType) {
-        if (genericType instanceof ParameterizedType) {
-            // types with parameters
-            ParameterizedType parameterizedType = (ParameterizedType) genericType;
-            String declaration = parameterizedType.getRawType().getTypeName();
-            declaration += "<";
+        // When type is concrete type or array.
+        Class<?> actualType = (Class<?>) type;
+        Class<?> actualComponentType = ArrayUtils.resolveActualComponentType(actualType);
 
-            Type[] typeArgs = parameterizedType.getActualTypeArguments();
-
-            for (int i = 0; i < typeArgs.length; i++) {
-                Type typeArg = typeArgs[i];
-
-                if (i > 0) {
-                    declaration += ", ";
-                }
-
-                // note: recursive call
-                declaration += getDeclaration(typeArg);
-            }
-
-            declaration += ">";
-            declaration = declaration.replace('$', '.');
-            return declaration;
-        } else if (genericType instanceof Class<?>) {
-            Class<?> clazz = (Class<?>) genericType;
-
-            if (clazz.isArray()) {
-                // arrays
-                return clazz.getComponentType().getCanonicalName() + "[]";
-            } else {
-                // primitive and types without parameters (normal/standard types)
-                return clazz.getCanonicalName();
-            }
+        if (Iterable.class.isAssignableFrom(actualType)) {
+            return Object.class;
+        } else if (actualType.isArray() && Iterable.class.isAssignableFrom(actualComponentType)) {
+            return Object.class;
         } else {
-            // e.g. WildcardTypeImpl (Class<? extends Integer>)
-            return genericType.getTypeName();
+            return actualType;
         }
     }
 

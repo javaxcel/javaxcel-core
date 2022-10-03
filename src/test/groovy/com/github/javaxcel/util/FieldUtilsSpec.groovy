@@ -18,6 +18,7 @@ package com.github.javaxcel.util
 
 import com.github.javaxcel.annotation.ExcelColumn
 import com.github.javaxcel.annotation.ExcelModel
+import com.github.javaxcel.model.sample.ComplexSample
 import io.github.imsejin.common.util.ReflectionUtils
 import spock.lang.Specification
 
@@ -132,54 +133,53 @@ class FieldUtilsSpec extends Specification {
 
     def "Resolves the actual type of field"() {
         given:
-        def field = Sample.declaredFields.find({ it.name == fieldName })
+        def field = ComplexSample.declaredFields.find({ it.name == fieldName })
 
         when:
-        println fieldName
-        println "field.genericType.class: $field.genericType.class.simpleName"
-        println "field.type: $field.type"
-        println "field.genericType: $field.genericType"
-        println "--------------------------------"
+        def actualType = FieldUtils.resolveActualType(field)
 
         then:
-        def actualType = FieldUtils.resolveActualType(field)
         actualType == expected
 
         where:
         fieldName                                             | expected
         "concrete"                                            | Long
-        "raw"                                                 | Sample
-        "generic"                                             | Sample
-        "generic_array"                                       | Sample[]
+        "raw"                                                 | ComplexSample
+        "generic"                                             | ComplexSample
+        "generic_array"                                       | ComplexSample
         "type_variable"                                       | Object
-        "type_variable_array"                                 | Object[]
-        "type_variable_2d_array"                              | Object[][]
+        "type_variable_array"                                 | Object
+        "type_variable_2d_array"                              | Object
         "bounded_type_variable"                               | Number
-        "bounded_type_variable_array"                         | Number[]
-        "bounded_type_variable_2d_array"                      | Number[][]
+        "bounded_type_variable_array"                         | Number
+        "bounded_type_variable_2d_array"                      | Number
+        "bounded_iterable_type_variable"                      | Double
+        "bounded_iterable_type_variable_array"                | Double
+        "bounded_iterable_type_variable_2d_array"             | Double
         "iterable"                                            | Object
         "iterable_unknown"                                    | Object
         "iterable_concrete"                                   | Long
-        "iterable_concrete_array"                             | Long[] //
-        "iterable_raw"                                        | Sample
-        "iterable_generic"                                    | Sample
+        "iterable_concrete_array"                             | Long
+        "iterable_raw"                                        | ComplexSample
+        "iterable_generic"                                    | ComplexSample
         "iterable_upper_wildcard_concrete"                    | Long
         "iterable_lower_wildcard_concrete"                    | Long
-        "iterable_upper_wildcard_generic"                     | Sample //
-        "iterable_lower_wildcard_generic"                     | Sample //
+        "iterable_upper_wildcard_generic"                     | ComplexSample
+        "iterable_lower_wildcard_generic"                     | ComplexSample
         "iterable_type_variable"                              | Object
-        "iterable_type_variable_array"                        | Object[] //
+        "iterable_type_variable_array"                        | Object
         "iterable_upper_wildcard_type_variable"               | Object
         "iterable_lower_wildcard_type_variable"               | Object
-        "iterable_upper_wildcard_type_variable_array"         | Object[]
-        "iterable_lower_wildcard_type_variable_array"         | Object[]
-        "iterable_bounded_type_variable"                      | Number //
-        "iterable_bounded_type_variable_array"                | Number[] //
-        "iterable_upper_wildcard_bounded_type_variable"       | Number //
-        "iterable_lower_wildcard_bounded_type_variable"       | Number //
-        "iterable_upper_wildcard_bounded_type_variable_array" | Number[]
-        "iterable_lower_wildcard_bounded_type_variable_array" | Number[]
-        "iterable_iterable_generic"                           | Sample
+        "iterable_upper_wildcard_type_variable_array"         | Object
+        "iterable_lower_wildcard_type_variable_array"         | Object
+        "iterable_bounded_type_variable"                      | Number
+        "iterable_bounded_type_variable_array"                | Number
+        "iterable_upper_wildcard_bounded_type_variable"       | Number
+        "iterable_lower_wildcard_bounded_type_variable"       | Number
+        "iterable_upper_wildcard_bounded_type_variable_array" | Number
+        "iterable_lower_wildcard_bounded_type_variable_array" | Number
+        "iterable_bounded_iterable_type_variable"             | Double
+        "iterable_iterable_generic"                           | ComplexSample
     }
 
     // -------------------------------------------------------------------------------------------------
@@ -223,47 +223,6 @@ class FieldUtilsSpec extends Specification {
     @ExcelModel(explicit = true, includeSuper = true)
     private static class ExplicitAndIncludedSuper extends Parent {
         String f1
-    }
-
-    // -------------------------------------------------------------------------------------------------
-
-    private static class Sample<S extends Number, T, C extends Iterable<S>> {
-        Long concrete
-        Sample raw
-        Sample<Long, String, List<Long>> generic
-        Sample<Integer, String, Set<Integer>>[] generic_array
-        T type_variable
-        T[] type_variable_array
-        T[][] type_variable_2d_array
-        S bounded_type_variable
-        S[] bounded_type_variable_array
-        S[][] bounded_type_variable_2d_array
-        C bounded_iterable_type_variable
-        C[] bounded_iterable_type_variable_array
-        C[][] bounded_iterable_type_variable_2d_array
-        List iterable
-        List<?> iterable_unknown
-        List<Long> iterable_concrete
-        List<Long>[] iterable_concrete_array
-        List<Sample> iterable_raw
-        List<Sample<Integer, ?, Collection<Integer>>> iterable_generic
-        List<? extends Long> iterable_upper_wildcard_concrete
-        List<? super Long> iterable_lower_wildcard_concrete
-        List<? extends Sample<Short, ?, Queue<Short>>> iterable_upper_wildcard_generic
-        List<? super Sample<Byte, ?, Deque<Byte>>> iterable_lower_wildcard_generic
-        List<T> iterable_type_variable
-        List<T[]> iterable_type_variable_array
-        List<? extends T> iterable_upper_wildcard_type_variable
-        List<? super T> iterable_lower_wildcard_type_variable
-        List<? extends T[]> iterable_upper_wildcard_type_variable_array
-        List<? super T[]> iterable_lower_wildcard_type_variable_array
-        List<S> iterable_bounded_type_variable
-        List<S[]> iterable_bounded_type_variable_array
-        List<? extends S> iterable_upper_wildcard_bounded_type_variable
-        List<? super S> iterable_lower_wildcard_bounded_type_variable
-        List<? extends S[]> iterable_upper_wildcard_bounded_type_variable_array
-        List<? super S[]> iterable_lower_wildcard_bounded_type_variable_array
-        List<List<Sample<BigInteger, String, Iterable<BigInteger>>>> iterable_iterable_generic
     }
 
 }
