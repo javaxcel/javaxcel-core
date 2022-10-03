@@ -44,7 +44,7 @@ class KeyNamesSpec extends Specification {
         then: "Succeed to create strategy"
         !strategy.isSupported(contextMap[ModelWriter])
         strategy.isSupported(contextMap[MapWriter])
-        def orders = (0..legalKeyNames.size() - 1).stream().collect toMap({ legalKeyNames[it] }, Function.identity())
+        def orders = (0..<legalKeyNames.size()).stream().collect toMap({ legalKeyNames[it] }, Function.identity())
         strategy.execute(null) == [orders: orders, names: legalKeyNames]
 
         when: "Create strategy with illegal argument"

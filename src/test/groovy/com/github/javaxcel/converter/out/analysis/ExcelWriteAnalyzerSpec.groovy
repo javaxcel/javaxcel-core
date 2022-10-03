@@ -17,7 +17,15 @@
 package com.github.javaxcel.converter.out.analysis
 
 import com.github.javaxcel.TestUtils
+import com.github.javaxcel.converter.handler.impl.BigDecimalTypeHandler
+import com.github.javaxcel.converter.handler.impl.BigIntegerTypeHandler
+import com.github.javaxcel.converter.handler.impl.DoubleTypeHandler
+import com.github.javaxcel.converter.handler.impl.IntegerTypeHandler
+import com.github.javaxcel.converter.handler.impl.LongTypeHandler
+import com.github.javaxcel.converter.handler.impl.StringTypeHandler
 import com.github.javaxcel.converter.handler.registry.impl.DefaultExcelTypeHandlerRegistry
+import com.github.javaxcel.model.sample.ComplexSample
+import com.github.javaxcel.model.sample.GenericSample
 import com.github.javaxcel.model.sample.ModelSample
 import com.github.javaxcel.model.sample.PlainSample
 import com.github.javaxcel.out.strategy.impl.DefaultValue
@@ -30,7 +38,7 @@ class ExcelWriteAnalyzerSpec extends Specification {
     def "Analyzes with access option"() {
         given:
         def model = new Sample(values: ["sample", "item"])
-        def analyzer = new ExcelWriteAnalyzer(model.class)
+        def analyzer = new ExcelWriteAnalyzer()
         def fields = FieldUtils.getTargetedFields(model.class)
         def arguments = [new DefaultExcelTypeHandlerRegistry()] as Object[]
 
@@ -53,20 +61,23 @@ class ExcelWriteAnalyzerSpec extends Specification {
     }
 
     @SuppressWarnings("GroovyAssignabilityCheck")
-    def "Analyzes"() {
+    def "Analyzes fields of randomized model"() {
         given:
         def fields = FieldUtils.getTargetedFields(type)
         def model = TestUtils.randomize(type)
         arguments += new DefaultExcelTypeHandlerRegistry()
 
         when:
-        def analyzer = new ExcelWriteAnalyzer(type)
+        def analyzer = new ExcelWriteAnalyzer()
         def analyses = analyzer.analyze(fields, arguments as Object[])
 
-        then:
+        then: """
+            1. Result count of analyses is equal to count of the given fields.
+            2. Default value of each analysis is equal to the expected.
+        """
         analyses.size() == fields.size()
         analyses*.defaultValue == defaultValues
-        (0..<analyses.size()).each {
+        analyses.size().times {
             def analysis = analyses[it]
             def field = fields[it]
 
@@ -76,10 +87,37 @@ class ExcelWriteAnalyzerSpec extends Specification {
 
         where:
         type        | arguments               || defaultValues
-        PlainSample | []                      || [null, null, "0.00", null]
-        PlainSample | [new DefaultValue("-")] || ["-", "-", "-", "-"]
+        PlainSample | []                      || [null, "0.00", null]
+        PlainSample | [new DefaultValue("-")] || ["-", "-", "-"]
         ModelSample | []                      || ["(empty)", "none", "(empty)", "[]"]
         ModelSample | [new DefaultValue("-")] || ["-", "-", "-", "-"]
+    }
+
+    def "Analyzes fields of non-randomized model"() {
+        given:
+        def fields = FieldUtils.getTargetedFields(type)
+
+        when:
+        def analyzer = new ExcelWriteAnalyzer()
+        def analyses = analyzer.analyze(fields, new DefaultExcelTypeHandlerRegistry())
+
+        then: "Field, value and handler of analysis is equal to the expected"
+        analyses.size() == fields.size()
+        analyses.size().times {
+            def analysis = analyses[it]
+            def handleType = handlerTypes[it]
+
+            assert analysis.handler?.class == handleType
+        }
+
+        where:
+        type          | handlerTypes
+        PlainSample   | [LongTypeHandler, BigDecimalTypeHandler, StringTypeHandler]
+        ModelSample   | [IntegerTypeHandler, StringTypeHandler, BigIntegerTypeHandler, StringTypeHandler]
+        GenericSample | [null, StringTypeHandler, BigDecimalTypeHandler, StringTypeHandler, StringTypeHandler, StringTypeHandler]
+        ComplexSample | [LongTypeHandler, null, null, null, null, null, null, null, null, null, DoubleTypeHandler, DoubleTypeHandler,
+                         DoubleTypeHandler, null, null, LongTypeHandler, LongTypeHandler, null, null, LongTypeHandler, LongTypeHandler,
+                         null, null, null, null, null, null, null, null, null, null, null, null, null, null, DoubleTypeHandler, null]
     }
 
     // -------------------------------------------------------------------------------------------------

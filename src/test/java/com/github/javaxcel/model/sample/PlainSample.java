@@ -13,8 +13,6 @@ public class PlainSample {
 
     private Long id;
 
-    private String name;
-
     @ExcelColumn(defaultValue = "0.00")
     private BigDecimal price;
 

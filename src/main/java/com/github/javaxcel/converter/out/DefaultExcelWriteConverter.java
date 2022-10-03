@@ -18,6 +18,7 @@ package com.github.javaxcel.converter.out;
 
 import com.github.javaxcel.converter.handler.ExcelTypeHandler;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
+import com.github.javaxcel.converter.out.analysis.ExcelWriteAnalysis;
 import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.ClassUtils;
 import io.github.imsejin.common.util.ReflectionUtils;
@@ -25,20 +26,34 @@ import jakarta.validation.constraints.Null;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toMap;
 
 public class DefaultExcelWriteConverter implements ExcelWriteConverter {
 
     private final ExcelTypeHandlerRegistry registry;
 
-    public DefaultExcelWriteConverter(ExcelTypeHandlerRegistry registry) {
+    private final Map<Field, ExcelWriteAnalysis> analysisMap;
+
+    public DefaultExcelWriteConverter(ExcelTypeHandlerRegistry registry, List<ExcelWriteAnalysis> analyses) {
         Asserts.that(registry)
                 .describedAs("DefaultExcelWriteConverter.registry is not allowed to be null")
                 .isNotNull()
                 .describedAs("DefaultExcelWriteConverter.registry.allTypes is not allowed to be null")
                 .predicate(it -> it.getAllTypes() != null);
+        Asserts.that(analyses)
+                .describedAs("DefaultExcelWriteConverter.analyses is not allowed to be null")
+                .isNotNull();
 
         this.registry = registry;
+        this.analysisMap = analyses.stream().collect(collectingAndThen(
+                toMap(ExcelWriteAnalysis::getField, Function.identity()), Collections::unmodifiableMap));
     }
 
     /**
@@ -53,7 +68,10 @@ public class DefaultExcelWriteConverter implements ExcelWriteConverter {
         }
 
         Class<?> type = field.getType();
+        return handleInternal(field, type, value);
+    }
 
+    private String handleInternal(Field field, Class<?> type, Object value) {
         if (type.isArray()) {
             // Supports multi-dimensional array type.
             return handleArray(field, value);
@@ -61,7 +79,7 @@ public class DefaultExcelWriteConverter implements ExcelWriteConverter {
             // Supports nested iterable type.
             return handleIterable(field, (Iterable<?>) value);
         } else {
-            return handleNonArray(field, type, value);
+            return handleConcrete(field, type, value);
         }
     }
 
@@ -84,14 +102,7 @@ public class DefaultExcelWriteConverter implements ExcelWriteConverter {
                 // Because one dimensional Object array can have array instance as an element.
                 Class<?> elementType = element.getClass();
 
-                String string;
-                if (elementType.isArray()) {
-                    string = handleArray(field, element);
-                } else if (element instanceof Iterable) {
-                    string = handleIterable(field, (Iterable<?>) element);
-                } else {
-                    string = handleNonArray(field, elementType, element);
-                }
+                String string = handleInternal(field, elementType, element);
 
                 // Considers null as empty string.
                 if (string != null) {
@@ -125,14 +136,7 @@ public class DefaultExcelWriteConverter implements ExcelWriteConverter {
                 // Because one dimensional Object array can have array instance as an element.
                 Class<?> elementType = element.getClass();
 
-                String string;
-                if (elementType.isArray()) {
-                    string = handleArray(field, element);
-                } else if (element instanceof Iterable) {
-                    string = handleIterable(field, (Iterable<?>) element);
-                } else {
-                    string = handleNonArray(field, elementType, element);
-                }
+                String string = handleInternal(field, elementType, element);
 
                 // Considers null as empty string.
                 if (string != null) {
@@ -149,8 +153,17 @@ public class DefaultExcelWriteConverter implements ExcelWriteConverter {
         return sb.append(']').toString();
     }
 
-    private String handleNonArray(Field field, Class<?> type, Object value) {
-        ExcelTypeHandler<?> handler = this.registry.getHandler(type);
+    private String handleConcrete(Field field, Class<?> type, Object value) {
+        ExcelWriteAnalysis analysis = this.analysisMap.get(field);
+
+        ExcelTypeHandler<?> handler;
+        if (analysis != null && analysis.doesHandlerResolved()) {
+            // When ExcelWriteAnalyzer has analysis for the field and its handler is resolved.
+            handler = analysis.getHandler();
+        } else {
+            // When ExcelWriteAnalyzer can't resolve handler for the field or this converter has no analysis.
+            handler = this.registry.getHandler(type);
+        }
 
         if (handler == null) {
             // When there is no handler for the type, just stringifies value.

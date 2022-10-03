@@ -24,6 +24,8 @@ import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
 import com.github.javaxcel.converter.out.DefaultExcelWriteConverter;
 import com.github.javaxcel.converter.out.ExcelWriteConverter;
 import com.github.javaxcel.converter.out.ExpressionExcelWriteConverter;
+import com.github.javaxcel.converter.out.analysis.ExcelWriteAnalysis;
+import com.github.javaxcel.converter.out.analysis.ExcelWriteAnalyzer;
 import com.github.javaxcel.model.Column;
 import com.github.javaxcel.out.strategy.impl.DefaultValue;
 import io.github.imsejin.common.util.StringUtils;
@@ -39,6 +41,8 @@ import static java.util.stream.Collectors.toMap;
 
 public class ExcelWriteConverterSupport implements ExcelWriteConverter {
 
+    private static final ExcelWriteAnalyzer ANALYZER = new ExcelWriteAnalyzer();
+
     private final Map<Field, Column> columnMap;
 
     private final ExcelWriteConverter defaultConverter;
@@ -50,7 +54,10 @@ public class ExcelWriteConverterSupport implements ExcelWriteConverter {
                 toMap(Function.identity(), it -> new Column(it, ConverterType.OUT)),
                 Collections::unmodifiableMap));
 
-        this.defaultConverter = new DefaultExcelWriteConverter(registry);
+        // TODO: resolve strategy for DefaultValue.
+        List<ExcelWriteAnalysis> analyses = ANALYZER.analyze(fields, registry);
+
+        this.defaultConverter = new DefaultExcelWriteConverter(registry, analyses);
         // Caches expressions for each field to improve performance.
         this.expressionConverter = new ExpressionExcelWriteConverter(fields);
     }

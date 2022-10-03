@@ -56,22 +56,12 @@ public class ExcelWriteAnalyzer {
             new GetterAccessDefaultAnalysisResolver(), new GetterAccessExpressionAnalysisResolver())
             .collect(collectingAndThen(toList(), Collections::unmodifiableList));
 
-    private final Class<?> type;
-
-    public ExcelWriteAnalyzer(Class<?> type) {
-        this.type = type;
-    }
-
     public List<ExcelWriteAnalysis> analyze(List<Field> fields, Object... arguments) {
         Asserts.that(fields)
                 .describedAs("ExcelWriteAnalyzer cannot analyze null as fields")
                 .isNotNull()
                 .describedAs("ExcelWriteAnalyzer cannot analyze empty fields")
-                .isNotEmpty()
-                .describedAs("One of fields ExcelWriteAnalyzer analyzes are declared on different type from the given type. (declared: '{0}', given: '{1}')",
-                        fields.stream().filter(field -> field.getDeclaringClass() != this.type)
-                                .findFirst().map(Field::getDeclaringClass).orElse(null), this.type)
-                .allMatch(field -> field.getDeclaringClass() == this.type);
+                .isNotEmpty();
 
         ExcelTypeHandlerRegistry registry = Objects.requireNonNull(
                 FieldUtils.resolveFirst(ExcelTypeHandlerRegistry.class, arguments),
@@ -79,9 +69,10 @@ public class ExcelWriteAnalyzer {
 
         List<ExcelWriteAnalysis> analyses = new ArrayList<>();
         for (Field field : fields) {
-            ExcelTypeHandler<?> handler = registry.getHandler(field.getType());
+            Class<?> actualType = FieldUtils.resolveActualType(field);
+            ExcelTypeHandler<?> handler = registry.getHandler(actualType);
 
-            Object[] args = ArrayUtils.prepend(arguments, field, handler);
+            Object[] args = ArrayUtils.prepend(arguments, fields, field, handler);
             ExcelWriteAnalysis analysis = resolveAnalysis(field, args);
 
             analyses.add(analysis);

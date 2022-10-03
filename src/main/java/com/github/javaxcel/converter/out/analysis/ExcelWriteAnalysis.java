@@ -33,7 +33,8 @@ public interface ExcelWriteAnalysis {
     ExcelTypeHandler<?> getHandler();
 
     default boolean doesHandlerResolved() {
-        return getHandler() != null;
+        ExcelTypeHandler<?> handler = getHandler();
+        return handler != null && handler.getType() != Object.class;
     }
 
 }

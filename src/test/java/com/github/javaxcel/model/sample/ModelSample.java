@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Set;
 
 @ToString
@@ -13,12 +14,12 @@ import java.util.Set;
 @ExcelModel(defaultValue = "(empty)")
 public class ModelSample {
 
-    private Long id;
+    private Integer identifier;
 
     @ExcelColumn(defaultValue = "none")
-    private String name;
+    private String title;
 
-    private BigDecimal price;
+    private BigInteger serialNumber;
 
     @ExcelColumn(defaultValue = "[]")
     private Set<String> tags;
