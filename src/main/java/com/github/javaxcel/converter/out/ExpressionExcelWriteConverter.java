@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Deprecated
 public class ExpressionExcelWriteConverter implements ExcelWriteConverter {
 
     private static final ExpressionParser parser = new SpelExpressionParser();

@@ -63,8 +63,10 @@ public class DefaultExcelWriteConverter implements ExcelWriteConverter {
     @Override
     public String convert(Object model, Field field) {
         Object value = ReflectionUtils.getFieldValue(model, field);
+
         if (value == null) {
-            return null;
+            ExcelWriteAnalysis analysis = this.analysisMap.get(field);
+            return analysis.getDefaultValue();
         }
 
         Class<?> type = field.getType();

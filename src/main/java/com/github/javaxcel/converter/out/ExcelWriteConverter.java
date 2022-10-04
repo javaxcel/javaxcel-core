@@ -16,21 +16,38 @@
 
 package com.github.javaxcel.converter.out;
 
+import com.github.javaxcel.annotation.ExcelColumn;
+import com.github.javaxcel.annotation.ExcelModel;
+import com.github.javaxcel.out.core.ExcelWriter;
+import com.github.javaxcel.out.strategy.impl.DefaultValue;
 import jakarta.validation.constraints.Null;
 
 import java.lang.reflect.Field;
 
+/**
+ * Converter for writing Excel
+ */
 public interface ExcelWriteConverter {
 
     /**
-     * Converts value of the field to the string.
+     * Converts a value of the field into a string.
      *
-     * <p> To write a value in the cell, this converts a field's value
-     * to the string. The converted string will be written in cell.
+     * <p> If the value is null, it is converted into <b>default value</b>.
+     * The priority is determined by the below policy orders.
+     *
+     * <ol>
+     *     <li>{@link DefaultValue}</li>
+     *     <li>{@link ExcelColumn#defaultValue()}</li>
+     *     <li>{@link ExcelModel#defaultValue()}</li>
+     * </ol>
+     *
+     * <p> In principal the converter doesn't return {@code null}, but if there is no policy, returns {@code null}.
+     * To write a value to cell, the converter makes it turn into a string.
+     * The converted string will be written to cell by {@link ExcelWriter}.
      *
      * @param model element in list
      * @param field field of model
-     * @return stringified field's value
+     * @return stringified value of field or default value
      */
     @Null
     String convert(Object model, Field field);
