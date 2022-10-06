@@ -19,7 +19,6 @@ package com.github.javaxcel.out.core.impl;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
-import com.github.javaxcel.converter.out.DefaultExcelWriteConverter;
 import com.github.javaxcel.converter.out.ExcelWriteConverter;
 import com.github.javaxcel.converter.out.analysis.ExcelWriteAnalysis;
 import com.github.javaxcel.converter.out.analysis.ExcelWriteAnalyzer;
@@ -116,13 +115,13 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
 
     @Override
     public void prepare(ExcelWriteContext<T> context) {
+        // Creates a converter.
         ExcelWriteStrategy strategy = context.getStrategyMap().get(DefaultValue.class);
         List<ExcelWriteAnalysis> analyses = ANALYZER.analyze(this.fields, this.registry, strategy);
-
         this.converter = new ExcelWriteConverterSupport(this.registry, analyses);
 
+        // Handles the given options.
         resolveEnumDropdown(context);
-//        resolveDefaultValue(context);
         resolveHeaderStyles(context);
         resolveBodyStyles(context);
     }
@@ -167,15 +166,6 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
         if (!enumDropdownMap.isEmpty()) {
             this.enumDropdownMap = enumDropdownMap;
         }
-    }
-
-    private void resolveDefaultValue(ExcelWriteContext<T> context) {
-        ExcelWriteStrategy strategy = context.getStrategyMap().get(DefaultValue.class);
-        if (strategy == null) {
-            return;
-        }
-
-//        this.converter.setAllDefaultValues((String) strategy.execute(context));
     }
 
     private void resolveHeaderStyles(ExcelWriteContext<T> context) {
