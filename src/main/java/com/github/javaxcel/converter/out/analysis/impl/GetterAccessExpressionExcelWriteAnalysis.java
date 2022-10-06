@@ -44,6 +44,8 @@ public final class GetterAccessExpressionExcelWriteAnalysis extends AbstractExce
 
     @Override
     public Object getValue(Object model) {
+        // We don't set root object to prevent user from assigning value
+        // to the field of model with the way we don't intend.
         EvaluationContext context = new StandardEvaluationContext();
 
         // Enables to use value of the field as "#FIELD_NAME" in 'ExcelWriteExpression'.

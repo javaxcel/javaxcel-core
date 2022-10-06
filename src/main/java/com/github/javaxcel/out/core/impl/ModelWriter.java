@@ -119,8 +119,7 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
         ExcelWriteStrategy strategy = context.getStrategyMap().get(DefaultValue.class);
         List<ExcelWriteAnalysis> analyses = ANALYZER.analyze(this.fields, this.registry, strategy);
 
-        this.converter = new DefaultExcelWriteConverter(registry, analyses);
-//        this.converter = new ExcelWriteConverterSupport(this.fields, this.registry, analyses);
+        this.converter = new ExcelWriteConverterSupport(this.registry, analyses);
 
         resolveEnumDropdown(context);
 //        resolveDefaultValue(context);

@@ -19,9 +19,10 @@ package com.github.javaxcel.converter.out;
 import com.github.javaxcel.converter.handler.ExcelTypeHandler;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
 import com.github.javaxcel.converter.out.analysis.ExcelWriteAnalysis;
+import com.github.javaxcel.converter.out.analysis.impl.FieldAccessDefaultExcelWriteAnalysis;
+import com.github.javaxcel.converter.out.analysis.impl.GetterAccessDefaultExcelWriteAnalysis;
 import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.ClassUtils;
-import io.github.imsejin.common.util.ReflectionUtils;
 import jakarta.validation.constraints.Null;
 
 import java.lang.reflect.Array;
@@ -56,16 +57,25 @@ public class DefaultExcelWriteConverter implements ExcelWriteConverter {
                 toMap(ExcelWriteAnalysis::getField, Function.identity()), Collections::unmodifiableMap));
     }
 
+    @Override
+    public boolean supports(Field field) {
+        ExcelWriteAnalysis analysis = this.analysisMap.get(field);
+
+        return analysis instanceof FieldAccessDefaultExcelWriteAnalysis
+                || analysis instanceof GetterAccessDefaultExcelWriteAnalysis;
+    }
+
     /**
      * {@inheritDoc}
      */
     @Null
     @Override
     public String convert(Object model, Field field) {
-        Object value = ReflectionUtils.getFieldValue(model, field);
+        ExcelWriteAnalysis analysis = this.analysisMap.get(field);
+        Object value = analysis.getValue(model);
 
+        // Returns default value if the value is null.
         if (value == null) {
-            ExcelWriteAnalysis analysis = this.analysisMap.get(field);
             return analysis.getDefaultValue();
         }
 

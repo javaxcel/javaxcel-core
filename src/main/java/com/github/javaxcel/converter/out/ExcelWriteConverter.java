@@ -29,6 +29,8 @@ import java.lang.reflect.Field;
  */
 public interface ExcelWriteConverter {
 
+    boolean supports(Field field);
+
     /**
      * Converts a value of the field into a string.
      *
