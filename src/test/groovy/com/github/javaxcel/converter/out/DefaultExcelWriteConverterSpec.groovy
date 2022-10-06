@@ -17,6 +17,7 @@
 package com.github.javaxcel.converter.out
 
 import com.github.javaxcel.converter.handler.registry.impl.DefaultExcelTypeHandlerRegistry
+import com.github.javaxcel.converter.out.analysis.impl.FieldAccessDefaultExcelWriteAnalysis
 import com.github.javaxcel.internal.Array1D
 import com.github.javaxcel.internal.Array2D
 import com.github.javaxcel.internal.Array3D
@@ -26,13 +27,14 @@ class DefaultExcelWriteConverterSpec extends Specification {
 
     def "Converts 1D array"() {
         given:
-        def converter = new DefaultExcelWriteConverter(new DefaultExcelTypeHandlerRegistry(), [])
         def array1D = new Array1D(array)
+        def analyses = array1D.class.declaredFields.collect({ new FieldAccessDefaultExcelWriteAnalysis(it, null) })
         def fieldName = array == null ? "localeArray" : (array1D.properties.keySet() as Set<String>).stream()
                 .filter({ it.startsWith(array.class.componentType.simpleName.toLowerCase()) }).find() as String
         def field = Array1D.getDeclaredField fieldName
 
         when:
+        def converter = new DefaultExcelWriteConverter(new DefaultExcelTypeHandlerRegistry(), analyses)
         def actual = converter.convert(array1D, field)
 
         then:
@@ -57,13 +59,14 @@ class DefaultExcelWriteConverterSpec extends Specification {
 
     def "Converts 2D array"() {
         given:
-        def converter = new DefaultExcelWriteConverter(new DefaultExcelTypeHandlerRegistry(), [])
         def array2D = new Array2D(array)
+        def analyses = array2D.class.declaredFields.collect({ new FieldAccessDefaultExcelWriteAnalysis(it, null) })
         def fieldName = array == null ? "localeArray" : (array2D.properties.keySet() as Set<String>).stream()
                 .filter({ it.startsWith(array.class.componentType.componentType.simpleName.toLowerCase()) }).find() as String
         def field = Array2D.getDeclaredField fieldName
 
         when:
+        def converter = new DefaultExcelWriteConverter(new DefaultExcelTypeHandlerRegistry(), analyses)
         def actual = converter.convert(array2D, field)
 
         then:
@@ -92,13 +95,14 @@ class DefaultExcelWriteConverterSpec extends Specification {
 
     def "Converts 3D array"() {
         given:
-        def converter = new DefaultExcelWriteConverter(new DefaultExcelTypeHandlerRegistry(), [])
         def array3D = new Array3D(array)
+        def analyses = array3D.class.declaredFields.collect({ new FieldAccessDefaultExcelWriteAnalysis(it, null) })
         def fieldName = array == null ? "localeArray" : (array3D.properties.keySet() as Set<String>).stream()
                 .filter({ it.startsWith(array.class.componentType.componentType.componentType.simpleName.toLowerCase()) }).find() as String
         def field = Array3D.getDeclaredField fieldName
 
         when:
+        def converter = new DefaultExcelWriteConverter(new DefaultExcelTypeHandlerRegistry(), analyses)
         def actual = converter.convert(array3D, field)
 
         then:
