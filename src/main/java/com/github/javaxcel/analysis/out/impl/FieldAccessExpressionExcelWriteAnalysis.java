@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.converter.out.analysis.impl;
+package com.github.javaxcel.analysis.out.impl;
 
-import com.github.javaxcel.converter.out.analysis.AbstractExcelWriteAnalysis;
+import com.github.javaxcel.analysis.AbstractExcelAnalysis;
+import com.github.javaxcel.analysis.out.ExcelWriteAnalysis;
 import com.github.javaxcel.util.FieldUtils;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
@@ -27,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public final class FieldAccessExpressionExcelWriteAnalysis extends AbstractExcelWriteAnalysis {
+public final class FieldAccessExpressionExcelWriteAnalysis extends AbstractExcelAnalysis implements ExcelWriteAnalysis {
 
     private Expression expression;
 

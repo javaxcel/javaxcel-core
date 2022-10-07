@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.converter.out.analysis;
+package com.github.javaxcel.analysis;
 
 import com.github.javaxcel.converter.handler.ExcelTypeHandler;
-import jakarta.validation.constraints.Null;
 
 import java.lang.reflect.Field;
 
-public interface ExcelWriteAnalysis {
+public interface ExcelAnalysis {
 
     Field getField();
-
-    @Null
-    Object getValue(Object model);
 
     String getDefaultValue();
 

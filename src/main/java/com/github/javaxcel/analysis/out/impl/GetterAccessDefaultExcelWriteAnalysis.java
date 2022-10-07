@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.converter.out.analysis.impl;
+package com.github.javaxcel.analysis.out.impl;
 
-import com.github.javaxcel.converter.out.analysis.AbstractExcelWriteAnalysis;
+import com.github.javaxcel.analysis.AbstractExcelAnalysis;
+import com.github.javaxcel.analysis.out.ExcelWriteAnalysis;
 import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-public final class GetterAccessDefaultExcelWriteAnalysis extends AbstractExcelWriteAnalysis {
+public final class GetterAccessDefaultExcelWriteAnalysis extends AbstractExcelAnalysis implements ExcelWriteAnalysis {
 
     private final Method getter;
 

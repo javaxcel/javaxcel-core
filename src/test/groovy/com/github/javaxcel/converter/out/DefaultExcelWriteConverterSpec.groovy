@@ -17,7 +17,7 @@
 package com.github.javaxcel.converter.out
 
 import com.github.javaxcel.converter.handler.registry.impl.DefaultExcelTypeHandlerRegistry
-import com.github.javaxcel.converter.out.analysis.impl.FieldAccessDefaultExcelWriteAnalysis
+import com.github.javaxcel.analysis.out.impl.FieldAccessDefaultExcelWriteAnalysis
 import com.github.javaxcel.internal.Array1D
 import com.github.javaxcel.internal.Array2D
 import com.github.javaxcel.internal.Array3D

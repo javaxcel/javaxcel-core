@@ -16,12 +16,13 @@
 
 package com.github.javaxcel.out.core.impl;
 
+import com.github.javaxcel.analysis.ExcelAnalyzer;
+import com.github.javaxcel.analysis.out.ExcelWriteAnalysis;
+import com.github.javaxcel.analysis.out.ExcelWriteAnalyzer;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
 import com.github.javaxcel.converter.out.ExcelWriteConverter;
-import com.github.javaxcel.converter.out.analysis.ExcelWriteAnalysis;
-import com.github.javaxcel.converter.out.analysis.ExcelWriteAnalyzer;
 import com.github.javaxcel.converter.out.support.ExcelWriteConverterSupport;
 import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.out.context.ExcelWriteContext;
@@ -70,7 +71,7 @@ import java.util.stream.IntStream;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class ModelWriter<T> extends AbstractExcelWriter<T> {
 
-    private static final ExcelWriteAnalyzer ANALYZER = new ExcelWriteAnalyzer();
+    private static final ExcelAnalyzer<ExcelWriteAnalysis> ANALYZER = new ExcelWriteAnalyzer();
 
     /**
      * The fields of type that will be actually written in Excel file.

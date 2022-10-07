@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.converter.out.analysis.impl;
+package com.github.javaxcel.analysis.out.impl;
 
-import com.github.javaxcel.converter.out.analysis.AbstractExcelWriteAnalysis;
+import com.github.javaxcel.analysis.AbstractExcelAnalysis;
+import com.github.javaxcel.analysis.out.ExcelWriteAnalysis;
 import io.github.imsejin.common.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 
-public final class FieldAccessDefaultExcelWriteAnalysis extends AbstractExcelWriteAnalysis {
+public final class FieldAccessDefaultExcelWriteAnalysis extends AbstractExcelAnalysis implements ExcelWriteAnalysis {
 
     public FieldAccessDefaultExcelWriteAnalysis(Field field, String defaultValue) {
         super(field, defaultValue);
