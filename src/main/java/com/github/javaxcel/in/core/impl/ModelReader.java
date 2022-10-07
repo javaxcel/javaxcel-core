@@ -83,6 +83,8 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
      */
     private final Executable executable;
 
+    private final ExcelModelExecutableParameterNameResolver paramNameResolver;
+
     /**
      * The fields of the type that will is actually read from Excel file.
      *
@@ -105,8 +107,12 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
 
         // To prevent exception from occurring on multi-threaded environment,
         // Permits access to the executable that is not accessible. (ExcelReadStrategy.Parallel)
-        if (!executable.isAccessible()) executable.setAccessible(true);
+        if (!executable.isAccessible()) {
+            executable.setAccessible(true);
+        }
+
         this.executable = executable;
+        this.paramNameResolver = new ExcelModelExecutableParameterNameResolver(executable);
 
         // Finds the targeted fields.
         List<Field> fields = FieldUtils.getTargetedFields(type);
@@ -162,7 +168,7 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
         Map<String, Object> mock = this.fields.stream().collect(HashMap::new,
                 (map, it) -> map.put(it.getName(), this.converter.convert(variables, it)), Map::putAll);
 
-        List<ResolvedParameter> resolvedParams = new ExcelModelExecutableParameterNameResolver(this.executable).resolve();
+        List<ResolvedParameter> resolvedParams = this.paramNameResolver.resolve();
         List<String> paramNames = resolvedParams.stream().map(ResolvedParameter::getName).collect(toList());
 
         // Maps a mock model to initial arguments for @ExcelModelCreator.
@@ -187,12 +193,17 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
 
         for (Field field : this.fields) {
             // To prevent ModelReader from changing value of final field by reflection API.
-            if (Modifier.isFinal(field.getModifiers())) continue;
-            // Skips over conversion of field assigned by parameters of the executable.
-            if (paramNames.contains(field.getName())) continue;
+            if (Modifier.isFinal(field.getModifiers())) {
+                continue;
+            }
 
-            Object fieldValue = this.converter.convert(variables, field);
-            ReflectionUtils.setFieldValue(model, field, fieldValue);
+            // Skips over conversion of field assigned by parameters of the executable.
+            if (paramNames.contains(field.getName())) {
+                continue;
+            }
+
+            Object value = mock.get(field.getName());
+            ReflectionUtils.setFieldValue(model, field, value);
         }
 
         return model;

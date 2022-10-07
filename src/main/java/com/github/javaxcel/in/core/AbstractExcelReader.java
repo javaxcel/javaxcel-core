@@ -182,10 +182,16 @@ public abstract class AbstractExcelReader<T> implements ExcelReader<T>, ExcelRea
         List<Map<String, String>> maps = new ArrayList<>();
         for (Row row : sheet) {
             // ExcelReader already read a header, so skip the first row in this method.
-            if (row.getRowNum() == 0) continue;
+            if (row.getRowNum() == 0) {
+                continue;
+            }
 
-            if (this.context.getReadCount() == this.limit) break;
-            maps.add(readRow(row));
+            if (this.context.getReadCount() == this.limit) {
+                break;
+            }
+
+            Map<String, String> rowMap = readRow(row);
+            maps.add(rowMap);
         }
 
         return Collections.unmodifiableList(maps);
@@ -226,7 +232,7 @@ public abstract class AbstractExcelReader<T> implements ExcelReader<T>, ExcelRea
             if (this.formulaEvaluator == null) {
                 cellValue = cell.getStringCellValue();
             } else {
-                // Evaluates the formula and returns a stringifed value.
+                // Evaluates the formula and returns a stringified value.
                 cellValue = dataFormatter.formatCellValue(cell, this.formulaEvaluator);
             }
 

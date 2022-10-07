@@ -33,7 +33,7 @@ import java.util.function.Function;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toMap;
 
-public class ExcelReadConverterSupport implements ExcelReadConverter {
+public final class ExcelReadConverterSupport implements ExcelReadConverter {
 
     private final Map<Field, Column> columnMap;
 

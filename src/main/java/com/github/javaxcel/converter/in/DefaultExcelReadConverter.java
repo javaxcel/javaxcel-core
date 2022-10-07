@@ -74,7 +74,7 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
             // Supports nested iterable type.
             return handleIterable(field, type, value);
         } else {
-            return handleNonArray(field, type, value);
+            return handleConcrete(field, type, value);
         }
     }
 
@@ -96,7 +96,7 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
                 element = string.isEmpty() ? null : handleIterable(field, componentType, string);
             } else {
                 // Allows empty string to handler for non-array type.
-                element = handleNonArray(field, componentType, string);
+                element = handleConcrete(field, componentType, string);
             }
 
             Array.set(array, i, element);
@@ -121,7 +121,7 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
                 element = string.isEmpty() ? null : handleIterable(field, componentType, string);
             } else {
                 // Allows empty string to handler for non-array type.
-                element = handleNonArray(field, componentType, string);
+                element = handleConcrete(field, componentType, string);
             }
 
             list.add(element);
@@ -130,7 +130,7 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
         return list;
     }
 
-    private Object handleNonArray(Field field, Class<?> type, String value) {
+    private Object handleConcrete(Field field, Class<?> type, String value) {
         // Resolves a handler of the type.
         ExcelTypeHandler<?> handler = this.registry.getHandler(type);
 
