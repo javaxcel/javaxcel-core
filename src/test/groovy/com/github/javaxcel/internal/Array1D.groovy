@@ -50,9 +50,9 @@ class Array1D {
     long[] longs
     float[] floats
     double[] doubles
-    Object[] objects
 
     @ExcelColumn(defaultValue = "[]")
+    Object[] objects
     Locale[] locales
 
 }
