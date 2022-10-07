@@ -165,8 +165,13 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
     @SuppressWarnings("unchecked")
     private T toActualModel(Map<String, String> variables) {
         // Creates a mock model for actual model.
-        Map<String, Object> mock = this.fields.stream().collect(HashMap::new,
-                (map, it) -> map.put(it.getName(), this.converter.convert(variables, it)), Map::putAll);
+        Map<String, Object> mock = new HashMap<>();
+        for (Field field : this.fields) {
+            String key = field.getName();
+            Object value = this.converter.convert(variables, field);
+
+            mock.put(key, value);
+        }
 
         List<ResolvedParameter> resolvedParams = this.paramNameResolver.resolve();
         List<String> paramNames = resolvedParams.stream().map(ResolvedParameter::getName).collect(toList());
@@ -188,7 +193,7 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
             arguments[i] = mock.get(field.getName());
         }
 
-        // Instantiates the actual model.
+        // Instantiates the actual model through the cached ExcelModelCreator.
         T model = (T) ReflectionUtils.execute(this.executable, null, arguments);
 
         for (Field field : this.fields) {
