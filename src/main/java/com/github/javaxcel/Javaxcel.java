@@ -96,7 +96,7 @@ public class Javaxcel {
      * @param workbook Excel workbook
      * @return implementation that can handle {@link Map} when you read
      */
-    public ExcelReader<Map<String, Object>> reader(Workbook workbook) {
+    public ExcelReader<Map<String, String>> reader(Workbook workbook) {
         return new MapReader(workbook);
     }
 
