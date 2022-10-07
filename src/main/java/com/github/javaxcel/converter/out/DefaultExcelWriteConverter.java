@@ -18,9 +18,9 @@ package com.github.javaxcel.converter.out;
 
 import com.github.javaxcel.converter.handler.ExcelTypeHandler;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
-import com.github.javaxcel.converter.out.analysis.ExcelWriteAnalysis;
-import com.github.javaxcel.converter.out.analysis.impl.FieldAccessDefaultExcelWriteAnalysis;
-import com.github.javaxcel.converter.out.analysis.impl.GetterAccessDefaultExcelWriteAnalysis;
+import com.github.javaxcel.analysis.out.ExcelWriteAnalysis;
+import com.github.javaxcel.analysis.out.impl.FieldAccessDefaultExcelWriteAnalysis;
+import com.github.javaxcel.analysis.out.impl.GetterAccessDefaultExcelWriteAnalysis;
 import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.ClassUtils;
 import jakarta.validation.constraints.Null;

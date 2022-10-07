@@ -20,7 +20,7 @@ import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
 import com.github.javaxcel.converter.out.DefaultExcelWriteConverter;
 import com.github.javaxcel.converter.out.ExcelWriteConverter;
 import com.github.javaxcel.converter.out.ExpressionExcelWriteConverter;
-import com.github.javaxcel.converter.out.analysis.ExcelWriteAnalysis;
+import com.github.javaxcel.analysis.out.ExcelWriteAnalysis;
 import io.github.imsejin.common.annotation.ExcludeFromGeneratedJacocoReport;
 
 import java.lang.reflect.Field;
