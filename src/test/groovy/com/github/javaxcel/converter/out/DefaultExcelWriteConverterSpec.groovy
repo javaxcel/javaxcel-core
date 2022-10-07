@@ -27,106 +27,115 @@ class DefaultExcelWriteConverterSpec extends Specification {
 
     def "Converts 1D array"() {
         given:
-        def array1D = new Array1D(array)
-        def analyses = array1D.class.declaredFields.collect({ new FieldAccessDefaultExcelWriteAnalysis(it, null) })
-        def fieldName = array == null ? "localeArray" : (array1D.properties.keySet() as Set<String>).stream()
-                .filter({ it.startsWith(array.class.componentType.simpleName.toLowerCase()) }).find() as String
-        def field = Array1D.getDeclaredField fieldName
+        def model = new Array1D(array)
+        def analyses = model.class.declaredFields.collect({ new FieldAccessDefaultExcelWriteAnalysis(it, null) })
+        def field = Array1D.getDeclaredField(fieldName)
 
         when:
         def converter = new DefaultExcelWriteConverter(new DefaultExcelTypeHandlerRegistry(), analyses)
-        def actual = converter.convert(array1D, field)
+        def actual = converter.convert(model, field)
 
         then:
         actual == expected
 
         where:
-        array                                                | expected
-        null                                                 | null
-        [false, true] as boolean[]                           | "[false, true]"
-        [-128, 0, 127] as byte[]                             | "[-128, 0, 127]"
-        [-32768, 0, 32767] as short[]                        | "[-32768, 0, 32767]"
-        ['a', 'B', '0', '/'] as char[]                       | "[a, B, 0, /]"
-        [74, 0, -12] as int[]                                | "[74, 0, -12]"
-        [0, 9720, -8715] as long[]                           | "[0, 9720, -8715]"
-        [0.0, 9.745, -1.14157] as float[]                    | "[0.0, 9.745, -1.14157]"
-        [3.141592, -0.0879, 0.0] as double[]                 | "[3.141592, -0.0879, 0.0]"
-        [] as Locale[]                                       | "[]"
-        [null] as Locale[]                                   | "[]"
-        [null, Locale.ROOT, null] as Locale[]                | "[, , ]"
-        [Locale.US, Locale.KOREA, Locale.FRANCE] as Locale[] | "[en_US, ko_KR, fr_FR]"
+        fieldName  | array                                                || expected
+        "objects"  | null                                                 || null
+        "booleans" | [false, true] as boolean[]                           || "[false, true]"
+        "bytes"    | [-128, 0, 127] as byte[]                             || "[-128, 0, 127]"
+        "shorts"   | [-32768, 0, 32767] as short[]                        || "[-32768, 0, 32767]"
+        "chars"    | ['a', 'B', '0', '/'] as char[]                       || "[a, B, 0, /]"
+        "ints"     | [74, 0, -12] as int[]                                || "[74, 0, -12]"
+        "longs"    | [0, 9720, -8715] as long[]                           || "[0, 9720, -8715]"
+        "floats"   | [0.0, 9.745, -1.14157] as float[]                    || "[0.0, 9.745, -1.14157]"
+        "doubles"  | [3.141592, -0.0879, 0.0] as double[]                 || "[3.141592, -0.0879, 0.0]"
+        "objects"  | [] as Object[]                                       || "[]"
+        "objects"  | [null] as Object[]                                   || "[]"
+        "objects"  | [new Object() {
+            String toString() { "java.lang.Object@x" }
+        }] as Object[]                                                    || "[java.lang.Object@x]"
+        "locales"  | [] as Locale[]                                       || "[]"
+        "locales"  | [null] as Locale[]                                   || "[]"
+        "locales"  | [null, Locale.ROOT, null] as Locale[]                || "[, , ]"
+        "locales"  | [Locale.US, Locale.KOREA, Locale.FRANCE] as Locale[] || "[en_US, ko_KR, fr_FR]"
     }
 
     def "Converts 2D array"() {
         given:
-        def array2D = new Array2D(array)
-        def analyses = array2D.class.declaredFields.collect({ new FieldAccessDefaultExcelWriteAnalysis(it, null) })
-        def fieldName = array == null ? "localeArray" : (array2D.properties.keySet() as Set<String>).stream()
-                .filter({ it.startsWith(array.class.componentType.componentType.simpleName.toLowerCase()) }).find() as String
-        def field = Array2D.getDeclaredField fieldName
+        def model = new Array2D(array)
+        def analyses = model.class.declaredFields.collect({ new FieldAccessDefaultExcelWriteAnalysis(it, null) })
+        def field = model.class.getDeclaredField(fieldName)
 
         when:
         def converter = new DefaultExcelWriteConverter(new DefaultExcelTypeHandlerRegistry(), analyses)
-        def actual = converter.convert(array2D, field)
+        def actual = converter.convert(model, field)
 
         then:
         actual == expected
 
         where:
-        array                                                          | expected
-        null                                                           | null
-        [[false], [true], [false, true]] as boolean[][]                | "[[false], [true], [false, true]]"
-        [[-128], null, [127]] as byte[][]                              | "[[-128], , [127]]"
-        [[-32768, 0, 32767]] as short[][]                              | "[[-32768, 0, 32767]]"
-        [['a', 'B'], [], ['0', '/']] as char[][]                       | "[[a, B], [], [0, /]]"
-        [null, [74, 0, -12]] as int[][]                                | "[, [74, 0, -12]]"
-        [[0], [], [9720, -8715]] as long[][]                           | "[[0], [], [9720, -8715]]"
-        [[0.0], [9.745, -1.14157]] as float[][]                        | "[[0.0], [9.745, -1.14157]]"
-        [[3.141592, -0.0879, 0.0], null] as double[][]                 | "[[3.141592, -0.0879, 0.0], ]"
-        [] as Locale[][]                                               | "[]"
-        [[]] as Locale[][]                                             | "[[]]"
-        [[], []] as Locale[][]                                         | "[[], []]"
-        [[], null, []] as Locale[][]                                   | "[[], , []]"
-        [null, [], [], null] as Locale[][]                             | "[, [], [], ]"
-        [null, [], null, [null, null]] as Locale[][]                   | "[, [], , [, ]]"
-        [null, [Locale.GERMANY, Locale.CHINA], [], null] as Locale[][] | "[, [de_DE, zh_CN], [], ]"
-        [[Locale.UK], [], [Locale.ITALY], []] as Locale[][]            | "[[en_GB], [], [it_IT], []]"
+        fieldName  | array                                                          || expected
+        "objects"  | null                                                           || null
+        "booleans" | [[false], [true], [false, true]] as boolean[][]                || "[[false], [true], [false, true]]"
+        "bytes"    | [[-128], null, [127]] as byte[][]                              || "[[-128], , [127]]"
+        "shorts"   | [[-32768, 0, 32767]] as short[][]                              || "[[-32768, 0, 32767]]"
+        "chars"    | [['a', 'B'], [], ['0', '/']] as char[][]                       || "[[a, B], [], [0, /]]"
+        "ints"     | [null, [74, 0, -12]] as int[][]                                || "[, [74, 0, -12]]"
+        "longs"    | [[0], [], [9720, -8715]] as long[][]                           || "[[0], [], [9720, -8715]]"
+        "floats"   | [[0.0], [9.745, -1.14157]] as float[][]                        || "[[0.0], [9.745, -1.14157]]"
+        "doubles"  | [[3.141592, -0.0879, 0.0], null] as double[][]                 || "[[3.141592, -0.0879, 0.0], ]"
+        "objects"  | [] as Object[][]                                               || "[]"
+        "objects"  | [[null]] as Object[][]                                         || "[[]]"
+        "objects"  | [[null, new Object() {
+            String toString() { "java.lang.Object@x" }
+        }]] as Object[][]                                                           || "[[, java.lang.Object@x]]"
+        "locales"  | [] as Locale[][]                                               || "[]"
+        "locales"  | [[]] as Locale[][]                                             || "[[]]"
+        "locales"  | [[], []] as Locale[][]                                         || "[[], []]"
+        "locales"  | [[], null, []] as Locale[][]                                   || "[[], , []]"
+        "locales"  | [null, [], [], null] as Locale[][]                             || "[, [], [], ]"
+        "locales"  | [null, [], null, [null, null]] as Locale[][]                   || "[, [], , [, ]]"
+        "locales"  | [null, [Locale.GERMANY, Locale.CHINA], [], null] as Locale[][] || "[, [de_DE, zh_CN], [], ]"
+        "locales"  | [[Locale.UK], [], [Locale.ITALY], []] as Locale[][]            || "[[en_GB], [], [it_IT], []]"
     }
 
     def "Converts 3D array"() {
         given:
-        def array3D = new Array3D(array)
-        def analyses = array3D.class.declaredFields.collect({ new FieldAccessDefaultExcelWriteAnalysis(it, null) })
-        def fieldName = array == null ? "localeArray" : (array3D.properties.keySet() as Set<String>).stream()
-                .filter({ it.startsWith(array.class.componentType.componentType.componentType.simpleName.toLowerCase()) }).find() as String
-        def field = Array3D.getDeclaredField fieldName
+        def model = new Array3D(array)
+        def analyses = model.class.declaredFields.collect({ new FieldAccessDefaultExcelWriteAnalysis(it, null) })
+        def field = model.class.getDeclaredField(fieldName)
 
         when:
         def converter = new DefaultExcelWriteConverter(new DefaultExcelTypeHandlerRegistry(), analyses)
-        def actual = converter.convert(array3D, field)
+        def actual = converter.convert(model, field)
 
         then:
         actual == expected
 
         where:
-        array                                                                            | expected
-        null                                                                             | null
-        [[], [[false], [true]], null] as boolean[][][]                                   | "[[], [[false], [true]], ]"
-        [null, [[-128]], [[127]]] as byte[][][]                                          | "[, [[-128]], [[127]]]"
-        [[[-32768, 0, 32767]]] as short[][][]                                            | "[[[-32768, 0, 32767]]]"
-        [[['a'], [], ['B']], [], [['0', '/']]] as char[][][]                             | "[[[a], [], [B]], [], [[0, /]]]"
-        [null, [null, [74], [0, -12]]] as int[][][]                                      | "[, [, [74], [0, -12]]]"
-        [[[0], null], [], [[9720, -8715], null]] as long[][][]                           | "[[[0], ], [], [[9720, -8715], ]]"
-        [[[], [0.0]], [[9.745], [-1.14157]]] as float[][][]                              | "[[[], [0.0]], [[9.745], [-1.14157]]]"
-        [[[3.141592, -0.0879], [0.0]], null] as double[][][]                             | "[[[3.141592, -0.0879], [0.0]], ]"
-        [] as Locale[][][]                                                               | "[]"
-        [[]] as Locale[][][]                                                             | "[[]]"
-        [[], []] as Locale[][][]                                                         | "[[], []]"
-        [[], null, []] as Locale[][][]                                                   | "[[], , []]"
-        [null, null, null, null] as Locale[][][]                                         | "[, , , ]"
-        [null, [[], []], [], null] as Locale[][][]                                       | "[, [[], []], [], ]"
-        [[[Locale.US, Locale.ENGLISH], [Locale.KOREA, Locale.KOREAN]]] as Locale[][][]   | "[[[en_US, en], [ko_KR, ko]]]"
-        [[null, [null, Locale.ROOT], [Locale.JAPAN, Locale.TAIWAN]], []] as Locale[][][] | "[[, [, ], [ja_JP, zh_TW]], []]"
+        fieldName  | array                                                                            || expected
+        "objects"  | null                                                                             || null
+        "booleans" | [[], [[false], [true]], null] as boolean[][][]                                   || "[[], [[false], [true]], ]"
+        "bytes"    | [null, [[-128]], [[127]]] as byte[][][]                                          || "[, [[-128]], [[127]]]"
+        "shorts"   | [[[-32768, 0, 32767]]] as short[][][]                                            || "[[[-32768, 0, 32767]]]"
+        "chars"    | [[['a'], [], ['B']], [], [['0', '/']]] as char[][][]                             || "[[[a], [], [B]], [], [[0, /]]]"
+        "ints"     | [null, [null, [74], [0, -12]]] as int[][][]                                      || "[, [, [74], [0, -12]]]"
+        "longs"    | [[[0], null], [], [[9720, -8715], null]] as long[][][]                           || "[[[0], ], [], [[9720, -8715], ]]"
+        "floats"   | [[[], [0.0]], [[9.745], [-1.14157]]] as float[][][]                              || "[[[], [0.0]], [[9.745], [-1.14157]]]"
+        "doubles"  | [[[3.141592, -0.0879], [0.0]], null] as double[][][]                             || "[[[3.141592, -0.0879], [0.0]], ]"
+        "objects"  | [] as Object[][][]                                                               || "[]"
+        "objects"  | [null, [[]], []] as Object[][][]                                                 || "[, [[]], []]"
+        "objects"  | [[], null, [[null, new Object() {
+            String toString() { "java.lang.Object@x" }
+        }, null]]] as Object[][][]                                                                    || "[[], , [[, java.lang.Object@x, ]]]"
+        "locales"  | [] as Locale[][][]                                                               || "[]"
+        "locales"  | [[]] as Locale[][][]                                                             || "[[]]"
+        "locales"  | [[], []] as Locale[][][]                                                         || "[[], []]"
+        "locales"  | [[], null, []] as Locale[][][]                                                   || "[[], , []]"
+        "locales"  | [null, null, null, null] as Locale[][][]                                         || "[, , , ]"
+        "locales"  | [null, [[], []], [], null] as Locale[][][]                                       || "[, [[], []], [], ]"
+        "locales"  | [[[Locale.US, Locale.ENGLISH], [Locale.KOREA, Locale.KOREAN]]] as Locale[][][]   || "[[[en_US, en], [ko_KR, ko]]]"
+        "locales"  | [[null, [null, Locale.ROOT], [Locale.JAPAN, Locale.TAIWAN]], []] as Locale[][][] || "[[, [, ], [ja_JP, zh_TW]], []]"
     }
 
 }

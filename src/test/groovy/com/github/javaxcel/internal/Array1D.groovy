@@ -18,48 +18,41 @@ package com.github.javaxcel.internal
 
 import com.github.javaxcel.annotation.ExcelColumn
 import io.github.imsejin.common.assertion.Asserts
+import io.github.imsejin.common.util.ArrayUtils
 
 class Array1D {
-
-    def static DIMENSION = 1
 
     Array1D(Object array) {
         if (array == null) return
         Asserts.that(array.class).isArray()
 
-        def componentType = array.class
-        for (i in 1..DIMENSION) {
-            componentType = componentType.componentType
-        }
-
+        def componentType = ArrayUtils.resolveActualComponentType(array.class)
         Asserts.that(componentType)
                 .isNotNull().predicate({ !it.isArray() })
 
-        if (!componentType.isPrimitive()) {
-            this.localeArray = array as Locale[]
-            return
-        }
-
-        if (componentType == boolean) this.booleanArray = array as boolean[]
-        if (componentType == byte) this.byteArray = array as byte[]
-        if (componentType == short) this.shortArray = array as short[]
-        if (componentType == char) this.charArray = array as char[]
-        if (componentType == int) this.intArray = array as int[]
-        if (componentType == long) this.longArray = array as long[]
-        if (componentType == float) this.floatArray = array as float[]
-        if (componentType == double) this.doubleArray = array as double[]
+        if (componentType == boolean) this.booleans = array as boolean[]
+        if (componentType == byte) this.bytes = array as byte[]
+        if (componentType == short) this.shorts = array as short[]
+        if (componentType == char) this.chars = array as char[]
+        if (componentType == int) this.ints = array as int[]
+        if (componentType == long) this.longs = array as long[]
+        if (componentType == float) this.floats = array as float[]
+        if (componentType == double) this.doubles = array as double[]
+        if (componentType == Object) this.objects = array as Object[]
+        if (componentType == Locale) this.locales = array as Locale[]
     }
 
-    boolean[] booleanArray
-    byte[] byteArray
-    short[] shortArray
-    char[] charArray
-    int[] intArray
-    long[] longArray
-    float[] floatArray
-    double[] doubleArray
+    boolean[] booleans
+    byte[] bytes
+    short[] shorts
+    char[] chars
+    int[] ints
+    long[] longs
+    float[] floats
+    double[] doubles
+    Object[] objects
 
     @ExcelColumn(defaultValue = "[]")
-    Locale[] localeArray
+    Locale[] locales
 
 }
