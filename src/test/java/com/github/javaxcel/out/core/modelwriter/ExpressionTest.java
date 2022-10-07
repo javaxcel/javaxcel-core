@@ -87,7 +87,7 @@ class ExpressionTest extends ModelWriterTester {
         int numOfFields = FieldUtils.getTargetedFields(Human.class).size();
         List<String> keyNames = IntStream.range(0, numOfFields)
                 .mapToObj(Integer::toString).collect(toList());
-        List<Map<String, Object>> list = TestUtils.JAVAXCEL.reader(workbook)
+        List<Map<String, String>> list = TestUtils.JAVAXCEL.reader(workbook)
                 .options(new KeyNames(keyNames)).read();
 
         Map<String, List<Object>> columns = list.stream().flatMap(map -> map.entrySet().stream())

@@ -106,15 +106,15 @@ class DateTimeFormatTest extends ModelWriterTester {
                         "[0-5]\\d:" + // "mm:"
                         "[0-5]\\d")); // "ss"
 
-        List<Map<String, Object>> models = TestUtils.JAVAXCEL.reader(workbook).read();
-        for (Map<String, Object> model : models) {
-            String date = (String) model.get("date");
-            String localDate = (String) model.get("localDate");
-            String localTime = (String) model.get("localTime");
-            String localDateTime = (String) model.get("localDateTime");
-            String zonedDateTime = (String) model.get("zonedDateTime");
-            String offsetTime = (String) model.get("offsetTime");
-            String offsetDateTime = (String) model.get("offsetDateTime");
+        List<Map<String, String>> models = TestUtils.JAVAXCEL.reader(workbook).read();
+        for (Map<String, String> model : models) {
+            String date = model.get("date");
+            String localDate = model.get("localDate");
+            String localTime = model.get("localTime");
+            String localDateTime = model.get("localDateTime");
+            String zonedDateTime = model.get("zonedDateTime");
+            String offsetTime = model.get("offsetTime");
+            String offsetDateTime = model.get("offsetDateTime");
 
             assertThat(date)
                     .as("#2 Pattern of Date field is equal to '%s'", DateType.F_DATE_TIME.getPattern())

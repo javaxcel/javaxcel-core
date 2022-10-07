@@ -178,8 +178,8 @@ public abstract class AbstractExcelReader<T> implements ExcelReader<T>, ExcelRea
      * @param sheet Excel sheet
      * @return models read as map
      */
-    protected final List<Map<String, Object>> readBodyAsMaps(Sheet sheet) {
-        List<Map<String, Object>> maps = new ArrayList<>();
+    protected final List<Map<String, String>> readBodyAsMaps(Sheet sheet) {
+        List<Map<String, String>> maps = new ArrayList<>();
         for (Row row : sheet) {
             // ExcelReader already read a header, so skip the first row in this method.
             if (row.getRowNum() == 0) continue;
@@ -214,8 +214,8 @@ public abstract class AbstractExcelReader<T> implements ExcelReader<T>, ExcelRea
      * @param row row in sheet
      * @return imitated model
      */
-    private Map<String, Object> readRow(Row row) {
-        Map<String, Object> map = new HashMap<>();
+    private Map<String, String> readRow(Row row) {
+        Map<String, String> map = new HashMap<>();
 
         int numOfColumns = row.getLastCellNum();
         for (int i = 0; i < numOfColumns; i++) {

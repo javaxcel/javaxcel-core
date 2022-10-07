@@ -54,11 +54,11 @@ class CustomEnumConversionTest {
 
         Map<String, Field> fieldMap = FieldUtils.getTargetedFields(EnumModel.class)
                 .stream().collect(toMap(Field::getName, Function.identity()));
-        List<Map<String, Object>> mocks = getMocks(10);
+        List<Map<String, String>> mocks = getMocks(10);
 
         // when
         List<EnumModel> models = new ArrayList<>();
-        for (Map<String, Object> mock : mocks) {
+        for (Map<String, String> mock : mocks) {
             AccessMode accessMode = (AccessMode) converter.convert(mock, fieldMap.get("accessMode"));
             TimeUnit timeUnit = (TimeUnit) converter.convert(mock, fieldMap.get("timeUnit"));
 
@@ -69,7 +69,7 @@ class CustomEnumConversionTest {
         assertThat(mocks)
                 .isNotNull().isNotEmpty()
                 .as("If EnumModel.timeUnit is null, user-defined handler is not used.")
-                .map(it -> (String) it.get("timeUnit")).isNotEmpty().doesNotContainNull()
+                .map(it -> it.get("timeUnit")).isNotEmpty().doesNotContainNull()
                 .allMatch(TimeUnitTypeHandler::validate);
         assertThat(models)
                 .isNotNull().isNotEmpty().hasSameSizeAs(mocks)
@@ -81,14 +81,14 @@ class CustomEnumConversionTest {
                 .map(it -> it.timeUnit).isNotEmpty().doesNotContainNull();
     }
 
-    private static List<Map<String, Object>> getMocks(int size) throws Exception {
+    private static List<Map<String, String>> getMocks(int size) throws Exception {
         List<EnumModel> models = TestUtils.getMocks(EnumModel.class, size);
         EnumTypeHandler enumHandler = new EnumTypeHandler();
         TimeUnitTypeHandler timeUnitHandler = new TimeUnitTypeHandler();
 
-        List<Map<String, Object>> mocks = new ArrayList<>();
+        List<Map<String, String>> mocks = new ArrayList<>();
         for (EnumModel model : models) {
-            Map<String, Object> mock = new HashMap<>();
+            Map<String, String> mock = new HashMap<>();
             mock.put("accessMode", enumHandler.write(model.accessMode));
             mock.put("timeUnit", timeUnitHandler.write(model.timeUnit));
 

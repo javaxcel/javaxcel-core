@@ -73,7 +73,7 @@ class IncludeSuperClassesTest extends ModelWriterTester {
 
     private static void assertIncludeSuperClasses(File file, Class<?> type, List<?> list) throws IOException {
         @Cleanup Workbook workbook = WorkbookFactory.create(file);
-        List<Map<String, Object>> models = TestUtils.JAVAXCEL.reader(workbook).read();
+        List<Map<String, String>> models = TestUtils.JAVAXCEL.reader(workbook).read();
 
         assertThat(models.stream().mapToInt(Map::size).average().orElse(-1))
                 .as("#2 The header size is the number of targeted fields in '%s'", type.getSimpleName())

@@ -47,9 +47,9 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
 
     @Null
     @Override
-    public Object convert(Map<String, Object> variables, Field field) {
+    public Object convert(Map<String, String> variables, Field field) {
         Class<?> type = field.getType();
-        String value = (String) variables.get(field.getName());
+        String value = variables.get(field.getName());
 
         return convertInternal(field, type, value);
     }

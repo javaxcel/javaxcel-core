@@ -93,10 +93,10 @@ class DefaultValueTest extends ModelWriterTester {
 
     private void assertDefaultValue(Class<?> type, File file) throws IOException {
         @Cleanup Workbook workbook = ExcelUtils.getWorkbook(file);
-        List<Map<String, Object>> models = TestUtils.JAVAXCEL.reader(workbook).read();
+        List<Map<String, String>> models = TestUtils.JAVAXCEL.reader(workbook).read();
 
-        for (Map<String, Object> model : models) {
-            String title = (String) model.get("title");
+        for (Map<String, String> model : models) {
+            String title = model.get("title");
 
             String defaultValue = resolveDefaultValue(type);
             assertThat(title)

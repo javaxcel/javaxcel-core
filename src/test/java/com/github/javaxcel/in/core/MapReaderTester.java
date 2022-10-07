@@ -121,7 +121,7 @@ public abstract class MapReaderTester {
     }
 
     protected ThenModel whenReadMaps(GivenModel givenModel, WhenModel whenModel) {
-        List<Map<String, Object>> maps = TestUtils.JAVAXCEL.reader(whenModel.workbook).read();
+        List<Map<String, String>> maps = TestUtils.JAVAXCEL.reader(whenModel.workbook).read();
         return new ThenModel(maps);
     }
 
@@ -151,7 +151,7 @@ public abstract class MapReaderTester {
     @RequiredArgsConstructor
     protected static class ThenModel {
         @NotNull
-        private final List<Map<String, Object>> maps;
+        private final List<Map<String, String>> maps;
     }
 
 }

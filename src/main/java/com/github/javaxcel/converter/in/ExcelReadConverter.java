@@ -29,6 +29,6 @@ public interface ExcelReadConverter {
      * @param field     targeted field of model
      * @return value converted to the type of field
      */
-    Object convert(Map<String, Object> variables, Field field);
+    Object convert(Map<String, String> variables, Field field);
 
 }

@@ -133,7 +133,7 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
 
     @Override
     protected List<T> readBody(ExcelReadContext<T> context) {
-        List<Map<String, Object>> maps = super.readBodyAsMaps(context.getSheet());
+        List<Map<String, String>> maps = super.readBodyAsMaps(context.getSheet());
 
         if (context.getStrategyMap().containsKey(Parallel.class)) {
             return maps.parallelStream().map(this::toActualModel).collect(toList());
@@ -141,7 +141,7 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
             // Makes sure not to grow length of internal array.
             List<T> models = new ArrayList<>(maps.size());
 
-            for (Map<String, Object> map : maps) {
+            for (Map<String, String> map : maps) {
                 T model = toActualModel(map);
                 models.add(model);
             }
@@ -157,7 +157,7 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
      * @return real model
      */
     @SuppressWarnings("unchecked")
-    private T toActualModel(Map<String, Object> variables) {
+    private T toActualModel(Map<String, String> variables) {
         // Creates a mock model for actual model.
         Map<String, Object> mock = this.fields.stream().collect(HashMap::new,
                 (map, it) -> map.put(it.getName(), this.converter.convert(variables, it)), Map::putAll);

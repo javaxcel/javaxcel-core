@@ -73,9 +73,9 @@ public class ExpressionExcelReadConverter implements ExcelReadConverter {
      *
      * @see ExcelReadExpression#value()
      */
-    @Override
     @Null
-    public Object convert(Map<String, Object> variables, Field field) {
+    @Override
+    public Object convert(Map<String, String> variables, Field field) {
         Expression expression;
         if (CollectionUtils.isNullOrEmpty(this.cache) || !this.cache.containsKey(field)) {
             // When this instantiated without cache.

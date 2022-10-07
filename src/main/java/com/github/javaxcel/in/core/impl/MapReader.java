@@ -31,9 +31,9 @@ import java.util.Map;
  * Excel reader for {@link Map}.
  */
 @SuppressWarnings("unchecked")
-public class MapReader extends AbstractExcelReader<Map<String, Object>> {
+public class MapReader extends AbstractExcelReader<Map<String, String>> {
 
-    private static final Class<Map<String, Object>> MAP_TYPE;
+    private static final Class<Map<String, String>> MAP_TYPE;
 
     static {
         try {
@@ -41,7 +41,7 @@ public class MapReader extends AbstractExcelReader<Map<String, Object>> {
             // defined by class. To solve the problem, we use the method Class.forName(String).
             // This is the compile error message.
             // incompatible types: java.lang.Class<java.util.Map> cannot be converted to java.lang.Class<T>
-            MAP_TYPE = (Class<Map<String, Object>>) Class.forName(Map.class.getName());
+            MAP_TYPE = (Class<Map<String, String>>) Class.forName(Map.class.getName());
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -57,7 +57,7 @@ public class MapReader extends AbstractExcelReader<Map<String, Object>> {
     }
 
     @Override
-    protected List<String> readHeader(ExcelReadContext<Map<String, Object>> context) {
+    protected List<String> readHeader(ExcelReadContext<Map<String, String>> context) {
         // If header names is empty, sets first row's values to it.
         List<String> headerNames = new ArrayList<>();
         for (Row header : context.getSheet()) {
@@ -80,7 +80,7 @@ public class MapReader extends AbstractExcelReader<Map<String, Object>> {
     }
 
     @Override
-    protected List<Map<String, Object>> readBody(ExcelReadContext<Map<String, Object>> context) {
+    protected List<Map<String, String>> readBody(ExcelReadContext<Map<String, String>> context) {
         return super.readBodyAsMaps(context.getSheet());
     }
 

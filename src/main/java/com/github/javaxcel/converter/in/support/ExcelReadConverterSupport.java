@@ -52,7 +52,7 @@ public class ExcelReadConverterSupport implements ExcelReadConverter {
     }
 
     @Override
-    public Object convert(Map<String, Object> variables, Field field) {
+    public Object convert(Map<String, String> variables, Field field) {
         Column column = this.columnMap.get(field);
 
         Object fieldValue;

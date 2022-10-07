@@ -76,7 +76,7 @@ class DefaultValueTest extends MapWriterTester {
 
     private static void assertDefaultValue(File file, List<Map<String, Object>> models) throws IOException {
         @Cleanup Workbook workbook = ExcelUtils.getWorkbook(file);
-        List<Map<String, Object>> written = TestUtils.JAVAXCEL.reader(workbook).read();
+        List<Map<String, String>> written = TestUtils.JAVAXCEL.reader(workbook).read();
 
         assertThat(written.stream().map(Map::values).flatMap(Collection::stream)
                 .map(Object::toString).noneMatch(StringUtils::isNullOrEmpty))
