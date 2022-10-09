@@ -36,9 +36,10 @@
 
 ### Dependencies
 
-- ⬆️ Upgrade: dependency `common-utils` from `0.9.0` to `0.11.0`
+- ⬆️ Upgrade: dependency `common-utils` from `0.9.0` to `0.12.0`
+- ⬆️ Upgrade: test dependency `junit5` from `5.8.2` to `5.9.1`
 - ⬆️ Upgrade: test dependency `assertj-core` from `3.22.0` to `3.23.1`
-- ⬆️ Upgrade: test dependency `spock-core` from `2.1-groovy-3.0` to `2.2-groovy-3.0`
+- ⬆️ Upgrade: test dependency `spock-core` from `2.1-groovy-3.0` to `2.3-groovy-3.0`
 - ⬆️ Upgrade: test dependency `byte-buddy` from `1.12.9` to `1.12.16`
 
 ### Troubleshooting
