@@ -27,7 +27,7 @@ class Array3D {
 
         def componentType = ArrayUtils.resolveActualComponentType(array.class)
         Asserts.that(componentType)
-                .isNotNull().predicate({ !it.isArray() })
+                .isNotNull().isNot(Class::isArray)
 
         if (componentType == boolean) this.booleans = array as boolean[][][]
         if (componentType == byte) this.bytes = array as byte[][][]

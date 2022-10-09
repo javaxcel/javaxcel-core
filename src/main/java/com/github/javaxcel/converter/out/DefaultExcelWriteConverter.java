@@ -47,7 +47,7 @@ public class DefaultExcelWriteConverter implements ExcelWriteConverter {
                 .describedAs("DefaultExcelWriteConverter.registry is not allowed to be null")
                 .isNotNull()
                 .describedAs("DefaultExcelWriteConverter.registry.allTypes is not allowed to be null")
-                .predicate(it -> it.getAllTypes() != null);
+                .isNot(it -> it.getAllTypes() == null);
         Asserts.that(analyses)
                 .describedAs("DefaultExcelWriteConverter.analyses is not allowed to be null")
                 .isNotNull();

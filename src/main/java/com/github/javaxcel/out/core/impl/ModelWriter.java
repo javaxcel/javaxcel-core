@@ -181,7 +181,7 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
             Asserts.that(headerStyleConfigs)
                     .describedAs("headerStyles.size must be 1 or equal to fields.size (headerStyles.size: {0}, fields.size: {1})",
                             headerStyleConfigs.size(), this.fields.size())
-                    .predicate(them -> them.size() == 1 || them.size() == this.fields.size());
+                    .is(them -> them.size() == 1 || them.size() == this.fields.size());
 
             ExcelStyleConfig[] headerConfigs = headerStyleConfigs.toArray(new ExcelStyleConfig[0]);
             CellStyle[] headerStyles = ExcelUtils.toCellStyles(workbook, headerConfigs);
@@ -247,7 +247,7 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
             Asserts.that(bodyStyleConfigs)
                     .describedAs("bodyStyles.size must be 1 or equal to fields.size (bodyStyles.size: {0}, fields.size: {1})",
                             bodyStyleConfigs.size(), this.fields.size())
-                    .predicate(them -> them.size() == 1 || them.size() == this.fields.size());
+                    .is(them -> them.size() == 1 || them.size() == this.fields.size());
 
             ExcelStyleConfig[] bodyConfigs = bodyStyleConfigs.toArray(new ExcelStyleConfig[0]);
             CellStyle[] bodyStyles = ExcelUtils.toCellStyles(workbook, bodyConfigs);

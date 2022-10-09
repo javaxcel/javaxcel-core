@@ -171,9 +171,9 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
                     .isNotNull().hasText()
                     .describedAs("ResolvedParameter.name must match name of the targeted fields, but it isn't: (actual: '{0}', allowed: {1})",
                             paramName, fieldNameMap.keySet())
-                    .predicate(fieldNameMap::containsKey)
+                    .is(fieldNameMap::containsKey)
                     .describedAs("Each ResolvedParameter.name must be unique, but it isn't: (duplicated: '{0}', names: {1})", paramName, paramNames)
-                    .predicate(it -> Collections.frequency(paramNames, it) == 1);
+                    .is(it -> Collections.frequency(paramNames, it) == 1);
 
             if (this.fields.stream().filter(it -> it.getType() == paramType && it.getName().equals(paramName)).count() != 1) {
                 throw new InvalidExcelModelCreatorException("Not found field[%s %s] to map parameter[%s] with; " +

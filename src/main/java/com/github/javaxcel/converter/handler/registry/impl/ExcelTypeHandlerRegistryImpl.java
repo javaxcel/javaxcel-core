@@ -59,7 +59,7 @@ public class ExcelTypeHandlerRegistryImpl implements ExcelTypeHandlerRegistry {
                 .isNotNull()
                 .describedAs("ExcelTypeHandlerRegistry doesn't allow the addition of handler with unmatched type as a pair. (type: '{0}', handler: '{1}')", type, handler)
                 .thrownBy(IllegalStateException::new)
-                .predicate(it -> it.getType() == type);
+                .is(it -> it.getType() == type);
 
         boolean added = !this.handlerMap.containsKey(type);
         this.handlerMap.put(type, handler);

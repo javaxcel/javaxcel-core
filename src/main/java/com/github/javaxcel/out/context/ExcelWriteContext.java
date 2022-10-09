@@ -76,7 +76,7 @@ public class ExcelWriteContext<T> {
                 .describedAs("ExcelWriteContext.writerType is not allowed to be null")
                 .isNotNull()
                 .describedAs("ExcelWriteContext.writerType is type of implementation of ExcelWriter, but it isn't : '{0}'", writerType.getName())
-                .predicate(ExcelWriter.class::isAssignableFrom);
+                .is(ExcelWriter.class::isAssignableFrom);
 
         this.workbook = workbook;
         this.modelType = modelType;

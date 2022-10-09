@@ -148,7 +148,7 @@ public class MapWriter extends AbstractExcelWriter<Map<String, Object>> {
         Asserts.that(headerStyleConfigs)
                 .describedAs("headerStyles.size must be 1 or equal to keys.size (headerStyles.size: {0}, keys.size: {1})",
                         headerStyleConfigs.size(), this.keys.size())
-                .predicate(them -> them.size() == 1 || them.size() == this.keys.size());
+                .is(them -> them.size() == 1 || them.size() == this.keys.size());
 
         ExcelStyleConfig[] headerConfigs = headerStyleConfigs.toArray(new ExcelStyleConfig[0]);
         CellStyle[] headerStyles = ExcelUtils.toCellStyles(context.getWorkbook(), headerConfigs);
@@ -165,7 +165,7 @@ public class MapWriter extends AbstractExcelWriter<Map<String, Object>> {
         Asserts.that(bodyStyleConfigs)
                 .describedAs("bodyStyles.size must be 1 or equal to keys.size (bodyStyles.size: {0}, keys.size: {1})",
                         bodyStyleConfigs.size(), this.keys.size())
-                .predicate(them -> them.size() == 1 || them.size() == this.keys.size());
+                .is(them -> them.size() == 1 || them.size() == this.keys.size());
 
         ExcelStyleConfig[] bodyConfigs = bodyStyleConfigs.toArray(new ExcelStyleConfig[0]);
         CellStyle[] bodyStyles = ExcelUtils.toCellStyles(context.getWorkbook(), bodyConfigs);

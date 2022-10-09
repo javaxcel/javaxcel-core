@@ -277,8 +277,10 @@ public final class FieldUtils {
         Class<?> actualComponentType = ArrayUtils.resolveActualComponentType(actualType);
 
         if (Iterable.class.isAssignableFrom(actualType)) {
+            // Raw type.
             return Object.class;
         } else if (actualType.isArray() && Iterable.class.isAssignableFrom(actualComponentType)) {
+            // Raw type array.
             return Object.class;
         } else {
             return actualType;

@@ -40,7 +40,7 @@ public class DefaultExcelReadConverter implements ExcelReadConverter {
                 .describedAs("DefaultExcelReadConverter.registry is not allowed to be null")
                 .isNotNull()
                 .describedAs("DefaultExcelReadConverter.registry.allTypes is not allowed to be null")
-                .predicate(it -> it.getAllTypes() != null);
+                .isNot(it -> it.getAllTypes() == null);
 
         this.registry = registry;
     }

@@ -141,8 +141,7 @@ public final class ExcelUtils {
                 .isNotNull()
                 .describedAs("SXSSFWorkbook is not supported workbook when read")
                 .thrownBy(UnsupportedWorkbookException::new)
-                .asClass()
-                .isNotTypeOf(SXSSFSheet.class);
+                .isNotInstanceOf(SXSSFSheet.class);
 
         return Math.max(0, sheet.getPhysicalNumberOfRows());
     }
@@ -159,8 +158,7 @@ public final class ExcelUtils {
                 .isNotNull()
                 .describedAs("SXSSFWorkbook is not supported workbook when read")
                 .thrownBy(UnsupportedWorkbookException::new)
-                .asClass()
-                .isNotTypeOf(SXSSFWorkbook.class);
+                .isNotInstanceOf(SXSSFWorkbook.class);
 
         long numOfRows = 0;
         for (Sheet sheet : getSheets(workbook)) {
@@ -185,8 +183,7 @@ public final class ExcelUtils {
                 .isNotNull()
                 .describedAs("SXSSFWorkbook is not supported workbook when read")
                 .thrownBy(UnsupportedWorkbookException::new)
-                .asClass()
-                .isNotTypeOf(SXSSFSheet.class);
+                .isNotInstanceOf(SXSSFSheet.class);
 
         return Math.max(0, sheet.getPhysicalNumberOfRows() - 1);
     }
@@ -206,8 +203,7 @@ public final class ExcelUtils {
                 .isNotNull()
                 .describedAs("SXSSFWorkbook is not supported workbook when read")
                 .thrownBy(UnsupportedWorkbookException::new)
-                .asClass()
-                .isNotTypeOf(SXSSFWorkbook.class);
+                .isNotInstanceOf(SXSSFWorkbook.class);
 
         long numOfModels = 0;
         for (Sheet sheet : getSheets(workbook)) {

@@ -60,7 +60,7 @@
         <!-- Dependency versions -->
         <spring-expression.version>5.3.18</spring-expression.version>
         <javaxcel-styler.version>0.2.2</javaxcel-styler.version>
-        <common-utils.version>0.11.0</common-utils.version>
+        <common-utils.version>0.12.0</common-utils.version>
         <jsr380.version>3.0.2</jsr380.version>
         <jetbrains-annotations.version>23.0.0</jetbrains-annotations.version>
 

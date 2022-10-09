@@ -75,7 +75,7 @@ public class ExcelReadContext<T> {
                 .describedAs("ExcelReadContext.readerType is not allowed to be null")
                 .isNotNull()
                 .describedAs("ExcelReadContext.readerType is type of implementation of ExcelReader, but it isn't : '{0}'", readerType.getName())
-                .predicate(ExcelReader.class::isAssignableFrom);
+                .is(ExcelReader.class::isAssignableFrom);
 
         this.workbook = workbook;
         this.modelType = modelType;
