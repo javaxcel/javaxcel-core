@@ -34,6 +34,10 @@
 
 - ✨ Add: method `add(ExcelTypeHandler)` in `ExcelTypeHandlerRegistry`
 
+### Troubleshooting
+
+- 🐞 Fix:
+
 ### Dependencies
 
 - ⬆️ Upgrade: dependency `common-utils` from `0.9.0` to `0.12.0`
@@ -41,10 +45,6 @@
 - ⬆️ Upgrade: test dependency `assertj-core` from `3.22.0` to `3.23.1`
 - ⬆️ Upgrade: test dependency `spock-core` from `2.1-groovy-3.0` to `2.3-groovy-3.0`
 - ⬆️ Upgrade: test dependency `byte-buddy` from `1.12.9` to `1.12.17`
-
-### Troubleshooting
-
-- 🐞 Fix:
 
 # v0.8.2
 
@@ -59,15 +59,15 @@
 - ♻️ Increase: access privileges to `AbstractExcelWriteStrategy`, `AbstractExcelReadStrategy`
 - ⚡️ Modify: `com.github.javaxcel.out.strategy.impl.Filter` to freeze header
 
-### Dependencies
-
-- ⬆️ Upgrade: dependency `common-utils` from `0.8.0` to `0.9.0`
-
 ### Troubleshooting
 
 - 🐞 Fix: wrong import (`java.util.logging.Filter` => `com.github.javaxcel.out.strategy.impl.Filter`) in `ModelWriter`
   , `MapWriter`
 - 🐞 Fix: compile error on jdk 9+ by using internal package `sun.util.locale.*` in `LocaleTypeHandler`
+
+### Dependencies
+
+- ⬆️ Upgrade: dependency `common-utils` from `0.8.0` to `0.9.0`
 
 # v0.8.1
 
@@ -105,6 +105,11 @@
   in `FieldUtils`
 - 🔊 Add: fluent exception messages
 
+### Troubleshooting
+
+- 🐞 Fix: wrong computation of targeted fields
+- 🐞 Fix: security problem for changing value of final field
+
 ### Dependencies
 
 - ♻️ Make: dependency `poi-ooxml` provided
@@ -123,11 +128,6 @@
 - ⬆️ Upgrade: build dependency `gmavenplus-plugin` from `1.13.0` to `1.13.1`
 - ⬆️ Upgrade: build dependency `maven-compiler-plugin` from `3.8.1` to `3.10.1`
 - ⬆️ Upgrade: build dependency `jacoco-maven-plugin` from `0.8.7` to `0.8.8`
-
-### Troubleshooting
-
-- 🐞 Fix: wrong computation of targeted fields
-- 🐞 Fix: security problem for changing value of final field
 
 # v0.7.5
 
@@ -215,17 +215,17 @@
 - 🔧 Add: maven wrapper
 - 🔧 Add: configuration for Travis CI
 
+### Troubleshooting
+
+- 🐞 Fix: mis-computation that `ExcelColumn#defaultValue()` doesn't override `ExcelModel#defaultValue()`
+- 🐞 Fix: omission of conversion from empty value to default value on `MapWriter`
+
 ### Dependencies
 
 - ➕ Add: build plugin `Jacoco`
 - ➕ Add: test dependency `EasyRandom`
 - ➕ Add: test dependency `Byte Buddy`
 - ⬆️ Upgrade: test dependency `lombok` --- `1.18.20`
-
-### Troubleshooting
-
-- 🐞 Fix: mis-computation that `ExcelColumn#defaultValue()` doesn't override `ExcelModel#defaultValue()`
-- 🐞 Fix: omission of conversion from empty value to default value on `MapWriter`
 
 # v0.6.0
 
@@ -255,15 +255,15 @@
 - ✨ Add: `ExcelModel#enumDropdown()`, `ExcelColumn#enumDropdown()`, `ExcelColumn#dropdownItems()`
   , `ModelWriter#enumDropdown()`
 
-### Dependencies
-
-- ⬆️ Upgrade: dependencies for test
-- ⬆️ Upgrade: dependency `common-utils` --- `0.3.4`
-
 ### Troubleshooting
 
 - 🐞 Fix: `NullPointerException` caused by approaching a non-existent row; When an empty row is in body, computation of
   the number of models by `ExcelUtils#getNumOfModels(Sheet)` is failed.
+
+### Dependencies
+
+- ⬆️ Upgrade: dependencies for test
+- ⬆️ Upgrade: dependency `common-utils` --- `0.3.4`
 
 # v0.5.3
 
@@ -290,13 +290,13 @@
 - ✨ Add: enum `Types` for `TypeClassifier`
 - 🔊 Provide: error message when `Excel*Factory#create`
 
-### Dependencies
-
-- ⬆️ Upgrade: dependency `common-utils` --- `0.3.3`
-
 ### Troubleshooting
 
 - 🐞 Fix: custom header names in wrong position --- `MapWriter#headerNames(List)`
+
+### Dependencies
+
+- ⬆️ Upgrade: dependency `common-utils` --- `0.3.3`
 
 # v0.5.1
 
@@ -343,15 +343,15 @@
 - ✨ Add: `ExcelModel#defaultValue()`
 - ✨ Add: `ExcelUtils#getMaxRows`, `ExcelUtils#getMaxColumns`, `ExcelUtils#getNumOfRows`
 
-### Dependencies
-
-- ➕ Use: dependency `common-utils` --- `0.3.2`
-- ⬆️ Upgrade: dependency `javaxcel-styler` --- `0.2.1`
-
 ### Troubleshooting
 
 - 🐞 Fix: possibility that header name can be empty string
 - 🐞 Fix: possibility for allowing `ExcelReader` to access row that doesn't exist
+
+### Dependencies
+
+- ➕ Use: dependency `common-utils` --- `0.3.2`
+- ⬆️ Upgrade: dependency `javaxcel-styler` --- `0.2.1`
 
 # v0.4.2
 
@@ -404,15 +404,15 @@
 - ✨ Add: converters
 - ✨ Add: `ExcelReader#parallel()`
 
-### Dependencies
-
-- ➕ Add: dependency `common-utils` --- `0.1.2`
-- ➕ Add: dependency `spring-expression`
-
 ### Troubleshooting
 
 - 🐞 Fix: bugs --- creating empty cell(not null) even through not define default value, so that excel recognize that the
   cell exists.
+
+### Dependencies
+
+- ➕ Add: dependency `common-utils` --- `0.1.2`
+- ➕ Add: dependency `spring-expression`
 
 # v0.3.1
 
@@ -449,13 +449,13 @@
 - 🛠️ Add: excel utilities
 - ✨ Add: custom style in `ExcelWriter`
 
-### Dependencies
-
-➖ Remove: dependency 'org.jetbrains:annotations'
-
 ### Troubleshooting
 
 - 🐞 Fix: parsing string as long to convert it into big decimal
+
+### Dependencies
+
+➖ Remove: dependency 'org.jetbrains:annotations'
 
 # v0.1.0
 
