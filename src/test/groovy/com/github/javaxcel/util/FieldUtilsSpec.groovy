@@ -22,8 +22,8 @@ import com.github.javaxcel.model.sample.ComplexSample
 import io.github.imsejin.common.util.ReflectionUtils
 import spock.lang.Specification
 
-import javax.xml.bind.annotation.XmlAccessType
 import java.nio.file.AccessMode
+import java.security.cert.CRLReason
 import java.util.concurrent.TimeUnit
 import java.util.function.Function
 
@@ -109,7 +109,7 @@ class FieldUtilsSpec extends Specification {
         Object     | [null, 1, 2, 3]                                            || 1
         Number     | [new Object(), "alpha", 0.15, 10]                          || 0.15
         String     | [2, null, "beta", String, "gamma"]                         || "beta"
-        Enum       | [AccessMode.READ, TimeUnit.DAYS, XmlAccessType.FIELD]      || AccessMode.READ
+        Enum       | [AccessMode.READ, TimeUnit.DAYS, CRLReason.UNUSED]         || AccessMode.READ
         Comparable | [0, "delta", 128L, 3.14D, BigInteger.ZERO, BigDecimal.TEN] || 0
     }
 
@@ -127,7 +127,7 @@ class FieldUtilsSpec extends Specification {
         Object     | [null, 1, 2, 3]                                            || 3
         Number     | [new Object(), "alpha", 0.15, 10]                          || 10
         String     | [2, null, "beta", String, "gamma"]                         || "gamma"
-        Enum       | [AccessMode.READ, TimeUnit.DAYS, XmlAccessType.FIELD]      || XmlAccessType.FIELD
+        Enum       | [AccessMode.READ, TimeUnit.DAYS, CRLReason.UNUSED]         || CRLReason.UNUSED
         Comparable | [0, "delta", 128L, 3.14D, BigInteger.ZERO, BigDecimal.TEN] || BigDecimal.TEN
     }
 
