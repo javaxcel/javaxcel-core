@@ -95,11 +95,9 @@ public final class FieldUtils {
     public static Method resolveGetter(Field field) {
         String fieldName = field.getName();
 
-        String getterName = "get";
+        String getterName = "get" + Character.toUpperCase(fieldName.charAt(0));
         if (fieldName.length() > 1) {
-            getterName += Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
-        } else {
-            getterName += fieldName.toUpperCase();
+            getterName += fieldName.substring(1);
         }
 
         Method getter = ReflectionUtils.getDeclaredMethod(field.getDeclaringClass(), getterName);
@@ -114,11 +112,9 @@ public final class FieldUtils {
     public static Method resolveSetter(Field field) {
         String fieldName = field.getName();
 
-        String setterName = "set";
+        String setterName = "set" + Character.toUpperCase(fieldName.charAt(0));
         if (fieldName.length() > 1) {
-            setterName += Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
-        } else {
-            setterName += fieldName.toUpperCase();
+            setterName += fieldName.substring(1);
         }
 
         Method setter = ReflectionUtils.getDeclaredMethod(field.getDeclaringClass(), setterName, field.getType());
