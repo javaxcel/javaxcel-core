@@ -47,7 +47,7 @@ class HeaderNamesSpec extends Specification {
 
         then: "Failed to create strategy"
         def e = thrown IllegalArgumentException
-        e.message == "ExcelWriteStrategy.HeaderNames.values cannot have duplicated elements: $illegalHeaderNames"
+        e.message.split("\n")[0] == "ExcelWriteStrategy.HeaderNames.values cannot have duplicated elements: $illegalHeaderNames"
     }
 
 }

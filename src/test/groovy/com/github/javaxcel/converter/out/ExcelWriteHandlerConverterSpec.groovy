@@ -16,6 +16,7 @@
 
 package com.github.javaxcel.converter.out
 
+import com.github.javaxcel.analysis.ExcelAnalysis
 import com.github.javaxcel.analysis.ExcelAnalysisImpl
 import com.github.javaxcel.analysis.out.ExcelWriteAnalyzer
 import com.github.javaxcel.converter.handler.registry.impl.DefaultExcelTypeHandlerRegistry
@@ -24,20 +25,18 @@ import com.github.javaxcel.internal.Array2D
 import com.github.javaxcel.internal.Array3D
 import spock.lang.Specification
 
+import java.lang.reflect.Field
+
 class ExcelWriteHandlerConverterSpec extends Specification {
 
     def "Converts 1D array"() {
         given:
         def model = new Array1D(array)
+        def analyses = analyze(model.class.declaredFields)
         def field = model.class.getDeclaredField(fieldName)
-        def analyses = model.class.declaredFields.findAll { !it.isSynthetic() }.collect {
-            def analysis = new ExcelAnalysisImpl(it)
-            analysis.addFlags(ExcelWriteAnalyzer.HANDLER | ExcelWriteAnalyzer.GETTER)
-            analysis
-        }
 
         when:
-        def converter = new ExcelWriteHandlerConverter(new DefaultExcelTypeHandlerRegistry(), analyses)
+        def converter = new ExcelWriteHandlerConverter(analyses, new DefaultExcelTypeHandlerRegistry())
         def actual = converter.convert(model, field)
 
         then:
@@ -68,15 +67,11 @@ class ExcelWriteHandlerConverterSpec extends Specification {
     def "Converts 2D array"() {
         given:
         def model = new Array2D(array)
+        def analyses = analyze(model.class.declaredFields)
         def field = model.class.getDeclaredField(fieldName)
-        def analyses = model.class.declaredFields.findAll { !it.isSynthetic() }.collect {
-            def analysis = new ExcelAnalysisImpl(it)
-            analysis.addFlags(ExcelWriteAnalyzer.HANDLER | ExcelWriteAnalyzer.FIELD_ACCESS)
-            analysis
-        }
 
         when:
-        def converter = new ExcelWriteHandlerConverter(new DefaultExcelTypeHandlerRegistry(), analyses)
+        def converter = new ExcelWriteHandlerConverter(analyses, new DefaultExcelTypeHandlerRegistry())
         def actual = converter.convert(model, field)
 
         then:
@@ -111,15 +106,11 @@ class ExcelWriteHandlerConverterSpec extends Specification {
     def "Converts 3D array"() {
         given:
         def model = new Array3D(array)
+        def analyses = analyze(model.class.declaredFields)
         def field = model.class.getDeclaredField(fieldName)
-        def analyses = model.class.declaredFields.findAll { !it.isSynthetic() }.collect {
-            def analysis = new ExcelAnalysisImpl(it)
-            analysis.addFlags(ExcelWriteAnalyzer.HANDLER | ExcelWriteAnalyzer.FIELD_ACCESS)
-            analysis
-        }
 
         when:
-        def converter = new ExcelWriteHandlerConverter(new DefaultExcelTypeHandlerRegistry(), analyses)
+        def converter = new ExcelWriteHandlerConverter(analyses, new DefaultExcelTypeHandlerRegistry())
         def actual = converter.convert(model, field)
 
         then:
@@ -149,6 +140,16 @@ class ExcelWriteHandlerConverterSpec extends Specification {
         "locales"  | [null, [[], []], [], null] as Locale[][][]                                       || "[, [[], []], [], ]"
         "locales"  | [[[Locale.US, Locale.ENGLISH], [Locale.KOREA, Locale.KOREAN]]] as Locale[][][]   || "[[[en_US, en], [ko_KR, ko]]]"
         "locales"  | [[null, [null, Locale.ROOT], [Locale.JAPAN, Locale.TAIWAN]], []] as Locale[][][] || "[[, [, ], [ja_JP, zh_TW]], []]"
+    }
+
+    // -------------------------------------------------------------------------------------------------
+
+    private static Iterable<ExcelAnalysis> analyze(Field[] fields) {
+        fields.findAll { !it.isSynthetic() }.collect {
+            def analysis = new ExcelAnalysisImpl(it)
+            analysis.addFlags(ExcelWriteAnalyzer.HANDLER | ExcelWriteAnalyzer.FIELD_ACCESS)
+            analysis
+        }
     }
 
 }

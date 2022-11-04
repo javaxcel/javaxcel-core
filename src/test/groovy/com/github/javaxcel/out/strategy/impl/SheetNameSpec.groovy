@@ -47,7 +47,7 @@ class SheetNameSpec extends Specification {
 
         then: "Failed to create strategy"
         def e = thrown IllegalArgumentException
-        e.message == "ExcelWriteStrategy.SheetName.value is not allowed to contain invalid character: $illegalSheetName"
+        e.message.split("\n")[0] == "ExcelWriteStrategy.SheetName.value is not allowed to contain invalid character: $illegalSheetName"
     }
 
 }

@@ -32,10 +32,10 @@ public final class ExcelWriteConverterSupport implements ExcelWriteConverter {
 
     private final List<ExcelWriteConverter> converters;
 
-    public ExcelWriteConverterSupport(ExcelTypeHandlerRegistry registry, List<ExcelAnalysis> analyses) {
+    public ExcelWriteConverterSupport(Iterable<ExcelAnalysis> analyses, ExcelTypeHandlerRegistry registry) {
         List<ExcelWriteConverter> converters = new ArrayList<>();
 
-        converters.add(new ExcelWriteHandlerConverter(registry, analyses));
+        converters.add(new ExcelWriteHandlerConverter(analyses, registry));
         converters.add(new ExcelWriteExpressionConverter(analyses));
 
         this.converters = Collections.unmodifiableList(converters);

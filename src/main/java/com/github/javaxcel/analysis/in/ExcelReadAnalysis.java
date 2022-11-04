@@ -20,10 +20,6 @@ import com.github.javaxcel.analysis.ExcelAnalysis;
 
 public interface ExcelReadAnalysis extends ExcelAnalysis {
 
-    void setValue(Object model);
-
-    default void set() {
-//         ReflectionUtils.setFieldValue();
-    }
+    void setValue(Object model, Object value);
 
 }

@@ -120,7 +120,7 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
         List<ExcelAnalysis> analyses = analyzer.analyze(this.fields, strategies.toArray());
 
         // Creates a converter.
-        this.converter = new ExcelWriteConverterSupport(this.registry, analyses);
+        this.converter = new ExcelWriteConverterSupport(analyses, this.registry);
 
         // Handles the given options.
         resolveEnumDropdown(context);

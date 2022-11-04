@@ -57,7 +57,7 @@ class AbstractExcelModelExecutableResolverSpec extends Specification {
 
         then:
         def e = thrown exceptionType
-        e.message.matches message
+        e.message.split("\n")[0].matches message
         where:
         modelType                     || exceptionType                       | message
         EmptyFieldName                || InvalidExcelModelCreatorException   | "ResolvedParameter.name must have text, but it isn't: '.*'"

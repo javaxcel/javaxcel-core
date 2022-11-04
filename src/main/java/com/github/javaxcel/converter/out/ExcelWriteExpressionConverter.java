@@ -47,9 +47,9 @@ public class ExcelWriteExpressionConverter implements ExcelWriteConverter {
 
     private final Map<Field, Method> getterMap;
 
-    private final Map<Field, Entry<ExcelAnalysis, Expression>> analysisMap;
+    private final Map<Field, Entry<ExcelAnalysis, @Null Expression>> analysisMap;
 
-    public ExcelWriteExpressionConverter(List<ExcelAnalysis> analyses) {
+    public ExcelWriteExpressionConverter(Iterable<ExcelAnalysis> analyses) {
         Asserts.that(analyses)
                 .describedAs("ExcelWriteExpressionConverter.analyses is not allowed to be null")
                 .isNotNull();
@@ -61,16 +61,20 @@ public class ExcelWriteExpressionConverter implements ExcelWriteConverter {
         for (ExcelAnalysis analysis : analyses) {
             Field field = analysis.getField();
 
+            Entry<ExcelAnalysis, Expression> entry = new SimpleEntry<>(analysis, null);
+            if (analysis.hasFlag(ExcelWriteAnalyzer.EXPRESSION)) {
+                ExcelWriteExpression annotation = field.getAnnotation(ExcelWriteExpression.class);
+                Expression expression = EXPRESSION_PARSER.parseExpression(annotation.value());
+                entry.setValue(expression);
+            }
+
             if (analysis.hasFlag(ExcelWriteAnalyzer.GETTER)) {
                 Method getter = FieldUtils.resolveGetter(field);
                 getterMap.put(field, getter);
             }
 
-            ExcelWriteExpression annotation = field.getAnnotation(ExcelWriteExpression.class);
-            Expression expression = EXPRESSION_PARSER.parseExpression(annotation.value());
-
             fields.add(field);
-            analysisMap.put(field, new SimpleEntry<>(analysis, expression));
+            analysisMap.put(field, entry);
         }
 
         this.fields = Collections.unmodifiableList(fields);

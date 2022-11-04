@@ -47,7 +47,7 @@ class DefaultValueSpec extends Specification {
 
         then: "Failed to create strategy"
         def e = thrown IllegalArgumentException
-        e.message == "ExcelWriteStrategy.DefaultValue.value is not allowed to be null or blank"
+        e.message.split("\n")[0] == "ExcelWriteStrategy.DefaultValue.value is not allowed to be null or blank"
     }
 
 }

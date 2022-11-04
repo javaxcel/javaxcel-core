@@ -1,6 +1,6 @@
 package com.github.javaxcel.analysis.out
 
-import com.github.javaxcel.TestUtils
+
 import com.github.javaxcel.converter.handler.impl.lang.DoubleTypeHandler
 import com.github.javaxcel.converter.handler.impl.lang.IntegerTypeHandler
 import com.github.javaxcel.converter.handler.impl.lang.LongTypeHandler
@@ -13,40 +13,15 @@ import com.github.javaxcel.model.sample.GenericSample
 import com.github.javaxcel.model.sample.ModelSample
 import com.github.javaxcel.model.sample.PlainSample
 import com.github.javaxcel.out.strategy.impl.DefaultValue
-import com.github.javaxcel.out.strategy.impl.UseGetters
 import com.github.javaxcel.util.FieldUtils
 import spock.lang.Specification
 
 class ExcelWriteAnalyzerSpec extends Specification {
 
-    def "Analyzes with access option"() {
-        given:
-        def model = new Sample(values: ["sample", "item"])
-        def analyzer = new ExcelWriteAnalyzer(new DefaultExcelTypeHandlerRegistry())
-        def fields = FieldUtils.getTargetedFields(model.class)
-
-        when: "Accesses value through field"
-        def analyses = analyzer.analyze(fields)
-
-        then:
-        analyses.size() == fields.size()
-        analyses[0].getValue(model) == model.@values
-        analyses[0].getValue(model) != model.values
-
-        when: "Accesses value through getter"
-        analyses = analyzer.analyze(fields, new UseGetters())
-
-        then:
-        analyses.size() == fields.size()
-        analyses[0].getValue(model) != model.@values
-        analyses[0].getValue(model) == model.values
-    }
-
     @SuppressWarnings("GroovyAssignabilityCheck")
     def "Analyzes fields of randomized model"() {
         given:
         def fields = FieldUtils.getTargetedFields(type)
-        def model = TestUtils.randomize(type)
 
         when:
         def analyzer = new ExcelWriteAnalyzer(new DefaultExcelTypeHandlerRegistry())
@@ -63,7 +38,6 @@ class ExcelWriteAnalyzerSpec extends Specification {
             def field = fields[it]
 
             assert analysis.field == field
-            assert analysis.getValue(model) == model[field.name]
         }
 
         where:
@@ -99,16 +73,6 @@ class ExcelWriteAnalyzerSpec extends Specification {
         ComplexSample | [LongTypeHandler, null, null, null, null, null, null, null, null, null, DoubleTypeHandler, DoubleTypeHandler,
                          DoubleTypeHandler, null, null, LongTypeHandler, LongTypeHandler, null, null, LongTypeHandler, LongTypeHandler,
                          null, null, null, null, null, null, null, null, null, null, null, null, null, null, DoubleTypeHandler, null]
-    }
-
-    // -------------------------------------------------------------------------------------------------
-
-    private static class Sample {
-        Set<String> values
-
-        Set<String> getValues() {
-            values.collect { "#" + it }
-        }
     }
 
 }

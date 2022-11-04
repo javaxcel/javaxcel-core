@@ -32,7 +32,6 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 public class ExcelWriteHandlerConverter implements ExcelWriteConverter {
@@ -43,15 +42,15 @@ public class ExcelWriteHandlerConverter implements ExcelWriteConverter {
 
     private final Map<Field, ExcelAnalysis> analysisMap;
 
-    public ExcelWriteHandlerConverter(ExcelTypeHandlerRegistry registry, List<ExcelAnalysis> analyses) {
+    public ExcelWriteHandlerConverter(Iterable<ExcelAnalysis> analyses, ExcelTypeHandlerRegistry registry) {
+        Asserts.that(analyses)
+                .describedAs("ExcelWriteHandlerConverter.analyses is not allowed to be null")
+                .isNotNull();
         Asserts.that(registry)
                 .describedAs("ExcelWriteHandlerConverter.registry is not allowed to be null")
                 .isNotNull()
                 .describedAs("ExcelWriteHandlerConverter.registry.allTypes is not allowed to be null")
                 .isNot(it -> it.getAllTypes() == null);
-        Asserts.that(analyses)
-                .describedAs("ExcelWriteHandlerConverter.analyses is not allowed to be null")
-                .isNotNull();
 
         this.registry = registry;
 

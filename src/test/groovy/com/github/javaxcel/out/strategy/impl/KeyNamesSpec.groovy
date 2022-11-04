@@ -52,14 +52,14 @@ class KeyNamesSpec extends Specification {
 
         then: "Failed to create strategy"
         def e0 = thrown IllegalArgumentException
-        e0.message == "keyOrders cannot have duplicated elements: $illegalKeyNames"
+        e0.message.split("\n")[0] == "keyOrders cannot have duplicated elements: $illegalKeyNames"
 
         when: "Create strategy with illegal arguments"
         new KeyNames(legalKeyNames, illegalKeyNames)
 
         then: "Failed to create strategy"
         def e1 = thrown IllegalArgumentException
-        e1.message == "newKeyNames cannot have duplicated elements: $illegalKeyNames"
+        e1.message.split("\n")[0] == "newKeyNames cannot have duplicated elements: $illegalKeyNames"
     }
 
 }
