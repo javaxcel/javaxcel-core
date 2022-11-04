@@ -85,18 +85,18 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
     /**
      * Creates a writer for model.
      *
-     * @param workbook Excel workbook
-     * @param type     model type
-     * @param registry registry of handlers for field type
+     * @param workbook  Excel workbook
+     * @param modelType type of Excel model
+     * @param registry  registry of handlers for field type
      */
-    public ModelWriter(Workbook workbook, Class<T> type, ExcelTypeHandlerRegistry registry) {
-        super(workbook, type);
+    public ModelWriter(Workbook workbook, Class<T> modelType, ExcelTypeHandlerRegistry registry) {
+        super(workbook, modelType);
 
         // Finds the targeted fields.
-        List<Field> fields = FieldUtils.getTargetedFields(type);
+        List<Field> fields = FieldUtils.getTargetedFields(modelType);
         Asserts.that(fields)
-                .describedAs("ModelWriter.fields cannot find the targeted fields in the class: {0}", type.getName())
-                .thrownBy(desc -> new NoTargetedFieldException(type, desc))
+                .describedAs("ModelWriter.fields cannot find the targeted fields in the class: {0}", modelType.getName())
+                .thrownBy(desc -> new NoTargetedFieldException(modelType, desc))
                 .isNotEmpty()
                 .describedAs("ModelWriter.fields cannot have null element: {0}", fields)
                 .doesNotContainNull();

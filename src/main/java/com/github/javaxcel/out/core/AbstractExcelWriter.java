@@ -42,6 +42,11 @@ import java.util.function.Function;
 
 import static java.util.stream.Collectors.toMap;
 
+/**
+ * Abstract Excel writer
+ *
+ * @param <T> type of Excel model
+ */
 public abstract class AbstractExcelWriter<T> implements ExcelWriter<T>, ExcelWriteLifecycle<T> {
 
     /**
@@ -51,6 +56,12 @@ public abstract class AbstractExcelWriter<T> implements ExcelWriter<T>, ExcelWri
 
     private final ExcelWriteContext<T> context;
 
+    /**
+     * Creates a writer for model.
+     *
+     * @param workbook  Excel workbook
+     * @param modelType type of Excel model
+     */
     @SuppressWarnings("unchecked")
     protected AbstractExcelWriter(Workbook workbook, Class<T> modelType) {
         Class<? extends ExcelWriter<T>> writerType = (Class<? extends ExcelWriter<T>>) getClass();
