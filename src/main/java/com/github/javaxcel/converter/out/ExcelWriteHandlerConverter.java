@@ -16,33 +16,34 @@
 
 package com.github.javaxcel.converter.out;
 
-import com.github.javaxcel.analysis.out.ExcelWriteAnalysis;
-import com.github.javaxcel.analysis.out.impl.FieldAccessDefaultExcelWriteAnalysis;
-import com.github.javaxcel.analysis.out.impl.GetterAccessDefaultExcelWriteAnalysis;
+import com.github.javaxcel.analysis.ExcelAnalysis;
+import com.github.javaxcel.analysis.out.ExcelWriteAnalyzer;
 import com.github.javaxcel.converter.handler.ExcelTypeHandler;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
+import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.ClassUtils;
+import io.github.imsejin.common.util.ReflectionUtils;
 import jakarta.validation.constraints.Null;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toMap;
 
 public class ExcelWriteHandlerConverter implements ExcelWriteConverter {
 
     private final ExcelTypeHandlerRegistry registry;
 
-    private final Map<Field, ExcelWriteAnalysis> analysisMap;
+    private final Map<Field, Method> getterMap;
 
-    public ExcelWriteHandlerConverter(ExcelTypeHandlerRegistry registry, List<ExcelWriteAnalysis> analyses) {
+    private final Map<Field, ExcelAnalysis> analysisMap;
+
+    public ExcelWriteHandlerConverter(ExcelTypeHandlerRegistry registry, List<ExcelAnalysis> analyses) {
         Asserts.that(registry)
                 .describedAs("ExcelWriteHandlerConverter.registry is not allowed to be null")
                 .isNotNull()
@@ -53,16 +54,29 @@ public class ExcelWriteHandlerConverter implements ExcelWriteConverter {
                 .isNotNull();
 
         this.registry = registry;
-        this.analysisMap = analyses.stream().collect(collectingAndThen(
-                toMap(ExcelWriteAnalysis::getField, Function.identity()), Collections::unmodifiableMap));
+
+        Map<Field, Method> getterMap = new HashMap<>();
+        Map<Field, ExcelAnalysis> analysisMap = new HashMap<>();
+
+        for (ExcelAnalysis analysis : analyses) {
+            Field field = analysis.getField();
+
+            if (analysis.hasFlag(ExcelWriteAnalyzer.GETTER)) {
+                Method getter = FieldUtils.resolveGetter(field);
+                getterMap.put(field, getter);
+            }
+
+            analysisMap.put(field, analysis);
+        }
+
+        this.getterMap = Collections.unmodifiableMap(getterMap);
+        this.analysisMap = Collections.unmodifiableMap(analysisMap);
     }
 
     @Override
     public boolean supports(Field field) {
-        ExcelWriteAnalysis analysis = this.analysisMap.get(field);
-
-        return analysis instanceof FieldAccessDefaultExcelWriteAnalysis
-                || analysis instanceof GetterAccessDefaultExcelWriteAnalysis;
+        ExcelAnalysis analysis = this.analysisMap.get(field);
+        return analysis.hasFlag(ExcelWriteAnalyzer.HANDLER);
     }
 
     /**
@@ -71,16 +85,34 @@ public class ExcelWriteHandlerConverter implements ExcelWriteConverter {
     @Null
     @Override
     public String convert(Object model, Field field) {
-        ExcelWriteAnalysis analysis = this.analysisMap.get(field);
-        Object value = analysis.getValue(model);
+        // Gets property value of model.
+        Object value = getValueOf(model, field);
 
         // Returns default value if the value is null.
         if (value == null) {
+            ExcelAnalysis analysis = this.analysisMap.get(field);
             return analysis.getDefaultValue();
         }
 
         Class<?> type = field.getType();
         return handleInternal(field, type, value);
+    }
+
+    // -------------------------------------------------------------------------------------------------
+
+    private Object getValueOf(Object model, Field field) {
+        ExcelAnalysis analysis = this.analysisMap.get(field);
+
+        if (analysis.hasFlag(ExcelWriteAnalyzer.FIELD_ACCESS)) {
+            return ReflectionUtils.getFieldValue(model, field);
+
+        } else if (analysis.hasFlag(ExcelWriteAnalyzer.GETTER)) {
+            Method getter = this.getterMap.get(field);
+            return ReflectionUtils.invoke(getter, model);
+
+        } else {
+            throw new RuntimeException("Never throw; ExcelWriteAnalyzer adds the flags into each analysis");
+        }
     }
 
     private String handleInternal(Field field, Class<?> type, Object value) {
@@ -166,7 +198,7 @@ public class ExcelWriteHandlerConverter implements ExcelWriteConverter {
     }
 
     private String handleConcrete(Field field, Class<?> type, Object value) {
-        ExcelWriteAnalysis analysis = this.analysisMap.get(field);
+        ExcelAnalysis analysis = this.analysisMap.get(field);
 
         ExcelTypeHandler<?> handler;
         if (analysis != null && analysis.doesHandlerResolved()) {

@@ -16,12 +16,11 @@
 
 package com.github.javaxcel.analysis.out;
 
-import com.github.javaxcel.analysis.ExcelAnalysisResolver;
+import com.github.javaxcel.analysis.ExcelAnalysis;
+import com.github.javaxcel.analysis.ExcelAnalysisImpl;
 import com.github.javaxcel.analysis.ExcelAnalyzer;
-import com.github.javaxcel.analysis.out.impl.FieldAccessDefaultExcelWriteAnalysis;
-import com.github.javaxcel.analysis.out.impl.FieldAccessExpressionExcelWriteAnalysis;
-import com.github.javaxcel.analysis.out.impl.GetterAccessDefaultExcelWriteAnalysis;
-import com.github.javaxcel.analysis.out.impl.GetterAccessExpressionExcelWriteAnalysis;
+import com.github.javaxcel.annotation.ExcelColumn;
+import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.annotation.ExcelWriteExpression;
 import com.github.javaxcel.converter.handler.ExcelTypeHandler;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
@@ -29,31 +28,23 @@ import com.github.javaxcel.out.strategy.impl.DefaultValue;
 import com.github.javaxcel.out.strategy.impl.UseGetters;
 import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.assertion.Asserts;
-import io.github.imsejin.common.util.ArrayUtils;
-import org.springframework.expression.Expression;
-import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
+import io.github.imsejin.common.util.StringUtils;
+import jakarta.validation.constraints.Null;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
+public class ExcelWriteAnalyzer implements ExcelAnalyzer<ExcelAnalysis> {
 
-public class ExcelWriteAnalyzer implements ExcelAnalyzer<ExcelWriteAnalysis> {
+    public static final int HANDLER = 0x01;
 
-    private static final ExpressionParser EXPRESSION_PARSER = new SpelExpressionParser();
-    private static final int VOID_BIT = 0x00;
-    private static final int EXPRESSION_BIT = 0x01;
-    private static final int USE_GETTERS_BIT = 0x02;
-    private static final List<ExcelAnalysisResolver> ANALYSIS_RESOLVERS = Stream.of(
-            new FieldAccessDefaultExcelAnalysisResolver(), new FieldAccessExpressionExcelAnalysisResolver(),
-            new GetterAccessDefaultExcelAnalysisResolver(), new GetterAccessExpressionExcelAnalysisResolver())
-            .collect(collectingAndThen(toList(), Collections::unmodifiableList));
+    public static final int EXPRESSION = 0x02;
+
+    public static final int FIELD_ACCESS = 0x04;
+
+    public static final int GETTER = 0x08;
 
     private final ExcelTypeHandlerRegistry registry;
 
@@ -62,20 +53,35 @@ public class ExcelWriteAnalyzer implements ExcelAnalyzer<ExcelWriteAnalysis> {
     }
 
     @Override
-    public List<ExcelWriteAnalysis> analyze(List<Field> fields, Object... arguments) {
+    public List<ExcelAnalysis> analyze(List<Field> fields, Object... arguments) {
         Asserts.that(fields)
                 .describedAs("ExcelWriteAnalyzer cannot analyze null as fields")
                 .isNotNull()
                 .describedAs("ExcelWriteAnalyzer cannot analyze empty fields")
                 .isNotEmpty();
 
-        List<ExcelWriteAnalysis> analyses = new ArrayList<>();
+        List<ExcelAnalysis> analyses = new ArrayList<>();
         for (Field field : fields) {
+            ExcelAnalysisImpl analysis = new ExcelAnalysisImpl(field);
+
+            // Analyzes default value for the field.
+            DefaultValue dva = FieldUtils.resolveFirst(DefaultValue.class, arguments);
+            String defaultValue = analyzeDefaultValue(field, dva);
+            if (!StringUtils.isNullOrEmpty(defaultValue)) {
+                analysis.setDefaultValue(defaultValue);
+            }
+
+            // Analyzes handler for the field.
             Class<?> actualType = FieldUtils.resolveActualType(field);
             ExcelTypeHandler<?> handler = this.registry.getHandler(actualType);
+            if (handler != null) {
+                analysis.setHandler(handler);
+            }
 
-            Object[] args = ArrayUtils.prepend(arguments, fields, field, handler);
-            ExcelWriteAnalysis analysis = resolveAnalysis(field, args);
+            // Analyzes flags for the field.
+            UseGetters uga = FieldUtils.resolveFirst(UseGetters.class, arguments);
+            int flags = analyzeFlags(field, uga);
+            analysis.addFlags(flags);
 
             analyses.add(analysis);
         }
@@ -85,134 +91,46 @@ public class ExcelWriteAnalyzer implements ExcelAnalyzer<ExcelWriteAnalysis> {
 
     // -------------------------------------------------------------------------------------------------
 
-    private static ExcelWriteAnalysis resolveAnalysis(Field field, Object... args) {
-        UseGetters useGettersStrategy = FieldUtils.resolveFirst(UseGetters.class, args);
-        ExcelWriteExpression annotation = field.getAnnotation(ExcelWriteExpression.class);
+    @Null
+    private static String analyzeDefaultValue(Field field, @Null DefaultValue strategy) {
+        if (strategy != null) {
+            return (String) strategy.execute(null);
+        }
 
-        int bit = VOID_BIT;
-        bit |= annotation == null ? VOID_BIT : EXPRESSION_BIT;
-        bit |= useGettersStrategy == null ? VOID_BIT : USE_GETTERS_BIT;
+        // Decides the proper default value for a field value.
+        // @ExcelColumn's default value takes precedence over ExcelModel's default value.
+        ExcelColumn columnAnnotation = field.getAnnotation(ExcelColumn.class);
+        if (columnAnnotation != null && !columnAnnotation.defaultValue().equals("")) {
+            // Default value on @ExcelColumn
+            return columnAnnotation.defaultValue();
+        }
 
-        for (ExcelAnalysisResolver resolver : ANALYSIS_RESOLVERS) {
-            if (resolver.getBit() == bit) {
-                return resolver.resolve(args);
+        ExcelModel modelAnnotation = field.getDeclaringClass().getAnnotation(ExcelModel.class);
+        if (modelAnnotation != null && !modelAnnotation.defaultValue().equals("")) {
+            // Default value on @ExcelModel
+            return modelAnnotation.defaultValue();
+        }
+
+        return null;
+    }
+
+    private static int analyzeFlags(Field field, @Null UseGetters strategy) {
+        int flags = 0x00;
+
+        flags |= field.isAnnotationPresent(ExcelWriteExpression.class) ? EXPRESSION : HANDLER;
+        flags |= strategy == null ? FIELD_ACCESS : GETTER;
+
+        // Checks if getter of the field exists.
+        if ((flags & GETTER) == GETTER) {
+            try {
+                FieldUtils.resolveGetter(field);
+            } catch (RuntimeException ignored) {
+                // When it doesn't exist, removes flag of GETTER from the flags.
+                flags = flags ^ GETTER;
             }
         }
 
-        throw new RuntimeException("Never throw; ExcelWriteAnalyzer.ANALYSIS_RESOLVERS can deal with a bit in every case");
+        return flags;
     }
-
-    // -------------------------------------------------------------------------------------------------
-
-    private static class FieldAccessDefaultExcelAnalysisResolver implements ExcelAnalysisResolver {
-        @Override
-        public int getBit() {
-            return VOID_BIT;
-        }
-
-        @Override
-        public ExcelWriteAnalysis resolve(Object... args) {
-            Field field = FieldUtils.resolveFirst(Field.class, args);
-
-            DefaultValue strategy = FieldUtils.resolveFirst(DefaultValue.class, args);
-            String defaultValue = ExcelAnalysisResolver.resolveDefaultValue(field, strategy);
-
-            ExcelTypeHandler<?> handler = FieldUtils.resolveFirst(ExcelTypeHandler.class, args);
-
-            FieldAccessDefaultExcelWriteAnalysis fad = new FieldAccessDefaultExcelWriteAnalysis(field, defaultValue);
-            if (handler != null) {
-                fad.setHandler(handler);
-            }
-
-            return fad;
-        }
-    }
-
-    // -------------------------------------------------------------------------------------------------
-
-    private static class FieldAccessExpressionExcelAnalysisResolver implements ExcelAnalysisResolver {
-        @Override
-        public int getBit() {
-            return EXPRESSION_BIT;
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public ExcelWriteAnalysis resolve(Object... args) {
-            Field field = Objects.requireNonNull(FieldUtils.resolveFirst(Field.class, args),
-                    "Never throw; Field is injected into arguments by ExcelWriteAnalyzer");
-
-            DefaultValue strategy = FieldUtils.resolveFirst(DefaultValue.class, args);
-            String defaultValue = ExcelAnalysisResolver.resolveDefaultValue(field, strategy);
-
-            ExcelWriteExpression annotation = field.getAnnotation(ExcelWriteExpression.class);
-            Expression expression = EXPRESSION_PARSER.parseExpression(annotation.value());
-            List<Field> fields = (List<Field>) FieldUtils.resolveFirst(List.class, args);
-
-            // Return type of the expression is determined on runtime, so analyzer can't resolve handler for this column.
-            FieldAccessExpressionExcelWriteAnalysis fae = new FieldAccessExpressionExcelWriteAnalysis(field, defaultValue);
-            fae.setExpression(expression);
-            fae.setFields(fields);
-
-            return fae;
-        }
-    }
-
-    // -------------------------------------------------------------------------------------------------
-
-    private static class GetterAccessDefaultExcelAnalysisResolver implements ExcelAnalysisResolver {
-        @Override
-        public int getBit() {
-            return USE_GETTERS_BIT;
-        }
-
-        @Override
-        public ExcelWriteAnalysis resolve(Object... args) {
-            Field field = FieldUtils.resolveFirst(Field.class, args);
-
-            DefaultValue strategy = FieldUtils.resolveFirst(DefaultValue.class, args);
-            String defaultValue = ExcelAnalysisResolver.resolveDefaultValue(field, strategy);
-
-            ExcelTypeHandler<?> handler = FieldUtils.resolveFirst(ExcelTypeHandler.class, args);
-
-            GetterAccessDefaultExcelWriteAnalysis gad = new GetterAccessDefaultExcelWriteAnalysis(field, defaultValue);
-            if (handler != null) {
-                gad.setHandler(handler);
-            }
-
-            return gad;
-        }
-    }
-
-    // -------------------------------------------------------------------------------------------------
-
-    private static class GetterAccessExpressionExcelAnalysisResolver implements ExcelAnalysisResolver {
-        @Override
-        public int getBit() {
-            return EXPRESSION_BIT | USE_GETTERS_BIT;
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public ExcelWriteAnalysis resolve(Object... args) {
-            Field field = Objects.requireNonNull(FieldUtils.resolveFirst(Field.class, args),
-                    "Never throw; Field is injected into arguments by ExcelWriteAnalyzer");
-
-            DefaultValue strategy = FieldUtils.resolveFirst(DefaultValue.class, args);
-            String defaultValue = ExcelAnalysisResolver.resolveDefaultValue(field, strategy);
-
-            ExcelWriteExpression annotation = field.getAnnotation(ExcelWriteExpression.class);
-            Expression expression = EXPRESSION_PARSER.parseExpression(annotation.value());
-            List<Field> fields = (List<Field>) FieldUtils.resolveFirst(List.class, args);
-
-            // Return type of the expression is determined on runtime, so analyzer can't resolve handler for this column.
-            GetterAccessExpressionExcelWriteAnalysis gae = new GetterAccessExpressionExcelWriteAnalysis(field, defaultValue);
-            gae.setExpression(expression);
-            gae.setGetters(fields);
-
-            return gae;
-        }
-    }
-
 
 }

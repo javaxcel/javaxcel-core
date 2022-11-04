@@ -17,6 +17,7 @@
 package com.github.javaxcel.analysis;
 
 import com.github.javaxcel.converter.handler.ExcelTypeHandler;
+import jakarta.validation.constraints.Null;
 
 import java.lang.reflect.Field;
 
@@ -24,9 +25,18 @@ public interface ExcelAnalysis {
 
     Field getField();
 
+    int getFlags();
+
+    @Null
     String getDefaultValue();
 
+    @Null
     ExcelTypeHandler<?> getHandler();
+
+    default boolean hasFlag(int flag) {
+        int flags = getFlags();
+        return (flags & flag) == flag;
+    }
 
     default boolean doesHandlerResolved() {
         ExcelTypeHandler<?> handler = getHandler();

@@ -16,7 +16,8 @@
 
 package com.github.javaxcel.converter.out
 
-import com.github.javaxcel.analysis.out.impl.FieldAccessDefaultExcelWriteAnalysis
+import com.github.javaxcel.analysis.ExcelAnalysisImpl
+import com.github.javaxcel.analysis.out.ExcelWriteAnalyzer
 import com.github.javaxcel.converter.handler.registry.impl.DefaultExcelTypeHandlerRegistry
 import com.github.javaxcel.internal.Array1D
 import com.github.javaxcel.internal.Array2D
@@ -28,8 +29,12 @@ class ExcelWriteHandlerConverterSpec extends Specification {
     def "Converts 1D array"() {
         given:
         def model = new Array1D(array)
-        def analyses = model.class.declaredFields.collect({ new FieldAccessDefaultExcelWriteAnalysis(it, null) })
-        def field = Array1D.getDeclaredField(fieldName)
+        def field = model.class.getDeclaredField(fieldName)
+        def analyses = model.class.declaredFields.findAll { !it.isSynthetic() }.collect {
+            def analysis = new ExcelAnalysisImpl(it)
+            analysis.addFlags(ExcelWriteAnalyzer.HANDLER | ExcelWriteAnalyzer.GETTER)
+            analysis
+        }
 
         when:
         def converter = new ExcelWriteHandlerConverter(new DefaultExcelTypeHandlerRegistry(), analyses)
@@ -63,8 +68,12 @@ class ExcelWriteHandlerConverterSpec extends Specification {
     def "Converts 2D array"() {
         given:
         def model = new Array2D(array)
-        def analyses = model.class.declaredFields.collect({ new FieldAccessDefaultExcelWriteAnalysis(it, null) })
         def field = model.class.getDeclaredField(fieldName)
+        def analyses = model.class.declaredFields.findAll { !it.isSynthetic() }.collect {
+            def analysis = new ExcelAnalysisImpl(it)
+            analysis.addFlags(ExcelWriteAnalyzer.HANDLER | ExcelWriteAnalyzer.FIELD_ACCESS)
+            analysis
+        }
 
         when:
         def converter = new ExcelWriteHandlerConverter(new DefaultExcelTypeHandlerRegistry(), analyses)
@@ -102,8 +111,12 @@ class ExcelWriteHandlerConverterSpec extends Specification {
     def "Converts 3D array"() {
         given:
         def model = new Array3D(array)
-        def analyses = model.class.declaredFields.collect({ new FieldAccessDefaultExcelWriteAnalysis(it, null) })
         def field = model.class.getDeclaredField(fieldName)
+        def analyses = model.class.declaredFields.findAll { !it.isSynthetic() }.collect {
+            def analysis = new ExcelAnalysisImpl(it)
+            analysis.addFlags(ExcelWriteAnalyzer.HANDLER | ExcelWriteAnalyzer.FIELD_ACCESS)
+            analysis
+        }
 
         when:
         def converter = new ExcelWriteHandlerConverter(new DefaultExcelTypeHandlerRegistry(), analyses)

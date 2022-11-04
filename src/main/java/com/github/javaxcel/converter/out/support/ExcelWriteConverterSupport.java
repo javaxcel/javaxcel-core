@@ -16,11 +16,11 @@
 
 package com.github.javaxcel.converter.out.support;
 
-import com.github.javaxcel.analysis.out.ExcelWriteAnalysis;
+import com.github.javaxcel.analysis.ExcelAnalysis;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
-import com.github.javaxcel.converter.out.ExcelWriteHandlerConverter;
 import com.github.javaxcel.converter.out.ExcelWriteConverter;
 import com.github.javaxcel.converter.out.ExcelWriteExpressionConverter;
+import com.github.javaxcel.converter.out.ExcelWriteHandlerConverter;
 import io.github.imsejin.common.annotation.ExcludeFromGeneratedJacocoReport;
 
 import java.lang.reflect.Field;
@@ -32,7 +32,7 @@ public final class ExcelWriteConverterSupport implements ExcelWriteConverter {
 
     private final List<ExcelWriteConverter> converters;
 
-    public ExcelWriteConverterSupport(ExcelTypeHandlerRegistry registry, List<ExcelWriteAnalysis> analyses) {
+    public ExcelWriteConverterSupport(ExcelTypeHandlerRegistry registry, List<ExcelAnalysis> analyses) {
         List<ExcelWriteConverter> converters = new ArrayList<>();
 
         converters.add(new ExcelWriteHandlerConverter(registry, analyses));

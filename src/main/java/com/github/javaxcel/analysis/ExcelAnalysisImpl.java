@@ -6,17 +6,18 @@ import jakarta.validation.constraints.Null;
 import java.lang.reflect.Field;
 import java.util.Objects;
 
-public abstract class AbstractExcelAnalysis implements ExcelAnalysis {
+public class ExcelAnalysisImpl implements ExcelAnalysis {
 
     private final Field field;
 
-    private final String defaultValue;
+    private int flags;
+
+    private String defaultValue;
 
     private ExcelTypeHandler<?> handler;
 
-    protected AbstractExcelAnalysis(Field field, @Null String defaultValue) {
+    public ExcelAnalysisImpl(Field field) {
         this.field = field;
-        this.defaultValue = defaultValue;
     }
 
     @Override
@@ -24,10 +25,23 @@ public abstract class AbstractExcelAnalysis implements ExcelAnalysis {
         return this.field;
     }
 
+    @Override
+    public int getFlags() {
+        return this.flags;
+    }
+
+    public void addFlags(int flags) {
+        this.flags |= flags;
+    }
+
     @Null
     @Override
     public String getDefaultValue() {
         return this.defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = Objects.requireNonNull(defaultValue, () -> getClass().getSimpleName() + ".defaultValue cannot be null");
     }
 
     @Null

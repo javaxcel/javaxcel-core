@@ -16,8 +16,8 @@
 
 package com.github.javaxcel.out.core.impl;
 
+import com.github.javaxcel.analysis.ExcelAnalysis;
 import com.github.javaxcel.analysis.ExcelAnalyzer;
-import com.github.javaxcel.analysis.out.ExcelWriteAnalysis;
 import com.github.javaxcel.analysis.out.ExcelWriteAnalyzer;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
@@ -30,7 +30,6 @@ import com.github.javaxcel.out.core.AbstractExcelWriter;
 import com.github.javaxcel.out.strategy.ExcelWriteStrategy;
 import com.github.javaxcel.out.strategy.impl.AutoResizedColumns;
 import com.github.javaxcel.out.strategy.impl.BodyStyles;
-import com.github.javaxcel.out.strategy.impl.DefaultValue;
 import com.github.javaxcel.out.strategy.impl.EnumDropdown;
 import com.github.javaxcel.out.strategy.impl.Filter;
 import com.github.javaxcel.out.strategy.impl.HeaderNames;
@@ -116,9 +115,9 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
     @Override
     public void prepare(ExcelWriteContext<T> context) {
         // Analyzes the fields with arguments.
-        ExcelAnalyzer<ExcelWriteAnalysis> analyzer = new ExcelWriteAnalyzer(this.registry);
+        ExcelAnalyzer<ExcelAnalysis> analyzer = new ExcelWriteAnalyzer(this.registry);
         Collection<ExcelWriteStrategy> strategies = context.getStrategyMap().values();
-        List<ExcelWriteAnalysis> analyses = analyzer.analyze(this.fields, strategies.toArray());
+        List<ExcelAnalysis> analyses = analyzer.analyze(this.fields, strategies.toArray());
 
         // Creates a converter.
         this.converter = new ExcelWriteConverterSupport(this.registry, analyses);
