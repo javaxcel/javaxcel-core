@@ -16,36 +16,36 @@
 
 package com.github.javaxcel.converter.handler.registry.impl;
 
-import com.github.javaxcel.converter.handler.impl.BigDecimalTypeHandler;
-import com.github.javaxcel.converter.handler.impl.BigIntegerTypeHandler;
-import com.github.javaxcel.converter.handler.impl.BooleanTypeHandler;
-import com.github.javaxcel.converter.handler.impl.ByteTypeHandler;
-import com.github.javaxcel.converter.handler.impl.CharacterTypeHandler;
-import com.github.javaxcel.converter.handler.impl.DateTypeHandler;
-import com.github.javaxcel.converter.handler.impl.DoubleTypeHandler;
-import com.github.javaxcel.converter.handler.impl.EnumTypeHandler;
-import com.github.javaxcel.converter.handler.impl.FileTypeHandler;
-import com.github.javaxcel.converter.handler.impl.FloatTypeHandler;
-import com.github.javaxcel.converter.handler.impl.InstantTypeHandler;
-import com.github.javaxcel.converter.handler.impl.IntegerTypeHandler;
-import com.github.javaxcel.converter.handler.impl.LocalDateTimeTypeHandler;
-import com.github.javaxcel.converter.handler.impl.LocalDateTypeHandler;
-import com.github.javaxcel.converter.handler.impl.LocalTimeTypeHandler;
-import com.github.javaxcel.converter.handler.impl.LocaleTypeHandler;
-import com.github.javaxcel.converter.handler.impl.LongTypeHandler;
-import com.github.javaxcel.converter.handler.impl.MonthDayTypeHandler;
-import com.github.javaxcel.converter.handler.impl.MonthTypeHandler;
-import com.github.javaxcel.converter.handler.impl.OffsetDateTimeTypeHandler;
-import com.github.javaxcel.converter.handler.impl.OffsetTimeTypeHandler;
-import com.github.javaxcel.converter.handler.impl.PathTypeHandler;
-import com.github.javaxcel.converter.handler.impl.ShortTypeHandler;
-import com.github.javaxcel.converter.handler.impl.StringTypeHandler;
-import com.github.javaxcel.converter.handler.impl.URITypeHandler;
-import com.github.javaxcel.converter.handler.impl.URLTypeHandler;
-import com.github.javaxcel.converter.handler.impl.UUIDTypeHandler;
-import com.github.javaxcel.converter.handler.impl.YearMonthTypeHandler;
-import com.github.javaxcel.converter.handler.impl.YearTypeHandler;
-import com.github.javaxcel.converter.handler.impl.ZonedDateTimeTypeHandler;
+import com.github.javaxcel.converter.handler.impl.io.FileTypeHandler;
+import com.github.javaxcel.converter.handler.impl.lang.BooleanTypeHandler;
+import com.github.javaxcel.converter.handler.impl.lang.ByteTypeHandler;
+import com.github.javaxcel.converter.handler.impl.lang.CharacterTypeHandler;
+import com.github.javaxcel.converter.handler.impl.lang.DoubleTypeHandler;
+import com.github.javaxcel.converter.handler.impl.lang.EnumTypeHandler;
+import com.github.javaxcel.converter.handler.impl.lang.FloatTypeHandler;
+import com.github.javaxcel.converter.handler.impl.lang.IntegerTypeHandler;
+import com.github.javaxcel.converter.handler.impl.lang.LongTypeHandler;
+import com.github.javaxcel.converter.handler.impl.lang.ShortTypeHandler;
+import com.github.javaxcel.converter.handler.impl.lang.StringTypeHandler;
+import com.github.javaxcel.converter.handler.impl.math.BigDecimalTypeHandler;
+import com.github.javaxcel.converter.handler.impl.math.BigIntegerTypeHandler;
+import com.github.javaxcel.converter.handler.impl.net.URITypeHandler;
+import com.github.javaxcel.converter.handler.impl.net.URLTypeHandler;
+import com.github.javaxcel.converter.handler.impl.nio.file.PathTypeHandler;
+import com.github.javaxcel.converter.handler.impl.time.InstantTypeHandler;
+import com.github.javaxcel.converter.handler.impl.time.LocalDateTimeTypeHandler;
+import com.github.javaxcel.converter.handler.impl.time.LocalDateTypeHandler;
+import com.github.javaxcel.converter.handler.impl.time.LocalTimeTypeHandler;
+import com.github.javaxcel.converter.handler.impl.time.MonthDayTypeHandler;
+import com.github.javaxcel.converter.handler.impl.time.MonthTypeHandler;
+import com.github.javaxcel.converter.handler.impl.time.OffsetDateTimeTypeHandler;
+import com.github.javaxcel.converter.handler.impl.time.OffsetTimeTypeHandler;
+import com.github.javaxcel.converter.handler.impl.time.YearMonthTypeHandler;
+import com.github.javaxcel.converter.handler.impl.time.YearTypeHandler;
+import com.github.javaxcel.converter.handler.impl.time.ZonedDateTimeTypeHandler;
+import com.github.javaxcel.converter.handler.impl.util.DateTypeHandler;
+import com.github.javaxcel.converter.handler.impl.util.LocaleTypeHandler;
+import com.github.javaxcel.converter.handler.impl.util.UUIDTypeHandler;
 
 public class DefaultExcelTypeHandlerRegistry extends ExcelTypeHandlerRegistryImpl {
 

@@ -17,7 +17,7 @@
 package com.github.javaxcel.converter.in;
 
 import com.github.javaxcel.TestUtils;
-import com.github.javaxcel.converter.handler.impl.EnumTypeHandler;
+import com.github.javaxcel.converter.handler.impl.lang.EnumTypeHandler;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
 import com.github.javaxcel.converter.handler.registry.impl.DefaultExcelTypeHandlerRegistry;
 import com.github.javaxcel.internal.handler.TimeUnitTypeHandler;
@@ -40,7 +40,7 @@ import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * @see com.github.javaxcel.converter.handler.impl.EnumTypeHandler
+ * @see EnumTypeHandler
  * @see DefaultExcelReadConverter
  */
 class CustomEnumConversionTest {

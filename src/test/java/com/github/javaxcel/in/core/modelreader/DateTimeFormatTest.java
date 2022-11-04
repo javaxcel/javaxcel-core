@@ -18,6 +18,7 @@ package com.github.javaxcel.in.core.modelreader;
 
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
 import com.github.javaxcel.annotation.ExcelModel;
+import com.github.javaxcel.converter.handler.impl.lang.EnumTypeHandler;
 import com.github.javaxcel.in.core.ModelReaderTester;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.model.toy.EducationToy;
@@ -35,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @see ExcelModel#includeSuper()
  * @see ExcelDateTimeFormat#pattern()
- * @see com.github.javaxcel.converter.handler.impl.EnumTypeHandler
+ * @see EnumTypeHandler
  */
 @StopwatchProvider
 class DateTimeFormatTest extends ModelReaderTester {

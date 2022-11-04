@@ -17,6 +17,31 @@
 package com.github.javaxcel.converter.handler.impl
 
 import com.github.javaxcel.converter.handler.ExcelTypeHandler
+import com.github.javaxcel.converter.handler.impl.lang.BooleanTypeHandler
+import com.github.javaxcel.converter.handler.impl.lang.ByteTypeHandler
+import com.github.javaxcel.converter.handler.impl.lang.CharacterTypeHandler
+import com.github.javaxcel.converter.handler.impl.lang.DoubleTypeHandler
+import com.github.javaxcel.converter.handler.impl.lang.FloatTypeHandler
+import com.github.javaxcel.converter.handler.impl.lang.IntegerTypeHandler
+import com.github.javaxcel.converter.handler.impl.lang.LongTypeHandler
+import com.github.javaxcel.converter.handler.impl.lang.ShortTypeHandler
+import com.github.javaxcel.converter.handler.impl.lang.StringTypeHandler
+import com.github.javaxcel.converter.handler.impl.math.BigDecimalTypeHandler
+import com.github.javaxcel.converter.handler.impl.math.BigIntegerTypeHandler
+import com.github.javaxcel.converter.handler.impl.time.InstantTypeHandler
+import com.github.javaxcel.converter.handler.impl.time.LocalDateTimeTypeHandler
+import com.github.javaxcel.converter.handler.impl.time.LocalDateTypeHandler
+import com.github.javaxcel.converter.handler.impl.time.LocalTimeTypeHandler
+import com.github.javaxcel.converter.handler.impl.time.MonthDayTypeHandler
+import com.github.javaxcel.converter.handler.impl.time.MonthTypeHandler
+import com.github.javaxcel.converter.handler.impl.time.OffsetDateTimeTypeHandler
+import com.github.javaxcel.converter.handler.impl.time.OffsetTimeTypeHandler
+import com.github.javaxcel.converter.handler.impl.time.YearMonthTypeHandler
+import com.github.javaxcel.converter.handler.impl.time.YearTypeHandler
+import com.github.javaxcel.converter.handler.impl.time.ZonedDateTimeTypeHandler
+import com.github.javaxcel.converter.handler.impl.util.DateTypeHandler
+import com.github.javaxcel.converter.handler.impl.util.LocaleTypeHandler
+import com.github.javaxcel.converter.handler.impl.util.UUIDTypeHandler
 import spock.lang.Specification
 import spock.lang.Unroll
 

@@ -16,9 +16,9 @@
 
 package com.github.javaxcel.converter.handler.registry.impl
 
-import com.github.javaxcel.converter.handler.impl.BigIntegerTypeHandler
-import com.github.javaxcel.converter.handler.impl.DateTypeHandler
-import com.github.javaxcel.converter.handler.impl.FileTypeHandler
+import com.github.javaxcel.converter.handler.impl.io.FileTypeHandler
+import com.github.javaxcel.converter.handler.impl.math.BigIntegerTypeHandler
+import com.github.javaxcel.converter.handler.impl.util.DateTypeHandler
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry
 import com.github.javaxcel.internal.ObjectTypeHandler
 import io.github.imsejin.common.util.ReflectionUtils

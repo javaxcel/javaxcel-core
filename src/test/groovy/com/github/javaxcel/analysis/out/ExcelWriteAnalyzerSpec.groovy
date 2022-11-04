@@ -1,12 +1,12 @@
 package com.github.javaxcel.analysis.out
 
 import com.github.javaxcel.TestUtils
-import com.github.javaxcel.converter.handler.impl.BigDecimalTypeHandler
-import com.github.javaxcel.converter.handler.impl.BigIntegerTypeHandler
-import com.github.javaxcel.converter.handler.impl.DoubleTypeHandler
-import com.github.javaxcel.converter.handler.impl.IntegerTypeHandler
-import com.github.javaxcel.converter.handler.impl.LongTypeHandler
-import com.github.javaxcel.converter.handler.impl.StringTypeHandler
+import com.github.javaxcel.converter.handler.impl.lang.DoubleTypeHandler
+import com.github.javaxcel.converter.handler.impl.lang.IntegerTypeHandler
+import com.github.javaxcel.converter.handler.impl.lang.LongTypeHandler
+import com.github.javaxcel.converter.handler.impl.lang.StringTypeHandler
+import com.github.javaxcel.converter.handler.impl.math.BigDecimalTypeHandler
+import com.github.javaxcel.converter.handler.impl.math.BigIntegerTypeHandler
 import com.github.javaxcel.converter.handler.registry.impl.DefaultExcelTypeHandlerRegistry
 import com.github.javaxcel.model.sample.ComplexSample
 import com.github.javaxcel.model.sample.GenericSample

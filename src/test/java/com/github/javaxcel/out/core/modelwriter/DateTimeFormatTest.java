@@ -18,6 +18,13 @@ package com.github.javaxcel.out.core.modelwriter;
 
 import com.github.javaxcel.TestUtils;
 import com.github.javaxcel.annotation.ExcelDateTimeFormat;
+import com.github.javaxcel.converter.handler.impl.time.LocalDateTimeTypeHandler;
+import com.github.javaxcel.converter.handler.impl.time.LocalDateTypeHandler;
+import com.github.javaxcel.converter.handler.impl.time.LocalTimeTypeHandler;
+import com.github.javaxcel.converter.handler.impl.time.OffsetDateTimeTypeHandler;
+import com.github.javaxcel.converter.handler.impl.time.OffsetTimeTypeHandler;
+import com.github.javaxcel.converter.handler.impl.time.ZonedDateTimeTypeHandler;
+import com.github.javaxcel.converter.handler.impl.util.DateTypeHandler;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.out.core.ModelWriterTester;
 import com.github.javaxcel.util.ExcelUtils;
@@ -49,13 +56,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @see ExcelDateTimeFormat#pattern()
- * @see com.github.javaxcel.converter.handler.impl.DateTypeHandler
- * @see com.github.javaxcel.converter.handler.impl.LocalDateTypeHandler
- * @see com.github.javaxcel.converter.handler.impl.LocalTimeTypeHandler
- * @see com.github.javaxcel.converter.handler.impl.LocalDateTimeTypeHandler
- * @see com.github.javaxcel.converter.handler.impl.ZonedDateTimeTypeHandler
- * @see com.github.javaxcel.converter.handler.impl.OffsetTimeTypeHandler
- * @see com.github.javaxcel.converter.handler.impl.OffsetDateTimeTypeHandler
+ * @see DateTypeHandler
+ * @see LocalDateTypeHandler
+ * @see LocalTimeTypeHandler
+ * @see LocalDateTimeTypeHandler
+ * @see ZonedDateTimeTypeHandler
+ * @see OffsetTimeTypeHandler
+ * @see OffsetDateTimeTypeHandler
  */
 @StopwatchProvider
 class DateTimeFormatTest extends ModelWriterTester {
