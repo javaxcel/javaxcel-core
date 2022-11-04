@@ -45,7 +45,9 @@ public class ExcelModelExecutableParameterNameResolver {
     }
 
     public List<ResolvedParameter> resolve() {
-        if (CollectionUtils.isNullOrEmpty(this.parameters)) return Collections.emptyList();
+        if (CollectionUtils.isNullOrEmpty(this.parameters)) {
+            return Collections.emptyList();
+        }
 
         List<ResolvedParameter> resolvedParameters = this.parameters.stream()
                 .map(MethodParameter::forParameter).map(ResolvedParameter::new).collect(toList());
