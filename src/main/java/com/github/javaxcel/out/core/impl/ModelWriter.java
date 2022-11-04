@@ -56,6 +56,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -70,8 +71,6 @@ import java.util.stream.IntStream;
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class ModelWriter<T> extends AbstractExcelWriter<T> {
-
-    private static final ExcelAnalyzer<ExcelWriteAnalysis> ANALYZER = new ExcelWriteAnalyzer();
 
     /**
      * The fields of type that will be actually written in Excel file.
@@ -116,9 +115,12 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
 
     @Override
     public void prepare(ExcelWriteContext<T> context) {
+        // Analyzes the fields with arguments.
+        ExcelAnalyzer<ExcelWriteAnalysis> analyzer = new ExcelWriteAnalyzer(this.registry);
+        Collection<ExcelWriteStrategy> strategies = context.getStrategyMap().values();
+        List<ExcelWriteAnalysis> analyses = analyzer.analyze(this.fields, strategies.toArray());
+
         // Creates a converter.
-        ExcelWriteStrategy strategy = context.getStrategyMap().get(DefaultValue.class);
-        List<ExcelWriteAnalysis> analyses = ANALYZER.analyze(this.fields, this.registry, strategy);
         this.converter = new ExcelWriteConverterSupport(this.registry, analyses);
 
         // Handles the given options.

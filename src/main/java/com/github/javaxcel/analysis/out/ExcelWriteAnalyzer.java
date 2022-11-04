@@ -55,6 +55,12 @@ public class ExcelWriteAnalyzer implements ExcelAnalyzer<ExcelWriteAnalysis> {
             new GetterAccessDefaultExcelAnalysisResolver(), new GetterAccessExpressionExcelAnalysisResolver())
             .collect(collectingAndThen(toList(), Collections::unmodifiableList));
 
+    private final ExcelTypeHandlerRegistry registry;
+
+    public ExcelWriteAnalyzer(ExcelTypeHandlerRegistry registry) {
+        this.registry = registry;
+    }
+
     @Override
     public List<ExcelWriteAnalysis> analyze(List<Field> fields, Object... arguments) {
         Asserts.that(fields)
@@ -63,14 +69,10 @@ public class ExcelWriteAnalyzer implements ExcelAnalyzer<ExcelWriteAnalysis> {
                 .describedAs("ExcelWriteAnalyzer cannot analyze empty fields")
                 .isNotEmpty();
 
-        ExcelTypeHandlerRegistry registry = Objects.requireNonNull(
-                FieldUtils.resolveFirst(ExcelTypeHandlerRegistry.class, arguments),
-                "Never throw; ExcelTypeHandlerRegistry is injected into arguments by caller");
-
         List<ExcelWriteAnalysis> analyses = new ArrayList<>();
         for (Field field : fields) {
             Class<?> actualType = FieldUtils.resolveActualType(field);
-            ExcelTypeHandler<?> handler = registry.getHandler(actualType);
+            ExcelTypeHandler<?> handler = this.registry.getHandler(actualType);
 
             Object[] args = ArrayUtils.prepend(arguments, fields, field, handler);
             ExcelWriteAnalysis analysis = resolveAnalysis(field, args);

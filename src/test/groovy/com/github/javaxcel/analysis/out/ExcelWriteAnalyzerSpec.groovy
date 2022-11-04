@@ -22,12 +22,11 @@ class ExcelWriteAnalyzerSpec extends Specification {
     def "Analyzes with access option"() {
         given:
         def model = new Sample(values: ["sample", "item"])
-        def analyzer = new ExcelWriteAnalyzer()
+        def analyzer = new ExcelWriteAnalyzer(new DefaultExcelTypeHandlerRegistry())
         def fields = FieldUtils.getTargetedFields(model.class)
-        def arguments = [new DefaultExcelTypeHandlerRegistry()] as Object[]
 
         when: "Accesses value through field"
-        def analyses = analyzer.analyze(fields, arguments)
+        def analyses = analyzer.analyze(fields)
 
         then:
         analyses.size() == fields.size()
@@ -35,8 +34,7 @@ class ExcelWriteAnalyzerSpec extends Specification {
         analyses[0].getValue(model) != model.values
 
         when: "Accesses value through getter"
-        arguments += new UseGetters()
-        analyses = analyzer.analyze(fields, arguments)
+        analyses = analyzer.analyze(fields, new UseGetters())
 
         then:
         analyses.size() == fields.size()
@@ -49,10 +47,9 @@ class ExcelWriteAnalyzerSpec extends Specification {
         given:
         def fields = FieldUtils.getTargetedFields(type)
         def model = TestUtils.randomize(type)
-        arguments += new DefaultExcelTypeHandlerRegistry()
 
         when:
-        def analyzer = new ExcelWriteAnalyzer()
+        def analyzer = new ExcelWriteAnalyzer(new DefaultExcelTypeHandlerRegistry())
         def analyses = analyzer.analyze(fields, arguments as Object[])
 
         then: """
@@ -82,8 +79,8 @@ class ExcelWriteAnalyzerSpec extends Specification {
         def fields = FieldUtils.getTargetedFields(type)
 
         when:
-        def analyzer = new ExcelWriteAnalyzer()
-        def analyses = analyzer.analyze(fields, new DefaultExcelTypeHandlerRegistry())
+        def analyzer = new ExcelWriteAnalyzer(new DefaultExcelTypeHandlerRegistry())
+        def analyses = analyzer.analyze(fields)
 
         then: "Field, value and handler of analysis is equal to the expected"
         analyses.size() == fields.size()
