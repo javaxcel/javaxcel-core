@@ -17,13 +17,13 @@
 package com.github.javaxcel.converter.in
 
 import com.github.javaxcel.converter.handler.registry.impl.DefaultExcelTypeHandlerRegistry
-import com.github.javaxcel.converter.in.DefaultExcelReadConverter.Utils
+import com.github.javaxcel.converter.in.ExcelReadHandlerConverter.Utils
 import com.github.javaxcel.internal.Array1D
 import com.github.javaxcel.internal.Array2D
 import com.github.javaxcel.internal.Array3D
 import spock.lang.Specification
 
-class DefaultExcelReadConverterSpec extends Specification {
+class ExcelReadHandlerConverterSpec extends Specification {
 
     def "Converts to 1D Array"() {
         given:
@@ -31,7 +31,7 @@ class DefaultExcelReadConverterSpec extends Specification {
         def field = Array1D.getDeclaredField(fieldName)
 
         when:
-        def converter = new DefaultExcelReadConverter(new DefaultExcelTypeHandlerRegistry())
+        def converter = new ExcelReadHandlerConverter(new DefaultExcelTypeHandlerRegistry())
         def actual = converter.convert(variables, field)
 
         then:
@@ -62,7 +62,7 @@ class DefaultExcelReadConverterSpec extends Specification {
         def field = Array2D.getDeclaredField(fieldName)
 
         when:
-        def converter = new DefaultExcelReadConverter(new DefaultExcelTypeHandlerRegistry())
+        def converter = new ExcelReadHandlerConverter(new DefaultExcelTypeHandlerRegistry())
         def actual = converter.convert(variables, field)
 
         then:
@@ -98,7 +98,7 @@ class DefaultExcelReadConverterSpec extends Specification {
         def field = Array3D.getDeclaredField(fieldName)
 
         when:
-        def converter = new DefaultExcelReadConverter(new DefaultExcelTypeHandlerRegistry())
+        def converter = new ExcelReadHandlerConverter(new DefaultExcelTypeHandlerRegistry())
         def actual = converter.convert(variables, field)
 
         then:

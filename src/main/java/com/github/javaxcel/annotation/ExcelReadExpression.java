@@ -16,7 +16,7 @@
 
 package com.github.javaxcel.annotation;
 
-import com.github.javaxcel.converter.in.ExpressionExcelReadConverter;
+import com.github.javaxcel.converter.in.ExcelReadExpressionConverter;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -40,7 +40,7 @@ public @interface ExcelReadExpression {
      * Expression to be assigned as field value.
      *
      * @return expression to be parsed
-     * @see ExpressionExcelReadConverter
+     * @see ExcelReadExpressionConverter
      * @see org.springframework.expression.Expression
      */
     String value();

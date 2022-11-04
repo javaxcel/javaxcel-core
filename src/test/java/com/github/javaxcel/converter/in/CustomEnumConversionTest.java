@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @see EnumTypeHandler
- * @see DefaultExcelReadConverter
+ * @see ExcelReadHandlerConverter
  */
 class CustomEnumConversionTest {
 
@@ -50,7 +50,7 @@ class CustomEnumConversionTest {
         // given
         ExcelTypeHandlerRegistry registry = new DefaultExcelTypeHandlerRegistry();
         registry.add(TimeUnit.class, new TimeUnitTypeHandler());
-        ExcelReadConverter converter = new DefaultExcelReadConverter(registry);
+        ExcelReadConverter converter = new ExcelReadHandlerConverter(registry);
 
         Map<String, Field> fieldMap = FieldUtils.getTargetedFields(EnumModel.class)
                 .stream().collect(toMap(Field::getName, Function.identity()));

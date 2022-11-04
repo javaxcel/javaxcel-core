@@ -23,7 +23,7 @@ import com.github.javaxcel.internal.Array2D
 import com.github.javaxcel.internal.Array3D
 import spock.lang.Specification
 
-class DefaultExcelWriteConverterSpec extends Specification {
+class ExcelWriteHandlerConverterSpec extends Specification {
 
     def "Converts 1D array"() {
         given:
@@ -32,7 +32,7 @@ class DefaultExcelWriteConverterSpec extends Specification {
         def field = Array1D.getDeclaredField(fieldName)
 
         when:
-        def converter = new DefaultExcelWriteConverter(new DefaultExcelTypeHandlerRegistry(), analyses)
+        def converter = new ExcelWriteHandlerConverter(new DefaultExcelTypeHandlerRegistry(), analyses)
         def actual = converter.convert(model, field)
 
         then:
@@ -67,7 +67,7 @@ class DefaultExcelWriteConverterSpec extends Specification {
         def field = model.class.getDeclaredField(fieldName)
 
         when:
-        def converter = new DefaultExcelWriteConverter(new DefaultExcelTypeHandlerRegistry(), analyses)
+        def converter = new ExcelWriteHandlerConverter(new DefaultExcelTypeHandlerRegistry(), analyses)
         def actual = converter.convert(model, field)
 
         then:
@@ -106,7 +106,7 @@ class DefaultExcelWriteConverterSpec extends Specification {
         def field = model.class.getDeclaredField(fieldName)
 
         when:
-        def converter = new DefaultExcelWriteConverter(new DefaultExcelTypeHandlerRegistry(), analyses)
+        def converter = new ExcelWriteHandlerConverter(new DefaultExcelTypeHandlerRegistry(), analyses)
         def actual = converter.convert(model, field)
 
         then:

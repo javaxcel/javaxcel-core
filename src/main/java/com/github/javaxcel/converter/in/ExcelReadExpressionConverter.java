@@ -31,17 +31,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ExpressionExcelReadConverter implements ExcelReadConverter {
+public class ExcelReadExpressionConverter implements ExcelReadConverter {
 
     private static final ExpressionParser parser = new SpelExpressionParser();
 
     private final Map<Field, Expression> cache;
 
-    public ExpressionExcelReadConverter() {
+    public ExcelReadExpressionConverter() {
         this.cache = Collections.emptyMap();
     }
 
-    public ExpressionExcelReadConverter(List<Field> fields) {
+    public ExcelReadExpressionConverter(List<Field> fields) {
         this.cache = createCache(fields);
     }
 

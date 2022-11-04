@@ -338,7 +338,7 @@ The result is
 
 ### reader:
 
-If cell value is null or empty string, `DefaultExcelReadConverter` parse `ExcelColumn#defaultValue()` and set it to field.
+If cell value is null or empty string, `ExcelReadHandlerConverter` parse `ExcelColumn#defaultValue()` and set it to field.
 
 Specify `ExcelColumn#defaultValue()` with care.
 It might not occur exception, when you write, though the default value doesn't match type of that field.

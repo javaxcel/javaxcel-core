@@ -31,13 +31,13 @@ import java.util.function.Function;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toMap;
 
-public class ExpressionExcelWriteConverter implements ExcelWriteConverter {
+public class ExcelWriteExpressionConverter implements ExcelWriteConverter {
 
     private final Map<Field, ExcelWriteAnalysis> analysisMap;
 
-    public ExpressionExcelWriteConverter(List<ExcelWriteAnalysis> analyses) {
+    public ExcelWriteExpressionConverter(List<ExcelWriteAnalysis> analyses) {
         Asserts.that(analyses)
-                .describedAs("ExpressionExcelWriteConverter.analyses is not allowed to be null")
+                .describedAs("ExcelWriteExpressionConverter.analyses is not allowed to be null")
                 .isNotNull();
 
         this.analysisMap = analyses.stream().collect(collectingAndThen(

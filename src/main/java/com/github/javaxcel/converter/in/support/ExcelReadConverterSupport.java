@@ -19,9 +19,9 @@ package com.github.javaxcel.converter.in.support;
 import com.github.javaxcel.constant.ConversionType;
 import com.github.javaxcel.constant.ConverterType;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
-import com.github.javaxcel.converter.in.DefaultExcelReadConverter;
+import com.github.javaxcel.converter.in.ExcelReadHandlerConverter;
 import com.github.javaxcel.converter.in.ExcelReadConverter;
-import com.github.javaxcel.converter.in.ExpressionExcelReadConverter;
+import com.github.javaxcel.converter.in.ExcelReadExpressionConverter;
 import com.github.javaxcel.model.Column;
 
 import java.lang.reflect.Field;
@@ -46,9 +46,9 @@ public final class ExcelReadConverterSupport implements ExcelReadConverter {
                 toMap(Function.identity(), it -> new Column(it, ConverterType.IN)),
                 Collections::unmodifiableMap));
 
-        this.defaultConverter = new DefaultExcelReadConverter(registry);
+        this.defaultConverter = new ExcelReadHandlerConverter(registry);
         // Caches expressions for each field to improve performance.
-        this.expressionConverter = new ExpressionExcelReadConverter(fields);
+        this.expressionConverter = new ExcelReadExpressionConverter(fields);
     }
 
     @Override

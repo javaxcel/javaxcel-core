@@ -31,15 +31,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class DefaultExcelReadConverter implements ExcelReadConverter {
+public class ExcelReadHandlerConverter implements ExcelReadConverter {
 
     private final ExcelTypeHandlerRegistry registry;
 
-    public DefaultExcelReadConverter(ExcelTypeHandlerRegistry registry) {
+    public ExcelReadHandlerConverter(ExcelTypeHandlerRegistry registry) {
         Asserts.that(registry)
-                .describedAs("DefaultExcelReadConverter.registry is not allowed to be null")
+                .describedAs("ExcelReadHandlerConverter.registry is not allowed to be null")
                 .isNotNull()
-                .describedAs("DefaultExcelReadConverter.registry.allTypes is not allowed to be null")
+                .describedAs("ExcelReadHandlerConverter.registry.allTypes is not allowed to be null")
                 .isNot(it -> it.getAllTypes() == null);
 
         this.registry = registry;

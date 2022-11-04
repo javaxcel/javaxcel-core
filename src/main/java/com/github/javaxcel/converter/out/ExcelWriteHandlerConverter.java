@@ -36,20 +36,20 @@ import java.util.function.Function;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toMap;
 
-public class DefaultExcelWriteConverter implements ExcelWriteConverter {
+public class ExcelWriteHandlerConverter implements ExcelWriteConverter {
 
     private final ExcelTypeHandlerRegistry registry;
 
     private final Map<Field, ExcelWriteAnalysis> analysisMap;
 
-    public DefaultExcelWriteConverter(ExcelTypeHandlerRegistry registry, List<ExcelWriteAnalysis> analyses) {
+    public ExcelWriteHandlerConverter(ExcelTypeHandlerRegistry registry, List<ExcelWriteAnalysis> analyses) {
         Asserts.that(registry)
-                .describedAs("DefaultExcelWriteConverter.registry is not allowed to be null")
+                .describedAs("ExcelWriteHandlerConverter.registry is not allowed to be null")
                 .isNotNull()
-                .describedAs("DefaultExcelWriteConverter.registry.allTypes is not allowed to be null")
+                .describedAs("ExcelWriteHandlerConverter.registry.allTypes is not allowed to be null")
                 .isNot(it -> it.getAllTypes() == null);
         Asserts.that(analyses)
-                .describedAs("DefaultExcelWriteConverter.analyses is not allowed to be null")
+                .describedAs("ExcelWriteHandlerConverter.analyses is not allowed to be null")
                 .isNotNull();
 
         this.registry = registry;

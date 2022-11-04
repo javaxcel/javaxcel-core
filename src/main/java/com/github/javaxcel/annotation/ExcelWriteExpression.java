@@ -16,7 +16,7 @@
 
 package com.github.javaxcel.annotation;
 
-import com.github.javaxcel.converter.out.ExpressionExcelWriteConverter;
+import com.github.javaxcel.converter.out.ExcelWriteExpressionConverter;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -40,7 +40,7 @@ public @interface ExcelWriteExpression {
      * Expression to be written as cell value.
      *
      * @return expression to be parsed
-     * @see ExpressionExcelWriteConverter
+     * @see ExcelWriteExpressionConverter
      * @see org.springframework.expression.Expression
      */
     String value();

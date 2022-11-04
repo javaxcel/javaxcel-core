@@ -18,9 +18,9 @@ package com.github.javaxcel.converter.out.support;
 
 import com.github.javaxcel.analysis.out.ExcelWriteAnalysis;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
-import com.github.javaxcel.converter.out.DefaultExcelWriteConverter;
+import com.github.javaxcel.converter.out.ExcelWriteHandlerConverter;
 import com.github.javaxcel.converter.out.ExcelWriteConverter;
-import com.github.javaxcel.converter.out.ExpressionExcelWriteConverter;
+import com.github.javaxcel.converter.out.ExcelWriteExpressionConverter;
 import io.github.imsejin.common.annotation.ExcludeFromGeneratedJacocoReport;
 
 import java.lang.reflect.Field;
@@ -35,8 +35,8 @@ public final class ExcelWriteConverterSupport implements ExcelWriteConverter {
     public ExcelWriteConverterSupport(ExcelTypeHandlerRegistry registry, List<ExcelWriteAnalysis> analyses) {
         List<ExcelWriteConverter> converters = new ArrayList<>();
 
-        converters.add(new DefaultExcelWriteConverter(registry, analyses));
-        converters.add(new ExpressionExcelWriteConverter(analyses));
+        converters.add(new ExcelWriteHandlerConverter(registry, analyses));
+        converters.add(new ExcelWriteExpressionConverter(analyses));
 
         this.converters = Collections.unmodifiableList(converters);
     }
