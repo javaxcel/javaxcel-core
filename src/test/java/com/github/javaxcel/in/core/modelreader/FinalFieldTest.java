@@ -21,6 +21,7 @@ import com.github.javaxcel.annotation.ExcelModelCreator;
 import com.github.javaxcel.in.core.ModelReaderTester;
 import com.github.javaxcel.junit.annotation.StopwatchProvider;
 import com.github.javaxcel.util.ExcelUtils;
+import io.github.imsejin.common.tool.RandomString;
 import io.github.imsejin.common.tool.Stopwatch;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -49,10 +50,12 @@ class FinalFieldTest extends ModelReaderTester {
 
     @Override
     protected WhenModel givenCreateMocks(GivenModel givenModel) {
+        RandomString randomString = new RandomString(TestUtils.getRandom());
         List<FinalFieldModel> mocks = new ArrayList<>();
+
         for (int i = 0; i < givenModel.getNumOfMocks(); i++) {
             int number = TestUtils.getRandom().nextInt();
-            String text = TestUtils.generateRandomText(8);
+            String text = randomString.nextString(8);
             mocks.add(new FinalFieldModel(number, text));
         }
 

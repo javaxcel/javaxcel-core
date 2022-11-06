@@ -20,6 +20,7 @@ import com.github.javaxcel.TestUtils
 import com.github.javaxcel.out.strategy.impl.HeaderNames
 import com.github.javaxcel.out.strategy.impl.SheetName
 import com.github.javaxcel.util.ExcelUtils
+import io.github.imsejin.common.tool.RandomString
 import io.github.imsejin.common.tool.Stopwatch
 import lombok.Cleanup
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
@@ -28,10 +29,8 @@ import spock.lang.TempDir
 
 import java.nio.file.Path
 import java.util.concurrent.TimeUnit
-import java.util.function.Function
 
 import static java.util.stream.Collectors.toList
-import static java.util.stream.Collectors.toMap
 
 class MapReaderSpec extends Specification {
 
@@ -82,7 +81,14 @@ class MapReaderSpec extends Specification {
     }
 
     private static Map<String, Object> getRandomMap(List<String> keys) {
-        return keys.stream().collect(toMap(Function.identity(), { TestUtils.generateRandomText it.length() }))
+        def map = [:] as Map<String, Object>
+        def randomString = new RandomString()
+
+        keys.each {
+            map.put(it, randomString.nextString(it.length()))
+        }
+
+        map
     }
 
 }

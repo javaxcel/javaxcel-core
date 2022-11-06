@@ -82,16 +82,6 @@ public class TestUtils {
         return generator;
     }
 
-    public static String generateRandomText(int len) {
-        final int leftLimit = 97; // letter 'a'
-        final int rightLimit = 122; // letter 'z'
-
-        return generator.ints(leftLimit, rightLimit + 1)
-                .limit(len)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
-    }
-
     public static <T> T randomize(Class<T> type) {
         return generator.nextObject(type);
     }

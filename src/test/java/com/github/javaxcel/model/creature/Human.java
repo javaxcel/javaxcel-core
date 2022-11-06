@@ -9,6 +9,7 @@ import com.github.javaxcel.annotation.ExcelReadExpression;
 import com.github.javaxcel.annotation.ExcelWriteExpression;
 import com.github.javaxcel.internal.style.DefaultBodyStyleConfig;
 import com.github.javaxcel.internal.style.DefaultHeaderStyleConfig;
+import io.github.imsejin.common.tool.RandomString;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -108,13 +109,14 @@ public class Human extends Creature {
     public static List<Human> newRandomList(int size) {
         List<Human> people = new ArrayList<>();
         Random random = TestUtils.getRandom();
+        RandomString randomString = new RandomString(random);
 
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < size; i++) {
             Kingdom kingdom = Kingdom.ANIMALIA;
             Sex sex = Sex.newRandom();
             int lifespan = random.nextInt(140) + 1;
-            String name = random.nextDouble() <= 0.85 ? TestUtils.generateRandomText(random.nextInt(24) + 1) : null;
+            String name = random.nextDouble() <= 0.85 ? randomString.nextString(24) : null;
             LocalDate birthday = LocalDate.now();
             LocalTime birthTime = LocalTime.now().withNano(123_000_000); // with 123 ms
             UUID placeOfBirth = name == null ? null : UUID.randomUUID();
