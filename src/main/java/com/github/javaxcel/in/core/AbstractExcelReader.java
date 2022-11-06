@@ -119,6 +119,8 @@ public abstract class AbstractExcelReader<T> implements ExcelReader<T>, ExcelRea
      */
     @Override
     public final List<T> read() {
+        // YOU MUST SET ALL THE ATTRIBUTES YOU CAN DO BEFORE ExcelReadLifecycle.prepare
+        // BECAUSE THIS CLASS IS OBLIGATED TO PROVIDE A IMPLEMENTATION WITH THEM.
         List<T> list = new ArrayList<>();
         this.context.setList(list);
 

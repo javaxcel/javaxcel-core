@@ -94,6 +94,8 @@ public abstract class AbstractExcelWriter<T> implements ExcelWriter<T>, ExcelWri
      */
     @Override
     public final void write(OutputStream out, List<T> list) {
+        // YOU MUST SET ALL THE ATTRIBUTES YOU CAN DO BEFORE ExcelWriteLifecycle.prepare
+        // BECAUSE THIS CLASS IS OBLIGATED TO PROVIDE A IMPLEMENTATION WITH THEM.
         this.context.setList(list);
 
         // Lifecycle method.
