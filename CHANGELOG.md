@@ -27,12 +27,28 @@
 
 ### Modification
 
-- ⚡️ Modify:  default policy of sheet name
-- ⚡️ Update: strategy `ExcelWriteStrategy.Filter` with new option
+- 🔥 Remove: package `model` — enum `Column`
+- ♻️ Refactor: package `converter`
+- ♻️ Refactor: handlers for java time
+- ♻️ Replace: default constructor of strategy `Filter` with `Filter(boolean)`
+- 🚚 Move: packages of implementation `ExcelTypeHandler`
+- 🚚 Rename: implementations of converter
+- 🔨 Modify: utility `FieldUtils.resolveActualType(Field)`
+- 🔨 Modify: default policy of sheet name that increases suffix at 0 is changed to increase at 1.
+- 🔨 Modify: type of parameter `convert(Map<String, Object>, Field)` in `ExcelReadConverter` is changed
+  to `convert(Map<String, String>, Field)`
+- 🔨 Modify:  generic return type of `Javaxcel.reader(Workbook)` is changed from `ExcelReader<Map<String, Object>>`
+  to `ExcelReader<Map<String, String>>`
+- 🔨 Modify: method `newInstance(ExcelTypeHandlerRegistry)` in `Javaxcel` is changed not to
+  use `DefaultExcelTypeHandlerRegistry`.
 
 ### New features
 
+- 📦️ Add: package `analysis`, `util.processor`
 - ✨ Add: method `add(ExcelTypeHandler)` in `ExcelTypeHandlerRegistry`
+- ✨ Add: strategies `UseGetters`, `UseSetters`
+- ✨ Add: methods `resolveGetter(Field)`, `resolveSetter(Field)` in `FieldUtils`
+- ✨ Add: type handlers for `Year`, `YearMonth`, `Month`, `MonthDay`, `Instant`
 
 ### Troubleshooting
 
@@ -40,11 +56,15 @@
 
 ### Dependencies
 
-- ⬆️ Upgrade: dependency `common-utils` from `0.9.0` to `0.12.0`
+- ➕ Add: intransitive dependency `annotations`
+- ♻️ Replace: dependency `jsr305` with `jakarta.validation-api`
+- ⬆️ Upgrade: provided dependency `poi-ooxml` from `5.2.2` to `5.2.3`
+- ⬆️ Upgrade: dependency `common-utils` from `0.9.0` to `0.13.0`
 - ⬆️ Upgrade: test dependency `junit5` from `5.8.2` to `5.9.1`
 - ⬆️ Upgrade: test dependency `assertj-core` from `3.22.0` to `3.23.1`
-- ⬆️ Upgrade: test dependency `spock-core` from `2.1-groovy-3.0` to `2.3-groovy-3.0`
-- ⬆️ Upgrade: test dependency `byte-buddy` from `1.12.9` to `1.12.17`
+- ⬆️ Upgrade: test dependency `spock-core` from `2.1-groovy-3.0` to `2.3-groovy-4.0`
+- ⬆️ Upgrade: test dependency `byte-buddy` from `1.12.9` to `1.12.18`
+- ⬆️ Upgrade: test dependency `excel-streaming-reader` from `3.6.1` to `4.0.4`
 
 # v0.8.2
 
