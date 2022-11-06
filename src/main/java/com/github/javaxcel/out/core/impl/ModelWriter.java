@@ -23,7 +23,7 @@ import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
 import com.github.javaxcel.converter.out.ExcelWriteConverter;
-import com.github.javaxcel.converter.out.support.ExcelWriteConverterSupport;
+import com.github.javaxcel.converter.out.support.ExcelWriteConverters;
 import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.out.context.ExcelWriteContext;
 import com.github.javaxcel.out.core.AbstractExcelWriter;
@@ -120,7 +120,7 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
         List<ExcelAnalysis> analyses = analyzer.analyze(this.fields, strategies.toArray());
 
         // Creates a converter.
-        this.converter = new ExcelWriteConverterSupport(analyses, this.registry);
+        this.converter = new ExcelWriteConverters(analyses, this.registry);
 
         // Handles the given options.
         resolveEnumDropdown(context);

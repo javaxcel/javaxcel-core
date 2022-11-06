@@ -29,6 +29,12 @@ import java.lang.reflect.Field;
  */
 public interface ExcelWriteConverter {
 
+    /**
+     * Returns whether the field is supported by this converter.
+     *
+     * @param field field of model
+     * @return whether the field is supported
+     */
     boolean supports(Field field);
 
     /**
@@ -43,8 +49,7 @@ public interface ExcelWriteConverter {
      *     <li>{@link ExcelModel#defaultValue()}</li>
      * </ol>
      *
-     * <p> In principal the converter doesn't return {@code null}, but if there is no policy, returns {@code null}.
-     * To write a value to cell, the converter makes it turn into a string.
+     * <p> To write a value to cell, the converter makes it turn into a string.
      * The converted string will be written to cell by {@link ExcelWriter}.
      *
      * @param model element in list

@@ -24,6 +24,7 @@ import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.ClassUtils;
 import io.github.imsejin.common.util.ReflectionUtils;
+import io.github.imsejin.common.util.StringUtils;
 import jakarta.validation.constraints.Null;
 
 import java.lang.reflect.Array;
@@ -45,7 +46,9 @@ public class ExcelWriteHandlerConverter implements ExcelWriteConverter {
     public ExcelWriteHandlerConverter(Iterable<ExcelAnalysis> analyses, ExcelTypeHandlerRegistry registry) {
         Asserts.that(analyses)
                 .describedAs("ExcelWriteHandlerConverter.analyses is not allowed to be null")
-                .isNotNull();
+                .isNotNull()
+                .describedAs("ExcelWriteHandlerConverter.analyses is not allowed to be empty")
+                .is(them -> them.iterator().hasNext());
         Asserts.that(registry)
                 .describedAs("ExcelWriteHandlerConverter.registry is not allowed to be null")
                 .isNotNull()
@@ -60,6 +63,7 @@ public class ExcelWriteHandlerConverter implements ExcelWriteConverter {
         for (ExcelAnalysis analysis : analyses) {
             Field field = analysis.getField();
 
+            // Makes getter a cache.
             if (analysis.hasFlag(ExcelWriteAnalyzer.GETTER)) {
                 Method getter = FieldUtils.resolveGetter(field);
                 getterMap.put(field, getter);
@@ -87,10 +91,23 @@ public class ExcelWriteHandlerConverter implements ExcelWriteConverter {
         // Gets property value of model.
         Object value = getValueOf(model, field);
 
-        // Returns default value if the value is null.
-        if (value == null) {
+        // Checks if the value is null or empty string.
+        boolean needDefault = value == null;
+        if (value instanceof CharSequence) {
+            needDefault = ((CharSequence) value).length() == 0;
+        }
+
+        // Returns default value if needed.
+        if (needDefault) {
             ExcelAnalysis analysis = this.analysisMap.get(field);
-            return analysis.getDefaultValue();
+            String defaultValue = analysis.getDefaultValue();
+
+            // Returns null if the default value is also null or empty string.
+            if (StringUtils.isNullOrEmpty(defaultValue)) {
+                return null;
+            }
+
+            return defaultValue;
         }
 
         Class<?> type = field.getType();
@@ -99,6 +116,7 @@ public class ExcelWriteHandlerConverter implements ExcelWriteConverter {
 
     // -------------------------------------------------------------------------------------------------
 
+    @Null
     private Object getValueOf(Object model, Field field) {
         ExcelAnalysis analysis = this.analysisMap.get(field);
 

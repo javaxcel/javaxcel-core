@@ -28,17 +28,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public final class ExcelWriteConverterSupport implements ExcelWriteConverter {
+public final class ExcelWriteConverters implements ExcelWriteConverter {
 
-    private final List<ExcelWriteConverter> converters;
+    private final List<ExcelWriteConverter> candidates;
 
-    public ExcelWriteConverterSupport(Iterable<ExcelAnalysis> analyses, ExcelTypeHandlerRegistry registry) {
+    public ExcelWriteConverters(Iterable<ExcelAnalysis> analyses, ExcelTypeHandlerRegistry registry) {
         List<ExcelWriteConverter> converters = new ArrayList<>();
 
         converters.add(new ExcelWriteHandlerConverter(analyses, registry));
         converters.add(new ExcelWriteExpressionConverter(analyses));
 
-        this.converters = Collections.unmodifiableList(converters);
+        this.candidates = Collections.unmodifiableList(converters);
     }
 
     @Override
@@ -49,13 +49,13 @@ public final class ExcelWriteConverterSupport implements ExcelWriteConverter {
 
     @Override
     public String convert(Object model, Field field) {
-        for (ExcelWriteConverter converter : this.converters) {
+        for (ExcelWriteConverter converter : this.candidates) {
             if (converter.supports(field)) {
                 return converter.convert(model, field);
             }
         }
 
-        return null;
+        throw new RuntimeException("Never throw");
     }
 
 }
