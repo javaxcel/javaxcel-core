@@ -1,6 +1,5 @@
 package com.github.javaxcel.analysis.out
 
-
 import com.github.javaxcel.converter.handler.impl.lang.DoubleTypeHandler
 import com.github.javaxcel.converter.handler.impl.lang.IntegerTypeHandler
 import com.github.javaxcel.converter.handler.impl.lang.LongTypeHandler
