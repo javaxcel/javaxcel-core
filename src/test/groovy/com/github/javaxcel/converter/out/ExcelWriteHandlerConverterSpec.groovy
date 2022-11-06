@@ -32,7 +32,7 @@ class ExcelWriteHandlerConverterSpec extends Specification {
     def "Converts 1D array"() {
         given:
         def model = new Array1D(array)
-        def analyses = analyze(model.class.declaredFields)
+        def analyses = analyze(model.class.declaredFields, ExcelWriteAnalyzer.FIELD_ACCESS)
         def field = model.class.getDeclaredField(fieldName)
 
         when:
@@ -67,7 +67,7 @@ class ExcelWriteHandlerConverterSpec extends Specification {
     def "Converts 2D array"() {
         given:
         def model = new Array2D(array)
-        def analyses = analyze(model.class.declaredFields)
+        def analyses = analyze(model.class.declaredFields, ExcelWriteAnalyzer.GETTER)
         def field = model.class.getDeclaredField(fieldName)
 
         when:
@@ -106,7 +106,7 @@ class ExcelWriteHandlerConverterSpec extends Specification {
     def "Converts 3D array"() {
         given:
         def model = new Array3D(array)
-        def analyses = analyze(model.class.declaredFields)
+        def analyses = analyze(model.class.declaredFields, ExcelWriteAnalyzer.FIELD_ACCESS)
         def field = model.class.getDeclaredField(fieldName)
 
         when:
@@ -144,10 +144,10 @@ class ExcelWriteHandlerConverterSpec extends Specification {
 
     // -------------------------------------------------------------------------------------------------
 
-    private static Iterable<ExcelAnalysis> analyze(Field[] fields) {
+    private static Iterable<ExcelAnalysis> analyze(Field[] fields, int flags) {
         fields.findAll { !it.isSynthetic() }.collect {
             def analysis = new ExcelAnalysisImpl(it)
-            analysis.addFlags(ExcelWriteAnalyzer.HANDLER | ExcelWriteAnalyzer.FIELD_ACCESS)
+            analysis.addFlags(ExcelWriteAnalyzer.HANDLER | flags)
             analysis
         }
     }

@@ -29,7 +29,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true, exclude = "agesFromTwilightToDeath")
+@EqualsAndHashCode(callSuper = true, exclude = {"placeOfBirth", "agesFromTwilightToDeath"})
 @NoArgsConstructor(onConstructor_ = @ExcelModelCreator)
 @ExcelModel(includeSuper = true, headerStyle = DefaultHeaderStyleConfig.class, bodyStyle = DefaultBodyStyleConfig.class)
 public class Human extends Creature {
@@ -47,7 +47,7 @@ public class Human extends Creature {
     @ExcelReadExpression("T(java.time.LocalTime).parse(#birthTime, T(java.time.format.DateTimeFormatter).ofPattern('HH/mm/ss.SSS'))")
     private LocalTime birthTime;
 
-    @ExcelColumn(name = "Place of Birth")
+    @ExcelColumn(name = "Place of Birth", defaultValue = "new java.util.UUID(0, 0)")
     @ExcelWriteExpression("T(com.github.javaxcel.Converter).capitalize(#placeOfBirth, '-')")
     @ExcelReadExpression("#placeOfBirth?.toLowerCase()") // null-safe operator '?.'
     private UUID placeOfBirth;

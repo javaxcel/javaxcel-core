@@ -20,7 +20,6 @@ import com.github.javaxcel.analysis.ExcelAnalysis
 import com.github.javaxcel.analysis.ExcelAnalysisImpl
 import com.github.javaxcel.analysis.out.ExcelWriteAnalyzer
 import com.github.javaxcel.annotation.ExcelWriteExpression
-import io.github.imsejin.common.util.NumberUtils
 import spock.lang.Specification
 
 import java.lang.reflect.Field
@@ -33,7 +32,7 @@ class ExcelWriteExpressionConverterSpec extends Specification {
     def "Converts field value through expression"() {
         given:
         def model = new Sample(fieldName, value)
-        def analyses = analyze(model.class.declaredFields)
+        def analyses = analyze(model.class.declaredFields, ExcelWriteAnalyzer.GETTER)
         def field = model.class.getDeclaredField(fieldName)
 
         when:
@@ -41,7 +40,6 @@ class ExcelWriteExpressionConverterSpec extends Specification {
         def actual = converter.convert(model, field)
 
         then:
-        NumberUtils
         actual == expected
 
         where:
@@ -62,7 +60,7 @@ class ExcelWriteExpressionConverterSpec extends Specification {
 
     // -------------------------------------------------------------------------------------------------
 
-    static class Sample {
+    private static class Sample {
         @ExcelWriteExpression("#_int + #_int")
         int _int
         @ExcelWriteExpression("#_long * #_int")
@@ -99,10 +97,10 @@ class ExcelWriteExpressionConverterSpec extends Specification {
 
     // -------------------------------------------------------------------------------------------------
 
-    private static Iterable<ExcelAnalysis> analyze(Field[] fields) {
+    private static Iterable<ExcelAnalysis> analyze(Field[] fields, int flags) {
         fields.findAll { !it.isSynthetic() }.collect {
             def analysis = new ExcelAnalysisImpl(it)
-            analysis.addFlags(ExcelWriteAnalyzer.EXPRESSION | ExcelWriteAnalyzer.FIELD_ACCESS)
+            analysis.addFlags(ExcelWriteAnalyzer.EXPRESSION | flags)
             analysis
         }
     }

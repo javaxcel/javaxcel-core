@@ -35,13 +35,14 @@ import java.util.concurrent.TimeUnit
 
 class ExcelReadHandlerConverterSpec extends Specification {
 
-    def "Converts to 1D Array"() {
+    def "Converts into 1D Array"() {
         given:
         def variables = [(fieldName): value]
         def field = Array1D.getDeclaredField(fieldName)
+        def analyses = analyze(field.declaringClass.declaredFields, ExcelReadAnalyzer.FIELD_ACCESS)
 
         when:
-        def converter = new ExcelReadHandlerConverter(new DefaultExcelTypeHandlerRegistry())
+        def converter = new ExcelReadHandlerConverter(analyses, new DefaultExcelTypeHandlerRegistry())
         def actual = converter.convert(variables, field)
 
         then:
@@ -66,13 +67,14 @@ class ExcelReadHandlerConverterSpec extends Specification {
         "locales"  | "[en, ja, , ]"                  || [Locale.ENGLISH, Locale.JAPANESE, Locale.ROOT, Locale.ROOT] as Locale[]
     }
 
-    def "Converts to 2D Array"() {
+    def "Converts into 2D Array"() {
         given:
         def variables = [(fieldName): value]
         def field = Array2D.getDeclaredField(fieldName)
+        def analyses = analyze(field.declaringClass.declaredFields, ExcelReadAnalyzer.SETTER)
 
         when:
-        def converter = new ExcelReadHandlerConverter(new DefaultExcelTypeHandlerRegistry())
+        def converter = new ExcelReadHandlerConverter(analyses, new DefaultExcelTypeHandlerRegistry())
         def actual = converter.convert(variables, field)
 
         then:
@@ -102,13 +104,14 @@ class ExcelReadHandlerConverterSpec extends Specification {
         "locales"  | "[[en_GB], [], [it_IT], []]"        || [[Locale.UK], [], [Locale.ITALY], []] as Locale[][]
     }
 
-    def "Converts to 3D Array"() {
+    def "Converts into 3D Array"() {
         given:
         def variables = [(fieldName): value]
         def field = Array3D.getDeclaredField(fieldName)
+        def analyses = analyze(field.declaringClass.declaredFields, ExcelReadAnalyzer.FIELD_ACCESS)
 
         when:
-        def converter = new ExcelReadHandlerConverter(new DefaultExcelTypeHandlerRegistry())
+        def converter = new ExcelReadHandlerConverter(analyses, new DefaultExcelTypeHandlerRegistry())
         def actual = converter.convert(variables, field)
 
         then:

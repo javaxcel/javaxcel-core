@@ -29,6 +29,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -57,14 +58,20 @@ class ExpressionTest extends ModelReaderTester {
     @Override
     @SuppressWarnings("unchecked")
     protected void then(GivenModel givenModel, WhenModel whenModel, ThenModel thenModel) throws Exception {
+        // given
         List<Human> toys = (List<Human>) thenModel.getModels();
         List<Human> mocks = whenModel.getMocks();
+        UUID defaultPlaceOfBirth = new UUID(0, 0);
 
+        // expect
         assertThat(toys)
                 .as("#1 The number of loaded models is %,d", mocks.size())
                 .hasSameSizeAs(mocks)
                 .as("#2 Each loaded model is equal to each mock")
                 .containsExactlyElementsOf(mocks);
+        assertThat(mocks)
+                .filteredOn(mock -> mock.getPlaceOfBirth() == null)
+                .hasSizeLessThanOrEqualTo((int) toys.stream().filter(toy -> toy.getPlaceOfBirth().equals(defaultPlaceOfBirth)).count());
     }
 
 }
