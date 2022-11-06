@@ -71,7 +71,7 @@
         <lombok.version>1.18.24</lombok.version>
         <byte-buddy.version>1.12.18</byte-buddy.version>
         <easy-random.version>4.3.0</easy-random.version>
-        <excel-streaming-reader.version>3.6.1</excel-streaming-reader.version>
+        <excel-streaming-reader.version>4.0.4</excel-streaming-reader.version>
     </properties>
 
     <repositories>
