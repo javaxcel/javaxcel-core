@@ -16,12 +16,22 @@
 
 package com.github.javaxcel.converter.in
 
+import com.github.javaxcel.analysis.ExcelAnalysis
+import com.github.javaxcel.analysis.ExcelAnalysisImpl
+import com.github.javaxcel.analysis.in.ExcelReadAnalyzer
+import com.github.javaxcel.annotation.ExcelColumn
 import com.github.javaxcel.converter.handler.registry.impl.DefaultExcelTypeHandlerRegistry
 import com.github.javaxcel.converter.in.ExcelReadHandlerConverter.Utils
 import com.github.javaxcel.internal.Array1D
 import com.github.javaxcel.internal.Array2D
 import com.github.javaxcel.internal.Array3D
+import com.github.javaxcel.internal.TimeUnitTypeHandler
+import groovy.transform.EqualsAndHashCode
 import spock.lang.Specification
+
+import java.lang.reflect.Field
+import java.nio.file.AccessMode
+import java.util.concurrent.TimeUnit
 
 class ExcelReadHandlerConverterSpec extends Specification {
 
@@ -128,6 +138,39 @@ class ExcelReadHandlerConverterSpec extends Specification {
         "locales"  | "[[, [, ], [ja_JP, zh_TW]], []]"          || [[null, [Locale.ROOT, Locale.ROOT], [Locale.JAPAN, Locale.TAIWAN]], []] as Locale[][][]
     }
 
+    def "Converts into enum by custom handler"() {
+        given:
+        def registry = new DefaultExcelTypeHandlerRegistry()
+        registry.add(new TimeUnitTypeHandler())
+        def variables = [(fieldName): value]
+        def field = EnumModel.getDeclaredField(fieldName)
+        def analyses = analyze(field.declaringClass.declaredFields, ExcelReadAnalyzer.SETTER)
+
+        when:
+        def converter = new ExcelReadHandlerConverter(analyses, registry)
+        def actual = converter.convert(variables, field)
+
+        then:
+        actual == expected
+
+        where:
+        fieldName    | value     || expected
+        "accessMode" | null      || null
+        "accessMode" | "READ"    || AccessMode.READ
+        "accessMode" | "WRITE"   || AccessMode.WRITE
+        "accessMode" | "EXECUTE" || AccessMode.EXECUTE
+        "timeUnit"   | null      || null
+        "timeUnit"   | "days"    || TimeUnit.DAYS
+        "timeUnit"   | "hrs"     || TimeUnit.HOURS
+        "timeUnit"   | "min"     || TimeUnit.MINUTES
+        "timeUnit"   | "sec"     || TimeUnit.SECONDS
+        "timeUnit"   | "ms"      || TimeUnit.MILLISECONDS
+        "timeUnit"   | "μs"      || TimeUnit.MICROSECONDS
+        "timeUnit"   | "ns"      || TimeUnit.NANOSECONDS
+    }
+
+    // -------------------------------------------------------------------------------------------------
+
     def "Split shallowly a string as array"() {
         when:
         def actual = Utils.shallowSplit(string, ", ")
@@ -176,6 +219,24 @@ class ExcelReadHandlerConverterSpec extends Specification {
         "[, , , [], , [2], ]"                                             | 7
         "[[], [1, 2, 4, 5], [0, [0]], [], 2]"                             | 5
         "[, [[[2, 5]]], [], [, [, [1]]], , [[[2], [4, 5], [6]], [], ], ]" | 7
+    }
+
+    // -------------------------------------------------------------------------------------------------
+
+    private static Iterable<ExcelAnalysis> analyze(Field[] fields, int flags) {
+        fields.findAll { !it.isSynthetic() }.collect {
+            def analysis = new ExcelAnalysisImpl(it)
+            def defaultValue = it.getAnnotation(ExcelColumn)?.defaultValue()
+            if (defaultValue) analysis.defaultValue = defaultValue
+            analysis.addFlags(ExcelReadAnalyzer.HANDLER | flags)
+            analysis
+        }
+    }
+
+    @EqualsAndHashCode
+    private static class EnumModel {
+        AccessMode accessMode;
+        TimeUnit timeUnit;
     }
 
 }
