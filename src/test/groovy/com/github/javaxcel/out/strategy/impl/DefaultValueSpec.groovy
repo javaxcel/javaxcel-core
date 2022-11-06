@@ -28,7 +28,7 @@ class DefaultValueSpec extends Specification {
     def "test"() {
         given:
         def legalDefaultValue = "<null>"
-        def illegalDefaultValue = " "
+        def illegalDefaultValue = ""
         def contextMap = [
                 (ModelWriter): new ExcelWriteContext<>(new XSSFWorkbook(), String, ModelWriter),
                 (MapWriter)  : new ExcelWriteContext<>(new XSSFWorkbook(), String, MapWriter),
@@ -47,7 +47,7 @@ class DefaultValueSpec extends Specification {
 
         then: "Failed to create strategy"
         def e = thrown IllegalArgumentException
-        e.message.split("\n")[0] == "ExcelWriteStrategy.DefaultValue.value is not allowed to be null or blank"
+        e.message.split("\n")[0] == "ExcelWriteStrategy.DefaultValue.value is not allowed to be null or empty"
     }
 
 }
