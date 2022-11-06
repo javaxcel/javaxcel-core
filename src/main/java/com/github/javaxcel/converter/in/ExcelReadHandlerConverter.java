@@ -16,7 +16,8 @@
 
 package com.github.javaxcel.converter.in;
 
-import com.github.javaxcel.annotation.ExcelColumn;
+import com.github.javaxcel.analysis.ExcelAnalysis;
+import com.github.javaxcel.analysis.in.ExcelReadAnalyzer;
 import com.github.javaxcel.converter.handler.ExcelTypeHandler;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
 import io.github.imsejin.common.assertion.Asserts;
@@ -28,6 +29,8 @@ import org.jetbrains.annotations.VisibleForTesting;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +38,14 @@ public class ExcelReadHandlerConverter implements ExcelReadConverter {
 
     private final ExcelTypeHandlerRegistry registry;
 
-    public ExcelReadHandlerConverter(ExcelTypeHandlerRegistry registry) {
+    private final Map<Field, ExcelAnalysis> analysisMap;
+
+    public ExcelReadHandlerConverter(Iterable<ExcelAnalysis> analyses, ExcelTypeHandlerRegistry registry) {
+        Asserts.that(analyses)
+                .describedAs("ExcelReadHandlerConverter.analyses is not allowed to be null")
+                .isNotNull()
+                .describedAs("ExcelReadHandlerConverter.analyses is not allowed to be empty")
+                .is(them -> them.iterator().hasNext());
         Asserts.that(registry)
                 .describedAs("ExcelReadHandlerConverter.registry is not allowed to be null")
                 .isNotNull()
@@ -43,6 +53,20 @@ public class ExcelReadHandlerConverter implements ExcelReadConverter {
                 .isNot(it -> it.getAllTypes() == null);
 
         this.registry = registry;
+
+        Map<Field, ExcelAnalysis> analysisMap = new HashMap<>();
+        for (ExcelAnalysis analysis : analyses) {
+            Field field = analysis.getField();
+            analysisMap.put(field, analysis);
+        }
+
+        this.analysisMap = Collections.unmodifiableMap(analysisMap);
+    }
+
+    @Override
+    public boolean supports(Field field) {
+        ExcelAnalysis analysis = this.analysisMap.get(field);
+        return analysis.hasFlag(ExcelReadAnalyzer.HANDLER);
     }
 
     @Null
@@ -51,19 +75,21 @@ public class ExcelReadHandlerConverter implements ExcelReadConverter {
         Class<?> type = field.getType();
         String value = variables.get(field.getName());
 
-        return convertInternal(field, type, value);
+        return handleInternal(field, type, value);
     }
 
-    private Object convertInternal(Field field, Class<?> type, String value) {
+    private Object handleInternal(Field field, Class<?> type, String value) {
         // When cell value is null or empty.
         if (StringUtils.isNullOrEmpty(value)) {
-            ExcelColumn excelColumn = field.getAnnotation(ExcelColumn.class);
-            if (excelColumn != null && !excelColumn.defaultValue().equals("")) {
-                // Converts again with the default value.
-                return convertInternal(field, type, excelColumn.defaultValue());
-            } else {
+            ExcelAnalysis analysis = this.analysisMap.get(field);
+            String defaultValue = analysis.getDefaultValue();
+
+            if (StringUtils.isNullOrEmpty(defaultValue)) {
                 // When you don't explicitly define default value.
                 return ClassUtils.initialValueOf(type);
+            } else {
+                // Converts again with the default value.
+                return handleInternal(field, type, defaultValue);
             }
         }
 
@@ -111,9 +137,7 @@ public class ExcelReadHandlerConverter implements ExcelReadConverter {
 
         List<Object> list = new ArrayList<>(strings.length);
 
-        for (int i = 0; i < strings.length; i++) {
-            String string = strings[i];
-
+        for (String string : strings) {
             Object element;
             if (componentType.isArray()) {
                 element = string.isEmpty() ? null : handleArray(field, componentType, string);

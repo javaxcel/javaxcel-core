@@ -16,8 +16,12 @@
 
 package com.github.javaxcel.converter.in;
 
+import com.github.javaxcel.analysis.ExcelAnalysis;
+import com.github.javaxcel.analysis.in.ExcelReadAnalyzer;
+import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelReadExpression;
-import io.github.imsejin.common.util.CollectionUtils;
+import io.github.imsejin.common.assertion.Asserts;
+import io.github.imsejin.common.util.StringUtils;
 import jakarta.validation.constraints.Null;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
@@ -28,74 +32,110 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ExcelReadExpressionConverter implements ExcelReadConverter {
 
-    private static final ExpressionParser parser = new SpelExpressionParser();
+    private static final ExpressionParser EXPRESSION_PARSER = new SpelExpressionParser();
 
-    private final Map<Field, Expression> cache;
+    private final Map<Field, Cache> analysisMap;
 
-    public ExcelReadExpressionConverter() {
-        this.cache = Collections.emptyMap();
-    }
+    public ExcelReadExpressionConverter(Iterable<ExcelAnalysis> analyses) {
+        Asserts.that(analyses)
+                .describedAs("ExcelReadExpressionConverter.analyses is not allowed to be null")
+                .isNotNull()
+                .describedAs("ExcelReadExpressionConverter.analyses is not allowed to be empty")
+                .is(them -> them.iterator().hasNext());
 
-    public ExcelReadExpressionConverter(List<Field> fields) {
-        this.cache = createCache(fields);
-    }
+        Map<Field, Cache> analysisMap = new HashMap<>();
 
-    /**
-     * Creates unmodifiable cache of expressions.
-     *
-     * @param fields fields of model
-     * @return unmodifiable cache of expressions
-     */
-    private static Map<Field, Expression> createCache(List<Field> fields) {
-        Map<Field, Expression> cache = new HashMap<>();
+        for (ExcelAnalysis analysis : analyses) {
+            Field field = analysis.getField();
 
-        for (Field field : fields) {
-            ExcelReadExpression annotation = field.getAnnotation(ExcelReadExpression.class);
-            if (annotation == null) continue;
+            // Makes instance of expression a cache.
+            Cache cache = new Cache(analysis);
+            if (analysis.hasFlag(ExcelReadAnalyzer.EXPRESSION)) {
+                ExcelReadExpression annotation = field.getAnnotation(ExcelReadExpression.class);
+                cache.expression = EXPRESSION_PARSER.parseExpression(annotation.value());
 
-            Expression expression = parser.parseExpression(annotation.value());
-            cache.put(field, expression);
+                String defaultExpressionString = analysis.getDefaultValue();
+                if (!StringUtils.isNullOrEmpty(defaultExpressionString)) {
+                    cache.expressionForDefault = EXPRESSION_PARSER.parseExpression(defaultExpressionString);
+                }
+            }
+
+            analysisMap.put(field, cache);
         }
 
-        return Collections.unmodifiableMap(cache);
+        this.analysisMap = Collections.unmodifiableMap(analysisMap);
+    }
+
+    @Override
+    public boolean supports(Field field) {
+        ExcelAnalysis analysis = this.analysisMap.get(field).analysis;
+        return analysis.hasFlag(ExcelReadAnalyzer.EXPRESSION);
     }
 
     /**
      * {@inheritDoc}
      *
-     * <p> If expressions are already parsed, uses it or parses an expression at that time.
-     * This assigns the parsed value to field.
-     *
      * @see ExcelReadExpression#value()
+     * @see ExcelColumn#defaultValue()
      */
     @Null
     @Override
     public Object convert(Map<String, String> variables, Field field) {
-        Expression expression;
-        if (CollectionUtils.isNullOrEmpty(this.cache) || !this.cache.containsKey(field)) {
-            // When this instantiated without cache.
-            ExcelReadExpression annotation = field.getAnnotation(ExcelReadExpression.class);
-            expression = parser.parseExpression(annotation.value());
-
-        } else {
-            // When this instantiated with cache.
-            expression = this.cache.get(field);
-        }
-
-        // To read in parallel, instantiates on each call.
-        // Enables to use value of the field as "#FIELD_NAME" in 'ExcelReadExpression'.
-        //
-        // Do not set root object to prevent user from assigning value
+        // To read in parallel, instantiates on each call of this method.
+        // Don't set root object to prevent user from assigning value
         // to the field of model with the way we don't intend.
         EvaluationContext context = new StandardEvaluationContext();
+
+        // Enables to use value of the field as "#FIELD_NAME" in @ExcelReadExpression.
         variables.forEach(context::setVariable);
 
-        return expression.getValue(context, field.getType());
+        Cache cache = this.analysisMap.get(field);
+        Object value = cache.expression.getValue(context, field.getType());
+
+        // Returns default value if the value is null or empty string.
+        if (isNullOrEmpty(value) && cache.expressionForDefault != null) {
+            // There is no access to fields(variables) on default expression.
+            Object defaultValue = cache.expressionForDefault.getValue(field.getType());
+
+            // Returns null if the default value is also null or empty string.
+            if (isNullOrEmpty(defaultValue)) {
+                return null;
+            }
+
+            return defaultValue;
+        }
+
+        return value;
+    }
+
+    // -------------------------------------------------------------------------------------------------
+
+    private static boolean isNullOrEmpty(@Null Object object) {
+        if (object == null) {
+            return true;
+        }
+
+        if (object instanceof CharSequence) {
+            return ((CharSequence) object).length() == 0;
+        }
+
+        return false;
+    }
+
+    private static class Cache {
+        private final ExcelAnalysis analysis;
+        @Null
+        private Expression expression;
+        @Null
+        private Expression expressionForDefault;
+
+        private Cache(ExcelAnalysis analysis) {
+            this.analysis = analysis;
+        }
     }
 
 }

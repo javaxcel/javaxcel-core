@@ -22,6 +22,14 @@ import java.util.Map;
 public interface ExcelReadConverter {
 
     /**
+     * Returns whether the field is supported by this converter.
+     *
+     * @param field field of model
+     * @return whether the field is supported
+     */
+    boolean supports(Field field);
+
+    /**
      * Converts a string in cell to the type of field.
      *
      * @param variables {@link Map} in which key is the model's field name and

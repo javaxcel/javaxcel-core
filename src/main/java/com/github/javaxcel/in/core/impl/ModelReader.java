@@ -16,11 +16,15 @@
 
 package com.github.javaxcel.in.core.impl;
 
+import com.github.javaxcel.analysis.ExcelAnalysis;
+import com.github.javaxcel.analysis.in.ExcelReadAnalyzer;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
-import com.github.javaxcel.converter.in.support.ExcelReadConverterSupport;
+import com.github.javaxcel.converter.in.ExcelReadConverter;
+import com.github.javaxcel.converter.in.support.ExcelReadConverters;
 import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.in.context.ExcelReadContext;
 import com.github.javaxcel.in.core.AbstractExcelReader;
+import com.github.javaxcel.in.strategy.ExcelReadStrategy;
 import com.github.javaxcel.in.strategy.impl.Parallel;
 import com.github.javaxcel.util.FieldUtils;
 import com.github.javaxcel.util.processor.ExcelModelCreationProcessor;
@@ -29,6 +33,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -50,9 +55,11 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
      */
     private final List<Field> fields;
 
-    private final ExcelReadConverterSupport converter;
+    private final ExcelTypeHandlerRegistry registry;
 
     private final ExcelModelCreationProcessor<T> modelProcessor;
+
+    private ExcelReadConverter converter;
 
     /**
      * Creates a reader for model.
@@ -77,8 +84,23 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
         fields.stream().filter(it -> !it.isAccessible()).forEach(it -> it.setAccessible(true));
         this.fields = Collections.unmodifiableList(fields);
 
-        this.converter = new ExcelReadConverterSupport(this.fields, registry);
+        Asserts.that(registry)
+                .describedAs("ModelReader.registry is not allowed to be null")
+                .isNotNull();
+        this.registry = registry;
+
         this.modelProcessor = new ExcelModelCreationProcessor<>(modelType, this.fields);
+    }
+
+    @Override
+    public void prepare(ExcelReadContext<T> context) {
+        // Analyzes the fields with arguments.
+        ExcelReadAnalyzer analyzer = new ExcelReadAnalyzer(this.registry);
+        Collection<ExcelReadStrategy> strategies = context.getStrategyMap().values();
+        List<ExcelAnalysis> analyses = analyzer.analyze(this.fields, strategies.toArray());
+
+        // Creates a converter.
+        this.converter = new ExcelReadConverters(analyses, registry);
     }
 
     @Override
