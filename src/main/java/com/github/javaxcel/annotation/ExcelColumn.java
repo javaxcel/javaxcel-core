@@ -64,9 +64,10 @@ public @interface ExcelColumn {
     String[] dropdownItems() default {};
 
     /**
-     * Replacement of the value when only writes the value that is null or empty string.
+     * Replacement when writer or reader handles the value that is null or empty string.
      *
-     * <p> This is ineffective to primitive type.
+     * <p> This is ineffective to a field whose type is primitive
+     * because primitive type doesn't allow {@code null}.
      *
      * @return replacement of the value when the value is null or empty string
      * @see DefaultValue
