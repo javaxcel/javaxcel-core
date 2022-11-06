@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.analysis.out;
+package com.github.javaxcel.analysis.in;
 
 import com.github.javaxcel.analysis.AbstractExcelWriteAnalyzer;
 import com.github.javaxcel.annotation.ExcelColumn;
-import com.github.javaxcel.annotation.ExcelModel;
-import com.github.javaxcel.annotation.ExcelWriteExpression;
+import com.github.javaxcel.annotation.ExcelReadExpression;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
-import com.github.javaxcel.out.strategy.impl.DefaultValue;
-import com.github.javaxcel.out.strategy.impl.UseGetters;
+import com.github.javaxcel.in.strategy.impl.UseSetters;
 import com.github.javaxcel.util.FieldUtils;
 import jakarta.validation.constraints.Null;
 
 import java.lang.reflect.Field;
 
-public class ExcelWriteAnalyzer extends AbstractExcelWriteAnalyzer {
+public class ExcelReadAnalyzer extends AbstractExcelWriteAnalyzer {
 
     public static final int HANDLER = 0x01;
 
@@ -36,33 +34,19 @@ public class ExcelWriteAnalyzer extends AbstractExcelWriteAnalyzer {
 
     public static final int FIELD_ACCESS = 0x04;
 
-    public static final int GETTER = 0x08;
+    public static final int SETTER = 0x08;
 
-    public ExcelWriteAnalyzer(ExcelTypeHandlerRegistry registry) {
+    public ExcelReadAnalyzer(ExcelTypeHandlerRegistry registry) {
         super(registry);
     }
 
     @Null
     @Override
     protected String analyzeDefaultValue(Field field, Object[] arguments) {
-        DefaultValue strategy = FieldUtils.resolveFirst(DefaultValue.class, arguments);
-
-        // Decides the proper default value for the field value.
-        if (strategy != null) {
-            return (String) strategy.execute(null);
-        }
-
-        // @ExcelColumn.defaultValue takes precedence over @ExcelModel.defaultValue.
+        // ExcelReader supports only @ExcelColumn.defaultValue.
         ExcelColumn columnAnnotation = field.getAnnotation(ExcelColumn.class);
         if (columnAnnotation != null && !columnAnnotation.defaultValue().isEmpty()) {
-            // Default value on @ExcelColumn
             return columnAnnotation.defaultValue();
-        }
-
-        ExcelModel modelAnnotation = field.getDeclaringClass().getAnnotation(ExcelModel.class);
-        if (modelAnnotation != null && !modelAnnotation.defaultValue().isEmpty()) {
-            // Default value on @ExcelModel
-            return modelAnnotation.defaultValue();
         }
 
         return null;
@@ -70,19 +54,19 @@ public class ExcelWriteAnalyzer extends AbstractExcelWriteAnalyzer {
 
     @Override
     protected int analyzeFlags(Field field, Object[] arguments) {
-        UseGetters ug = FieldUtils.resolveFirst(UseGetters.class, arguments);
+        UseSetters us = FieldUtils.resolveFirst(UseSetters.class, arguments);
 
         int flags = 0x00;
-        flags |= field.isAnnotationPresent(ExcelWriteExpression.class) ? EXPRESSION : HANDLER;
-        flags |= ug == null ? FIELD_ACCESS : GETTER;
+        flags |= field.isAnnotationPresent(ExcelReadExpression.class) ? EXPRESSION : HANDLER;
+        flags |= us == null ? FIELD_ACCESS : SETTER;
 
         // Checks if getter of the field exists.
-        if ((flags & GETTER) == GETTER) {
+        if ((flags & SETTER) == SETTER) {
             try {
-                FieldUtils.resolveGetter(field);
+                FieldUtils.resolveSetter(field);
             } catch (RuntimeException ignored) {
-                // When it doesn't exist, removes flag of GETTER from the flags.
-                flags = flags ^ GETTER;
+                // When it doesn't exist, removes flag of SETTER from the flags.
+                flags = flags ^ SETTER;
             }
         }
 
