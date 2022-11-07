@@ -17,6 +17,7 @@
 package com.github.javaxcel.converter.handler.impl
 
 import com.github.javaxcel.converter.handler.ExcelTypeHandler
+import com.github.javaxcel.converter.handler.impl.io.FileTypeHandler
 import com.github.javaxcel.converter.handler.impl.lang.BooleanTypeHandler
 import com.github.javaxcel.converter.handler.impl.lang.ByteTypeHandler
 import com.github.javaxcel.converter.handler.impl.lang.CharacterTypeHandler
@@ -28,6 +29,9 @@ import com.github.javaxcel.converter.handler.impl.lang.ShortTypeHandler
 import com.github.javaxcel.converter.handler.impl.lang.StringTypeHandler
 import com.github.javaxcel.converter.handler.impl.math.BigDecimalTypeHandler
 import com.github.javaxcel.converter.handler.impl.math.BigIntegerTypeHandler
+import com.github.javaxcel.converter.handler.impl.net.URITypeHandler
+import com.github.javaxcel.converter.handler.impl.net.URLTypeHandler
+import com.github.javaxcel.converter.handler.impl.nio.file.PathTypeHandler
 import com.github.javaxcel.converter.handler.impl.time.InstantTypeHandler
 import com.github.javaxcel.converter.handler.impl.time.LocalDateTimeTypeHandler
 import com.github.javaxcel.converter.handler.impl.time.LocalDateTypeHandler
@@ -45,6 +49,7 @@ import com.github.javaxcel.converter.handler.impl.util.UUIDTypeHandler
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import java.nio.file.Paths
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -121,6 +126,13 @@ class ExcelTypeHandlerSpec extends Specification {
         new OffsetTimeTypeHandler()     || OffsetTime.of(1, 55, 9, 0, ZoneOffset.ofHoursMinutes(-4, -30))               | "01:55:09 -0430"
         new OffsetDateTimeTypeHandler() || OffsetDateTime.of(1592, 5, 23, 18, 47, 3, 0, ZoneOffset.ofHours(9))          | "1592-05-23 18:47:03 +0900"
         new InstantTypeHandler()        || Instant.ofEpochSecond(1663134385)                                            | "2022-09-14 05:46:25"
+        // java.net
+        new URITypeHandler()            || URI.create("alpha/beta/gamma")                                               | "alpha/beta/gamma"
+        new URLTypeHandler()            || new URL("https://github.com")                                                | "https://github.com"
+        // java.io
+        new FileTypeHandler()           || new File("/usr", "local")                                                    | "${File.separator}usr${File.separator}local"
+        // java.nio.file
+        new PathTypeHandler()           || Paths.get("/usr", "local")                                                   | "${File.separator}usr${File.separator}local"
     }
 
 }

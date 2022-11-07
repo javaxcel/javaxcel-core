@@ -26,6 +26,7 @@ import com.github.javaxcel.out.core.ExcelWriter;
 import com.github.javaxcel.out.core.impl.MapWriter;
 import com.github.javaxcel.out.core.impl.ModelWriter;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.Map;
 
@@ -39,7 +40,8 @@ import java.util.Map;
  */
 public class Javaxcel {
 
-    private final ExcelTypeHandlerRegistry registry;
+    @VisibleForTesting
+    final ExcelTypeHandlerRegistry registry;
 
     private Javaxcel(ExcelTypeHandlerRegistry registry) {
         this.registry = registry;
