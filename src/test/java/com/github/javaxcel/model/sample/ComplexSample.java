@@ -16,21 +16,21 @@
 
 package com.github.javaxcel.model.sample;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
+import java.util.UUID;
 
 @SuppressWarnings("rawtypes")
-public class ComplexSample<S extends Number, T, C extends Iterable<Double>> {
+public class ComplexSample<S extends UUID, T, C extends Iterable<Double>> {
 
     Long concrete;
     ComplexSample raw;
-    ComplexSample<Long, String, Set<Double>> generic;
-    ComplexSample<Integer, String, Set<Double>>[] generic_array;
+    ComplexSample<UUID, String, Set<Double>> generic;
+    ComplexSample<UUID, String, Set<Double>>[] generic_array;
     T type_variable;
     T[] type_variable_array;
     T[][] type_variable_2d_array;
@@ -45,11 +45,11 @@ public class ComplexSample<S extends Number, T, C extends Iterable<Double>> {
     Collection<Long> iterable_concrete;
     Iterable<Long>[] iterable_concrete_array;
     ArrayList<ComplexSample> iterable_raw;
-    List<ComplexSample<Integer, ?, Collection<Double>>> iterable_generic;
+    List<ComplexSample<UUID, ?, Collection<Double>>> iterable_generic;
     Collection<? extends Long> iterable_upper_wildcard_concrete;
     Iterable<? super Long> iterable_lower_wildcard_concrete;
-    ArrayList<? extends ComplexSample<Short, ?, Queue<Double>>> iterable_upper_wildcard_generic;
-    List<? super ComplexSample<Byte, ?, Deque<Double>>> iterable_lower_wildcard_generic;
+    ArrayList<? extends ComplexSample<UUID, ?, Queue<Double>>> iterable_upper_wildcard_generic;
+    List<? super ComplexSample<UUID, ?, Deque<Double>>> iterable_lower_wildcard_generic;
     Collection<T> iterable_type_variable;
     Iterable<T[]> iterable_type_variable_array;
     ArrayList<? extends T> iterable_upper_wildcard_type_variable;
@@ -63,6 +63,6 @@ public class ComplexSample<S extends Number, T, C extends Iterable<Double>> {
     ArrayList<? extends S[]> iterable_upper_wildcard_bounded_type_variable_array;
     List<? super S[]> iterable_lower_wildcard_bounded_type_variable_array;
     Collection<C> iterable_bounded_iterable_type_variable;
-    Iterable<Set<ComplexSample<BigInteger, String, Queue<Double>>>> iterable_iterable_generic;
+    Iterable<Set<ComplexSample<UUID, String, Queue<Double>>>> iterable_iterable_generic;
 
 }

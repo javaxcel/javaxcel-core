@@ -95,9 +95,10 @@ public class ExcelReadExpressionConverter implements ExcelReadConverter {
 
         Cache cache = this.analysisMap.get(field);
         Object value = cache.expression.getValue(context, field.getType());
+        value = isNullOrEmpty(value) ? null : value;
 
         // Returns default value if the value is null or empty string.
-        if (isNullOrEmpty(value) && cache.expressionForDefault != null) {
+        if (value == null && cache.expressionForDefault != null) {
             // There is no access to fields(variables) on default expression.
             Object defaultValue = cache.expressionForDefault.getValue(field.getType());
 
