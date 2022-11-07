@@ -176,6 +176,26 @@ class ExcelWriteHandlerConverterSpec extends Specification {
         "timeUnit"   | new EnumModel(timeUnit: TimeUnit.NANOSECONDS)  || "ns"
     }
 
+    def "Converts iterable and array"() {
+        given:
+        def analyses = analyze(model.class.declaredFields, ExcelWriteAnalyzer.FIELD_ACCESS)
+        def field = model.class.getDeclaredField(fieldName)
+
+        when:
+        def converter = new ExcelWriteHandlerConverter(analyses, new DefaultExcelTypeHandlerRegistry())
+        def actual = converter.convert(model, field)
+
+        then:
+        actual == expected
+
+        where:
+        fieldName           | model                                                                       || expected
+        "collection_array"  | new IterableArray(collection_array: [])                                     || "[]"
+        "collection_array"  | new IterableArray(collection_array: [[], [1, 2, 3], [4], null, [5, 6]])     || "[[], [1, 2, 3], [4], , [5, 6]]"
+        "list_2d_array"     | new IterableArray(list_2d_array: [[["a"], ["b"]], [["c", "d"]], [["e"]]])   || "[[[a], [b]], [[c, d]], [[e]]]"
+        "iterable_iterable" | new IterableArray(iterable_iterable: [[2.5, 3.2], null, [-0.14, null], []]) || "[[2.5, 3.2], , [-0.14, ], []]"
+    }
+
     // -------------------------------------------------------------------------------------------------
 
     private static Iterable<ExcelAnalysis> analyze(Field[] fields, int flags) {
@@ -188,8 +208,15 @@ class ExcelWriteHandlerConverterSpec extends Specification {
 
     @EqualsAndHashCode
     private static class EnumModel {
-        AccessMode accessMode;
-        TimeUnit timeUnit;
+        AccessMode accessMode
+        TimeUnit timeUnit
+    }
+
+    @EqualsAndHashCode
+    private static class IterableArray {
+        Collection<int[]> collection_array
+        List<String>[][] list_2d_array
+        Iterable<Iterable<BigDecimal>> iterable_iterable
     }
 
 }

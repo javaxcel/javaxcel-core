@@ -238,8 +238,8 @@ class ExcelReadHandlerConverterSpec extends Specification {
 
     @EqualsAndHashCode
     private static class EnumModel {
-        AccessMode accessMode;
-        TimeUnit timeUnit;
+        AccessMode accessMode
+        TimeUnit timeUnit
     }
 
 }
