@@ -13,6 +13,7 @@ import com.github.javaxcel.model.sample.GenericSample
 import com.github.javaxcel.model.sample.ModelSample
 import com.github.javaxcel.model.sample.PlainSample
 import com.github.javaxcel.out.strategy.impl.DefaultValue
+import com.github.javaxcel.out.strategy.impl.UseGetters
 import com.github.javaxcel.util.FieldUtils
 import spock.lang.Specification
 
@@ -42,7 +43,7 @@ class ExcelWriteAnalyzerSpec extends Specification {
 
         where:
         type        | arguments               || defaultValues
-        PlainSample | []                      || [null, "0.00", null]
+        PlainSample | [new UseGetters()]      || [null, "0.00", null]
         PlainSample | [new DefaultValue("-")] || ["-", "-", "-"]
         ModelSample | []                      || ["(empty)", "none", "(empty)", "[]"]
         ModelSample | [new DefaultValue("-")] || ["-", "-", "-", "-"]
