@@ -23,9 +23,13 @@ import com.github.javaxcel.converter.handler.registry.impl.DefaultExcelTypeHandl
 import com.github.javaxcel.internal.Array1D
 import com.github.javaxcel.internal.Array2D
 import com.github.javaxcel.internal.Array3D
+import com.github.javaxcel.internal.TimeUnitTypeHandler
+import groovy.transform.EqualsAndHashCode
 import spock.lang.Specification
 
 import java.lang.reflect.Field
+import java.nio.file.AccessMode
+import java.util.concurrent.TimeUnit
 
 class ExcelWriteHandlerConverterSpec extends Specification {
 
@@ -142,6 +146,36 @@ class ExcelWriteHandlerConverterSpec extends Specification {
         "locales"  | [[null, [null, Locale.ROOT], [Locale.JAPAN, Locale.TAIWAN]], []] as Locale[][][] || "[[, [, ], [ja_JP, zh_TW]], []]"
     }
 
+    def "Converts enum by custom handler"() {
+        given:
+        def registry = new DefaultExcelTypeHandlerRegistry()
+        registry.add(new TimeUnitTypeHandler())
+        def analyses = analyze(model.class.declaredFields, ExcelWriteAnalyzer.GETTER)
+        def field = model.class.getDeclaredField(fieldName)
+
+        when:
+        def converter = new ExcelWriteHandlerConverter(analyses, registry)
+        def actual = converter.convert(model, field)
+
+        then:
+        actual == expected
+
+        where:
+        fieldName    | model                                          || expected
+        "accessMode" | new EnumModel(accessMode: null)                || null
+        "accessMode" | new EnumModel(accessMode: AccessMode.READ)     || "READ"
+        "accessMode" | new EnumModel(accessMode: AccessMode.WRITE)    || "WRITE"
+        "accessMode" | new EnumModel(accessMode: AccessMode.EXECUTE)  || "EXECUTE"
+        "timeUnit"   | new EnumModel(timeUnit: null)                  || null
+        "timeUnit"   | new EnumModel(timeUnit: TimeUnit.DAYS)         || "days"
+        "timeUnit"   | new EnumModel(timeUnit: TimeUnit.HOURS)        || "hrs"
+        "timeUnit"   | new EnumModel(timeUnit: TimeUnit.MINUTES)      || "min"
+        "timeUnit"   | new EnumModel(timeUnit: TimeUnit.SECONDS)      || "sec"
+        "timeUnit"   | new EnumModel(timeUnit: TimeUnit.MILLISECONDS) || "ms"
+        "timeUnit"   | new EnumModel(timeUnit: TimeUnit.MICROSECONDS) || "μs"
+        "timeUnit"   | new EnumModel(timeUnit: TimeUnit.NANOSECONDS)  || "ns"
+    }
+
     // -------------------------------------------------------------------------------------------------
 
     private static Iterable<ExcelAnalysis> analyze(Field[] fields, int flags) {
@@ -150,6 +184,12 @@ class ExcelWriteHandlerConverterSpec extends Specification {
             analysis.addFlags(ExcelWriteAnalyzer.HANDLER | flags)
             analysis
         }
+    }
+
+    @EqualsAndHashCode
+    private static class EnumModel {
+        AccessMode accessMode;
+        TimeUnit timeUnit;
     }
 
 }

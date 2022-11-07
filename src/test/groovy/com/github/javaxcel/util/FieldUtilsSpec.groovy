@@ -150,9 +150,9 @@ class FieldUtilsSpec extends Specification {
         "type_variable"                                       | Object
         "type_variable_array"                                 | Object
         "type_variable_2d_array"                              | Object
-        "bounded_type_variable"                               | Number
-        "bounded_type_variable_array"                         | Number
-        "bounded_type_variable_2d_array"                      | Number
+        "bounded_type_variable"                               | UUID
+        "bounded_type_variable_array"                         | UUID
+        "bounded_type_variable_2d_array"                      | UUID
         "bounded_iterable_type_variable"                      | Double
         "bounded_iterable_type_variable_array"                | Double
         "bounded_iterable_type_variable_2d_array"             | Double
@@ -172,12 +172,12 @@ class FieldUtilsSpec extends Specification {
         "iterable_lower_wildcard_type_variable"               | Object
         "iterable_upper_wildcard_type_variable_array"         | Object
         "iterable_lower_wildcard_type_variable_array"         | Object
-        "iterable_bounded_type_variable"                      | Number
-        "iterable_bounded_type_variable_array"                | Number
-        "iterable_upper_wildcard_bounded_type_variable"       | Number
-        "iterable_lower_wildcard_bounded_type_variable"       | Number
-        "iterable_upper_wildcard_bounded_type_variable_array" | Number
-        "iterable_lower_wildcard_bounded_type_variable_array" | Number
+        "iterable_bounded_type_variable"                      | UUID
+        "iterable_bounded_type_variable_array"                | UUID
+        "iterable_upper_wildcard_bounded_type_variable"       | UUID
+        "iterable_lower_wildcard_bounded_type_variable"       | UUID
+        "iterable_upper_wildcard_bounded_type_variable_array" | UUID
+        "iterable_lower_wildcard_bounded_type_variable_array" | UUID
         "iterable_bounded_iterable_type_variable"             | Double
         "iterable_iterable_generic"                           | ComplexSample
     }
