@@ -236,7 +236,7 @@ public final class FieldUtils {
             // class Sample<S extends Number> {
             //     private Iterable<Sample<Long>> samples;
             // } ... parameterizedType.rawType == Iterable.class
-            // ... parameterizedType.getActualTypeArguments == [Sample]
+            // ... parameterizedType.actualTypeArguments == [Sample]
             if (type instanceof ParameterizedType) {
                 ParameterizedType parameterizedType = (ParameterizedType) type;
                 Type rawType = parameterizedType.getRawType();
