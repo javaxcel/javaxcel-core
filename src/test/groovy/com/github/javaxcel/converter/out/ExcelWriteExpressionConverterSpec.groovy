@@ -17,9 +17,14 @@
 package com.github.javaxcel.converter.out
 
 import com.github.javaxcel.analysis.ExcelAnalysis
+import com.github.javaxcel.analysis.ExcelAnalysis.DefaultMeta.Source
 import com.github.javaxcel.analysis.ExcelAnalysisImpl
+import com.github.javaxcel.analysis.ExcelAnalysisImpl.DefaultMetaImpl
 import com.github.javaxcel.analysis.out.ExcelWriteAnalyzer
+import com.github.javaxcel.annotation.ExcelColumn
+import com.github.javaxcel.annotation.ExcelModel
 import com.github.javaxcel.annotation.ExcelWriteExpression
+import groovy.transform.EqualsAndHashCode
 import spock.lang.Specification
 
 import java.lang.reflect.Field
@@ -56,6 +61,45 @@ class ExcelWriteExpressionConverterSpec extends Specification {
         "locale"     | Locale.US                  || "en/US"
         "date"       | LocalDate.of(2022, 1, 5)   || "2022-01-05"
         "time"       | LocalTime.of(12, 34, 56)   || "12:35:01"
+    }
+
+    def "Returns default value"() {
+        given:
+        def analyses = analyze(model.class.declaredFields, ExcelWriteAnalyzer.FIELD_ACCESS)
+        def field = model.class.getDeclaredField(fieldName)
+
+        when:
+        def converter = new ExcelWriteExpressionConverter(analyses)
+        def actual = converter.convert(model, field)
+
+        then:
+        actual == expected
+
+        where:
+        fieldName | model                                || expected
+        "id"      | new DefaultValueModel(id: 12)        || '$24'
+        "id"      | new DefaultValueModel(id: null)      || "$Long.MIN_VALUE"
+        "name"    | new DefaultValueModel(name: "alpha") || "{alpha}"
+        "name"    | new DefaultValueModel(name: null)    || null // @ExcelModel.defaultValue is ignored on ExcelWriteExpressionConverter
+    }
+
+    // -------------------------------------------------------------------------------------------------
+
+    private static Iterable<ExcelAnalysis> analyze(Field[] fields, int flags) {
+        fields.findAll { !it.isSynthetic() }.collect {
+            def analysis = new ExcelAnalysisImpl(it)
+
+            def defaultMeta = new DefaultMetaImpl(null, Source.NONE)
+            if (it.isAnnotationPresent(ExcelColumn)) {
+                defaultMeta = new DefaultMetaImpl(it.getAnnotation(ExcelColumn).defaultValue(), Source.COLUMN)
+            } else if (it.declaringClass.isAnnotationPresent(ExcelModel)) {
+                defaultMeta = new DefaultMetaImpl(it.declaringClass.getAnnotation(ExcelModel).defaultValue(), Source.MODEL)
+            }
+            analysis.defaultMeta = defaultMeta
+            analysis.addFlags(ExcelWriteAnalyzer.EXPRESSION | flags)
+
+            analysis
+        }
     }
 
     // -------------------------------------------------------------------------------------------------
@@ -95,14 +139,14 @@ class ExcelWriteExpressionConverterSpec extends Specification {
         }
     }
 
-    // -------------------------------------------------------------------------------------------------
-
-    private static Iterable<ExcelAnalysis> analyze(Field[] fields, int flags) {
-        fields.findAll { !it.isSynthetic() }.collect {
-            def analysis = new ExcelAnalysisImpl(it)
-            analysis.addFlags(ExcelWriteAnalyzer.EXPRESSION | flags)
-            analysis
-        }
+    @ExcelModel(defaultValue = "<null>")
+    @EqualsAndHashCode
+    private static class DefaultValueModel {
+        @ExcelColumn(defaultValue = "T(Long).MIN_VALUE")
+        @ExcelWriteExpression('#id == null ? null : "$" + (#id * 2)')
+        Long id
+        @ExcelWriteExpression("#name == null or #name.isEmpty() ? null : '{' + #name + '}'")
+        String name
     }
 
 }

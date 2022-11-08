@@ -17,6 +17,9 @@
 package com.github.javaxcel.analysis.out;
 
 import com.github.javaxcel.analysis.AbstractExcelWriteAnalyzer;
+import com.github.javaxcel.analysis.ExcelAnalysis.DefaultMeta;
+import com.github.javaxcel.analysis.ExcelAnalysis.DefaultMeta.Source;
+import com.github.javaxcel.analysis.ExcelAnalysisImpl.DefaultMetaImpl;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.annotation.ExcelWriteExpression;
@@ -24,7 +27,6 @@ import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
 import com.github.javaxcel.out.strategy.impl.DefaultValue;
 import com.github.javaxcel.out.strategy.impl.UseGetters;
 import com.github.javaxcel.util.FieldUtils;
-import jakarta.validation.constraints.Null;
 
 import java.lang.reflect.Field;
 
@@ -42,30 +44,32 @@ public class ExcelWriteAnalyzer extends AbstractExcelWriteAnalyzer {
         super(registry);
     }
 
-    @Null
     @Override
-    protected String analyzeDefaultValue(Field field, Object[] arguments) {
+    protected DefaultMeta analyzeDefaultMeta(Field field, Object[] arguments) {
         DefaultValue strategy = FieldUtils.resolveFirst(DefaultValue.class, arguments);
 
         // Decides the proper default value for the field value.
         if (strategy != null) {
-            return (String) strategy.execute(null);
+            String value = (String) strategy.execute(null);
+            return new DefaultMetaImpl(value, Source.OPTION);
         }
 
         // @ExcelColumn.defaultValue takes precedence over @ExcelModel.defaultValue.
         ExcelColumn columnAnnotation = field.getAnnotation(ExcelColumn.class);
         if (columnAnnotation != null && !columnAnnotation.defaultValue().isEmpty()) {
             // Default value on @ExcelColumn
-            return columnAnnotation.defaultValue();
+            String value = columnAnnotation.defaultValue();
+            return new DefaultMetaImpl(value, Source.COLUMN);
         }
 
         ExcelModel modelAnnotation = field.getDeclaringClass().getAnnotation(ExcelModel.class);
         if (modelAnnotation != null && !modelAnnotation.defaultValue().isEmpty()) {
             // Default value on @ExcelModel
-            return modelAnnotation.defaultValue();
+            String value = modelAnnotation.defaultValue();
+            return new DefaultMetaImpl(value, Source.MODEL);
         }
 
-        return null;
+        return new DefaultMetaImpl(null, Source.NONE);
     }
 
     @Override

@@ -16,12 +16,11 @@
 
 package com.github.javaxcel.analysis;
 
+import com.github.javaxcel.analysis.ExcelAnalysis.DefaultMeta;
 import com.github.javaxcel.converter.handler.ExcelTypeHandler;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
 import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.assertion.Asserts;
-import io.github.imsejin.common.util.StringUtils;
-import jakarta.validation.constraints.Null;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -48,11 +47,9 @@ public abstract class AbstractExcelWriteAnalyzer implements ExcelAnalyzer<ExcelA
         for (Field field : fields) {
             ExcelAnalysisImpl analysis = new ExcelAnalysisImpl(field);
 
-            // Analyzes default value for the field.
-            String defaultValue = analyzeDefaultValue(field, arguments);
-            if (!StringUtils.isNullOrEmpty(defaultValue)) {
-                analysis.setDefaultValue(defaultValue);
-            }
+            // Analyzes default meta information for the field.
+            DefaultMeta defaultMeta = analyzeDefaultMeta(field, arguments);
+            analysis.setDefaultMeta(defaultMeta);
 
             // Analyzes handler for the field.
             Class<?> actualType = FieldUtils.resolveActualType(field);
@@ -73,8 +70,7 @@ public abstract class AbstractExcelWriteAnalyzer implements ExcelAnalyzer<ExcelA
 
     // -------------------------------------------------------------------------------------------------
 
-    @Null
-    protected abstract String analyzeDefaultValue(Field field, Object[] arguments);
+    protected abstract DefaultMeta analyzeDefaultMeta(Field field, Object[] arguments);
 
     protected abstract int analyzeFlags(Field field, Object[] arguments);
 

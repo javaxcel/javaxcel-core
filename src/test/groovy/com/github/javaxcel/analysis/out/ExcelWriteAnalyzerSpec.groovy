@@ -33,7 +33,7 @@ class ExcelWriteAnalyzerSpec extends Specification {
             2. Default value of each analysis is equal to the expected.
         """
         analyses.size() == fields.size()
-        analyses*.defaultValue == defaultValues
+        analyses*.defaultMeta*.value == defaultValues
         analyses.size().times {
             def analysis = analyses[it]
             def field = fields[it]

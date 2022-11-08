@@ -17,6 +17,8 @@
 package com.github.javaxcel.converter.out;
 
 import com.github.javaxcel.analysis.ExcelAnalysis;
+import com.github.javaxcel.analysis.ExcelAnalysis.DefaultMeta;
+import com.github.javaxcel.analysis.ExcelAnalysis.DefaultMeta.Source;
 import com.github.javaxcel.analysis.out.ExcelWriteAnalyzer;
 import com.github.javaxcel.annotation.ExcelWriteExpression;
 import com.github.javaxcel.util.FieldUtils;
@@ -38,7 +40,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 
 public class ExcelWriteExpressionConverter implements ExcelWriteConverter {
 
@@ -70,9 +71,10 @@ public class ExcelWriteExpressionConverter implements ExcelWriteConverter {
                 ExcelWriteExpression annotation = field.getAnnotation(ExcelWriteExpression.class);
                 cache.expression = EXPRESSION_PARSER.parseExpression(annotation.value());
 
-                String defaultExpressionString = analysis.getDefaultValue();
-                if (!StringUtils.isNullOrEmpty(defaultExpressionString)) {
-                    cache.expressionForDefault = EXPRESSION_PARSER.parseExpression(defaultExpressionString);
+                DefaultMeta defaultMeta = analysis.getDefaultMeta();
+                String defaultValue = defaultMeta.getValue();
+                if (defaultMeta.getSource() == Source.COLUMN && !StringUtils.isNullOrEmpty(defaultValue)) {
+                    cache.expressionForDefault = EXPRESSION_PARSER.parseExpression(defaultValue);
                 }
             }
 
@@ -113,9 +115,15 @@ public class ExcelWriteExpressionConverter implements ExcelWriteConverter {
 
         Cache cache = this.analysisMap.get(field);
         Object value = cache.expression.getValue(context);
+        value = isNullOrEmpty(value) ? null : value;
 
-        // Returns default value if the value is null or empty string.
-        if (isNullOrEmpty(value) && cache.expressionForDefault != null) {
+        // Checks if the value is null or empty string.
+        if (value == null) {
+            // Returns null if default expression is not defined.
+            if (cache.expressionForDefault == null) {
+                return null;
+            }
+
             // There is no access to fields(variables) on default expression.
             Object defaultValue = cache.expressionForDefault.getValue();
 
@@ -131,7 +139,7 @@ public class ExcelWriteExpressionConverter implements ExcelWriteConverter {
 
         // Forces the evaluated value to be a string
         // even if desired return type of expression is not String.
-        return Objects.requireNonNull(value, "NEVER HAPPENED").toString();
+        return value.toString();
     }
 
     // -------------------------------------------------------------------------------------------------

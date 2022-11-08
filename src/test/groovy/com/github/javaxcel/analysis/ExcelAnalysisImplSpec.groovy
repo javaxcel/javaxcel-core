@@ -16,6 +16,8 @@
 
 package com.github.javaxcel.analysis
 
+import com.github.javaxcel.analysis.ExcelAnalysis.DefaultMeta.Source
+import com.github.javaxcel.analysis.ExcelAnalysisImpl.DefaultMetaImpl
 import com.github.javaxcel.internal.ObjectTypeHandler
 import com.github.javaxcel.internal.TimeUnitTypeHandler
 import groovy.transform.EqualsAndHashCode
@@ -57,7 +59,7 @@ class ExcelAnalysisImplSpec extends Specification {
         !analysis.hasFlag(0x02)
     }
 
-    def "Sets a default value"() {
+    def "Sets a default meta information"() {
         given:
         def field = Sample.getDeclaredField("id")
 
@@ -65,14 +67,13 @@ class ExcelAnalysisImplSpec extends Specification {
         def analysis = new ExcelAnalysisImpl(field)
 
         then:
-        analysis.defaultValue == null
+        analysis.defaultMeta == null
 
         when:
-        analysis.defaultValue = null
+        analysis.defaultMeta = new DefaultMetaImpl("<null>", Source.COLUMN)
 
         then:
-        def e = thrown(NullPointerException)
-        e.message == "${analysis.class.simpleName}.defaultValue cannot be null"
+        analysis.defaultMeta != null
     }
 
     def "Sets a handler"() {

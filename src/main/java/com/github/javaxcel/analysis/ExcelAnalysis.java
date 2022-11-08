@@ -27,8 +27,7 @@ public interface ExcelAnalysis {
 
     int getFlags();
 
-    @Null
-    String getDefaultValue();
+    DefaultMeta getDefaultMeta();
 
     @Null
     ExcelTypeHandler<?> getHandler();
@@ -41,6 +40,19 @@ public interface ExcelAnalysis {
     default boolean doesHandlerResolved() {
         ExcelTypeHandler<?> handler = getHandler();
         return handler != null && handler.getType() != Object.class;
+    }
+
+    // -------------------------------------------------------------------------------------------------
+
+    interface DefaultMeta {
+        @Null
+        String getValue();
+
+        Source getSource();
+
+        enum Source {
+            NONE, MODEL, COLUMN, OPTION
+        }
     }
 
 }

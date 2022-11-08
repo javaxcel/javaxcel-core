@@ -17,12 +17,14 @@
 package com.github.javaxcel.analysis.in;
 
 import com.github.javaxcel.analysis.AbstractExcelWriteAnalyzer;
+import com.github.javaxcel.analysis.ExcelAnalysis.DefaultMeta;
+import com.github.javaxcel.analysis.ExcelAnalysis.DefaultMeta.Source;
+import com.github.javaxcel.analysis.ExcelAnalysisImpl.DefaultMetaImpl;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelReadExpression;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
 import com.github.javaxcel.in.strategy.impl.UseSetters;
 import com.github.javaxcel.util.FieldUtils;
-import jakarta.validation.constraints.Null;
 
 import java.lang.reflect.Field;
 
@@ -40,16 +42,16 @@ public class ExcelReadAnalyzer extends AbstractExcelWriteAnalyzer {
         super(registry);
     }
 
-    @Null
     @Override
-    protected String analyzeDefaultValue(Field field, Object[] arguments) {
+    protected DefaultMeta analyzeDefaultMeta(Field field, Object[] arguments) {
         // ExcelReader supports only @ExcelColumn.defaultValue.
         ExcelColumn columnAnnotation = field.getAnnotation(ExcelColumn.class);
         if (columnAnnotation != null && !columnAnnotation.defaultValue().isEmpty()) {
-            return columnAnnotation.defaultValue();
+            String value = columnAnnotation.defaultValue();
+            return new DefaultMetaImpl(value, Source.COLUMN);
         }
 
-        return null;
+        return new DefaultMetaImpl(null, Source.NONE);
     }
 
     @Override

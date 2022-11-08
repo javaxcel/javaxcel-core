@@ -17,7 +17,9 @@
 package com.github.javaxcel.converter.in
 
 import com.github.javaxcel.analysis.ExcelAnalysis
+import com.github.javaxcel.analysis.ExcelAnalysis.DefaultMeta.Source
 import com.github.javaxcel.analysis.ExcelAnalysisImpl
+import com.github.javaxcel.analysis.ExcelAnalysisImpl.DefaultMetaImpl
 import com.github.javaxcel.analysis.in.ExcelReadAnalyzer
 import com.github.javaxcel.annotation.ExcelColumn
 import com.github.javaxcel.converter.handler.registry.impl.DefaultExcelTypeHandlerRegistry
@@ -50,6 +52,7 @@ class ExcelReadHandlerConverterSpec extends Specification {
 
         where:
         fieldName  | value                           || expected
+        "booleans" | null                            || null
         "objects"  | null                            || [] as Object[] // @ExcelColumn.defaultValue = "[]"
         "booleans" | "[false, true]"                 || [false, true] as boolean[]
         "bytes"    | "[-128, 0, 127]"                || [-128, 0, 127] as byte[]
@@ -229,9 +232,14 @@ class ExcelReadHandlerConverterSpec extends Specification {
     private static Iterable<ExcelAnalysis> analyze(Field[] fields, int flags) {
         fields.findAll { !it.isSynthetic() }.collect {
             def analysis = new ExcelAnalysisImpl(it)
-            def defaultValue = it.getAnnotation(ExcelColumn)?.defaultValue()
-            if (defaultValue) analysis.defaultValue = defaultValue
+
+            def defaultMeta = new DefaultMetaImpl(null, Source.NONE)
+            if (it.isAnnotationPresent(ExcelColumn)) {
+                defaultMeta = new DefaultMetaImpl(it.getAnnotation(ExcelColumn).defaultValue(), Source.COLUMN)
+            }
+            analysis.defaultMeta = defaultMeta
             analysis.addFlags(ExcelReadAnalyzer.HANDLER | flags)
+
             analysis
         }
     }

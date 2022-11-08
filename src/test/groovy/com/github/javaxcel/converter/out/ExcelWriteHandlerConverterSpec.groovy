@@ -17,8 +17,12 @@
 package com.github.javaxcel.converter.out
 
 import com.github.javaxcel.analysis.ExcelAnalysis
+import com.github.javaxcel.analysis.ExcelAnalysis.DefaultMeta.Source
 import com.github.javaxcel.analysis.ExcelAnalysisImpl
+import com.github.javaxcel.analysis.ExcelAnalysisImpl.DefaultMetaImpl
 import com.github.javaxcel.analysis.out.ExcelWriteAnalyzer
+import com.github.javaxcel.annotation.ExcelColumn
+import com.github.javaxcel.annotation.ExcelModel
 import com.github.javaxcel.converter.handler.registry.impl.DefaultExcelTypeHandlerRegistry
 import com.github.javaxcel.internal.Array1D
 import com.github.javaxcel.internal.Array2D
@@ -48,7 +52,8 @@ class ExcelWriteHandlerConverterSpec extends Specification {
 
         where:
         fieldName  | array                                                || expected
-        "objects"  | null                                                 || null
+        "booleans" | null                                                 || null
+        "objects"  | null                                                 || "[]" // @ExcelColumn.defaultValue = "[]"
         "booleans" | [false, true] as boolean[]                           || "[false, true]"
         "bytes"    | [-128, 0, 127] as byte[]                             || "[-128, 0, 127]"
         "shorts"   | [-32768, 0, 32767] as short[]                        || "[-32768, 0, 32767]"
@@ -196,20 +201,59 @@ class ExcelWriteHandlerConverterSpec extends Specification {
         "iterable_iterable" | new IterableArray(iterable_iterable: [[2.5, 3.2], null, [-0.14, null], []]) || "[[2.5, 3.2], , [-0.14, ], []]"
     }
 
+    def "Returns default value"() {
+        given:
+        def analyses = analyze(model.class.declaredFields, ExcelWriteAnalyzer.GETTER)
+        def field = model.class.getDeclaredField(fieldName)
+
+        when:
+        def converter = new ExcelWriteHandlerConverter(analyses, new DefaultExcelTypeHandlerRegistry())
+        def actual = converter.convert(model, field)
+
+        then:
+        actual == expected
+
+        where:
+        fieldName | model                                || expected
+        "id"      | new DefaultValueModel(id: 12)        || "12"
+        "id"      | new DefaultValueModel(id: null)      || "-1"
+        "name"    | new DefaultValueModel(name: "alpha") || "alpha"
+        "name"    | new DefaultValueModel(name: null)    || "<null>"
+    }
+
     // -------------------------------------------------------------------------------------------------
 
     private static Iterable<ExcelAnalysis> analyze(Field[] fields, int flags) {
         fields.findAll { !it.isSynthetic() }.collect {
             def analysis = new ExcelAnalysisImpl(it)
+
+            def defaultMeta = new DefaultMetaImpl(null, Source.NONE)
+            if (it.isAnnotationPresent(ExcelColumn)) {
+                defaultMeta = new DefaultMetaImpl(it.getAnnotation(ExcelColumn).defaultValue(), Source.COLUMN)
+            } else if (it.declaringClass.isAnnotationPresent(ExcelModel)) {
+                defaultMeta = new DefaultMetaImpl(it.declaringClass.getAnnotation(ExcelModel).defaultValue(), Source.MODEL)
+            }
+            analysis.defaultMeta = defaultMeta
             analysis.addFlags(ExcelWriteAnalyzer.HANDLER | flags)
+
             analysis
         }
     }
+
+    // -------------------------------------------------------------------------------------------------
 
     @EqualsAndHashCode
     private static class EnumModel {
         AccessMode accessMode
         TimeUnit timeUnit
+    }
+
+    @ExcelModel(defaultValue = "<null>")
+    @EqualsAndHashCode
+    private static class DefaultValueModel {
+        @ExcelColumn(defaultValue = "-1")
+        Long id
+        String name
     }
 
     @EqualsAndHashCode

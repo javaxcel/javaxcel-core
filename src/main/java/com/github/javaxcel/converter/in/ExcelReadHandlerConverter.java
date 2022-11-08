@@ -20,6 +20,7 @@ import com.github.javaxcel.analysis.ExcelAnalysis;
 import com.github.javaxcel.analysis.in.ExcelReadAnalyzer;
 import com.github.javaxcel.converter.handler.ExcelTypeHandler;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
+import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.ClassUtils;
 import io.github.imsejin.common.util.StringUtils;
@@ -82,7 +83,7 @@ public class ExcelReadHandlerConverter implements ExcelReadConverter {
         // When cell value is null or empty.
         if (StringUtils.isNullOrEmpty(value)) {
             ExcelAnalysis analysis = this.analysisMap.get(field);
-            String defaultValue = analysis.getDefaultValue();
+            String defaultValue = analysis.getDefaultMeta().getValue();
 
             if (StringUtils.isNullOrEmpty(defaultValue)) {
                 // When you don't explicitly define default value.
@@ -98,7 +99,8 @@ public class ExcelReadHandlerConverter implements ExcelReadConverter {
             return handleArray(field, type, value);
         } else if (Iterable.class.isAssignableFrom(type)) {
             // Supports nested iterable type.
-            return handleIterable(field, type, value);
+            Class<?> actualType = FieldUtils.resolveActualType(field);
+            return handleIterable(field, actualType, value);
         } else {
             return handleConcrete(field, type, value);
         }

@@ -91,16 +91,10 @@ public class ExcelWriteHandlerConverter implements ExcelWriteConverter {
         // Gets property value of model.
         Object value = getValueOf(model, field);
 
-        // Checks if the value is null or empty string.
-        boolean needDefault = value == null;
-        if (value instanceof CharSequence) {
-            needDefault = ((CharSequence) value).length() == 0;
-        }
-
-        // Returns default value if needed.
-        if (needDefault) {
+        // Returns default value if the value is null or empty string.
+        if (isNullOrEmpty(value)) {
             ExcelAnalysis analysis = this.analysisMap.get(field);
-            String defaultValue = analysis.getDefaultValue();
+            String defaultValue = analysis.getDefaultMeta().getValue();
 
             // Returns null if the default value is also null or empty string.
             if (StringUtils.isNullOrEmpty(defaultValue)) {
@@ -130,6 +124,18 @@ public class ExcelWriteHandlerConverter implements ExcelWriteConverter {
         } else {
             throw new RuntimeException("Never throw; ExcelWriteAnalyzer adds the flags into each analysis");
         }
+    }
+
+    private static boolean isNullOrEmpty(@Null Object object) {
+        if (object == null) {
+            return true;
+        }
+
+        if (object instanceof CharSequence) {
+            return ((CharSequence) object).length() == 0;
+        }
+
+        return false;
     }
 
     private String handleInternal(Field field, Class<?> type, Object value) {

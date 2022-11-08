@@ -17,6 +17,8 @@
 package com.github.javaxcel.converter.in;
 
 import com.github.javaxcel.analysis.ExcelAnalysis;
+import com.github.javaxcel.analysis.ExcelAnalysis.DefaultMeta;
+import com.github.javaxcel.analysis.ExcelAnalysis.DefaultMeta.Source;
 import com.github.javaxcel.analysis.in.ExcelReadAnalyzer;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelReadExpression;
@@ -58,8 +60,9 @@ public class ExcelReadExpressionConverter implements ExcelReadConverter {
                 ExcelReadExpression annotation = field.getAnnotation(ExcelReadExpression.class);
                 cache.expression = EXPRESSION_PARSER.parseExpression(annotation.value());
 
-                String defaultExpressionString = analysis.getDefaultValue();
-                if (!StringUtils.isNullOrEmpty(defaultExpressionString)) {
+                DefaultMeta defaultMeta = analysis.getDefaultMeta();
+                String defaultExpressionString = defaultMeta.getValue();
+                if (defaultMeta.getSource() == Source.COLUMN && !StringUtils.isNullOrEmpty(defaultExpressionString)) {
                     cache.expressionForDefault = EXPRESSION_PARSER.parseExpression(defaultExpressionString);
                 }
             }

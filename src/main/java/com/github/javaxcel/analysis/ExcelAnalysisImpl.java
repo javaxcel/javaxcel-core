@@ -12,7 +12,7 @@ public class ExcelAnalysisImpl implements ExcelAnalysis {
 
     private int flags;
 
-    private String defaultValue;
+    private DefaultMeta defaultMeta;
 
     private ExcelTypeHandler<?> handler;
 
@@ -34,14 +34,14 @@ public class ExcelAnalysisImpl implements ExcelAnalysis {
         this.flags |= flags;
     }
 
-    @Null
     @Override
-    public String getDefaultValue() {
-        return this.defaultValue;
+    public DefaultMeta getDefaultMeta() {
+        return this.defaultMeta;
     }
 
-    public void setDefaultValue(String defaultValue) {
-        this.defaultValue = Objects.requireNonNull(defaultValue, () -> getClass().getSimpleName() + ".defaultValue cannot be null");
+    public void setDefaultMeta(DefaultMeta defaultMeta) {
+        this.defaultMeta = Objects.requireNonNull(defaultMeta,
+                () -> getClass().getSimpleName() + ".defaultMeta cannot be null");
     }
 
     @Null
@@ -51,7 +51,33 @@ public class ExcelAnalysisImpl implements ExcelAnalysis {
     }
 
     public void setHandler(ExcelTypeHandler<?> handler) {
-        this.handler = Objects.requireNonNull(handler, () -> getClass().getSimpleName() + ".handler cannot be null");
+        this.handler = Objects.requireNonNull(handler,
+                () -> getClass().getSimpleName() + ".handler cannot be null");
+    }
+
+    // -------------------------------------------------------------------------------------------------
+
+    public static class DefaultMetaImpl implements DefaultMeta {
+        private final String value;
+
+        private final Source source;
+
+        public DefaultMetaImpl(@Null String value, Source source) {
+            this.value = value;
+            this.source = source;
+        }
+
+        @Null
+        @Override
+        public String getValue() {
+            return this.value;
+        }
+
+
+        @Override
+        public Source getSource() {
+            return this.source;
+        }
     }
 
 }
