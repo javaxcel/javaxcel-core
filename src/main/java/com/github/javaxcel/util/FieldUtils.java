@@ -232,7 +232,6 @@ public final class FieldUtils {
                 continue;
             }
 
-
             // class Sample<S extends Number> {
             //     private Iterable<Sample<Long>> samples;
             // } ... parameterizedType.rawType == Iterable.class

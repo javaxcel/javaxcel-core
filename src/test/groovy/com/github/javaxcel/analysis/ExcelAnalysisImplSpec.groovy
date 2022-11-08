@@ -36,7 +36,7 @@ class ExcelAnalysisImplSpec extends Specification {
         analysis.field == field
     }
 
-    def "Gets the flags"() {
+    def "Gets and adds the flags"() {
         given:
         def field = Sample.getDeclaredField("name")
         def numbers = [0x01, 0x04, 0x08, 0x10, 0x30]
@@ -49,14 +49,14 @@ class ExcelAnalysisImplSpec extends Specification {
         then:
         numbers.each { assert analysis.hasFlag(it) }
         analysis.flags == flags
+        !analysis.hasFlag(0x02)
 
         when:
-        numbers.each { analysis.addFlags(it) }
+        (numbers.first()..numbers.last()).each { analysis.addFlags(it) }
 
         then:
         numbers.each { assert analysis.hasFlag(it) }
         analysis.flags == flags
-        !analysis.hasFlag(0x02)
     }
 
     def "Sets a default meta information"() {

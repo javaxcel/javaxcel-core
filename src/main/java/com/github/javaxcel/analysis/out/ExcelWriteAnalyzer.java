@@ -30,16 +30,36 @@ import com.github.javaxcel.util.FieldUtils;
 
 import java.lang.reflect.Field;
 
+/**
+ * The type Excel write analyzer.
+ */
 public class ExcelWriteAnalyzer extends AbstractExcelWriteAnalyzer {
 
+    /**
+     * The constant HANDLER.
+     */
     public static final int HANDLER = 0x01;
 
+    /**
+     * The constant EXPRESSION.
+     */
     public static final int EXPRESSION = 0x02;
 
+    /**
+     * The constant FIELD_ACCESS.
+     */
     public static final int FIELD_ACCESS = 0x04;
 
+    /**
+     * The constant GETTER.
+     */
     public static final int GETTER = 0x08;
 
+    /**
+     * Instantiates a new Excel write analyzer.
+     *
+     * @param registry the registry
+     */
     public ExcelWriteAnalyzer(ExcelTypeHandlerRegistry registry) {
         super(registry);
     }
@@ -69,7 +89,7 @@ public class ExcelWriteAnalyzer extends AbstractExcelWriteAnalyzer {
             return new DefaultMetaImpl(value, Source.MODEL);
         }
 
-        return new DefaultMetaImpl(null, Source.NONE);
+        return DefaultMetaImpl.EMPTY;
     }
 
     @Override

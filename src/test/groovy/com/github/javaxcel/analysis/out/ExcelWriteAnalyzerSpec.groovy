@@ -15,9 +15,41 @@ import com.github.javaxcel.model.sample.PlainSample
 import com.github.javaxcel.out.strategy.impl.DefaultValue
 import com.github.javaxcel.out.strategy.impl.UseGetters
 import com.github.javaxcel.util.FieldUtils
+import io.github.imsejin.common.util.NumberUtils
 import spock.lang.Specification
 
+import static com.github.javaxcel.analysis.out.ExcelWriteAnalyzer.EXPRESSION
+import static com.github.javaxcel.analysis.out.ExcelWriteAnalyzer.FIELD_ACCESS
+import static com.github.javaxcel.analysis.out.ExcelWriteAnalyzer.GETTER
+import static com.github.javaxcel.analysis.out.ExcelWriteAnalyzer.HANDLER
+
 class ExcelWriteAnalyzerSpec extends Specification {
+
+    def "Constraints for flag"() {
+        given:
+        def flags = [HANDLER, EXPRESSION, FIELD_ACCESS, GETTER].sort()
+
+        expect: """
+            1. All the flags are type of integer, not decimal.
+            2. Each flag must be unique.
+            3. 
+        """
+        flags.grep(Integer).size() == flags.size()
+        flags.unique() == flags
+        flags.size().each {
+            println it
+        }
+
+//        flags.sort().inject(flags.first(), { acc, cur ->
+//            assert
+//            cur * 2
+//        })
+
+//        flags.findAll { it > 2 }
+//                .collect { Math.sqrt(it) }
+//                .each { assert !NumberUtils.hasDecimalPart(it) }
+//                .each { assert !NumberUtils.hasDecimalPart(Math.sqrt(it)) }
+    }
 
     @SuppressWarnings("GroovyAssignabilityCheck")
     def "Analyzes fields of randomized model"() {

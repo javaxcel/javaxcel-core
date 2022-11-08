@@ -227,7 +227,7 @@ class ExcelWriteHandlerConverterSpec extends Specification {
         fields.findAll { !it.isSynthetic() }.collect {
             def analysis = new ExcelAnalysisImpl(it)
 
-            def defaultMeta = new DefaultMetaImpl(null, Source.NONE)
+            def defaultMeta = DefaultMetaImpl.EMPTY
             if (it.isAnnotationPresent(ExcelColumn)) {
                 defaultMeta = new DefaultMetaImpl(it.getAnnotation(ExcelColumn).defaultValue(), Source.COLUMN)
             } else if (it.declaringClass.isAnnotationPresent(ExcelModel)) {

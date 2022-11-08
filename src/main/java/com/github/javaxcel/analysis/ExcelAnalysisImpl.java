@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Null;
 import java.lang.reflect.Field;
 import java.util.Objects;
 
-public class ExcelAnalysisImpl implements ExcelAnalysis {
+public final class ExcelAnalysisImpl implements ExcelAnalysis {
 
     private final Field field;
 
@@ -57,7 +57,9 @@ public class ExcelAnalysisImpl implements ExcelAnalysis {
 
     // -------------------------------------------------------------------------------------------------
 
-    public static class DefaultMetaImpl implements DefaultMeta {
+    public static final class DefaultMetaImpl implements DefaultMeta {
+        public static final DefaultMetaImpl EMPTY = new DefaultMetaImpl(null, Source.NONE);
+
         private final String value;
 
         private final Source source;
