@@ -16,16 +16,24 @@
 
 package com.github.javaxcel.util.processor;
 
+import com.github.javaxcel.analysis.ExcelAnalysis;
+import com.github.javaxcel.analysis.in.ExcelReadAnalyzer;
 import com.github.javaxcel.annotation.ExcelModelCreator;
+import com.github.javaxcel.converter.in.ExcelReadConverter;
 import com.github.javaxcel.exception.NoTargetedFieldException;
+import com.github.javaxcel.util.FieldUtils;
 import com.github.javaxcel.util.resolver.ExcelModelExecutableParameterNameResolver;
 import com.github.javaxcel.util.resolver.ExcelModelExecutableParameterNameResolver.ResolvedParameter;
 import io.github.imsejin.common.assertion.Asserts;
+import io.github.imsejin.common.util.CollectionUtils;
 import io.github.imsejin.common.util.ReflectionUtils;
 
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +48,7 @@ public class ExcelModelCreationProcessor<T> {
 
     private final List<Field> fields;
 
-    /**
+    /** 
      * For cache
      *
      * <p> The following table is a benchmark with 100,000 rows.
@@ -77,6 +85,10 @@ public class ExcelModelCreationProcessor<T> {
 
     private final List<ResolvedParameter> resolvedParameters;
 
+    private List<ExcelAnalysis> analyses;
+
+    private Map<Field, Method> setterMap;
+
     /**
      * Instantiates a new processor.
      *
@@ -95,7 +107,7 @@ public class ExcelModelCreationProcessor<T> {
                 .describedAs("ExcelModelCreationProcessor.fields cannot have null element: {0}", fields)
                 .doesNotContainNull()
                 .describedAs("ExcelModelCreationProcessor.fields are declared on model class, but it doesn't: (modelType: {0}, fields: {1})", modelType.getName(), fields)
-                .allMatch(field -> field.getDeclaringClass() == modelType);
+                .allMatch(field -> field.getDeclaringClass().isAssignableFrom(modelType));
 
         this.fields = fields;
 
@@ -110,11 +122,32 @@ public class ExcelModelCreationProcessor<T> {
         }
 
         this.executable = executable;
+
+        // Parameters are already validated on AbstractExcelModelExecutableResolver.
         this.resolvedParameters = new ExcelModelExecutableParameterNameResolver(executable).resolve();
+    }
+
+    public void setAnalyses(List<ExcelAnalysis> analyses) {
+        Map<Field, Method> setterMap = new HashMap<>();
+
+        for (ExcelAnalysis analysis : analyses) {
+            if (analysis.hasFlag(ExcelReadAnalyzer.SETTER)) {
+                Field field = analysis.getField();
+                Method setter = FieldUtils.resolveSetter(field);
+
+                setterMap.put(field, setter);
+            }
+        }
+
+        this.analyses = analyses;
+        this.setterMap = Collections.unmodifiableMap(setterMap);
     }
 
     /**
      * Creates a Excel model.
+     *
+     * <p> The parameter has a entry which has the key as {@link Field#getName()}
+     * and the value from {@link ExcelReadConverter}.
      *
      * @param mock mock of the model
      * @return model
@@ -127,7 +160,10 @@ public class ExcelModelCreationProcessor<T> {
         T model = (T) ReflectionUtils.execute(this.executable, null, arguments);
 
         List<String> paramNames = this.resolvedParameters.stream().map(ResolvedParameter::getName).collect(toList());
-        for (Field field : this.fields) {
+
+        for (int i = 0; i < this.fields.size(); i++) {
+            Field field = this.fields.get(i);
+
             // To prevent ModelReader from changing value of final field by reflection API.
             if (Modifier.isFinal(field.getModifiers())) {
                 continue;
@@ -139,7 +175,19 @@ public class ExcelModelCreationProcessor<T> {
             }
 
             Object value = mock.get(field.getName());
-            // TODO: implements by setter.
+
+            if (!CollectionUtils.isNullOrEmpty(this.analyses)) {
+                ExcelAnalysis analysis = this.analyses.get(i);
+
+                // Binds the argument through setter for the field.
+                if (analysis.hasFlag(ExcelReadAnalyzer.SETTER)) {
+                    Method setter = this.setterMap.get(field);
+                    ReflectionUtils.invoke(setter, model, value);
+                    continue;
+                }
+            }
+
+            // Without setter, binds the argument to the field directly.
             ReflectionUtils.setFieldValue(model, field, value);
         }
 

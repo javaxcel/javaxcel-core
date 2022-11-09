@@ -16,12 +16,16 @@
 
 package com.github.javaxcel.util.processor
 
+import com.github.javaxcel.analysis.in.ExcelReadAnalyzer
+import com.github.javaxcel.annotation.ExcelModelCreator
+import com.github.javaxcel.annotation.ExcelModelCreator.FieldName
+import com.github.javaxcel.converter.handler.registry.impl.DefaultExcelTypeHandlerRegistry
+import com.github.javaxcel.in.strategy.impl.UseSetters
 import com.github.javaxcel.util.FieldUtils
 import com.github.javaxcel.util.resolver.AbstractExcelModelExecutableResolver
 import groovy.transform.EqualsAndHashCode
 import spock.lang.Specification
 
-import java.lang.reflect.Executable
 import java.util.concurrent.TimeUnit
 
 class ExcelModelCreationProcessorSpec extends Specification {
@@ -41,31 +45,124 @@ class ExcelModelCreationProcessorSpec extends Specification {
 
         where:
         modelType | mock                                                   || expected
-        Alpha     | [number: 256, name: "alpha", decimal: 2.173]           || new Alpha(number: 256, name: "alpha", decimal: 2.173)
-        Beta      | [id: 1024L, timeUnit: TimeUnit.DAYS, tags: ["A", "B"]] || new Beta(id: 1024L, timeUnit: TimeUnit.DAYS, tags: ["A", "B"])
-        Gamma     | [uuid: new UUID(0x512, 64), locale: Locale.US]         || new Gamma([uuid: new UUID(0x512, 64), locale: Locale.US])
+        Alpha     | [number: 256, name: "alpha", decimal: 2.173]           || new Alpha(256, "alpha", 2.173)
+        Beta      | [id: 1024L, timeUnit: TimeUnit.DAYS, tags: ["A", "B"]] || new Beta(1024L, TimeUnit.DAYS, ["A", "B"])
+        Gamma     | [uuid: new UUID(0x512, 64), locale: Locale.US]         || new Gamma(new UUID(0x512, 64), Locale.US)
+        Delta     | [name: "delta", title: "DELTA", point: 3.14D]          || new Delta("delta", "DELTA", 3.14D)
+    }
+
+    def "Creates a excel model with setter"() {
+        given:
+        def fields = FieldUtils.getTargetedFields(modelType)
+        def executable = AbstractExcelModelExecutableResolver.resolve(modelType)
+        def analyses = new ExcelReadAnalyzer(new DefaultExcelTypeHandlerRegistry()).analyze(fields, new UseSetters())
+
+        when:
+        def processor = new ExcelModelCreationProcessor<>(modelType as Class, fields, executable)
+        processor.analyses = analyses
+        def actual = processor.createModel(mock)
+
+        then:
+        modelType.isInstance(actual)
+        actual == expected
+
+        where:
+        modelType | mock                                                   || expected
+        Alpha     | [number: 256, name: "alpha", decimal: 2.173]           || new Alpha(256, "alpha", 2.173)
+        Beta      | [id: 1024L, timeUnit: TimeUnit.DAYS, tags: ["A", "B"]] || new Beta(-1024L, TimeUnit.DAYS, ["0", "1"])
+        Gamma     | [uuid: new UUID(0x512, 64), locale: Locale.US]         || new Gamma(new UUID(0, 0), Locale.ROOT)
+        Delta     | [name: "delta", title: "DELTA", point: 3.14D]          || new Delta("delta", "DELTA", 3.14D)
     }
 
     // -------------------------------------------------------------------------------------------------
 
     @EqualsAndHashCode
-    static class Alpha {
+    private static class Alpha {
         Integer number
         String name
         BigDecimal decimal
+
+        Alpha(Integer number, String name, BigDecimal decimal) {
+            this.number = number
+            this.name = name
+            this.decimal = decimal
+        }
+
+        void setNumber(Integer number) {
+            this.number = number * 2
+        }
+
+        void setName(String name) {
+            this.name = name.toUpperCase(Locale.US)
+        }
+
+        void setDecimal(BigDecimal decimal) {
+            this.decimal = decimal.toBigInteger().toBigDecimal()
+        }
     }
 
     @EqualsAndHashCode
-    static class Beta {
+    private static class Beta {
         Long id
         TimeUnit timeUnit
         List<String> tags
+
+        Beta(@FieldName("l") Long id, TimeUnit timeUnit, @FieldName("t") List<String> tags) {
+            this.id = id
+            this.timeUnit = timeUnit
+            this.tags = tags
+        }
+
+        void setId(Long id) {
+            this.id = -id
+        }
+
+        void setTimeUnit(TimeUnit timeUnit) {
+            this.timeUnit = TimeUnit.HOURS
+        }
+
+        void setTags(List<String> tags) {
+            def numbers = (0..<tags.size()).collect { "$it" }
+            this.tags = numbers
+        }
     }
 
     @EqualsAndHashCode
-    static class Gamma {
+    private static class Gamma {
         UUID uuid
         Locale locale
+
+        Gamma(@FieldName("u") UUID uuid, @FieldName("l") Locale locale) {
+            this.uuid = uuid
+            this.locale = locale
+        }
+
+        void setUuid(UUID uuid) {
+            this.uuid = new UUID(0, 0)
+        }
+
+        void setLocale(Locale locale) {
+            this.locale = Locale.ROOT
+        }
+    }
+
+    @EqualsAndHashCode
+    private static class Delta {
+        String name
+        String title
+        Double point
+
+        @ExcelModelCreator
+        Delta(Double point, String name) {
+            this.point = point
+            this.name = name
+        }
+
+        Delta(String name, String title, Double point) {
+            this.name = name
+            this.title = title
+            this.point = point
+        }
     }
 
 }

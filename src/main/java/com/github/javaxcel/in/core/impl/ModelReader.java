@@ -104,6 +104,9 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
 
         // Creates a converter.
         this.converter = new ExcelReadConverters(analyses, registry);
+
+        // ExcelModelCreationProcessor needs the analyses.
+        this.modelProcessor.setAnalyses(analyses);
     }
 
     @Override
