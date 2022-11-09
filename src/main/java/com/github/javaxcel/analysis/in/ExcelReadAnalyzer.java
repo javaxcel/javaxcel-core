@@ -89,6 +89,7 @@ public class ExcelReadAnalyzer extends AbstractExcelWriteAnalyzer {
             } catch (RuntimeException ignored) {
                 // When it doesn't exist, removes flag of SETTER from the flags.
                 flags = flags ^ SETTER;
+                flags |= FIELD_ACCESS;
             }
         }
 
