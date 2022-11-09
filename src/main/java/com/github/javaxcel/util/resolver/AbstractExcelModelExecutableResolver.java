@@ -170,7 +170,9 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
             // Both names of parameter and field are different,
             // but their type is unique, so the parameter can be resolved.
             Long paramTypeCount = paramTypeCountMap.get(paramType);
-            if (fieldTypeCount == 1 && paramTypeCount == 1) continue;
+            if (fieldTypeCount == 1 && paramTypeCount == 1) {
+                continue;
+            }
 
             Asserts.that(paramName)
                     .thrownBy(InvalidExcelModelCreatorException::new)

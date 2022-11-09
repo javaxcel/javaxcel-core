@@ -133,6 +133,7 @@ public class ExcelReadHandlerConverter implements ExcelReadConverter {
         return array;
     }
 
+    // TODO: Fix this.
     private Iterable<?> handleIterable(Field field, Class<?> type, String value) {
         Class<?> componentType = type.getComponentType();
         String[] strings = Utils.shallowSplit(value, ", ");

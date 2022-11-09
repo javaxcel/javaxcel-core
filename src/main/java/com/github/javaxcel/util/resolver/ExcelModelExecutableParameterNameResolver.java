@@ -53,7 +53,7 @@ public class ExcelModelExecutableParameterNameResolver {
                 .map(MethodParameter::forParameter).map(ResolvedParameter::new).collect(toList());
 
         Asserts.that(resolvedParameters)
-                .describedAs("Failed to discover parameter names of {1}[{2}]",
+                .describedAs("Failed to discover parameter names of {0}[{1}]",
                         this.executable.getClass().getSimpleName().toLowerCase(), this.executable)
                 .isNotNull()
                 .isNotEmpty()
