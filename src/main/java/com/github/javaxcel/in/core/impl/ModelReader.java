@@ -28,9 +28,11 @@ import com.github.javaxcel.in.strategy.ExcelReadStrategy;
 import com.github.javaxcel.in.strategy.impl.Parallel;
 import com.github.javaxcel.util.FieldUtils;
 import com.github.javaxcel.util.processor.ExcelModelCreationProcessor;
+import com.github.javaxcel.util.resolver.AbstractExcelModelExecutableResolver;
 import io.github.imsejin.common.assertion.Asserts;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,7 +46,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Excel reader for model.
  *
- * @param <T> model type
+ * @param <T> type of model
  */
 public class ModelReader<T> extends AbstractExcelReader<T> {
 
@@ -89,7 +91,8 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
                 .isNotNull();
         this.registry = registry;
 
-        this.modelProcessor = new ExcelModelCreationProcessor<>(modelType, this.fields);
+        Executable executable = AbstractExcelModelExecutableResolver.resolve(modelType);
+        this.modelProcessor = new ExcelModelCreationProcessor<>(modelType, this.fields, executable);
     }
 
     @Override

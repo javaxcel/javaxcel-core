@@ -17,9 +17,10 @@
 package com.github.javaxcel.util.processor;
 
 import com.github.javaxcel.annotation.ExcelModelCreator;
-import com.github.javaxcel.util.resolver.AbstractExcelModelExecutableResolver;
+import com.github.javaxcel.exception.NoTargetedFieldException;
 import com.github.javaxcel.util.resolver.ExcelModelExecutableParameterNameResolver;
 import com.github.javaxcel.util.resolver.ExcelModelExecutableParameterNameResolver.ResolvedParameter;
+import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.ReflectionUtils;
 
 import java.lang.reflect.Executable;
@@ -30,6 +31,11 @@ import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 
+/**
+ * Processor for creation of Excel model
+ *
+ * @param <T> type of model
+ */
 public class ExcelModelCreationProcessor<T> {
 
     private final List<Field> fields;
@@ -71,8 +77,31 @@ public class ExcelModelCreationProcessor<T> {
 
     private final List<ResolvedParameter> resolvedParameters;
 
-    public ExcelModelCreationProcessor(Class<T> modelType, List<Field> fields) {
-        Executable executable = AbstractExcelModelExecutableResolver.resolve(modelType);
+    /**
+     * Instantiates a new processor.
+     *
+     * @param modelType  type of model
+     * @param fields     targeted fields of model
+     * @param executable creator of model
+     */
+    public ExcelModelCreationProcessor(Class<T> modelType, List<Field> fields, Executable executable) {
+        Asserts.that(modelType)
+                .describedAs("ExcelModelCreationProcessor.modelType is not allowed to be null")
+                .isNotNull();
+        Asserts.that(fields)
+                .describedAs("ExcelModelCreationProcessor.fields cannot find the targeted fields in the class: {0}", modelType.getName())
+                .thrownBy(desc -> new NoTargetedFieldException(modelType, desc))
+                .isNotEmpty()
+                .describedAs("ExcelModelCreationProcessor.fields cannot have null element: {0}", fields)
+                .doesNotContainNull()
+                .describedAs("ExcelModelCreationProcessor.fields are declared on model class, but it doesn't: (modelType: {0}, fields: {1})", modelType.getName(), fields)
+                .allMatch(field -> field.getDeclaringClass() == modelType);
+
+        this.fields = fields;
+
+        Asserts.that(executable)
+                .isNotNull()
+                .returns(modelType, Executable::getDeclaringClass);
 
         // To prevent exception from occurring on multi-threaded environment,
         // Permits access to the executable that is not accessible. (ExcelReadStrategy.Parallel)
@@ -80,11 +109,16 @@ public class ExcelModelCreationProcessor<T> {
             executable.setAccessible(true);
         }
 
-        this.fields = fields;
         this.executable = executable;
         this.resolvedParameters = new ExcelModelExecutableParameterNameResolver(executable).resolve();
     }
 
+    /**
+     * Creates a Excel model.
+     *
+     * @param mock mock of the model
+     * @return model
+     */
     @SuppressWarnings("unchecked")
     public T createModel(Map<String, Object> mock) {
         Object[] arguments = resolveInitialArguments(mock);

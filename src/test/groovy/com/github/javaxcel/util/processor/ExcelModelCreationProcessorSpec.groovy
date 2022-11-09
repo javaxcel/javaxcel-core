@@ -17,9 +17,11 @@
 package com.github.javaxcel.util.processor
 
 import com.github.javaxcel.util.FieldUtils
+import com.github.javaxcel.util.resolver.AbstractExcelModelExecutableResolver
 import groovy.transform.EqualsAndHashCode
 import spock.lang.Specification
 
+import java.lang.reflect.Executable
 import java.util.concurrent.TimeUnit
 
 class ExcelModelCreationProcessorSpec extends Specification {
@@ -27,7 +29,8 @@ class ExcelModelCreationProcessorSpec extends Specification {
     def "Creates a excel model"() {
         given:
         def fields = FieldUtils.getTargetedFields(modelType)
-        def processor = new ExcelModelCreationProcessor<>(modelType as Class, fields)
+        def executable = AbstractExcelModelExecutableResolver.resolve(modelType)
+        def processor = new ExcelModelCreationProcessor<>(modelType as Class, fields, executable)
 
         when:
         def actual = processor.createModel(mock)
