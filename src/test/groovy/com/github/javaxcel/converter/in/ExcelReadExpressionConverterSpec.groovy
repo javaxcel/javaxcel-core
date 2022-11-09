@@ -34,8 +34,8 @@ class ExcelReadExpressionConverterSpec extends Specification {
 
     def "Converts field value through expression"() {
         given:
-        def analyses = analyze(Sample.declaredFields, ExcelReadAnalyzer.FIELD_ACCESS)
-        def field = Sample.getDeclaredField(fieldName)
+        def analyses = analyze(TestModel.declaredFields, ExcelReadAnalyzer.FIELD_ACCESS)
+        def field = TestModel.getDeclaredField(fieldName)
 
         when:
         def converter = new ExcelReadExpressionConverter(analyses)
@@ -60,9 +60,44 @@ class ExcelReadExpressionConverterSpec extends Specification {
         [time: "12:34:56"]                  | "time"    || LocalTime.of(12, 34, 56)
     }
 
+    def "Converts through expression, but always returns null"() {
+        given:
+        def analyses = analyze(NullModel.declaredFields, ExcelReadAnalyzer.SETTER)
+        def field = NullModel.getDeclaredField(fieldName)
+
+        when:
+        def converter = new ExcelReadExpressionConverter(analyses)
+        def actual = converter.convert(variables, field)
+
+        then:
+        actual == expected
+
+        where:
+        variables | fieldName || expected
+        [:]       | "object"  || null
+        [:]       | "string"  || null
+    }
+
     // -------------------------------------------------------------------------------------------------
 
-    private static class Sample {
+    private static Iterable<ExcelAnalysis> analyze(Field[] fields, int flags) {
+        fields.findAll { !it.isSynthetic() }.collect {
+            def analysis = new ExcelAnalysisImpl(it)
+
+            def defaultMeta = DefaultMetaImpl.EMPTY
+            if (it.isAnnotationPresent(ExcelColumn)) {
+                defaultMeta = new DefaultMetaImpl(it.getAnnotation(ExcelColumn).defaultValue(), Source.COLUMN)
+            }
+            analysis.defaultMeta = defaultMeta
+            analysis.addFlags(ExcelReadAnalyzer.EXPRESSION | flags)
+
+            analysis
+        }
+    }
+
+    // -------------------------------------------------------------------------------------------------
+
+    private static class TestModel {
         @ExcelReadExpression("T(Integer).parseInt(#i) * T(Long).parseLong(#l)")
         int i
         @ExcelReadExpression("T(Long).MIN_VALUE")
@@ -90,21 +125,13 @@ class ExcelReadExpressionConverterSpec extends Specification {
         LocalTime time
     }
 
-    // -------------------------------------------------------------------------------------------------
-
-    private static Iterable<ExcelAnalysis> analyze(Field[] fields, int flags) {
-        fields.findAll { !it.isSynthetic() }.collect {
-            def analysis = new ExcelAnalysisImpl(it)
-
-            def defaultMeta = DefaultMetaImpl.EMPTY
-            if (it.isAnnotationPresent(ExcelColumn)) {
-                defaultMeta = new DefaultMetaImpl(it.getAnnotation(ExcelColumn).defaultValue(), Source.COLUMN)
-            }
-            analysis.defaultMeta = defaultMeta
-            analysis.addFlags(ExcelReadAnalyzer.EXPRESSION | flags)
-
-            analysis
-        }
+    private static class NullModel {
+        @ExcelColumn(defaultValue = "null")
+        @ExcelReadExpression("null")
+        Object object
+        @ExcelColumn(defaultValue = "")
+        @ExcelReadExpression("''")
+        String string
     }
 
 }

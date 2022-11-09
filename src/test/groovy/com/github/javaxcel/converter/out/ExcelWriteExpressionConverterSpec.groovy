@@ -36,7 +36,7 @@ class ExcelWriteExpressionConverterSpec extends Specification {
 
     def "Converts field value through expression"() {
         given:
-        def model = new Sample(fieldName, value)
+        def model = new TestModel(fieldName, value)
         def analyses = analyze(model.class.declaredFields, ExcelWriteAnalyzer.GETTER)
         def field = model.class.getDeclaredField(fieldName)
 
@@ -83,6 +83,24 @@ class ExcelWriteExpressionConverterSpec extends Specification {
         "name"    | new DefaultValueModel(name: null)    || null // @ExcelModel.defaultValue is ignored on ExcelWriteExpressionConverter
     }
 
+    def "Converts through expression, but always returns null"() {
+        given:
+        def analyses = analyze(NullModel.declaredFields, ExcelWriteAnalyzer.GETTER)
+        def field = NullModel.getDeclaredField(fieldName)
+
+        when:
+        def converter = new ExcelWriteExpressionConverter(analyses)
+        def actual = converter.convert(model, field)
+
+        then:
+        actual == expected
+
+        where:
+        fieldName | model           || expected
+        "object"  | new NullModel() || null
+        "string"  | new NullModel() || null
+    }
+
     // -------------------------------------------------------------------------------------------------
 
     private static Iterable<ExcelAnalysis> analyze(Field[] fields, int flags) {
@@ -104,7 +122,7 @@ class ExcelWriteExpressionConverterSpec extends Specification {
 
     // -------------------------------------------------------------------------------------------------
 
-    private static class Sample {
+    private static class TestModel {
         @ExcelWriteExpression("#_int + #_int")
         int _int
         @ExcelWriteExpression("#_long * #_int")
@@ -134,7 +152,7 @@ class ExcelWriteExpressionConverterSpec extends Specification {
         @ExcelWriteExpression("#time.plusSeconds(5)")
         LocalTime time
 
-        Sample(String key, Object value) {
+        TestModel(String key, Object value) {
             this[key] = value
         }
     }
@@ -147,6 +165,15 @@ class ExcelWriteExpressionConverterSpec extends Specification {
         Long id
         @ExcelWriteExpression("#name == null or #name.isEmpty() ? null : '{' + #name + '}'")
         String name
+    }
+
+    private static class NullModel {
+        @ExcelColumn(defaultValue = "null")
+        @ExcelWriteExpression("null")
+        Object object
+        @ExcelColumn(defaultValue = "")
+        @ExcelWriteExpression("''")
+        String string
     }
 
 }
