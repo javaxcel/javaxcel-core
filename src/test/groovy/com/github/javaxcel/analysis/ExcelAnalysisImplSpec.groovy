@@ -36,27 +36,42 @@ class ExcelAnalysisImplSpec extends Specification {
         analysis.field == field
     }
 
-    def "Gets and adds the flags"() {
+    def "Adds the flags and then gets them"() {
         given:
         def field = Sample.getDeclaredField("name")
-        def numbers = [0x01, 0x04, 0x08, 0x10, 0x30]
+        def numbers = [0x01, 0x04, 0x08, 0x20, 0x40]
 
         when:
         def analysis = new ExcelAnalysisImpl(field)
         def flags = numbers.inject(0) { acc, cur -> acc | cur }
         analysis.addFlags(flags)
 
-        then:
-        numbers.each { assert analysis.hasFlag(it) }
+        then: """
+            1. ExcelAnalysis.flags is the same as the added flags.
+            2. ExcelAnalysis has each flag and combination of the flags.
+            3. ExcelAnalysis doesn't have a flag which is not added.
+        """
         analysis.flags == flags
+        numbers.inject(numbers.first()) { acc, cur ->
+            assert analysis.hasFlag(cur) // flag
+            assert analysis.hasFlag(acc) // combination of the flags
+            acc | cur
+        }
         !analysis.hasFlag(0x02)
+        !analysis.hasFlag(0x10)
 
-        when:
+        when: "Adds flags including missed flags"
         (numbers.first()..numbers.last()).each { analysis.addFlags(it) }
 
-        then:
-        numbers.each { assert analysis.hasFlag(it) }
-        analysis.flags == flags
+        then: """
+            1. ExcelAnalysis has the missed flags.
+            2. ExcelAnalysis has all the flags from the least flag to the greatest flag.
+            3. ExcelAnalysis.flags is the same as the next bit minus 1.
+        """
+        analysis.hasFlag(0x02 | 0x10)
+        (numbers.first()..numbers.last()).each { assert analysis.hasFlag(it) }
+        analysis.flags != flags
+        analysis.flags == numbers.last() * 2 - 1
     }
 
     def "Sets a default meta information"() {
