@@ -33,7 +33,7 @@ import java.util.Map;
 /**
  * Context that has objects used on writing Excel file.
  *
- * @param <T> model type
+ * @param <T> type of model
  */
 public class ExcelWriteContext<T> {
 

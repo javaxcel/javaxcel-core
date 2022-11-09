@@ -66,7 +66,7 @@ import java.util.stream.IntStream;
 /**
  * Excel writer for model.
  *
- * @param <T> model type
+ * @param <T> type of model
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class ModelWriter<T> extends AbstractExcelWriter<T> {

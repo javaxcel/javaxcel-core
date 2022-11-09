@@ -31,7 +31,7 @@ import java.util.Map;
 /**
  * Context that has objects used on reading Excel file.
  *
- * @param <T> model type
+ * @param <T> type of model
  */
 public class ExcelReadContext<T> {
 
