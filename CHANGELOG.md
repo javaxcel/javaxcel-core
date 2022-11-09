@@ -27,12 +27,15 @@
 
 ### Modification
 
-- 🔥 Remove: package `model` — enum `Column`
+- 🔥 Remove: useless packages `constant`, `model` — `ConversionType`, `ConverterType`, `Column`
+- 🔥 Remove: unused exceptions `GettingFieldValueException`, `NoTargetedConstructorException`, `NotExistConverterException`
+  , `SettingFieldValueException`
 - ♻️ Refactor: package `converter`
 - ♻️ Refactor: handlers for java time
 - ♻️ Replace: default constructor of strategy `Filter` with `Filter(boolean)`
 - 🚚 Move: packages of implementation `ExcelTypeHandler`
 - 🚚 Rename: implementations of converter
+- ⚡️ Improve: support for handling field `Iterable` by converter
 - 🔨 Modify: utility `FieldUtils.resolveActualType(Field)`
 - 🔨 Modify: default policy of sheet name that increases suffix at 0 is changed to increase at 1.
 - 🔨 Modify: type of parameter `convert(Map<String, Object>, Field)` in `ExcelReadConverter` is changed
