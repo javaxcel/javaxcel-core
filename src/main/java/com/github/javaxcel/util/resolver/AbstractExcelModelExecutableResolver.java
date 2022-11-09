@@ -59,7 +59,14 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
                 .isNotNull();
 
         this.modelType = modelType;
-        this.executableName = executableType.getSimpleName().toLowerCase();
+
+        String executableName = executableType.getSimpleName().toLowerCase();
+        Asserts.that(executableName)
+                .isNotNull()
+                .isNotEmpty()
+                .matches("^constructor|method$");
+
+        this.executableName = executableName;
         this.fields = Collections.unmodifiableList(FieldUtils.getTargetedFields(this.modelType));
     }
 
