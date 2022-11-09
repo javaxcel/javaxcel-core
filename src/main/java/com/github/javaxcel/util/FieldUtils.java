@@ -101,6 +101,11 @@ public final class FieldUtils {
         }
 
         Method getter = ReflectionUtils.getDeclaredMethod(field.getDeclaringClass(), getterName);
+        if (getter.getReturnType() != field.getType()) {
+            throw new IllegalArgumentException(
+                    String.format("Return type[%s] of getter for field[%s] doesn't match the field type[%s]: %s",
+                            getter.getReturnType().getName(), field, field.getType(), getter));
+        }
         if (!Modifier.isPublic(getter.getModifiers())) {
             throw new IllegalArgumentException(
                     String.format("Getter for field[%s] is not public: %s", field, getter));
