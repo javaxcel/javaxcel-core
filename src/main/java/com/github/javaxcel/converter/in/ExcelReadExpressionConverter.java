@@ -57,9 +57,15 @@ public class ExcelReadExpressionConverter implements ExcelReadConverter {
             // Makes instance of expression a cache.
             Cache cache = new Cache(analysis);
             if (analysis.hasFlag(ExcelReadAnalyzer.EXPRESSION)) {
+                // DO NOT CHECK IF @ExcelReadExpression.value IS EMPTY STRING.
+                // BECAUSE THE ANNOTATION HAS ONLY ONE MANDATORY ATTRIBUTE.
+                // THIS CLASS IS RESPONSIBLE FOR INFORMING USER OF FAILURE OF PARSING EXPRESSION.
                 ExcelReadExpression annotation = field.getAnnotation(ExcelReadExpression.class);
                 cache.expression = EXPRESSION_PARSER.parseExpression(annotation.value());
 
+                // HOWEVER, @ExcelColumn.defaultValue IS NOT MANDATORY ATTRIBUTE
+                // AND ALSO THE ANNOTATION CAN BE USED FOR OTHER PURPOSES.
+                // SO YOU SHOULD MAKE SURE THAT THE VALUE IS SPECIFIED EXPLICITLY.
                 DefaultMeta defaultMeta = analysis.getDefaultMeta();
                 String defaultExpressionString = defaultMeta.getValue();
                 if (defaultMeta.getSource() == Source.COLUMN && !StringUtils.isNullOrEmpty(defaultExpressionString)) {

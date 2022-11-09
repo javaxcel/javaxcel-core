@@ -67,8 +67,11 @@ public @interface ExcelModel {
     /**
      * Replacement when only writer handles the value that is null or empty string.
      *
-     * <p> This is ineffective to a field whose type is primitive
-     * because primitive type doesn't allow {@code null}.
+     * <p> When writing a value of the field is null or empty string, converter replaces it
+     * with this default value.
+     *
+     * <p> This is ineffective to a field whose type is primitive, <u>when writing</u>.
+     * Because primitive type doesn't allow {@code null}.
      *
      * @return replacement of the value when the value is null or empty string
      * @see DefaultValue

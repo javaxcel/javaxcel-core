@@ -66,8 +66,15 @@ public @interface ExcelColumn {
     /**
      * Replacement when writer or reader handles the value that is null or empty string.
      *
-     * <p> This is ineffective to a field whose type is primitive
-     * because primitive type doesn't allow {@code null}.
+     * <p> <b>When writing</b> a value of the field which is null or empty string, converter replaces it
+     * with this default value. <b>When reading</b> a cell value from Excel file which is null or empty string,
+     * converter replaces it with this default value.
+     *
+     * <p> <u>If the field is also annotated with {@link ExcelWriteExpression} or {@link ExcelReadExpression},
+     * this value is considered as a expression(SpEL).</u>
+     *
+     * <p> This is ineffective to a field whose type is primitive, <b>when writing</b>.
+     * Because primitive type doesn't allow {@code null}.
      *
      * @return replacement of the value when the value is null or empty string
      * @see DefaultValue
