@@ -56,7 +56,7 @@ public abstract class AbstractExcelReader<T> implements ExcelReader<T>, ExcelRea
      *
      * @see #readRow(Row)
      */
-    private static final DataFormatter dataFormatter = new DataFormatter();
+    private static final DataFormatter DATA_FORMATTER = new DataFormatter();
 
     /**
      * Evaluator that evaluates the formula in a cell.
@@ -142,7 +142,9 @@ public abstract class AbstractExcelReader<T> implements ExcelReader<T>, ExcelRea
             // Resolve header names if you don't give the option.
             List<String> headerNames = this.context.getHeaderNames().isEmpty()
                     ? readHeader(this.context) : Collections.emptyList();
-            if (CollectionUtils.exists(headerNames)) this.context.setHeaderNames(headerNames);
+            if (CollectionUtils.exists(headerNames)) {
+                this.context.setHeaderNames(headerNames);
+            }
 
             List<T> chunk = readBody(this.context);
             this.context.setChunk(chunk);
@@ -235,7 +237,7 @@ public abstract class AbstractExcelReader<T> implements ExcelReader<T>, ExcelRea
                 cellValue = cell.getStringCellValue();
             } else {
                 // Evaluates the formula and returns a stringified value.
-                cellValue = dataFormatter.formatCellValue(cell, this.formulaEvaluator);
+                cellValue = DATA_FORMATTER.formatCellValue(cell, this.formulaEvaluator);
             }
 
             // Converts empty string to null because when CellType is BLANK,

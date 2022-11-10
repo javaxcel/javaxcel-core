@@ -372,11 +372,11 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
 
     private List<String> resolveHeaderNames(ExcelWriteContext<T> context) {
         ExcelWriteStrategy strategy = context.getStrategyMap().get(HeaderNames.class);
-        if (strategy == null) {
-            return FieldUtils.toHeaderNames(this.fields, false);
+        if (strategy != null) {
+            return (List<String>) strategy.execute(context);
         }
 
-        return (List<String>) strategy.execute(context);
+        return FieldUtils.toHeaderNames(this.fields, false);
     }
 
     @Override
