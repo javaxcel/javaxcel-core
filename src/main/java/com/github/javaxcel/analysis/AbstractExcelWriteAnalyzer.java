@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class AbstractExcelWriteAnalyzer implements ExcelAnalyzer<ExcelAnalysis> {
+public abstract class AbstractExcelWriteAnalyzer implements ExcelAnalyzer {
 
     private final ExcelTypeHandlerRegistry registry;
 

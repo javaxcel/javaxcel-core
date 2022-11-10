@@ -17,6 +17,7 @@
 package com.github.javaxcel.in.core.impl;
 
 import com.github.javaxcel.analysis.ExcelAnalysis;
+import com.github.javaxcel.analysis.ExcelAnalyzer;
 import com.github.javaxcel.analysis.in.ExcelReadAnalyzer;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
 import com.github.javaxcel.converter.in.ExcelReadConverter;
@@ -98,7 +99,7 @@ public class ModelReader<T> extends AbstractExcelReader<T> {
     @Override
     public void prepare(ExcelReadContext<T> context) {
         // Analyzes the fields with arguments.
-        ExcelReadAnalyzer analyzer = new ExcelReadAnalyzer(this.registry);
+        ExcelAnalyzer analyzer = new ExcelReadAnalyzer(this.registry);
         Collection<ExcelReadStrategy> strategies = context.getStrategyMap().values();
         List<ExcelAnalysis> analyses = analyzer.analyze(this.fields, strategies.toArray());
 

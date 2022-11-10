@@ -115,7 +115,7 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
     @Override
     public void prepare(ExcelWriteContext<T> context) {
         // Analyzes the fields with arguments.
-        ExcelAnalyzer<ExcelAnalysis> analyzer = new ExcelWriteAnalyzer(this.registry);
+        ExcelAnalyzer analyzer = new ExcelWriteAnalyzer(this.registry);
         Collection<ExcelWriteStrategy> strategies = context.getStrategyMap().values();
         List<ExcelAnalysis> analyses = analyzer.analyze(this.fields, strategies.toArray());
 
