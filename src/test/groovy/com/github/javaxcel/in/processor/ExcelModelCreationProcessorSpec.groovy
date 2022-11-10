@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.util.processor
+package com.github.javaxcel.in.processor
 
 import com.github.javaxcel.analysis.in.ExcelReadAnalyzer
 import com.github.javaxcel.annotation.ExcelModelCreator
