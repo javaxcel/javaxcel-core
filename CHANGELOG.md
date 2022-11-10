@@ -33,6 +33,7 @@
 - ♻️ Refactor: package `converter`
 - ♻️ Refactor: handlers for java time
 - ♻️ Replace: default constructor of strategy `Filter` with `Filter(boolean)`
+- 🚚 Move: package `util.resolver` to `in.resolver`
 - 🚚 Move: packages of implementation `ExcelTypeHandler`
 - 🚚 Rename: implementations of converter
 - ⚡️ Improve: support for handling field `Iterable` by converter
