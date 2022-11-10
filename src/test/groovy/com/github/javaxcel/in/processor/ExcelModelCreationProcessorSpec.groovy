@@ -22,7 +22,7 @@ import com.github.javaxcel.annotation.ExcelModelCreator.FieldName
 import com.github.javaxcel.converter.handler.registry.impl.DefaultExcelTypeHandlerRegistry
 import com.github.javaxcel.in.strategy.impl.UseSetters
 import com.github.javaxcel.util.FieldUtils
-import com.github.javaxcel.util.resolver.AbstractExcelModelExecutableResolver
+import com.github.javaxcel.in.resolver.AbstractExcelModelExecutableResolver
 import groovy.transform.EqualsAndHashCode
 import spock.lang.Specification
 

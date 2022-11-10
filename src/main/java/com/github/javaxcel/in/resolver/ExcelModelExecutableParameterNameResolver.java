@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.util.resolver;
+package com.github.javaxcel.in.resolver;
 
 import com.github.javaxcel.annotation.ExcelModelCreator.FieldName;
 import io.github.imsejin.common.assertion.Asserts;

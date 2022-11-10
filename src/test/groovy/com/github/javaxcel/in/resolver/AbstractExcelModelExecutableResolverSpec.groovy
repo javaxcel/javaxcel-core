@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.util.resolver
+package com.github.javaxcel.in.resolver
 
 import com.github.javaxcel.exception.AmbiguousExcelModelCreatorException
 import com.github.javaxcel.exception.InvalidExcelModelCreatorException

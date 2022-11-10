@@ -28,7 +28,7 @@ import com.github.javaxcel.in.strategy.ExcelReadStrategy;
 import com.github.javaxcel.in.strategy.impl.Parallel;
 import com.github.javaxcel.util.FieldUtils;
 import com.github.javaxcel.in.processor.ExcelModelCreationProcessor;
-import com.github.javaxcel.util.resolver.AbstractExcelModelExecutableResolver;
+import com.github.javaxcel.in.resolver.AbstractExcelModelExecutableResolver;
 import io.github.imsejin.common.assertion.Asserts;
 import org.apache.poi.ss.usermodel.Workbook;
 

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.util.resolver.impl;
+package com.github.javaxcel.in.resolver.impl;
 
 import com.github.javaxcel.annotation.ExcelModelCreator;
 import com.github.javaxcel.exception.AmbiguousExcelModelCreatorException;
-import com.github.javaxcel.util.resolver.AbstractExcelModelExecutableResolver;
+import com.github.javaxcel.in.resolver.AbstractExcelModelExecutableResolver;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
