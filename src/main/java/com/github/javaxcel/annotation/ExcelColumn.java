@@ -27,13 +27,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Excel column.
+ */
 @Documented
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ExcelColumn {
 
     /**
-     * Header name.
+     * Header name on Excel file.
      *
      * @return header name
      */
@@ -46,25 +49,25 @@ public @interface ExcelColumn {
      *
      * @return whether this column will be dropdown or not.
      * @see EnumDropdown
-     * @see ExcelModel#enumDropdown()
-     * @see #dropdownItems()
+     * @see ExcelModel#enumDropdown() ExcelModel.enumDropdown
+     * @see #dropdownItems() ExcelColumn.dropdownItems
      */
     boolean enumDropdown() default false;
 
     /**
      * Dropdown items for the constraint.
      *
-     * <p> If this is empty, dropdown items are {@link Enum#name()}.
+     * <p> If this is empty, dropdown items are {@link Enum#name() Enum.name}.
      *
      * @return dropdown items
      * @see EnumDropdown
-     * @see ExcelModel#enumDropdown()
-     * @see #enumDropdown()
+     * @see ExcelModel#enumDropdown() ExcelModel.enumDropdown
+     * @see #enumDropdown() ExcelColumn.enumDropdown
      */
     String[] dropdownItems() default {};
 
     /**
-     * Replacement when writer or reader handles the value that is null or empty string.
+     * Replacement when the value that is null or empty string.
      *
      * <p> <b>When writing</b> a value of the field which is null or empty string, converter replaces it
      * with this default value. <b>When reading</b> a cell value from Excel file which is null or empty string,
@@ -73,32 +76,43 @@ public @interface ExcelColumn {
      * <p> <u>If the field is also annotated with {@link ExcelWriteExpression} or {@link ExcelReadExpression},
      * this value is considered as a expression(SpEL).</u>
      *
+     * <pre>{@code
+     *      // Regarded as a string.
+     *      @ExcelColumn(defaultValue = "[alpha, beta]")
+     *      private List<String> strings;
+     *
+     *      // Regarded as a expression.
+     *      @ExcelColumn(defaultValue = "T(java.util.Arrays).asList('alpha', 'beta')")
+     *      @ExcelWriteExpression("#strings?.subList(1)")
+     *      private List<String> strings;
+     * }</pre>
+     *
      * <p> This is ineffective to a field whose type is primitive, <b>when writing</b>.
      * Because primitive type doesn't allow {@code null}.
      *
      * @return replacement of the value when the value is null or empty string
      * @see DefaultValue
-     * @see ExcelModel#defaultValue()
+     * @see ExcelModel#defaultValue() ExcelModel.defaultValue
      */
     String defaultValue() default "";
 
     /**
      * Configuration of header style.
      *
-     * <p> This takes precedence over {@link ExcelModel#headerStyle()}.
+     * <p> This takes precedence over {@link ExcelModel#headerStyle() ExcelModel.headerStyle}.
      *
      * @return configuration of header style
-     * @see ExcelModel#headerStyle()
+     * @see ExcelModel#headerStyle() ExcelModel.headerStyle
      */
     Class<? extends ExcelStyleConfig> headerStyle() default NoStyleConfig.class;
 
     /**
      * Configuration of body style.
      *
-     * <p> This takes precedence over {@link ExcelModel#bodyStyle()}.
+     * <p> This takes precedence over {@link ExcelModel#bodyStyle() ExcelModel.bodyStyle}.
      *
      * @return configuration of body style
-     * @see ExcelModel#bodyStyle()
+     * @see ExcelModel#bodyStyle() ExcelModel.bodyStyle
      */
     Class<? extends ExcelStyleConfig> bodyStyle() default NoStyleConfig.class;
 

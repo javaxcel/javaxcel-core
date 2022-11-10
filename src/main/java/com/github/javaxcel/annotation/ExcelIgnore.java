@@ -16,12 +16,20 @@
 
 package com.github.javaxcel.annotation;
 
+import com.github.javaxcel.in.core.ExcelReader;
+import com.github.javaxcel.out.core.ExcelWriter;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+
+/**
+ * Indicates that a field will be excluded from targeted fields.
+ * The field won't be handled by {@link ExcelWriter} and {@link ExcelReader}.
+ */
 @Documented
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
