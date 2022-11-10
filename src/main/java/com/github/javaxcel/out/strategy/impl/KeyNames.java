@@ -21,6 +21,7 @@ import com.github.javaxcel.out.core.ExcelWriter;
 import com.github.javaxcel.out.core.impl.MapWriter;
 import com.github.javaxcel.out.strategy.AbstractExcelWriteStrategy;
 import io.github.imsejin.common.assertion.Asserts;
+import io.github.imsejin.common.util.StringUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -93,8 +94,8 @@ public class KeyNames extends AbstractExcelWriteStrategy {
         Asserts.that(keyOrders)
                 .describedAs("keyOrders is not allowed to be null or empty: {0}", keyOrders)
                 .isNotNull().isNotEmpty()
-                .describedAs("keyOrders cannot have null element: {0}", keyOrders)
-                .doesNotContainNull()
+                .describedAs("keyOrders cannot have null or blank element: {0}", keyOrders)
+                .noneMatch(StringUtils::isNullOrBlank)
                 .describedAs("keyOrders must be an implementation of java.util.List: {0}", keyOrders)
                 .isInstanceOf(List.class)
                 .describedAs("keyOrders cannot have duplicated elements: {0}", keyOrders)
@@ -176,8 +177,8 @@ public class KeyNames extends AbstractExcelWriteStrategy {
         Asserts.that(keyOrders)
                 .describedAs("keyOrders is not allowed to be null or empty: {0}", keyOrders)
                 .isNotNull().isNotEmpty()
-                .describedAs("keyOrders cannot have null element: {0}", keyOrders)
-                .doesNotContainNull()
+                .describedAs("keyOrders cannot have null or blank element: {0}", keyOrders)
+                .noneMatch(StringUtils::isNullOrBlank)
                 .describedAs("keyOrders must be an implementation of java.util.List: {0}", keyOrders)
                 .isInstanceOf(List.class)
                 .describedAs("keyOrders cannot have duplicated elements: {0}", keyOrders)
@@ -189,8 +190,8 @@ public class KeyNames extends AbstractExcelWriteStrategy {
                 .describedAs("newKeyNames.size is not equal to keyOrders.size (newKeyNames.size: {0}, keyOrders.size: {1})",
                         newKeyNames.size(), keyOrders.size())
                 .hasSameSizeAs(keyOrders)
-                .describedAs("newKeyNames cannot have null element: {0}", newKeyNames)
-                .doesNotContainNull()
+                .describedAs("newKeyNames cannot have null or blank element: {0}", newKeyNames)
+                .noneMatch(StringUtils::isNullOrBlank)
                 .describedAs("newKeyNames must be an implementation of java.util.List: {0}", newKeyNames)
                 .isInstanceOf(List.class)
                 .describedAs("newKeyNames cannot have duplicated elements: {0}", newKeyNames)

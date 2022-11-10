@@ -19,6 +19,7 @@ package com.github.javaxcel.in.context;
 import com.github.javaxcel.in.core.ExcelReader;
 import com.github.javaxcel.in.strategy.ExcelReadStrategy;
 import io.github.imsejin.common.assertion.Asserts;
+import io.github.imsejin.common.util.StringUtils;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -134,8 +135,10 @@ public class ExcelReadContext<T> {
         Asserts.that(headerNames)
                 .describedAs("ExcelReadContext.headerNames is not allowed to be null or empty: {0}", headerNames)
                 .isNotNull().isNotEmpty()
-                .describedAs("ExcelReadContext.headerNames is not allowed to contain null: {0}", headerNames)
-                .doesNotContainNull();
+                .describedAs("ExcelReadContext.headerNames cannot have null or blank element: {0}", headerNames)
+                .noneMatch(StringUtils::isNullOrBlank)
+                .describedAs("ExcelReadContext.headerNames cannot have duplicated elements: {0}", headerNames)
+                .doesNotHaveDuplicates();
 
         this.headerNames = headerNames;
     }

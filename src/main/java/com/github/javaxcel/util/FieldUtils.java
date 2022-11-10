@@ -155,7 +155,7 @@ public final class FieldUtils {
      * Converts field to header name.
      *
      * <p> This checks whether the field is annotated with {@link ExcelColumn} or not.
-     * If {@link ExcelColumn#name()} is not null and not empty,
+     * If {@link ExcelColumn#name()} is not null and not blank,
      * this returns a header name defined in the field, otherwise returns name of the field.
      *
      * @param field            targeted field
@@ -166,7 +166,7 @@ public final class FieldUtils {
         if (ignoreAnnotation) return field.getName();
 
         ExcelColumn annotation = field.getAnnotation(ExcelColumn.class);
-        return annotation == null || StringUtils.isNullOrEmpty(annotation.name())
+        return annotation == null || StringUtils.isNullOrBlank(annotation.name())
                 ? field.getName() : annotation.name();
     }
 

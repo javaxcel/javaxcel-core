@@ -335,7 +335,11 @@ public class ModelWriter<T> extends AbstractExcelWriter<T> {
                 .isNotNull().isNotEmpty()
                 .describedAs("headerNames.size is not equal to the number of targeted fields in the class: {0}",
                         context.getModelType().getName())
-                .hasSameSizeAs(this.fields);
+                .hasSameSizeAs(this.fields)
+                .describedAs("headerNames cannot have null or blank element: {0}", headerNames)
+                .noneMatch(StringUtils::isNullOrBlank)
+                .describedAs("headerNames cannot have duplicated elements: {0}", headerNames)
+                .doesNotHaveDuplicates();
 
         List<CellStyle> headerStyles = context.getHeaderStyles();
 

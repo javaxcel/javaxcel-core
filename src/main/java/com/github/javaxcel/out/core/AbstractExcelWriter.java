@@ -28,6 +28,7 @@ import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.ArrayUtils;
 import io.github.imsejin.common.util.CollectionUtils;
 import io.github.imsejin.common.util.NumberUtils;
+import io.github.imsejin.common.util.StringUtils;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
@@ -111,8 +112,8 @@ public abstract class AbstractExcelWriter<T> implements ExcelWriter<T>, ExcelWri
         Asserts.that(sheetNames)
                 .describedAs("sheetNames is not allowed to be null or empty: {0}", sheetNames)
                 .isNotNull().isNotEmpty()
-                .describedAs("sheetNames is not allowed to contain null: {0}", sheetNames)
-                .doesNotContainNull()
+                .describedAs("sheetNames cannot have null or blank element: {0}", sheetNames)
+                .noneMatch(StringUtils::isNullOrBlank)
                 .describedAs("sheetNames cannot have duplicated elements: {0}", sheetNames)
                 .doesNotHaveDuplicates()
                 .asSize().describedAs("sheetNames.size is not equal to numOfSheets: (sheetName.size: {0}, numOfSheets: {1})",

@@ -21,6 +21,7 @@ import com.github.javaxcel.in.core.ExcelReader;
 import com.github.javaxcel.in.core.impl.MapReader;
 import com.github.javaxcel.in.strategy.AbstractExcelReadStrategy;
 import io.github.imsejin.common.assertion.Asserts;
+import io.github.imsejin.common.util.StringUtils;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -92,8 +93,8 @@ public class KeyNames extends AbstractExcelReadStrategy {
         Asserts.that(newKeyNames)
                 .describedAs("ExcelReadStrategy.KeyNames.headerNames is not allowed to be null or empty: {0}", newKeyNames)
                 .isNotNull().isNotEmpty()
-                .describedAs("ExcelReadStrategy.KeyNames.headerNames cannot have null element: {0}", newKeyNames)
-                .doesNotContainNull()
+                .describedAs("ExcelReadStrategy.KeyNames.headerNames cannot have null or blank element: {0}", newKeyNames)
+                .noneMatch(StringUtils::isNullOrBlank)
                 .describedAs("ExcelReadStrategy.KeyNames.headerNames must be an implementation of java.util.List: {0}", newKeyNames)
                 .isInstanceOf(List.class)
                 .describedAs("ExcelReadStrategy.KeyNames.headerNames cannot have duplicated elements: {0}", newKeyNames)
