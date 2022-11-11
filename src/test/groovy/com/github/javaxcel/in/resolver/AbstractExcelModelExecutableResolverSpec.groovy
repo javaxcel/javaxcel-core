@@ -36,11 +36,11 @@ class AbstractExcelModelExecutableResolverSpec extends Specification {
 
     def "succeed"() {
         when:
-        def executable = AbstractExcelModelExecutableResolver.resolve modelType
+        def executable = AbstractExcelModelExecutableResolver.resolve(modelType)
 
         then:
         executable != null
-        expected.isInstance executable
+        expected.isInstance(executable)
 
         where:
         modelType                      | expected
@@ -53,11 +53,11 @@ class AbstractExcelModelExecutableResolverSpec extends Specification {
 
     def "fail"() {
         when:
-        AbstractExcelModelExecutableResolver.resolve modelType
+        AbstractExcelModelExecutableResolver.resolve(modelType)
 
         then:
         def e = thrown exceptionType
-        e.message.split("\n")[0].matches message
+        e.message.split("\n")[0].matches(message)
         where:
         modelType                     || exceptionType                       | message
         EmptyFieldName                || InvalidExcelModelCreatorException   | "ResolvedParameter.name must have text, but it isn't: '.*'"

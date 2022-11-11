@@ -43,7 +43,7 @@ public class ExcelModelConstructorResolver<T> extends AbstractExcelModelExecutab
     @SuppressWarnings("unchecked")
     protected List<Constructor<T>> getCandidates() {
         List<Constructor<T>> candidates = new ArrayList<>();
-        for (Constructor<?> candidate : modelType.getDeclaredConstructors()) {
+        for (Constructor<?> candidate : super.modelType.getDeclaredConstructors()) {
             candidates.add((Constructor<T>) candidate);
         }
 
@@ -59,8 +59,7 @@ public class ExcelModelConstructorResolver<T> extends AbstractExcelModelExecutab
 
         List<Constructor<T>> elected = new ArrayList<>();
         for (Constructor<T> candidate : candidates) {
-            ExcelModelCreator annotation = candidate.getAnnotation(ExcelModelCreator.class);
-            if (annotation == null) {
+            if (!candidate.isAnnotationPresent(ExcelModelCreator.class)) {
                 continue;
             }
 

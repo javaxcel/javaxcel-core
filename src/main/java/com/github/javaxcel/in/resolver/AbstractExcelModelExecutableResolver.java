@@ -70,11 +70,11 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
         this.fields = Collections.unmodifiableList(FieldUtils.getTargetedFields(this.modelType));
     }
 
-    public static Executable resolve(Class<?> type) {
+    public static Executable resolve(Class<?> modelType) {
         // Resolution of method takes precedence over constructor.
         Method method = null;
         try {
-            method = new ExcelModelMethodResolver<>(type).resolve();
+            method = new ExcelModelMethodResolver<>(modelType).resolve();
         } catch (JavaxcelException e) {
             // If there is no resolvable method, tries to resolve constructor.
             if (!(e instanceof NoResolvableExcelModelCreatorException)) {
@@ -86,9 +86,9 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
         // to two executables, even though there is a resolved method.
         Constructor<?> constructor = null;
         try {
-            constructor = new ExcelModelConstructorResolver<>(type).resolve();
+            constructor = new ExcelModelConstructorResolver<>(modelType).resolve();
         } catch (JavaxcelException e) {
-            // There is no executable to be resolved.
+            // The model class has neither resolvable method nor constructor as a model creator.
             if (method == null) {
                 throw e;
             }
@@ -111,7 +111,7 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
 
         Asserts.that(executable)
                 .isNotNull()
-                .returns(type, Executable::getDeclaringClass);
+                .returns(modelType, Executable::getDeclaringClass);
 
         return executable;
     }

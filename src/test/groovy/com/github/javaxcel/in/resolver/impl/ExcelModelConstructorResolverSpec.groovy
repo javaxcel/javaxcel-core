@@ -71,7 +71,7 @@ class ExcelModelConstructorResolverSpec extends Specification {
 
         then:
         def e = thrown excecptionType
-        e.message.split("\n")[0].matches message
+        e.message.split("\n")[0].matches(message)
 
         where:
         modelType                             || excecptionType                      | message
