@@ -29,12 +29,12 @@ public class ByteTypeHandler extends AbstractExcelTypeHandler<Byte> {
     }
 
     @Override
-    protected String writeInternal(Byte value, Object... args) {
+    protected String writeInternal(Byte value, Object... arguments) {
         return value.toString();
     }
 
     @Override
-    public Byte read(String value, Object... args) {
+    public Byte read(String value, Object... arguments) {
         return Byte.parseByte(value);
     }
 

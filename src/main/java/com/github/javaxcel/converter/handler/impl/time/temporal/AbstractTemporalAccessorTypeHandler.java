@@ -40,10 +40,12 @@ public abstract class AbstractTemporalAccessorTypeHandler<T extends TemporalAcce
     // -------------------------------------------------------------------------------------------------
 
     @Override
-    protected String writeInternal(T value, Object... args) {
+    protected String writeInternal(T value, Object... arguments) {
         // Resolve field from arguments.
-        Field field = FieldUtils.resolveFirst(Field.class, args);
-        if (field == null) return stringify(value, this.defaultFormatter);
+        Field field = FieldUtils.resolveFirst(Field.class, arguments);
+        if (field == null) {
+            return stringify(value, this.defaultFormatter);
+        }
 
         ExcelDateTimeFormat annotation = field.getAnnotation(ExcelDateTimeFormat.class);
         if (annotation == null || StringUtils.isNullOrEmpty(annotation.pattern())) {
@@ -54,10 +56,12 @@ public abstract class AbstractTemporalAccessorTypeHandler<T extends TemporalAcce
     }
 
     @Override
-    public T read(String value, Object... args) {
+    public T read(String value, Object... arguments) {
         // Resolve field from arguments.
-        Field field = FieldUtils.resolveFirst(Field.class, args);
-        if (field == null) return parse(value, this.defaultFormatter);
+        Field field = FieldUtils.resolveFirst(Field.class, arguments);
+        if (field == null) {
+            return parse(value, this.defaultFormatter);
+        }
 
         ExcelDateTimeFormat annotation = field.getAnnotation(ExcelDateTimeFormat.class);
         if (annotation == null || StringUtils.isNullOrEmpty(annotation.pattern())) {

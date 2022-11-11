@@ -29,12 +29,12 @@ public class IntegerTypeHandler extends AbstractExcelTypeHandler<Integer> {
     }
 
     @Override
-    protected String writeInternal(Integer value, Object... args) {
+    protected String writeInternal(Integer value, Object... arguments) {
         return value.toString();
     }
 
     @Override
-    public Integer read(String value, Object... args) {
+    public Integer read(String value, Object... arguments) {
         return Integer.parseInt(value);
     }
 

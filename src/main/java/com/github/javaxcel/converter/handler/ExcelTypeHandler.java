@@ -38,7 +38,7 @@ public interface ExcelTypeHandler<T> {
      * @return stringified value
      * @throws Exception if failed to handle the value
      */
-    String write(Object value, Object... args) throws Exception;
+    String write(Object value, Object... arguments) throws Exception;
 
     /**
      * Instantiates the handled type with string value read from Excel file
@@ -49,6 +49,6 @@ public interface ExcelTypeHandler<T> {
      * @return stringified value
      * @throws Exception if failed to handle the value
      */
-    T read(String value, Object... args) throws Exception;
+    T read(String value, Object... arguments) throws Exception;
 
 }

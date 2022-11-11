@@ -27,12 +27,12 @@ public class FileTypeHandler extends AbstractExcelTypeHandler<File> {
     }
 
     @Override
-    protected String writeInternal(File value, Object... args) {
+    protected String writeInternal(File value, Object... arguments) {
         return value.getPath();
     }
 
     @Override
-    public File read(String value, Object... args) {
+    public File read(String value, Object... arguments) {
         return new File(value);
     }
 

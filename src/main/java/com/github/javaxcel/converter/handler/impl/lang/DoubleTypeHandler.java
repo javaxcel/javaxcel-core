@@ -29,12 +29,12 @@ public class DoubleTypeHandler extends AbstractExcelTypeHandler<Double> {
     }
 
     @Override
-    protected String writeInternal(Double value, Object... args) {
+    protected String writeInternal(Double value, Object... arguments) {
         return value.toString();
     }
 
     @Override
-    public Double read(String value, Object... args) {
+    public Double read(String value, Object... arguments) {
         return Double.parseDouble(value);
     }
 

@@ -29,12 +29,12 @@ public class ShortTypeHandler extends AbstractExcelTypeHandler<Short> {
     }
 
     @Override
-    protected String writeInternal(Short value, Object... args) {
+    protected String writeInternal(Short value, Object... arguments) {
         return value.toString();
     }
 
     @Override
-    public Short read(String value, Object... args) {
+    public Short read(String value, Object... arguments) {
         return Short.parseShort(value);
     }
 

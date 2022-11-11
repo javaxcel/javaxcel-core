@@ -25,12 +25,12 @@ public class StringTypeHandler extends AbstractExcelTypeHandler<String> {
     }
 
     @Override
-    protected String writeInternal(String value, Object... args) {
+    protected String writeInternal(String value, Object... arguments) {
         return value;
     }
 
     @Override
-    public String read(String value, Object... args) {
+    public String read(String value, Object... arguments) {
         return value;
     }
 

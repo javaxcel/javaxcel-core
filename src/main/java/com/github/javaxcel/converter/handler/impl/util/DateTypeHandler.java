@@ -38,20 +38,10 @@ public class DateTypeHandler extends AbstractExcelTypeHandler<Date> {
         super(Date.class);
     }
 
-    private static String stringify(Date value, String pattern) {
-        return new SimpleDateFormat(pattern).format(value);
-    }
-
-    private static Date parse(String value, String pattern) throws ParseException {
-        return new SimpleDateFormat(pattern).parse(value);
-    }
-
-    // -------------------------------------------------------------------------------------------------
-
     @Override
-    protected String writeInternal(Date value, Object... args) {
+    protected String writeInternal(Date value, Object... arguments) {
         // Resolve field from arguments.
-        Field field = FieldUtils.resolveFirst(Field.class, args);
+        Field field = FieldUtils.resolveFirst(Field.class, arguments);
         if (field == null) {
             return stringify(value, DEFAULT_PATTERN);
         }
@@ -65,9 +55,9 @@ public class DateTypeHandler extends AbstractExcelTypeHandler<Date> {
     }
 
     @Override
-    public Date read(String value, Object... args) throws ParseException {
+    public Date read(String value, Object... arguments) throws ParseException {
         // Resolve field from arguments.
-        Field field = FieldUtils.resolveFirst(Field.class, args);
+        Field field = FieldUtils.resolveFirst(Field.class, arguments);
         if (field == null) {
             return parse(value, DEFAULT_PATTERN);
         }
@@ -78,6 +68,16 @@ public class DateTypeHandler extends AbstractExcelTypeHandler<Date> {
         } else {
             return parse(value, annotation.pattern());
         }
+    }
+
+    // -------------------------------------------------------------------------------------------------
+
+    private static String stringify(Date value, String pattern) {
+        return new SimpleDateFormat(pattern).format(value);
+    }
+
+    private static Date parse(String value, String pattern) throws ParseException {
+        return new SimpleDateFormat(pattern).parse(value);
     }
 
 }

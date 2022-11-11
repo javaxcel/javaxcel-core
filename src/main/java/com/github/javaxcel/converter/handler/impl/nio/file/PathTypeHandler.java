@@ -28,12 +28,12 @@ public class PathTypeHandler extends AbstractExcelTypeHandler<Path> {
     }
 
     @Override
-    protected String writeInternal(Path value, Object... args) {
+    protected String writeInternal(Path value, Object... arguments) {
         return value.toString();
     }
 
     @Override
-    public Path read(String value, Object... args) {
+    public Path read(String value, Object... arguments) {
         return Paths.get(value);
     }
 

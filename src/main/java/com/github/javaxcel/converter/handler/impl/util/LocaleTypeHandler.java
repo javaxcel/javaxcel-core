@@ -29,7 +29,7 @@ public class LocaleTypeHandler extends AbstractExcelTypeHandler<Locale> {
     }
 
     @Override
-    protected String writeInternal(Locale value, Object... args) {
+    protected String writeInternal(Locale value, Object... arguments) {
         boolean l = (value.getLanguage().length() != 0);
         boolean c = (value.getCountry().length() != 0);
         boolean v = (value.getVariant().length() != 0);
@@ -44,7 +44,7 @@ public class LocaleTypeHandler extends AbstractExcelTypeHandler<Locale> {
     }
 
     @Override
-    public Locale read(String value, Object... args) {
+    public Locale read(String value, Object... arguments) {
         // Uses the cached locale instance with empty language, country and variant.
         if (value.isEmpty()) return Locale.ROOT;
 

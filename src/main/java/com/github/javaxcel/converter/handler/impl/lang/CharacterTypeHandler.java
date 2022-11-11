@@ -29,12 +29,12 @@ public class CharacterTypeHandler extends AbstractExcelTypeHandler<Character> {
     }
 
     @Override
-    protected String writeInternal(Character value, Object... args) {
+    protected String writeInternal(Character value, Object... arguments) {
         return value.toString();
     }
 
     @Override
-    public Character read(String value, Object... args) {
+    public Character read(String value, Object... arguments) {
         return value.charAt(0);
     }
 

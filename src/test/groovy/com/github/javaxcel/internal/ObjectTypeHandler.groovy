@@ -25,12 +25,12 @@ class ObjectTypeHandler extends AbstractExcelTypeHandler<Object> {
     }
 
     @Override
-    protected String writeInternal(Object value, Object... args) throws Exception {
+    protected String writeInternal(Object value, Object... arguments) throws Exception {
         value.toString()
     }
 
     @Override
-    Object read(String value, Object... args) throws Exception {
+    Object read(String value, Object... arguments) throws Exception {
         value
     }
 

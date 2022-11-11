@@ -29,12 +29,12 @@ public class LongTypeHandler extends AbstractExcelTypeHandler<Long> {
     }
 
     @Override
-    protected String writeInternal(Long value, Object... args) {
+    protected String writeInternal(Long value, Object... arguments) {
         return value.toString();
     }
 
     @Override
-    public Long read(String value, Object... args) {
+    public Long read(String value, Object... arguments) {
         return Long.parseLong(value);
     }
 

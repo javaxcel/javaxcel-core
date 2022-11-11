@@ -29,15 +29,15 @@ public class EnumTypeHandler extends AbstractExcelTypeHandler<Enum> {
     }
 
     @Override
-    protected String writeInternal(Enum value, Object... args) {
+    protected String writeInternal(Enum value, Object... arguments) {
         return value.name();
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public Enum read(String value, Object... args) {
+    public Enum read(String value, Object... arguments) {
         // Resolve field from arguments.
-        Field field = FieldUtils.resolveFirst(Field.class, args);
+        Field field = FieldUtils.resolveFirst(Field.class, arguments);
         if (field == null) {
             return null;
         }

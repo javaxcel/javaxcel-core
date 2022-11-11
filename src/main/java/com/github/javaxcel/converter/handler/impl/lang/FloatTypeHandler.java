@@ -29,12 +29,12 @@ public class FloatTypeHandler extends AbstractExcelTypeHandler<Float> {
     }
 
     @Override
-    protected String writeInternal(Float value, Object... args) {
+    protected String writeInternal(Float value, Object... arguments) {
         return value.toString();
     }
 
     @Override
-    public Float read(String value, Object... args) {
+    public Float read(String value, Object... arguments) {
         return Float.parseFloat(value);
     }
 

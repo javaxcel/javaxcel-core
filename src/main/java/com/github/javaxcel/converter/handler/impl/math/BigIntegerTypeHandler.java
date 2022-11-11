@@ -27,12 +27,12 @@ public class BigIntegerTypeHandler extends AbstractExcelTypeHandler<BigInteger> 
     }
 
     @Override
-    protected String writeInternal(BigInteger value, Object... args) {
+    protected String writeInternal(BigInteger value, Object... arguments) {
         return value.toString();
     }
 
     @Override
-    public BigInteger read(String value, Object... args) {
+    public BigInteger read(String value, Object... arguments) {
         return new BigInteger(value);
     }
 

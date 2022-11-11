@@ -27,12 +27,12 @@ public class URITypeHandler extends AbstractExcelTypeHandler<URI> {
     }
 
     @Override
-    protected String writeInternal(URI value, Object... args) {
+    protected String writeInternal(URI value, Object... arguments) {
         return value.toString();
     }
 
     @Override
-    public URI read(String value, Object... args) {
+    public URI read(String value, Object... arguments) {
         return URI.create(value);
     }
 

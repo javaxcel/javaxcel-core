@@ -37,10 +37,11 @@ public abstract class AbstractExcelTypeHandler<T> implements ExcelTypeHandler<T>
 
     @Override
     @SuppressWarnings("unchecked")
-    public final String write(Object value, Object... args) throws Exception {
+    public final String write(Object value, Object... arguments) throws Exception {
         return writeInternal((T) value, args);
     }
 
     protected abstract String writeInternal(T value, Object... args) throws Exception;
+    protected abstract String writeInternal(T value, Object... arguments) throws Exception;
 
 }

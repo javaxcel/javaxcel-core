@@ -27,12 +27,12 @@ public class UUIDTypeHandler extends AbstractExcelTypeHandler<UUID> {
     }
 
     @Override
-    protected String writeInternal(UUID value, Object... args) {
+    protected String writeInternal(UUID value, Object... arguments) {
         return value.toString();
     }
 
     @Override
-    public UUID read(String value, Object... args) {
+    public UUID read(String value, Object... arguments) {
         return UUID.fromString(value);
     }
 

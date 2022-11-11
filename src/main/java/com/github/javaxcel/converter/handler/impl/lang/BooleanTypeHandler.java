@@ -29,12 +29,12 @@ public class BooleanTypeHandler extends AbstractExcelTypeHandler<Boolean> {
     }
 
     @Override
-    protected String writeInternal(Boolean value, Object... args) {
+    protected String writeInternal(Boolean value, Object... arguments) {
         return value.toString();
     }
 
     @Override
-    public Boolean read(String value, Object... args) {
+    public Boolean read(String value, Object... arguments) {
         return Boolean.parseBoolean(value);
     }
 
