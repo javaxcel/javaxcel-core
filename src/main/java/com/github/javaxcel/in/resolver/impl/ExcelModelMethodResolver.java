@@ -19,7 +19,7 @@ package com.github.javaxcel.in.resolver.impl;
 import com.github.javaxcel.annotation.ExcelModelCreator;
 import com.github.javaxcel.exception.AmbiguousExcelModelCreatorException;
 import com.github.javaxcel.exception.InvalidExcelModelCreatorException;
-import com.github.javaxcel.exception.NoResolvedExcelModelCreatorException;
+import com.github.javaxcel.exception.NoResolvableExcelModelCreatorException;
 import com.github.javaxcel.in.resolver.AbstractExcelModelExecutableResolver;
 
 import java.lang.reflect.Method;
@@ -74,7 +74,7 @@ public class ExcelModelMethodResolver<T> extends AbstractExcelModelExecutableRes
     protected Method elect(List<Method> candidates) {
         // Unlike constructor, there may be no method as a candidate.
         if (candidates.isEmpty()) {
-            throw new NoResolvedExcelModelCreatorException("Not found method of type[%s] to resolve; " +
+            throw new NoResolvableExcelModelCreatorException("Not found method of type[%s] to resolve; " +
                     "Annotate static method you want with @ExcelModelCreator", super.modelType);
         }
 

@@ -20,7 +20,7 @@ import com.github.javaxcel.annotation.ExcelModelCreator;
 import com.github.javaxcel.exception.AmbiguousExcelModelCreatorException;
 import com.github.javaxcel.exception.InvalidExcelModelCreatorException;
 import com.github.javaxcel.exception.JavaxcelException;
-import com.github.javaxcel.exception.NoResolvedExcelModelCreatorException;
+import com.github.javaxcel.exception.NoResolvableExcelModelCreatorException;
 import com.github.javaxcel.util.FieldUtils;
 import com.github.javaxcel.in.resolver.ExcelModelExecutableParameterNameResolver.ResolvedParameter;
 import com.github.javaxcel.in.resolver.impl.ExcelModelConstructorResolver;
@@ -76,8 +76,8 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
         try {
             method = new ExcelModelMethodResolver<>(type).resolve();
         } catch (JavaxcelException e) {
-            // If method to be resolved doesn't exist, tries to resolve constructor.
-            if (!(e instanceof NoResolvedExcelModelCreatorException)) {
+            // If there is no resolvable method, tries to resolve constructor.
+            if (!(e instanceof NoResolvableExcelModelCreatorException)) {
                 throw e;
             }
         }

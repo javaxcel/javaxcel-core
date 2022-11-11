@@ -16,13 +16,13 @@
 
 package com.github.javaxcel.exception;
 
-public class NoResolvedExcelModelCreatorException extends JavaxcelException {
+public class NoResolvableExcelModelCreatorException extends JavaxcelException {
 
-    public NoResolvedExcelModelCreatorException(String format, Object... args) {
+    public NoResolvableExcelModelCreatorException(String format, Object... args) {
         super(format, args);
     }
 
-    public NoResolvedExcelModelCreatorException(Throwable cause, String format, Object... args) {
+    public NoResolvableExcelModelCreatorException(Throwable cause, String format, Object... args) {
         super(cause, format, args);
     }
 

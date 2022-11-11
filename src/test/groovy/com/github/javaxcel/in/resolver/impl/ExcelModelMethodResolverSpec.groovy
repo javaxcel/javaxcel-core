@@ -18,7 +18,7 @@ package com.github.javaxcel.in.resolver.impl
 
 import com.github.javaxcel.exception.AmbiguousExcelModelCreatorException
 import com.github.javaxcel.exception.InvalidExcelModelCreatorException
-import com.github.javaxcel.exception.NoResolvedExcelModelCreatorException
+import com.github.javaxcel.exception.NoResolvableExcelModelCreatorException
 import com.github.javaxcel.internal.model.ExcelModelMethodResolutionTester.AllMethodsAreNotAnnotated
 import com.github.javaxcel.internal.model.ExcelModelMethodResolutionTester.DuplicatedFieldName
 import com.github.javaxcel.internal.model.ExcelModelMethodResolutionTester.EmptyFieldName
@@ -76,20 +76,20 @@ class ExcelModelMethodResolverSpec extends Specification {
         e.message.split("\n")[0].matches message
 
         where:
-        modelType                             || excecptionType                       | message
-        ProtectedMethod                       || NoResolvedExcelModelCreatorException | "Not found method of type\\[.+] to resolve; Annotate static method you want with @ExcelModelCreator"
-        PackagePrivateMethod                  || NoResolvedExcelModelCreatorException | "Not found method of type\\[.+] to resolve; Annotate static method you want with @ExcelModelCreator"
-        PrivateMethod                         || NoResolvedExcelModelCreatorException | "Not found method of type\\[.+] to resolve; Annotate static method you want with @ExcelModelCreator"
-        AllMethodsAreNotAnnotated             || NoResolvedExcelModelCreatorException | "Not found method of type\\[.+] to resolve; Annotate static method you want with @ExcelModelCreator"
-        MethodsAreAnnotated                   || AmbiguousExcelModelCreatorException  | "Ambiguous methods\\[.+] to resolve; Remove @ExcelModelCreator from other methods except the one"
-        InstanceMethod                        || InvalidExcelModelCreatorException    | "@ExcelModelCreator is not allowed to be annotated on instance method; Remove the annotation from the method\\[.+]"
-        InvalidReturnType                     || InvalidExcelModelCreatorException    | "@ExcelModelCreator is not allowed to be annotated on method whose return type is assignable to model type\\[.+]; Remove the annotation from the method\\[.+]"
-        NoMatchFieldType                      || InvalidExcelModelCreatorException    | "Unable to resolve parameter type\\[.+] of the .+\\[.+]; .+ has parameter type that is not contained in types of the targeted fields\\[.+]"
-        EmptyFieldName                        || InvalidExcelModelCreatorException    | "ResolvedParameter.name must have text, but it isn't: '.*'"
-        NoMatchFieldName                      || InvalidExcelModelCreatorException    | "ResolvedParameter.name must match name of the targeted fields, but it isn't: \\(actual: '.+', allowed: \\[.+]\\)"
-        DuplicatedFieldName                   || InvalidExcelModelCreatorException    | "Each ResolvedParameter.name must be unique, but it isn't: \\(duplicated: '.+', names: \\[.+]\\)"
-        NoMatchFieldTypeAndName               || InvalidExcelModelCreatorException    | "Not found field\\[.+ .+] to map parameter\\[.+ .+] with; Check if the parameter of the .+\\[.+] matches its type and name with that fields"
-        NoMatchFieldTypeAndNameWithAnnotation || InvalidExcelModelCreatorException    | "Not found field\\[.+ .+] to map parameter\\[@FieldName\\('.+'\\) .+ .+] with; Check if the parameter of the .+\\[.+] matches its type and name with that fields"
+        modelType                             || excecptionType                         | message
+        ProtectedMethod                       || NoResolvableExcelModelCreatorException | "Not found method of type\\[.+] to resolve; Annotate static method you want with @ExcelModelCreator"
+        PackagePrivateMethod                  || NoResolvableExcelModelCreatorException | "Not found method of type\\[.+] to resolve; Annotate static method you want with @ExcelModelCreator"
+        PrivateMethod                         || NoResolvableExcelModelCreatorException | "Not found method of type\\[.+] to resolve; Annotate static method you want with @ExcelModelCreator"
+        AllMethodsAreNotAnnotated             || NoResolvableExcelModelCreatorException | "Not found method of type\\[.+] to resolve; Annotate static method you want with @ExcelModelCreator"
+        MethodsAreAnnotated                   || AmbiguousExcelModelCreatorException    | "Ambiguous methods\\[.+] to resolve; Remove @ExcelModelCreator from other methods except the one"
+        InstanceMethod                        || InvalidExcelModelCreatorException      | "@ExcelModelCreator is not allowed to be annotated on instance method; Remove the annotation from the method\\[.+]"
+        InvalidReturnType                     || InvalidExcelModelCreatorException      | "@ExcelModelCreator is not allowed to be annotated on method whose return type is assignable to model type\\[.+]; Remove the annotation from the method\\[.+]"
+        NoMatchFieldType                      || InvalidExcelModelCreatorException      | "Unable to resolve parameter type\\[.+] of the .+\\[.+]; .+ has parameter type that is not contained in types of the targeted fields\\[.+]"
+        EmptyFieldName                        || InvalidExcelModelCreatorException      | "ResolvedParameter.name must have text, but it isn't: '.*'"
+        NoMatchFieldName                      || InvalidExcelModelCreatorException      | "ResolvedParameter.name must match name of the targeted fields, but it isn't: \\(actual: '.+', allowed: \\[.+]\\)"
+        DuplicatedFieldName                   || InvalidExcelModelCreatorException      | "Each ResolvedParameter.name must be unique, but it isn't: \\(duplicated: '.+', names: \\[.+]\\)"
+        NoMatchFieldTypeAndName               || InvalidExcelModelCreatorException      | "Not found field\\[.+ .+] to map parameter\\[.+ .+] with; Check if the parameter of the .+\\[.+] matches its type and name with that fields"
+        NoMatchFieldTypeAndNameWithAnnotation || InvalidExcelModelCreatorException      | "Not found field\\[.+ .+] to map parameter\\[@FieldName\\('.+'\\) .+ .+] with; Check if the parameter of the .+\\[.+] matches its type and name with that fields"
     }
 
 }
