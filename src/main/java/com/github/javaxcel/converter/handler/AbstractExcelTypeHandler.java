@@ -18,10 +18,20 @@ package com.github.javaxcel.converter.handler;
 
 import io.github.imsejin.common.assertion.Asserts;
 
+/**
+ * Handler for type to help you to implement easily.
+ *
+ * @param <T> type of object to handle
+ */
 public abstract class AbstractExcelTypeHandler<T> implements ExcelTypeHandler<T> {
 
     private final Class<T> type;
 
+    /**
+     * Instantiates a new type handler.
+     *
+     * @param type handled type
+     */
     protected AbstractExcelTypeHandler(Class<T> type) {
         Asserts.that(type)
                 .describedAs("AbstractExcelTypeHandler.type is not allowed to be null")
@@ -38,10 +48,17 @@ public abstract class AbstractExcelTypeHandler<T> implements ExcelTypeHandler<T>
     @Override
     @SuppressWarnings("unchecked")
     public final String write(Object value, Object... arguments) throws Exception {
-        return writeInternal((T) value, args);
+        return writeInternal((T) value, arguments);
     }
 
-    protected abstract String writeInternal(T value, Object... args) throws Exception;
+    /**
+     * Stringifies the value with arguments to write in Excel file.
+     *
+     * @param value     specific value
+     * @param arguments optional arguments
+     * @return string value
+     * @throws Exception if failed to handle the value
+     */
     protected abstract String writeInternal(T value, Object... arguments) throws Exception;
 
 }

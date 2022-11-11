@@ -47,6 +47,11 @@ import com.github.javaxcel.converter.handler.impl.util.DateTypeHandler;
 import com.github.javaxcel.converter.handler.impl.util.LocaleTypeHandler;
 import com.github.javaxcel.converter.handler.impl.util.UUIDTypeHandler;
 
+/**
+ * Default registry of handlers.
+ *
+ * <p> This have the handlers which is supported by default.
+ */
 public class DefaultExcelTypeHandlerRegistry extends ExcelTypeHandlerRegistryImpl {
 
     public DefaultExcelTypeHandlerRegistry() {

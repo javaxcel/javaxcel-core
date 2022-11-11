@@ -25,6 +25,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Simple implementation of handler registry.
+ *
+ * <p> This doesn't have any handlers by default.
+ */
 public class ExcelTypeHandlerRegistryImpl implements ExcelTypeHandlerRegistry {
 
     private final Map<Class<?>, ExcelTypeHandler<?>> handlerMap = new HashMap<>();

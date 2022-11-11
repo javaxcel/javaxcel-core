@@ -16,14 +16,28 @@
 
 package com.github.javaxcel.annotation;
 
+import com.github.javaxcel.converter.handler.ExcelTypeHandler;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
+import java.time.MonthDay;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.Year;
+import java.time.YearMonth;
+import java.time.ZonedDateTime;
+import java.util.Date;
 
 /**
- * Indicates what pattern of format is applied to value of field, when writing and reading.
+ * Indicates the formatting pattern that applies to field value, when writing and reading.
  */
 @Documented
 @Target(ElementType.FIELD)
@@ -31,19 +45,39 @@ import java.lang.annotation.Target;
 public @interface ExcelDateTimeFormat {
 
     /**
-     * Pattern for formatting datetime.
+     * Formatting pattern for datetime object.
      *
-     * @return pattern for formatting datetime
+     * <p> If you want to format other object which is not supported by default,
+     * you should implement {@link ExcelTypeHandler} for that object and handle
+     * this annotation on the implementation.
+     *
+     * <p> Supported types are by default:
+     * <ul>
+     *     <li>{@link Date}</li>
+     *     <li>{@link Instant}</li>
+     *     <li>{@link LocalDateTime}</li>
+     *     <li>{@link LocalDate}</li>
+     *     <li>{@link LocalTime}</li>
+     *     <li>{@link MonthDay}</li>
+     *     <li>{@link Month}</li>
+     *     <li>{@link OffsetDateTime}</li>
+     *     <li>{@link OffsetTime}</li>
+     *     <li>{@link YearMonth}</li>
+     *     <li>{@link Year}</li>
+     *     <li>{@link ZonedDateTime}</li>
+     * </ul>
+     *
+     * @return formatting pattern
      * @see java.text.SimpleDateFormat
      * @see java.time.format.DateTimeFormatter
      */
     String pattern();
 
     /**
-     * Timezone for formatting datetime.
+     * Timezone for datetime object.
      *
-     * @return timezone for formatting datetime
-     * @deprecated Not supported yet
+     * @return timezone
+     * @deprecated not supported yet
      */
     @Deprecated
     String timezone() default "";
