@@ -16,47 +16,49 @@
 
 package com.github.javaxcel.analysis.in;
 
-import com.github.javaxcel.analysis.AbstractExcelWriteAnalyzer;
+import com.github.javaxcel.analysis.AbstractExcelAnalyzer;
 import com.github.javaxcel.analysis.ExcelAnalysis.DefaultMeta;
 import com.github.javaxcel.analysis.ExcelAnalysis.DefaultMeta.Source;
 import com.github.javaxcel.analysis.ExcelAnalysisImpl.DefaultMetaImpl;
 import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelReadExpression;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
+import com.github.javaxcel.converter.in.ExcelReadExpressionConverter;
+import com.github.javaxcel.converter.in.ExcelReadHandlerConverter;
 import com.github.javaxcel.in.strategy.impl.UseSetters;
 import com.github.javaxcel.util.FieldUtils;
 
 import java.lang.reflect.Field;
 
 /**
- * The type Excel read analyzer.
+ * Analyzer for reading Excel
  */
-public class ExcelReadAnalyzer extends AbstractExcelWriteAnalyzer {
+public class ExcelReadAnalyzer extends AbstractExcelAnalyzer {
 
     /**
-     * The constant HANDLER.
+     * Flag which indicates that the field should be handled by {@link ExcelReadHandlerConverter}.
      */
     public static final int HANDLER = 0x01;
 
     /**
-     * The constant EXPRESSION.
+     * Flag which indicates that the field should be handled by {@link ExcelReadExpressionConverter}.
      */
     public static final int EXPRESSION = 0x02;
 
     /**
-     * The constant FIELD_ACCESS.
+     * Flag which indicates that value of the field should be set through access to field.
      */
     public static final int FIELD_ACCESS = 0x04;
 
     /**
-     * The constant SETTER.
+     * Flag which indicates that value of the field should be set through setter for the field.
      */
     public static final int SETTER = 0x08;
 
     /**
-     * Instantiates a new Excel read analyzer.
+     * Instantiates a new analyzer for reading Excel.
      *
-     * @param registry the registry
+     * @param registry registry of handlers
      */
     public ExcelReadAnalyzer(ExcelTypeHandlerRegistry registry) {
         super(registry);

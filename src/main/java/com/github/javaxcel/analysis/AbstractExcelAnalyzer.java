@@ -27,11 +27,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class AbstractExcelWriteAnalyzer implements ExcelAnalyzer {
+/**
+ * Abstract analyzer for preparing the fields to handle for Excel
+ */
+public abstract class AbstractExcelAnalyzer implements ExcelAnalyzer {
 
     private final ExcelTypeHandlerRegistry registry;
 
-    protected AbstractExcelWriteAnalyzer(ExcelTypeHandlerRegistry registry) {
+    /**
+     * Instantiates a new analyzer for Excel.
+     *
+     * @param registry registry of handlers
+     */
+    protected AbstractExcelAnalyzer(ExcelTypeHandlerRegistry registry) {
         this.registry = registry;
     }
 
@@ -70,8 +78,22 @@ public abstract class AbstractExcelWriteAnalyzer implements ExcelAnalyzer {
 
     // -------------------------------------------------------------------------------------------------
 
+    /**
+     * Analyzes the field and returns default meta information of it.
+     *
+     * @param field     targeted field
+     * @param arguments optional arguments
+     * @return default meta information
+     */
     protected abstract DefaultMeta analyzeDefaultMeta(Field field, Object[] arguments);
 
+    /**
+     * Analyzes the fields and returns flags for it.
+     *
+     * @param field     targeted field
+     * @param arguments optional arguments
+     * @return flags
+     */
     protected abstract int analyzeFlags(Field field, Object[] arguments);
 
 }

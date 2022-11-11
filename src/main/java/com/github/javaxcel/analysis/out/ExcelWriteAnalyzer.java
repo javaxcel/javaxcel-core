@@ -16,7 +16,7 @@
 
 package com.github.javaxcel.analysis.out;
 
-import com.github.javaxcel.analysis.AbstractExcelWriteAnalyzer;
+import com.github.javaxcel.analysis.AbstractExcelAnalyzer;
 import com.github.javaxcel.analysis.ExcelAnalysis.DefaultMeta;
 import com.github.javaxcel.analysis.ExcelAnalysis.DefaultMeta.Source;
 import com.github.javaxcel.analysis.ExcelAnalysisImpl.DefaultMetaImpl;
@@ -24,6 +24,8 @@ import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.annotation.ExcelWriteExpression;
 import com.github.javaxcel.converter.handler.registry.ExcelTypeHandlerRegistry;
+import com.github.javaxcel.converter.out.ExcelWriteExpressionConverter;
+import com.github.javaxcel.converter.out.ExcelWriteHandlerConverter;
 import com.github.javaxcel.out.strategy.impl.DefaultValue;
 import com.github.javaxcel.out.strategy.impl.UseGetters;
 import com.github.javaxcel.util.FieldUtils;
@@ -31,34 +33,34 @@ import com.github.javaxcel.util.FieldUtils;
 import java.lang.reflect.Field;
 
 /**
- * The type Excel write analyzer.
+ * Analyzer for writing Excel
  */
-public class ExcelWriteAnalyzer extends AbstractExcelWriteAnalyzer {
+public class ExcelWriteAnalyzer extends AbstractExcelAnalyzer {
 
     /**
-     * The constant HANDLER.
+     * Flag which indicates that the field should be handled by {@link ExcelWriteHandlerConverter}.
      */
     public static final int HANDLER = 0x01;
 
     /**
-     * The constant EXPRESSION.
+     * Flag which indicates that the field should be handled by {@link ExcelWriteExpressionConverter}.
      */
     public static final int EXPRESSION = 0x02;
 
     /**
-     * The constant FIELD_ACCESS.
+     * Flag which indicates that value of the field should be gotten through access to field.
      */
     public static final int FIELD_ACCESS = 0x04;
 
     /**
-     * The constant GETTER.
+     * Flag which indicates that value of the field should be gotten through getter for the field.
      */
     public static final int GETTER = 0x08;
 
     /**
-     * Instantiates a new Excel write analyzer.
+     * Instantiates a new analyzer for writing Excel.
      *
-     * @param registry the registry
+     * @param registry registry of handlers
      */
     public ExcelWriteAnalyzer(ExcelTypeHandlerRegistry registry) {
         super(registry);
