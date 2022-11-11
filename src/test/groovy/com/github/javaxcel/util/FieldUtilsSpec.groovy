@@ -22,6 +22,8 @@ import com.github.javaxcel.model.sample.ComplexSample
 import io.github.imsejin.common.util.ReflectionUtils
 import spock.lang.Specification
 
+import java.lang.reflect.Field
+import java.lang.reflect.Method
 import java.nio.file.AccessMode
 import java.security.cert.CRLReason
 import java.util.concurrent.TimeUnit
@@ -48,6 +50,51 @@ class FieldUtilsSpec extends Specification {
         ExcludedSuper            | ["f1"]
         IncludedSuper            | ["f0", "f1"]
         ExplicitAndIncludedSuper | ["f0"]
+    }
+
+    def "Resolves getter of the field"() {
+        given:
+        def field = GetterTestModel.getDeclaredField("l")
+
+        when:
+        def getter = FieldUtils.resolveGetter(field)
+
+        then:
+        getter != null
+        getter.name == "getL"
+        getter.parameterCount == 0
+        getter.returnType == Long
+
+        when:
+        field = GetterTestModel.getDeclaredField("name")
+        FieldUtils.resolveGetter(field)
+
+        then:
+        def e = thrown(IllegalArgumentException)
+        e.message ==~ /^Getter for field\[.+] is not public: .+$/
+    }
+
+    def "Resolves setter of the field"() {
+        given:
+        def field = SetterTestModel.getDeclaredField("l")
+
+        when:
+        def setter = FieldUtils.resolveSetter(field)
+
+        then:
+        setter != null
+        setter.name == "setL"
+        setter.parameterCount == 1
+        setter.parameterTypes == [Long] as Class[]
+        setter.returnType == void
+
+        when:
+        field = SetterTestModel.getDeclaredField("name")
+        FieldUtils.resolveSetter(field)
+
+        then:
+        def e = thrown(IllegalArgumentException)
+        e.message ==~ /^Setter for field\[.+] is not public: .+$/
     }
 
     def "Converts the fields into their names"() {
@@ -133,7 +180,7 @@ class FieldUtilsSpec extends Specification {
 
     def "Resolves the actual type of field"() {
         given:
-        def field = ComplexSample.declaredFields.find({ it.name == fieldName })
+        def field = ComplexSample.getDeclaredField(fieldName)
 
         when:
         def actualType = FieldUtils.resolveActualType(field)
@@ -224,5 +271,20 @@ class FieldUtilsSpec extends Specification {
     private static class ExplicitAndIncludedSuper extends Parent {
         String f1
     }
+
+    private static class GetterTestModel {
+        Long l
+        String name
+
+        protected String getName() { this.name }
+    }
+
+    private static class SetterTestModel {
+        Long l
+        String name
+
+        protected void setName(String name) { this.name = name }
+    }
+
 
 }
