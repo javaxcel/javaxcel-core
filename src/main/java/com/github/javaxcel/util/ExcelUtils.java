@@ -58,6 +58,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
 /**
@@ -81,7 +82,7 @@ public final class ExcelUtils {
     }
 
     /**
-     * Returns the instance of {@link Workbook} by reading file.
+     * Creates an instance of {@link Workbook} from the file.
      *
      * @param file Excel file
      * @return Excel workbook instance
@@ -92,18 +93,18 @@ public final class ExcelUtils {
         Asserts.that(extension)
                 .describedAs("Extension of Excel file must be '{0}' or '{1}'",
                         EXCEL_97_EXTENSION, EXCEL_2007_EXTENSION)
-                .matches(EXCEL_97_EXTENSION + '|' + EXCEL_2007_EXTENSION);
+                .matches(Pattern.compile("^xlsx?$", Pattern.CASE_INSENSITIVE));
 
         Workbook workbook;
         try {
-            if (extension.equals(EXCEL_97_EXTENSION)) {
+            if (extension.equalsIgnoreCase(EXCEL_97_EXTENSION)) {
                 InputStream in = new FileInputStream(file);
                 workbook = new HSSFWorkbook(in);
             } else {
                 workbook = new XSSFWorkbook(file);
             }
         } catch (IOException | InvalidFormatException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage(), e);
         }
 
         return workbook;

@@ -43,7 +43,7 @@ public class MapReader extends AbstractExcelReader<Map<String, String>> {
             // incompatible types: java.lang.Class<java.util.Map> cannot be converted to java.lang.Class<T>
             MAP_TYPE = (Class<Map<String, String>>) Class.forName(Map.class.getName());
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 
