@@ -14,46 +14,56 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.in.resolver.impl.method.success
+package com.github.javaxcel.in.resolver.impl.method.failure
 
 import com.github.javaxcel.annotation.ExcelModelCreator
+import com.github.javaxcel.exception.AmbiguousExcelModelCreatorException
 import com.github.javaxcel.in.resolver.impl.ExcelModelMethodResolver
 import spock.lang.Specification
 
-import java.lang.reflect.Method
+import java.nio.file.AccessMode
 
-class UniqueParamTypeAndUnmatchedParamNameSpec extends Specification {
+class TooManyAnnotatedMethodsSpec extends Specification {
 
     def "Resolves a method"() {
         given:
         def resolver = new ExcelModelMethodResolver<>(TestModel)
 
         when:
-        def method = resolver.resolve()
+        resolver.resolve()
 
         then:
-        noExceptionThrown()
-        method != null
-        method instanceof Method
+        def e = thrown(AmbiguousExcelModelCreatorException)
+        e.message ==~ /^Ambiguous methods\[.+] to resolve; Remove @ExcelModelCreator from other methods except the one$/
     }
 
     // -------------------------------------------------------------------------------------------------
 
     @SuppressWarnings("unused")
     private static class TestModel {
-        final StringBuffer buffer
-        final StringBuilder builder
-        final String string
+        final AccessMode accessMode
 
-        TestModel(StringBuffer buffer, StringBuilder builder, String string) {
-            this.buffer = buffer
-            this.builder = builder
-            this.string = string
+        private TestModel(AccessMode accessMode) {
+            this.accessMode = accessMode
         }
 
         @ExcelModelCreator
-        static TestModel of(String $string, StringBuffer $buffer, StringBuilder $builder) {
-            new TestModel($buffer, $builder, $string)
+        static TestModel withRead() {
+            with(AccessMode.READ)
+        }
+
+        @ExcelModelCreator
+        static TestModel withWrite() {
+            with(AccessMode.WRITE)
+        }
+
+        @ExcelModelCreator
+        static TestModel withExecute() {
+            with(AccessMode.EXECUTE)
+        }
+
+        static TestModel with(AccessMode accessMode) {
+            new TestModel(accessMode)
         }
     }
 

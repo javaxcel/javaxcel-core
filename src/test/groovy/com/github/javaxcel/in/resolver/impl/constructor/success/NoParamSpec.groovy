@@ -14,47 +14,34 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.in.resolver.impl.method.success
+package com.github.javaxcel.in.resolver.impl.constructor.success
 
-import com.github.javaxcel.annotation.ExcelModelCreator
-import com.github.javaxcel.in.resolver.impl.ExcelModelMethodResolver
+import com.github.javaxcel.in.resolver.impl.ExcelModelConstructorResolver
 import spock.lang.Specification
 
-import java.lang.reflect.Method
+import java.lang.reflect.Constructor
 
-class UniqueParamTypeAndUnmatchedParamNameSpec extends Specification {
+class NoParamSpec extends Specification {
 
     def "Resolves a method"() {
         given:
-        def resolver = new ExcelModelMethodResolver<>(TestModel)
+        def resolver = new ExcelModelConstructorResolver<>(TestModel)
 
         when:
-        def method = resolver.resolve()
+        def constructor = resolver.resolve()
 
         then:
         noExceptionThrown()
-        method != null
-        method instanceof Method
+        constructor != null
+        constructor instanceof Constructor
     }
 
     // -------------------------------------------------------------------------------------------------
 
     @SuppressWarnings("unused")
     private static class TestModel {
-        final StringBuffer buffer
-        final StringBuilder builder
-        final String string
-
-        TestModel(StringBuffer buffer, StringBuilder builder, String string) {
-            this.buffer = buffer
-            this.builder = builder
-            this.string = string
-        }
-
-        @ExcelModelCreator
-        static TestModel of(String $string, StringBuffer $buffer, StringBuilder $builder) {
-            new TestModel($buffer, $builder, $string)
-        }
+        Long number
+        String name
     }
 
 }

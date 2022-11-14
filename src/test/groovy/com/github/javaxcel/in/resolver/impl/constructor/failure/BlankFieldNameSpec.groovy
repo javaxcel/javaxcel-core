@@ -14,48 +14,35 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.in.resolver.impl.method.success
+package com.github.javaxcel.in.resolver.impl.constructor.failure
 
-import com.github.javaxcel.annotation.ExcelModelCreator
-import com.github.javaxcel.in.resolver.impl.ExcelModelMethodResolver
+import com.github.javaxcel.annotation.ExcelModelCreator.FieldName
+import com.github.javaxcel.exception.InvalidExcelModelCreatorException
+import com.github.javaxcel.in.resolver.impl.ExcelModelConstructorResolver
 import spock.lang.Specification
 
-import java.lang.reflect.Method
-import java.nio.file.Path
-import java.nio.file.Paths
-
-class LackOfParamCountSpec extends Specification {
+class BlankFieldNameSpec extends Specification {
 
     def "Resolves a method"() {
         given:
-        def resolver = new ExcelModelMethodResolver<>(TestModel)
+        def resolver = new ExcelModelConstructorResolver<>(TestModel)
 
         when:
-        def method = resolver.resolve()
+        resolver.resolve()
 
         then:
-        noExceptionThrown()
-        method != null
-        method instanceof Method
+        def e = thrown(InvalidExcelModelCreatorException)
+        e.message ==~ /^@FieldName\.value is not allowed to be blank\[.*]; Specify the proper value or detach the annotation from that parameter\[.+] of constructor\[.+]$/
     }
 
     // -------------------------------------------------------------------------------------------------
 
     @SuppressWarnings("unused")
     private static class TestModel {
-        final long number
-        final String name
-        final Path path
+        final Long number
 
-        TestModel(long number, String name, Path path) {
+        TestModel(@FieldName(" ") Long number) {
             this.number = number
-            this.name = name
-            this.path = path
-        }
-
-        @ExcelModelCreator
-        static TestModel from(String name) throws IOException {
-            return new TestModel(new Random().nextLong(), name, Paths.get(".").toRealPath())
         }
     }
 

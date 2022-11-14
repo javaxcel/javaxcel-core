@@ -23,7 +23,7 @@ import com.github.javaxcel.in.resolver.impl.ExcelModelMethodResolver
 import groovy.transform.PackageScope
 import spock.lang.Specification
 
-class NotPublicModifierSpec extends Specification {
+class NonPublicModifierSpec extends Specification {
 
     def "Resolves a method"() {
         given:

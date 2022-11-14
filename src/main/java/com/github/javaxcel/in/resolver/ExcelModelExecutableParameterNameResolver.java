@@ -82,9 +82,12 @@ public class ExcelModelExecutableParameterNameResolver {
             if (annotated) {
                 name = annotation.value();
                 if (StringUtils.isNullOrBlank(name)) {
+                    Executable executable = methodParameter.getExecutable();
+                    String executableName = executable.getClass().getSimpleName().toLowerCase();
+
                     throw new InvalidExcelModelCreatorException(
-                            "@FieldName.value is not allowed to be blank[%s]; Specify the proper value or detach the annotation from that parameter[%s] of method[%s]",
-                            name, methodParameter.getParameter(), methodParameter.getMethod());
+                            "@FieldName.value is not allowed to be blank[%s]; Specify the proper value or detach the annotation from that parameter[%s] of %s[%s]",
+                            name, methodParameter.getParameter(), executableName, executable);
                 }
             } else {
                 methodParameter.initParameterNameDiscovery(DISCOVERER);

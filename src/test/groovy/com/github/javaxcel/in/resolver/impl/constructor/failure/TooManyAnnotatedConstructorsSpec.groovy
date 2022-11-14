@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.in.resolver.impl.method.failure
+package com.github.javaxcel.in.resolver.impl.constructor.failure
 
 import com.github.javaxcel.annotation.ExcelModelCreator
 import com.github.javaxcel.exception.AmbiguousExcelModelCreatorException
-import com.github.javaxcel.in.resolver.impl.ExcelModelMethodResolver
+import com.github.javaxcel.in.resolver.impl.ExcelModelConstructorResolver
 import spock.lang.Specification
 
 import java.nio.file.AccessMode
 
-class TooManyAnnotatedMethodSpec extends Specification {
+class TooManyAnnotatedConstructorsSpec extends Specification {
 
     def "Resolves a method"() {
         given:
-        def resolver = new ExcelModelMethodResolver<>(TestModel)
+        def resolver = new ExcelModelConstructorResolver<>(TestModel)
 
         when:
         resolver.resolve()
 
         then:
         def e = thrown(AmbiguousExcelModelCreatorException)
-        e.message ==~ /^Ambiguous methods\[.+] to resolve; Remove @ExcelModelCreator from other methods except the one$/
+        e.message ==~ /^Ambiguous constructors\[.+] to resolve; Remove @ExcelModelCreator from other constructors except the one$/
     }
 
     // -------------------------------------------------------------------------------------------------
@@ -43,27 +43,14 @@ class TooManyAnnotatedMethodSpec extends Specification {
     private static class TestModel {
         final AccessMode accessMode
 
+        @ExcelModelCreator
+        TestModel(String modeName) {
+            this(AccessMode.valueOf(modeName))
+        }
+
+        @ExcelModelCreator
         private TestModel(AccessMode accessMode) {
             this.accessMode = accessMode
-        }
-
-        @ExcelModelCreator
-        static TestModel withRead() {
-            with(AccessMode.READ)
-        }
-
-        @ExcelModelCreator
-        static TestModel withWrite() {
-            with(AccessMode.WRITE)
-        }
-
-        @ExcelModelCreator
-        static TestModel withExecute() {
-            with(AccessMode.EXECUTE)
-        }
-
-        static TestModel with(AccessMode accessMode) {
-            new TestModel(accessMode)
         }
     }
 
