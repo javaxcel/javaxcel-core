@@ -18,15 +18,16 @@ package com.github.javaxcel.in.resolver.impl.method.success
 
 import com.github.javaxcel.annotation.ExcelModelCreator
 import com.github.javaxcel.in.resolver.impl.ExcelModelMethodResolver
+import io.github.imsejin.common.tool.RandomString
 import spock.lang.Specification
 
 import java.lang.reflect.Method
 
-class PolymorphousReturnTypeSpec extends Specification {
+class ManyMethodsFromParentsSpec extends Specification {
 
     def "Resolves a method"() {
         given:
-        def resolver = new ExcelModelMethodResolver<>(Parent)
+        def resolver = new ExcelModelMethodResolver<>(type)
 
         when:
         def method = resolver.resolve()
@@ -35,12 +36,33 @@ class PolymorphousReturnTypeSpec extends Specification {
         noExceptionThrown()
         method != null
         method instanceof Method
+
+        where:
+        type << [Parent, Child]
     }
 
     // -------------------------------------------------------------------------------------------------
 
     @SuppressWarnings("unused")
-    private static class Parent {
+    private static class GrandParent {
+        @ExcelModelCreator
+        static GrandParent randomGrandParent() {
+            new GrandParent()
+        }
+
+        @ExcelModelCreator
+        static Parent randomParent() {
+            new Parent(new RandomString().nextString(8))
+        }
+
+        @ExcelModelCreator
+        static Child randomChild() {
+            new Child(new RandomString().nextString(16))
+        }
+    }
+
+    @SuppressWarnings("unused")
+    private static class Parent extends GrandParent {
         final String name
 
         private Parent(String name) {
@@ -49,7 +71,7 @@ class PolymorphousReturnTypeSpec extends Specification {
 
         @ExcelModelCreator
         static Child fromChild(String name) {
-            new Child(name, name)
+            Child.from(name)
         }
     }
 
@@ -57,9 +79,14 @@ class PolymorphousReturnTypeSpec extends Specification {
     private static class Child extends Parent {
         final String nickname
 
-        private Child(String name, String nickname) {
+        private Child(String name) {
             super(name)
-            this.nickname = nickname
+            this.nickname = name.toUpperCase(Locale.US)
+        }
+
+        @ExcelModelCreator
+        static Child from(String name) {
+            new Child(name)
         }
     }
 

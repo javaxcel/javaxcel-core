@@ -17,6 +17,7 @@
 package com.github.javaxcel.in.resolver.impl.method.failure
 
 import com.github.javaxcel.annotation.ExcelModelCreator
+import com.github.javaxcel.exception.InvalidExcelModelCreatorException
 import com.github.javaxcel.exception.NoResolvableExcelModelCreatorException
 import com.github.javaxcel.in.resolver.impl.ExcelModelMethodResolver
 import groovy.transform.PackageScope
@@ -32,8 +33,8 @@ class NotPublicModifierSpec extends Specification {
         resolver.resolve()
 
         then:
-        def e = thrown(NoResolvableExcelModelCreatorException)
-        e.message ==~ /^Not found method of type\[.+] to resolve; Annotate static method you want with @ExcelModelCreator$/
+        def e = thrown(InvalidExcelModelCreatorException)
+        e.message ==~ /^@ExcelModelCreator is not allowed to be annotated on non-public method; Remove the annotation from the method\[.+]$/
 
         where:
         type << [Protected, PackagePrivate, Private]
