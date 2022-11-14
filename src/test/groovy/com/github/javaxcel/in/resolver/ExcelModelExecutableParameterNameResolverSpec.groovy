@@ -63,6 +63,7 @@ class ExcelModelExecutableParameterNameResolverSpec extends Specification {
 
     // -------------------------------------------------------------------------------------------------
 
+    @SuppressWarnings("unused")
     private static class TestModel {
         final Long id
         final LocalDateTime dateTime

@@ -14,44 +14,46 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.in.resolver.impl.method.failure
+package com.github.javaxcel.in.resolver.impl.method.success
 
 import com.github.javaxcel.annotation.ExcelModelCreator
-import com.github.javaxcel.exception.InvalidExcelModelCreatorException
 import com.github.javaxcel.in.resolver.impl.ExcelModelMethodResolver
 import spock.lang.Specification
 
-class DuplicatedTypeAndDifferentNameSpec extends Specification {
+import java.lang.reflect.Method
+
+class UniqueParamTypeAndUnmatchedParamNameSpec extends Specification {
 
     def "Resolves a method"() {
         given:
         def resolver = new ExcelModelMethodResolver<>(TestModel)
 
         when:
-        resolver.resolve()
+        def method = resolver.resolve()
 
         then:
-        def e = thrown(InvalidExcelModelCreatorException)
-        e.message ==~ /^ResolvedParameter\.name must match name of the targeted fields, but it isn't: \(actual: 'number', allowed: \[path, name, numeric]\)[\s\S]*$/
+        noExceptionThrown()
+        method != null
+        method instanceof Method
     }
 
     // -------------------------------------------------------------------------------------------------
 
     @SuppressWarnings("unused")
     private static class TestModel {
-        final String numeric
-        final String name
-        final String path
+        final StringBuffer buffer
+        final StringBuilder builder
+        final String string
 
-        TestModel(String numeric, String name, String path) {
-            this.numeric = numeric
-            this.name = name
-            this.path = path
+        TestModel(StringBuffer buffer, StringBuilder builder, String string) {
+            this.buffer = buffer
+            this.builder = builder
+            this.string = string
         }
 
         @ExcelModelCreator
-        static TestModel of(String name, String path, String number) {
-            new TestModel(number, name, path)
+        static TestModel of(StringBuffer $buffer, StringBuilder $builder, String $string) {
+            new TestModel($buffer, $builder, $string)
         }
     }
 

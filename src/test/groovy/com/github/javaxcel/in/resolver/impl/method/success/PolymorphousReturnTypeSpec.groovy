@@ -16,20 +16,17 @@
 
 package com.github.javaxcel.in.resolver.impl.method.success
 
-import com.github.javaxcel.annotation.ExcelColumn
-import com.github.javaxcel.annotation.ExcelIgnore
-import com.github.javaxcel.annotation.ExcelModel
 import com.github.javaxcel.annotation.ExcelModelCreator
 import com.github.javaxcel.in.resolver.impl.ExcelModelMethodResolver
 import spock.lang.Specification
 
 import java.lang.reflect.Method
 
-class DuplicatedTypeAndUnmatchedNameButIgnoredFieldSpec extends Specification {
+class PolymorphousReturnTypeSpec extends Specification {
 
     def "Resolves a method"() {
         given:
-        def resolver = new ExcelModelMethodResolver<>(type)
+        def resolver = new ExcelModelMethodResolver<>(Parent)
 
         when:
         def method = resolver.resolve()
@@ -38,45 +35,36 @@ class DuplicatedTypeAndUnmatchedNameButIgnoredFieldSpec extends Specification {
         noExceptionThrown()
         method != null
         method instanceof Method
-
-        where:
-        type << [IgnoredField, ExplicitField]
     }
 
     // -------------------------------------------------------------------------------------------------
 
     @SuppressWarnings("unused")
-    private static class IgnoredField {
-        final List<Integer> integers
-        @ExcelIgnore
-        final List<String> strings
+    private static class Parent {
+        final String name
 
-        IgnoredField(List<Integer> integers, List<String> strings) {
-            this.integers = integers
-            this.strings = strings
+        private Parent(String name) {
+            this.name = name
         }
 
         @ExcelModelCreator
-        static IgnoredField of(List<Integer> numbers) {
-            new IgnoredField(numbers, Collections.emptyList())
+        static Child fromChild(String name) {
+            Child.from(name, name)
         }
     }
 
     @SuppressWarnings("unused")
-    @ExcelModel(explicit = true)
-    private static class ExplicitField {
-        @ExcelColumn
-        final List<Integer> integers
-        final List<String> strings
+    private static class Child extends Parent {
+        final String nickname
 
-        ExplicitField(List<Integer> integers, List<String> strings) {
-            this.integers = integers
-            this.strings = strings
+        private Child(String name, String nickname) {
+            super(name)
+            this.nickname = nickname
         }
 
         @ExcelModelCreator
-        static ExplicitField of(List<Integer> numbers) {
-            new ExplicitField(numbers, Collections.emptyList())
+        static Child from(String name, String nickname) {
+            new Child(name, nickname)
         }
     }
 

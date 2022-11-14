@@ -14,46 +14,58 @@
  * limitations under the License.
  */
 
-package com.github.javaxcel.in.resolver.impl.method.success
+package com.github.javaxcel.in.resolver.impl.method.failure
 
 import com.github.javaxcel.annotation.ExcelModelCreator
+import com.github.javaxcel.exception.InvalidExcelModelCreatorException
 import com.github.javaxcel.in.resolver.impl.ExcelModelMethodResolver
 import spock.lang.Specification
 
-import java.lang.reflect.Method
-
-class DuplicatedTypeAndMatchedNameSpec extends Specification {
+class InvalidReturnTypeSpec extends Specification {
 
     def "Resolves a method"() {
         given:
-        def resolver = new ExcelModelMethodResolver<>(TestModel)
+        def resolver = new ExcelModelMethodResolver<>(type)
 
         when:
-        def method = resolver.resolve()
+        resolver.resolve()
 
         then:
-        noExceptionThrown()
-        method != null
-        method instanceof Method
+        def e = thrown(InvalidExcelModelCreatorException)
+        e.message ==~ /^@ExcelModelCreator is not allowed to be annotated on method whose return type is assignable to model type\[.+]; Remove the annotation from the method\[.+]$/
+
+        where:
+        type << [Parent, Child]
     }
 
     // -------------------------------------------------------------------------------------------------
 
     @SuppressWarnings("unused")
-    private static class TestModel {
-        final String numeric
+    private static class Parent {
         final String name
-        final String path
 
-        TestModel(String numeric, String name, String path) {
-            this.numeric = numeric
+        private Parent(String name) {
             this.name = name
-            this.path = path
         }
 
         @ExcelModelCreator
-        static TestModel of(String name, String path, String numeric) {
-            new TestModel(numeric, name, path)
+        static Object from(String name) {
+            new Parent(name)
+        }
+    }
+
+    @SuppressWarnings("unused")
+    private static class Child extends Parent {
+        final String nickname
+
+        private Child(String name, String nickname) {
+            super(name)
+            this.nickname = nickname
+        }
+
+        @ExcelModelCreator
+        static Parent from(String name, String nickname) {
+            new Child(name, nickname)
         }
     }
 

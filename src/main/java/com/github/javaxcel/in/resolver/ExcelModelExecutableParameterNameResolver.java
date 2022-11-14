@@ -17,8 +17,10 @@
 package com.github.javaxcel.in.resolver;
 
 import com.github.javaxcel.annotation.ExcelModelCreator.FieldName;
+import com.github.javaxcel.exception.InvalidExcelModelCreatorException;
 import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.CollectionUtils;
+import io.github.imsejin.common.util.StringUtils;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
@@ -79,6 +81,11 @@ public class ExcelModelExecutableParameterNameResolver {
             String name;
             if (annotated) {
                 name = annotation.value();
+                if (StringUtils.isNullOrBlank(name)) {
+                    throw new InvalidExcelModelCreatorException(
+                            "@FieldName.value is not allowed to be blank[%s]; Specify the proper value or detach the annotation from that parameter[%s] of method[%s]",
+                            name, methodParameter.getParameter(), methodParameter.getMethod());
+                }
             } else {
                 methodParameter.initParameterNameDiscovery(DISCOVERER);
                 name = methodParameter.getParameterName();

@@ -22,7 +22,7 @@ import spock.lang.Specification
 
 import java.lang.reflect.Method
 
-class UniqueTypeAndUnmatchedNameSpec extends Specification {
+class DuplicatedParamTypeAndMatchedParamNameSpec extends Specification {
 
     def "Resolves a method"() {
         given:
@@ -41,19 +41,19 @@ class UniqueTypeAndUnmatchedNameSpec extends Specification {
 
     @SuppressWarnings("unused")
     private static class TestModel {
-        final StringBuffer buffer
-        final StringBuilder builder
-        final String string
+        final String numeric
+        final String name
+        final String path
 
-        TestModel(StringBuffer buffer, StringBuilder builder, String string) {
-            this.buffer = buffer
-            this.builder = builder
-            this.string = string
+        TestModel(String numeric, String name, String path) {
+            this.numeric = numeric
+            this.name = name
+            this.path = path
         }
 
         @ExcelModelCreator
-        static TestModel of(StringBuffer $buffer, StringBuilder $builder, String $string) {
-            new TestModel($buffer, $builder, $string)
+        static TestModel of(String name, String path, String numeric) {
+            new TestModel(numeric, name, path)
         }
     }
 
