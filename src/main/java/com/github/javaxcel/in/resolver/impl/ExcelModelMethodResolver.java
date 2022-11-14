@@ -46,9 +46,16 @@ public class ExcelModelMethodResolver<T> extends AbstractExcelModelExecutableRes
     @Override
     protected List<Method> getCandidates() {
         List<Method> candidates = new ArrayList<>();
-        for (Method candidate : super.modelType.getMethods()) {
+        // Excludes the methods from super classes.
+        for (Method candidate : super.modelType.getDeclaredMethods()) {
             if (!candidate.isAnnotationPresent(ExcelModelCreator.class)) {
                 continue;
+            }
+
+            // Are modifiers of candidate public?
+            if (!Modifier.isPublic(candidate.getModifiers())) {
+                throw new InvalidExcelModelCreatorException("@ExcelModelCreator is not allowed to be annotated " +
+                        "on non-public method; Remove the annotation from the method[%s]", candidate);
             }
 
             // Are modifiers of candidate static?
