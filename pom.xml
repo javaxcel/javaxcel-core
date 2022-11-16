@@ -331,6 +331,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.3.0</version>
                 <configuration>
+                    <!-- Not to generate '*-tests.jar' containing test classes. -->
                     <skip>true</skip>
                 </configuration>
             </plugin>
