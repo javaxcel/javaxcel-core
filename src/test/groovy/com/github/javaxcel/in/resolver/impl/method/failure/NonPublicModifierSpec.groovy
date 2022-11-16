@@ -18,7 +18,6 @@ package com.github.javaxcel.in.resolver.impl.method.failure
 
 import com.github.javaxcel.annotation.ExcelModelCreator
 import com.github.javaxcel.exception.InvalidExcelModelCreatorException
-import com.github.javaxcel.exception.NoResolvableExcelModelCreatorException
 import com.github.javaxcel.in.resolver.impl.ExcelModelMethodResolver
 import groovy.transform.PackageScope
 import spock.lang.Specification
