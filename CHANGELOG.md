@@ -28,7 +28,8 @@
 ### Modification
 
 - 🔥 Remove: useless packages `constant`, `model` — `ConversionType`, `ConverterType`, `Column`
-- 🔥 Remove: unused exceptions `GettingFieldValueException`, `NoTargetedConstructorException`, `NotExistConverterException`
+- 🔥 Remove: unused exceptions `GettingFieldValueException`, `NoTargetedConstructorException`
+  , `NotExistConverterException`
   , `SettingFieldValueException`
 - ♻️ Refactor: package `converter`
 - ♻️ Refactor: handlers for java time
@@ -69,6 +70,10 @@
 - ⬆️ Upgrade: test dependency `spock-core` from `2.1-groovy-3.0` to `2.3-groovy-4.0`
 - ⬆️ Upgrade: test dependency `byte-buddy` from `1.12.9` to `1.12.18`
 - ⬆️ Upgrade: test dependency `excel-streaming-reader` from `3.6.1` to `4.0.4`
+- ⬆️ Upgrade: build dependency `gmavenplus-plugin` from `1.13.1` to `2.1.0`
+- ⬆️ Upgrade: build dependency `maven-jar-plugin` from `3.2.0` to `3.3.0`
+- ⬆️ Upgrade: build dependency `maven-javadoc-plugin` from `3.2.0` to `3.4.1`
+- ⬆️ Upgrade: build dependency `maven-shade-plugin` from `3.3.0` to `3.4.1`
 
 # v0.8.2
 
