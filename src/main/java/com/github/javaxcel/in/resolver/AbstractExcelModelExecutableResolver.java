@@ -83,7 +83,7 @@ public abstract class AbstractExcelModelExecutableResolver<T, E extends Executab
         }
 
         // Resolves constructor to prevent @ExcelModelCreator from being annotated
-        // to two executables, even though there is a resolved method.
+        // to two executables, even if there is a resolved method.
         Constructor<?> constructor = null;
         try {
             constructor = new ExcelModelConstructorResolver<>(modelType).resolve();

@@ -55,7 +55,7 @@
 
         <!-- Provided dependency version -->
         <apache-poi.version>5.2.3</apache-poi.version>
-<!--        <apache-poi.version>4.1.2</apache-poi.version>-->
+        <!--        <apache-poi.version>4.1.2</apache-poi.version>-->
 
         <!-- Dependency versions -->
         <spring-expression.version>5.3.18</spring-expression.version>
@@ -220,8 +220,7 @@
 
     <profiles>
         <!--
-            When only executes "mvn deploy -DperformRelease=true",
-            release your libraries.
+            When only executes "mvn deploy -DperformRelease=true", release your libraries.
             It is prevent maven from executing goal "maven-gpg-plugin"
             to use this profile for release.
         -->
@@ -345,9 +344,9 @@
                     <testFailureIgnore>false</testFailureIgnore>
                     <!--
                         Only required if names of test classes don't match default Surefire patterns('*Test').
-                        By default only files ending in 'Test' will be included,
-                        so also include support for Spock style naming convention.
-                        Oddly enough for Groovy files, '*Spec.groovy' does not work, but '*Spec.java'.
+                        By default only files ending in 'Test' will be included, so also include support for
+                        spock style naming convention. Oddly enough for Groovy files, '*Spec.groovy' does not work,
+                        but '*Spec.java'.
                     -->
                     <includes>
                         <include>**/*Test.java</include>
@@ -381,6 +380,16 @@
                 </executions>
             </plugin>
 
+            <!--
+                Plugin to hide dependencies highly vulnerable to conflict.
+
+                Javaxcel needs 'spring-expression' as a dependency. If javaxcel exposes the dependency to outside,
+                a user's application will be strongly coupled with the dependency version that it uses.
+                There is also potential conflict, even if javaxcel makes the dependency provided
+                when other version of the dependency is used by user. To avoid these problems, javaxcel use this plugin.
+                The plugin can repackage dependencies in other words, it can rename package to package name of javaxcel.
+                See Uber-JAR(Fat JAR).
+            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -395,10 +404,7 @@
                             <minimizeJar>true</minimizeJar>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <keepDependenciesWithProvidedScope>false</keepDependenciesWithProvidedScope>
-                            <!--
-                                Specifies artifacts to be repackaged.
-                                Other dependencies will be exposed to outside.
-                            -->
+                            <!-- Specifies artifacts to repackage and others will be exposed to outside. -->
                             <artifactSet>
                                 <includes>
                                     <include>org.springframework:spring-expression</include>
