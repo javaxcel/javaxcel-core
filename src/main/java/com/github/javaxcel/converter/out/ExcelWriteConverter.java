@@ -20,7 +20,7 @@ import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelModel;
 import com.github.javaxcel.out.core.ExcelWriter;
 import com.github.javaxcel.out.strategy.impl.DefaultValue;
-import jakarta.validation.constraints.Null;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 
@@ -56,7 +56,7 @@ public interface ExcelWriteConverter {
      * @param field field of model
      * @return stringified value of field or default value
      */
-    @Null
+    @Nullable
     String convert(Object model, Field field);
 
 }

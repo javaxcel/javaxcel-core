@@ -1,7 +1,7 @@
 package com.github.javaxcel.analysis;
 
 import com.github.javaxcel.converter.handler.ExcelTypeHandler;
-import jakarta.validation.constraints.Null;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.Objects;
@@ -44,7 +44,7 @@ public final class ExcelAnalysisImpl implements ExcelAnalysis {
                 () -> getClass().getSimpleName() + ".defaultMeta cannot be null");
     }
 
-    @Null
+    @Nullable
     @Override
     public ExcelTypeHandler<?> getHandler() {
         return this.handler;
@@ -64,12 +64,12 @@ public final class ExcelAnalysisImpl implements ExcelAnalysis {
 
         private final Source source;
 
-        public DefaultMetaImpl(@Null String value, Source source) {
+        public DefaultMetaImpl(@Nullable String value, Source source) {
             this.value = value;
             this.source = source;
         }
 
-        @Null
+        @Nullable
         @Override
         public String getValue() {
             return this.value;

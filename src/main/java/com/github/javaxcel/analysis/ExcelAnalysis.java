@@ -19,7 +19,7 @@ package com.github.javaxcel.analysis;
 import com.github.javaxcel.analysis.in.ExcelReadAnalyzer;
 import com.github.javaxcel.analysis.out.ExcelWriteAnalyzer;
 import com.github.javaxcel.converter.handler.ExcelTypeHandler;
-import jakarta.validation.constraints.Null;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 
@@ -56,7 +56,7 @@ public interface ExcelAnalysis {
      *
      * @return type handler
      */
-    @Null
+    @Nullable
     ExcelTypeHandler<?> getHandler();
 
     /**
@@ -91,7 +91,7 @@ public interface ExcelAnalysis {
          *
          * @return default value for the field value
          */
-        @Null
+        @Nullable
         String getValue();
 
         /**

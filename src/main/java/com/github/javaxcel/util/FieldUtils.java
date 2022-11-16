@@ -23,7 +23,7 @@ import io.github.imsejin.common.annotation.ExcludeFromGeneratedJacocoReport;
 import io.github.imsejin.common.util.ArrayUtils;
 import io.github.imsejin.common.util.ReflectionUtils;
 import io.github.imsejin.common.util.StringUtils;
-import jakarta.validation.constraints.Null;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
@@ -189,7 +189,7 @@ public final class FieldUtils {
         return map;
     }
 
-    @Null
+    @Nullable
     @SuppressWarnings("unchecked")
     public static <T> T resolveFirst(Class<T> type, Object... arguments) {
         for (Object argument : arguments) {
@@ -201,7 +201,7 @@ public final class FieldUtils {
         return null;
     }
 
-    @Null
+    @Nullable
     @SuppressWarnings("unchecked")
     public static <T> T resolveLast(Class<T> type, Object... arguments) {
         for (int i = arguments.length - 1; i >= 0; i--) {

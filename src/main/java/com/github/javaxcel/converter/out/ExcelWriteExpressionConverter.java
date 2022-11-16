@@ -25,7 +25,7 @@ import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.ReflectionUtils;
 import io.github.imsejin.common.util.StringUtils;
-import jakarta.validation.constraints.Null;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
@@ -108,7 +108,7 @@ public class ExcelWriteExpressionConverter implements ExcelWriteConverter {
     /**
      * {@inheritDoc}
      */
-    @Null
+    @Nullable
     @Override
     public String convert(Object model, Field field) {
         // Don't set root object to prevent user from assigning value
@@ -172,7 +172,7 @@ public class ExcelWriteExpressionConverter implements ExcelWriteConverter {
         }
     }
 
-    private static boolean isNullOrEmpty(@Null Object object) {
+    private static boolean isNullOrEmpty(@Nullable Object object) {
         if (object == null) {
             return true;
         }
@@ -186,9 +186,9 @@ public class ExcelWriteExpressionConverter implements ExcelWriteConverter {
 
     private static class Cache {
         private final ExcelAnalysis analysis;
-        @Null
+        @Nullable
         private Expression expression;
-        @Null
+        @Nullable
         private Expression expressionForDefault;
 
         private Cache(ExcelAnalysis analysis) {

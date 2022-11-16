@@ -25,7 +25,7 @@ import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.ClassUtils;
 import io.github.imsejin.common.util.ReflectionUtils;
 import io.github.imsejin.common.util.StringUtils;
-import jakarta.validation.constraints.Null;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -85,7 +85,7 @@ public class ExcelWriteHandlerConverter implements ExcelWriteConverter {
     /**
      * {@inheritDoc}
      */
-    @Null
+    @Nullable
     @Override
     public String convert(Object model, Field field) {
         // Gets property value of model.
@@ -110,7 +110,7 @@ public class ExcelWriteHandlerConverter implements ExcelWriteConverter {
 
     // -------------------------------------------------------------------------------------------------
 
-    @Null
+    @Nullable
     private Object getValueOf(Object model, Field field) {
         ExcelAnalysis analysis = this.analysisMap.get(field);
 
@@ -126,7 +126,7 @@ public class ExcelWriteHandlerConverter implements ExcelWriteConverter {
         }
     }
 
-    private static boolean isNullOrEmpty(@Null Object object) {
+    private static boolean isNullOrEmpty(@Nullable Object object) {
         if (object == null) {
             return true;
         }

@@ -24,7 +24,7 @@ import com.github.javaxcel.annotation.ExcelColumn;
 import com.github.javaxcel.annotation.ExcelReadExpression;
 import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.StringUtils;
-import jakarta.validation.constraints.Null;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
@@ -91,7 +91,7 @@ public class ExcelReadExpressionConverter implements ExcelReadConverter {
      * @see ExcelReadExpression#value()
      * @see ExcelColumn#defaultValue()
      */
-    @Null
+    @Nullable
     @Override
     public Object convert(Map<String, String> variables, Field field) {
         // To read in parallel, instantiates on each call of this method.
@@ -124,7 +124,7 @@ public class ExcelReadExpressionConverter implements ExcelReadConverter {
 
     // -------------------------------------------------------------------------------------------------
 
-    private static boolean isNullOrEmpty(@Null Object object) {
+    private static boolean isNullOrEmpty(@Nullable Object object) {
         if (object == null) {
             return true;
         }
@@ -138,9 +138,9 @@ public class ExcelReadExpressionConverter implements ExcelReadConverter {
 
     private static class Cache {
         private final ExcelAnalysis analysis;
-        @Null
+        @Nullable
         private Expression expression;
-        @Null
+        @Nullable
         private Expression expressionForDefault;
 
         private Cache(ExcelAnalysis analysis) {

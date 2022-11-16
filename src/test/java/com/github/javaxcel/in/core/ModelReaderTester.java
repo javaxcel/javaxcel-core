@@ -22,14 +22,14 @@ import com.github.javaxcel.util.ExcelUtils;
 import com.github.pjfanning.xlsx.StreamingReader;
 import io.github.imsejin.common.tool.Stopwatch;
 import io.github.imsejin.common.util.FilenameUtils;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -137,7 +137,7 @@ public abstract class ModelReaderTester {
     protected static class GivenModel {
         @NotNull
         private final File file;
-        @Null
+        @Nullable
         private final Class<?> type;
         private OutputStream outputStream;
         private Workbook workbook;

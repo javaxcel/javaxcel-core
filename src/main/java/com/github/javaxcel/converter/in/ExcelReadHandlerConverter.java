@@ -24,7 +24,7 @@ import com.github.javaxcel.util.FieldUtils;
 import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.ClassUtils;
 import io.github.imsejin.common.util.StringUtils;
-import jakarta.validation.constraints.Null;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import java.lang.reflect.Array;
@@ -70,7 +70,7 @@ public class ExcelReadHandlerConverter implements ExcelReadConverter {
         return analysis.hasFlag(ExcelReadAnalyzer.HANDLER);
     }
 
-    @Null
+    @Nullable
     @Override
     public Object convert(Map<String, String> variables, Field field) {
         Class<?> type = field.getType();

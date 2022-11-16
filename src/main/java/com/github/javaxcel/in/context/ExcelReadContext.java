@@ -20,10 +20,10 @@ import com.github.javaxcel.in.core.ExcelReader;
 import com.github.javaxcel.in.strategy.ExcelReadStrategy;
 import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.StringUtils;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -113,7 +113,7 @@ public class ExcelReadContext<T> {
         this.strategyMap = strategyMap;
     }
 
-    @Null
+    @Nullable
     public List<T> getList() {
         return this.list;
     }
@@ -151,7 +151,7 @@ public class ExcelReadContext<T> {
         this.readCount++;
     }
 
-    @Null
+    @Nullable
     public List<T> getChunk() {
         return this.chunk;
     }

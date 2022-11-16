@@ -61,8 +61,8 @@
 
 ### Dependencies
 
+- ➖ Remove: dependency `jsr305`
 - ➕ Add: intransitive dependency `annotations`
-- ♻️ Replace: dependency `jsr305` with `jakarta.validation-api`
 - ⬆️ Upgrade: provided dependency `poi-ooxml` from `5.2.2` to `5.2.3`
 - ⬆️ Upgrade: dependency `common-utils` from `0.9.0` to `0.13.0`
 - ⬆️ Upgrade: test dependency `junit5` from `5.8.2` to `5.9.1`

@@ -23,7 +23,6 @@ import com.github.javaxcel.styler.config.Configurer;
 import io.github.imsejin.common.annotation.ExcludeFromGeneratedJacocoReport;
 import io.github.imsejin.common.assertion.Asserts;
 import io.github.imsejin.common.util.FilenameUtils;
-import jakarta.validation.constraints.Null;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -48,6 +47,7 @@ import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -414,7 +414,7 @@ public final class ExcelUtils {
      * @param config   configuration of cell style
      * @return cell style | null if config type is {@link NoStyleConfig}
      */
-    @Null
+    @Nullable
     public static CellStyle toCellStyle(Workbook workbook, ExcelStyleConfig config) {
         // To save memory and prevent the number of cell styles in a workbook from increasing,
         // replaces redundant cell style with null.
