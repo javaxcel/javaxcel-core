@@ -75,7 +75,6 @@ public final class ExcelAnalysisImpl implements ExcelAnalysis {
             return this.value;
         }
 
-
         @Override
         public Source getSource() {
             return this.source;
