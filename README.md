@@ -1,3 +1,9 @@
+<p>
+    <b>This is migrated to <a href="https://github.com/javaxcel/javaxcel">https://github.com/javaxcel/javaxcel</a>.</b>
+</p>
+
+<hr>
+
 <p align="center">
     <img src="./asset/javaxcel-core-logo.png" alt="Javaxcel Core" width="20%">
 </p>
