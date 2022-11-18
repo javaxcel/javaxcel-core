@@ -4,10 +4,10 @@
 name: Java CI with Maven
 
 on:
-  push:
+  push:  
+    branches:
     # This is migrated to https://github.com/javaxcel/javaxcel.
-    # branches:
-    # - release
+    - master
     
   # This is migrated to https://github.com/javaxcel/javaxcel.
   # schedule:
